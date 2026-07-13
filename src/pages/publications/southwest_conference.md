@@ -1,0 +1,32 @@
+---
+layout: ../../layouts/ArticleLayout.astro
+title: "The Remnants of the Southwest Conference: the Story of a Landmark Archival Collection"
+publication: "Authentic Texas"
+date: "Winter 2024"
+---
+
+
+
+
+> Conference realignment. It is the periodic buzzword that makes the rounds of college athletics for the past three or more decades as schools and conferences aim to sweeten their television contracts. The history of college athletics runs mostly parallel to the history of college athletic conferences, and with that history comes the stories of conference realignment. Conference realignment over the past decade has been front and center as schools like Texas A&M University and the University of Texas left their previously comfortable homes in the Big 12 Conference to try their luck in the Southeastern Conference (SEC). This was not the first time such moves rattled college athletics. A previously well-known entity in Texas, the Southwest Conference (SWC), dominated college sports in Texas for the better part of a century, but its stature quickly dissolved in a matter of months as schools sought to keep up with a changing landscape that revolved more around television contracts rather than traditional conference foes.
+
+![Aerial image of the Southwest Collection/Special Collections Library](/images/southwest_collection1.jpg)
+*Southwest Collection/Special Collections Library | Lubbock, Texas | Photo Credit: Austin Allison*
+
+The first major blow to the SWC was the departure of the University of Arkansas in 1990. This left the conference as a Texas-only affair that was on the outside looking in as other leagues signed large and long-term collaborative contracts with television groups to broadcast games on cable and network television. The conference trudged along for a time, but the dominoes were already falling out of favor for the old SWC. Four schools, Baylor University, Texas A&M University, Texas Tech University, and the University of Texas were on their way out by late 1993. Schools from the Big 8 and the four departing SWC schools joined forces to create the Big 12 Conference. Rice University, Southern Methodist University and Texas Christian University joined the Western Athletic Conference, while the University of Houston joined Conference USA.
+
+With the dissolution of the conference looming, the conference’s leadership was tasked with identifying a repository for the records of the organization. Two entities submitted proposals to house the remnant records of the conference: Texas Tech University’s Southwest Collection and the Texas Sports Hall of Fame in Waco. Each group submitted wide-ranging proposals detailing how the collection would be managed and publicized, but the Southwest Collection ultimately was chosen as the winning repository for the official papers and records, while the Texas Sports Hall of Fame was chosen as the repository of the Southwest Conference name, brand, and the memorabilia that Texas Tech was unable to house. 
+
+Dr. David Murrah, then the Director of the Southwest Collection, authored a proposal to Southwest Conference representatives in August 1995 and presented it at a later time prior to a November 1995 Southwest Conference board meeting. The proposal outlined a plan to survey and catalog the records, to perform preservation and conservation to items needing attention, and to publicize the collection externally to promote research and use of the records. 
+
+Transfer of the materials began in early 1996, and by June of that year more than 300 boxes of material had been collected by the crew from Texas Tech. One of the selling points that Texas Tech touted was the expansion and opening of their new building which was slated to occur in 1996. Not only did Tech have the facilities to house the monstrous collection, but they had the permanent exhibit space to highlight the acquisition in perpetuity as one of the cornerstone collections housed at the facility. This exhibit still stands today.
+
+![Image of Southwest Conference exhibit](/images/southwest_conference1.jpg)
+*Southwest Conference exhibit at Southwest Collection/Special Collections Library | Lubbock, Texas | Photo Credit: Austin Allison*
+
+The collection contains a breadth of information about not only the everyday business of the Southwest Conference, but also a wide-ranging view of athletics from the early 20th century up through a portion of its last decade. The most comprehensive series of documents is the meeting minutes records, which is complete and comprehensive. In fact, these records have been digitized and are available for researchers on the Southwest Collection’s digital repository. For those interested in historic game and season statistics, there are records folder after folder dating back to the 1960s and beyond.
+
+In total, there are 333 boxes of materials that were transferred when the final dissolution of the conference occurred. Perhaps the most interesting folders of the collection pertain to the early-1990s discussions about the conference’s future. The files of Kyle Kallander, the last commissioner of the conference, contain brutally honest views of the conference’s plight. A December 15, 1993 meeting of SWC university presidents detailed plans to address media speculation that the conference was foundering. By this time there was speculation that the Big 8 Conference aimed to absorb 4 SWC teams. To address this, a special meeting was called to brainstorm potential solutions while within the “window of opportunity” including a merge with the Big 8 Conference. This did not happen as the slow-acting conference failed to stave off the expansion-minded Big 8. February 1994 brought the announcement that Baylor, Texas, Texas A&M, Texas Tech were leaving, thus sealing the fate of the old Southwest Conference. 
+
+The Southwest Conference has a rich history that documents college athletics during the 20th century. This history can be accessed by researchers at Texas Tech University’s Southwest Collection/Special Collections Library. A box-by-box, folder-by-folder breakdown of the collection can be accessed online. Texas Tech is also home to the Southwest Conference Circle, a unique octagon-shaped marker that was constructed in 1956 to commemorate Texas Tech’s entry into the conference in 1956. The marker can be viewed just east of the Bob L. Herd Department of Petroleum Engineering on Texas Tech’s campus in Lubbock.
+

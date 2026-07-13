@@ -1,0 +1,70 @@
+---
+// src/layouts/RootLayout.astro
+import '../styles/global.css';
+import { Image } from 'astro:assets';
+import signature from '../assets/signature3.png';
+
+interface Props {
+	title: string;
+	description?: string;
+}
+
+const { title, description = "Academic Librarian & Photographer Portfolio" } = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="bg-canvas text-iron antialiased scroll-smooth">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<title>{title}</title>
+		<meta name="description" content={description} />
+	</head>
+	<body class="min-h-screen flex flex-col selection:bg-caprock/20 selection:text-caprock">
+		
+		<!-- Tripartite Grid Header -->
+<header class="w-full max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row md:grid md:grid-cols-3 items-center gap-4 sm:gap-6 md:gap-0 border-b border-haze">
+	
+	<!-- Left Column: Typeset Branding Name -->
+	<div class="sm:justify-start">
+		<a href="/" class="font-serif text-lg md:text-2xl font-medium tracking-tight text-iron/90 hover:text-caprock transition-colors duration-300 whitespace-nowrap">
+			Austin Allison
+		</a>
+	</div>
+
+	<!-- Center Column: Artistic Signature Graphic -->
+	<div class="sm:justify-self-center order-first sm:order-none">
+		<a href="/" class="block hover:opacity-80 transition-opacity duration-300">
+			<Image 
+				src={signature} 
+				alt="Austin Allison Signature" 
+				class="h-8 sm:h-10 md:h-18 w-auto mix-blend-multiply" 
+				loading="eager"
+			/>
+		</a>
+	</div>
+
+	<!-- Right Column: Navigation Links -->
+	<nav class="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 text-xs md:text-sm font-medium tracking-wider lowercase text-iron/70 sm:justify-end">
+		<a href="/cv" class="hover:text-caprock transition-colors duration-300">cv</a>
+		<a href="/publications" class="hover:text-caprock transition-colors duration-300">publications</a>
+		<a href="/photography" class="hover:text-caprock transition-colors duration-300">photography</a>
+	</nav>
+
+</header>
+
+		<!-- The main page content container -->
+		<main class="flex-grow w-full max-w-7xl mx-auto px-6 py-12">
+  				<div class="prose prose-neutral max-w-none font-sans">
+    			<slot />
+  				</div>
+		</main>
+
+		<!-- Minimal Footer -->
+		<footer class="w-full max-w-7xl mx-auto px-6 py-8 border-t border-haze text-xs text-iron/60 flex justify-between">
+			<p>&copy; {new Date().getFullYear()} &mdash; Lubbock, TX</p>
+			<p class="font-serif italic">All Rights Reserved | Austin Allison</p>
+		</footer>
+	</body>
+</html>

@@ -1,0 +1,70 @@
+---
+// src/pages/publications/capitol-land.astro
+import RootLayout from '../../layouts/RootLayout.astro';
+---
+
+<RootLayout title="Surveying the Capitol Land Reservation | Austin Allison">
+  <div class="max-w-7xl mx-auto py-6 text-iron">
+    
+    <!-- Breadcrumb Anchor Navigation -->
+    <div class="mb-8">
+      <a href="/publications" class="text-xs font-mono text-sage hover:text-caprock transition-colors lowercase tracking-wide">
+        &larr; return to repository index
+      </a>
+    </div>
+
+    <!-- The Split-Pane Layout Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+      
+      <!-- LEFT FLANK: Citation Details & Abstract (Spans 5 Columns) -->
+      <div class="lg:col-span-5 space-y-6">
+        <div class="space-y-2">
+          <span class="text-sm font-mono text-caprock font-semibold uppercase tracking-wider block">Peer-Reviewed Article</span>
+          <h1 class="font-serif text-2xl md:text-3xl font-medium tracking-tight text-iron leading-tight">
+            Surveying the Capitol Land Reservation in Texas
+          </h1>
+          <p class="text-xs font-mono text-iron/60 pt-1">
+            Published in <span class="italic font-sans text-iron font-medium">Southwestern Historical Quarterly</span> &bull; Vol. 129, No. 3 (January 2026), pp. 335–364
+          </p>
+          <p class="text-xs font-mono text-iron/60 pt-1">
+            The text here is the original submitted manuscript. For the published version, please see <span class="italic font-sans text-iron font-medium">Southwestern Historical Quarterly</span>
+          </p>
+        </div>
+
+        <hr class="border-haze" />
+
+        <div class="space-y-3">
+          <h2 class="text-xs font-mono text-sage uppercase tracking-widest font-bold">Abstract</h2>
+          <p class="text-sm text-iron/80 leading-relaxed font-sans">
+            During the closing years of the 1870s, vast areas of public lands owned by the State of Texas remained underutilized and their value unrealized as the state exited the Reconstruction period. With the adoption of the Constitution of 1876, this asset became the focus of state efforts to develop public works. This Constitution provided for the appropriation of 3 million acres of the public domain to fund the construction of a new state Capitol, a story that many Texans know well. A lesser-known aspect of this history entails the controversies that complicated the survey project that initiated the transformation of 3 million acres of state land into the largest ranch in the world. Led by contractor Joseph Theodore "J.T." Munson in 1879 and 1880, the survey of what became the Capitol Land Reservation employed expert surveyors like John S. Summerfield and H. A. Wiley in the Panhandle to produce an intricate record of the vast property. A detailed survey was created, but it attracted intense legal scrutiny as potentially fraudulent practices by the firm of Gunter & Munson in Sherman came to light. More problems emerged in subsequent years as more accurate surveys uncovered significant errors in Munson's survey that affected landowners in the region as late as the 1920s.
+          </p>
+        </div>
+
+        <div class="pt-4 flex flex-wrap gap-3">
+          <a href="/documents/capitol_land.pdf" download class="px-4 py-2 bg-iron text-canvas text-xs font-mono rounded-sm hover:bg-caprock transition-colors">
+            download print-ready version
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT FLANK: High-Fidelity Native Document View (Spans 7 Columns) -->
+      <div class="lg:col-span-7 w-full">
+        <div class="border border-haze rounded-sm p-2 bg-canvas shadow-sm">
+          <!-- Inline frame displaying the hosted file directly with top fit constraints -->
+          <iframe 
+            src="/documents/capitol_land.pdf#view=FitH" 
+            class="w-full h-[650px] rounded-xs" 
+            title="Surveying the Capitol Land Reservation PDF Viewer"
+          >
+            <p class="text-sm p-4 font-mono">Your browser does not support inline frame displays. <a href="/documents/capitol_land.pdf" class="text-caprock underline">Click here to view file directly.</a></p>
+          </iframe>
+        </div>
+        <div class="mt-2 text-center">
+          <span class="text-[10px] font-mono text-iron/40 lowercase">scroll inside panel to read full pagination or use text selection controls</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</RootLayout>

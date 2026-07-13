@@ -1,0 +1,63 @@
+/* src/styles/global.css */
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #FBFBF9;
+  --color-iron: #1A1919;
+  --color-caprock: #B85A38; /* Terracotta Rust */
+  --color-sage: #6E7E6A;    /* Desert Sage Green */
+  --color-haze: #E6E4DF;    /* Sandy Gray */
+
+  --font-serif: "Georgia", "Cambria", "Times New Roman", "Times", serif;
+  --font-sans: "Inter", "system-ui", "-apple-system", "BlinkMacSystemFont", sans-serif;
+}
+
+/* Global Markdown Typography Handlers */
+article blockquote, .prose blockquote {
+  border-left: 3px solid #B85A38 !important; /* Solid Caprock Rust Line */
+  padding-left: 1.5rem;
+  margin: 2rem 0;
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: #1A1919;
+  opacity: 0.85;
+}
+
+article p, .prose p {
+  margin-bottom: 1.25rem;
+  font-family: var(--font-sans);
+}
+
+article h3, .prose h3 {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  color: #1A1919;
+  margin-top: 2rem;
+  margin-bottom: 0.75rem;
+}
+
+/* Automate Essay Image Framing */
+article img {
+  width: 100%;
+  height: auto;
+  border: 1px solid #E6E4DF;       /* border-haze */
+  background-color: #FBFBF9;       /* bg-canvas */
+  padding: 0.75rem;                /* p-3 museum border gap */
+  border-radius: 0.125rem;         /* rounded-sm */
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05); /* shadow-sm */
+  margin-top: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Automate Captions running directly underneath an essay image */
+article img + p em, article img + em {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #6E7E6A;                  /* text-sage */
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 2.5rem;
+  padding-left: 0.25rem;
+  font-style: normal;              /* Resets italic to clean ledger text */
+}

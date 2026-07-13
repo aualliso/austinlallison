@@ -1,17 +1,99 @@
 ---
+// src/pages/index.astro
+import RootLayout from '../layouts/RootLayout.astro';
 
+// 1. Import the Image component and your landscape asset
+import { Image } from 'astro:assets';
+import montana2022 from '../assets/montana2022/137.jpg';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<RootLayout title="Home | Austin Allison">
+  
+  <!-- Outer Grid Container -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(180px,_auto)]">
+    
+    <!-- Block 1: The Narrative Intro (Spans 2 columns on desktop) -->
+    <div class="md:col-span-2 bg-canvas border border-haze rounded-sm p-8 flex flex-col justify-between space-y-6">
+      <div class="space-y-4">
+        <span class="text-xs font-mono tracking-widest uppercase text-sage font-medium block">
+          Librarian, Digital Curator, and Historian
+        </span>
+        <h2 class="font-serif text-3xl md:text-4xl font-medium tracking-tight text-iron leading-tight">
+          Bridging historical documentation with interactive digital resources.
+        </h2>
+        <p class="text-sm md:text-base text-iron/80 leading-relaxed max-w-2xl">
+          Specializing in structural metadata schemas, digital preservation infrastructure, and the physical curation of regional archives. This workspace highlights my academic framework alongside raw visual studies of regional landscapes.
+        </p>
+      </div>
+      <div class="pt-2">
+        <a href="/cv" class="text-xs font-mono lowercase tracking-wider text-caprock hover:underline inline-flex items-center gap-1">
+          explore full cv &rarr;
+        </a>
+      </div>
+    </div>
+
+    <!-- Block 2: Featured Visual Anchor (Now fully armed with an optimized image) -->
+    <div class="bg-iron border border-haze rounded-sm overflow-hidden flex flex-col justify-end p-6 min-h-[350px] md:min-h-full group relative">
+      
+      <!-- The Background Image Layer (z-0) -->
+      <Image 
+        src={montana2022} 
+        alt="Eroded red clay and rugged canyon formations of West Texas" 
+        class="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 group-hover:scale-[1.03] transition-all duration-700 ease-out z-0"
+      />
+      
+      <!-- Linear Gradient Mask to keep text perfectly legible (z-10) -->
+      <div class="absolute inset-0 bg-gradient-to-t from-iron/90 via-iron/20 to-transparent z-10"></div>
+      
+      <!-- The Editorial Text Content (z-20) -->
+      <div class="z-20">
+        <span class="text-[10px] font-mono tracking-widest uppercase text-canvas/70 block">
+          Featured Photograph
+        </span>
+        <h2 class="font-serif text-md font-medium tracking-tight mt-1 text-haze">
+          Toole County, Montana - Little Jerusalem
+        </h2>
+        <a href="/photography" class="text-[11px] font-mono lowercase tracking-wide text-canvas/90 hover:text-caprock transition-colors duration-300 underline mt-2 block">
+          view gallery
+        </a>
+      </div>
+
+    </div>
+
+    <!-- Block 3: Quick Metric / Statement Box (1 Column) -->
+    <div class="bg-iron text-canvas rounded-sm p-8 flex flex-col justify-between">
+      <span class="text-[10px] font-mono tracking-widest uppercase text-canvas/50">
+        Current Work
+      </span>
+      <div class="my-auto py-4">
+        <p class="font-serif text-xl italic tracking-tight text-canvas/90">
+          "Preserving vulnerable print collections through automated OCR scaling pipelines."
+        </p>
+      </div>
+      <span class="text-[11px] font-mono text-sage lowercase">
+        &bull; active project
+      </span>
+    </div>
+
+    <!-- Block 4: Featured Publication/Scholarship Card (Spans 2 columns) -->
+    <div class="md:col-span-2 bg-canvas border border-haze rounded-sm p-8 flex flex-col justify-between group hover:border-iron transition-colors duration-300">
+      <div class="space-y-3">
+        <span class="text-xs font-mono tracking-widest uppercase text-iron/40">
+          Featured Publication
+        </span>
+        <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors duration-300">
+          Surveying the Capitol Land Reservation in Texas
+        </h3>
+        <p class="text-xs font-mono text-iron/60">
+          Southwestern Historical Quarterly &bull; 2026
+        </p>
+      </div>
+      <div class="pt-4">
+        <a href="/publications" class="text-xs font-mono lowercase tracking-wider text-iron/80 hover:text-iron underline">
+          read full text
+        </a>
+      </div>
+    </div>
+
+  </div>
+</RootLayout>

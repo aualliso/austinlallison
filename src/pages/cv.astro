@@ -1,0 +1,408 @@
+---
+// src/pages/cv.astro
+import RootLayout from '../layouts/RootLayout.astro';
+---
+
+<RootLayout title="Curriculum Vitae | Austin Allison">
+  <div class="max-w-4xl mx-auto py-6 font-sans text-iron">
+    
+    <!-- PDF-Style Contact Header -->
+    <div class="border-b-2 border-sage pb-5 mb-5 text-center md:text-left flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+      <div>
+        <h1 class="font-serif text-3xl font-medium tracking-tight text-iron">Austin Allison</h1>
+        <p class="text-md font-serif italic text-sage mt-1">Assistant Librarian</p>
+        <p class="text-md text-iron/80 mt-0.5">Southwest Collection/Special Collections Library | Texas Tech University</p>
+      </div>
+      <div class="text-sm font-mono text-iron/70 md:text-right space-y-1">
+        <p>austin.allison@ttu.edu &bull; 806-834-3655</p>
+        <p>Lubbock, Texas</p>
+      </div>
+    </div>
+
+    <div class="space-y-0">
+
+      <!-- SECTION: EDUCATION -->
+      <h2 class="text-lg font-bold uppercase text-caprock border-b border-sage pb-0 mb-0">Education</h2>
+      <section>
+        <div class="space-y-0 text-md">
+          <div class="flex justify-between items-baseline">
+            <div>
+              <span class="font-semibold">University University of North Texas</span>
+              <p class="text-iron/80 italic">Master of Science | Major: Library Science</p>
+            </div>
+            <span class="text-s font-mono text-iron/60 whitespace-nowrap">May 2016</span>
+          </div>
+          <div class="flex justify-between items-baseline">
+            <div>
+              <span class="font-semibold">Texas Tech University</span>
+              <p class="text-iron/80 italic">Bachelor of Arts | Major: History | Minor: Classics</p>
+            </div>
+            <span class="text-s font-mono text-iron/60 whitespace-nowrap">May 2012</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: POSITIONS -->
+      <section>
+        <h2 class="text-lg font-bold uppercase text-caprock border-b border-sage pb-1 mb-0">Academic and Professional Positions</h2>
+        <div class="space-y-0 text-sm">
+          <div class="text-lg text-sage uppercase font-semibold mb-0">Texas Tech University | Southwest Collection/Special Collections Library</div>
+          
+          <div class="space-y-0-mt-8">
+            <div class="flex justify-between items-baseline -mt-8">
+              <h3 class="font-semibold text-base text-iron">Assistant Librarian | Bibliographic Services | Tenure-Track</h3>
+              <span class="text-s font-mono text-iron/60 whitespace-nowrap">June 2021 - Present</span>
+            </div>
+            <p class="text-iron/80 leading-tight pl-10 pr-50 -mt-4">Manage and supervise cataloging, metadata, and digitization projects for bibliographic services department. Supervise two exempt unit managers who oversee staffed units within the SWC/SCL, including conservation, reception, and bibliographic services. Work with internal and external stakeholders to ensure proper and ongoing access to physical and digital resources available.</p>
+          </div>
+
+          <div class="space-y-0 -mt-12">
+            <div class="flex justify-between items-baseline">
+              <h3 class="font-semibold text-base text-iron">Unit Manager | Bibliographic Services</h3>
+              <span class="text-s font-mono text-iron/60 whitespace-nowrap">August 2014 - June 2021</span>
+            </div>
+            <p class="text-iron/80 leading-relaxed pl-10 pr-50 -mt-4">Managed cataloging and digitization projects for SWC/SCL bibliographic services department. Supervision of one non-exempt staff member.</p>
+          </div>
+
+          <div class="space-y-0 -mt-12">
+            <div class="flex justify-between items-baseline">
+              <h3 class="font-semibold text-base text-iron">Specialist IV | Bibliographic Services</h3>
+              <span class="text-s font-mono text-iron/60 whitespace-nowrap">November 2013 - July 2014</span>
+            </div>
+            <p class="text-iron/80 leading-relaxed pl-10 pr-50 -mt-4">Cataloged incoming items for SWC/SCL bibliographic services department. Performed specialized duties to create bibliographic records for online access.</p>
+          </div>
+
+          <div class="space-y-0 -mt-12">
+            <div class="flex justify-between items-baseline">
+              <h3 class="font-semibold text-base text-iron">Part-Time Reference Assistant | Reference</h3>
+              <span class="text-s font-mono text-iron/60 whitespace-nowrap">June 2010 - October 2013</span>
+            </div>
+            <p class="text-iron/80 leading-relaxed pl-10 pr-50 -mt-4">Assisted reference staff with duties to serve incoming students and researchers.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: GRANTS -->
+      <section>
+        <h2 class="text-lg font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Scholarship/Research</h2> 
+        <h2 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-4 -mt-4">Contracts, Grants and Sponsored Research</h2>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left text-sm border-collapse">
+            <thead>
+              <tr class="border-b border-iron text-xs font-mono text-iron/60 uppercase">
+                <th class="py-2 pr-4">Year</th>
+                <th class="py-2 px-4">Funding Entity & Project Frame</th>
+                <th class="py-2 px-4 text-right">Amount</th>
+                <th class="py-2 pl-4 text-right">Status</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-haze/60 text-xs md:text-sm">
+              <tr>
+                <td class="py-3 pr-4 font-mono vertical-top">2026</td>
+                <td class="py-3 px-4">
+                  <span class="font-semibold">Helen Jones Foundation</span> | Principal Investigator
+                  <p class="text-xs text-iron/70 mt-1">Grant awarded to replace an aging microfilm scanner at the SWC/SCL to support newspaper digitization program.</p>
+                </td>
+                <td class="py-3 px-4 text-right font-mono font-semibold text-caprock">**$72,000**</td>
+                <td class="py-3 pl-4 text-right"><span class="px-2 py-0.5 bg-sage/10 text-sage rounded-sm font-medium">Awarded</span></td>
+              </tr>
+              <tr>
+                <td class="py-3 pr-4 font-mono vertical-top">2020</td>
+                <td class="py-3 px-4">
+                  <span class="font-semibold">Helen Jones Foundation</span> | Principal Investigator
+                  <p class="text-xs text-iron/70 mt-1">Grant awarded to replace aging flatbed scanners at the SWC/SCL.</p>
+                </td>
+                <td class="py-3 px-4 text-right font-mono font-semibold text-caprock">**$24,400**</td>
+                <td class="py-3 pl-4 text-right"><span class="px-2 py-0.5 bg-sage/10 text-sage rounded-sm font-medium">Awarded</span></td>
+              </tr>
+              <tr>
+                <td class="py-3 pr-4 font-mono text-iron/40">2018</td>
+                <td class="py-3 px-4 text-iron/50">National Endowment for the Humanities, National Digital Newspaper Program</td>
+                <td class="py-3 px-4 text-right font-mono text-iron/40">&mdash;</td>
+                <td class="py-3 pl-4 text-right text-xs text-iron/40">Not awarded</td>
+              </tr>
+              <tr>
+                <td class="py-3 pr-4 font-mono text-iron/40">2017</td>
+                <td class="py-3 px-4 text-iron/50">National Endowment for the Humanities, National Digital Newspaper Program</td>
+                <td class="py-3 px-4 text-right font-mono text-iron/40">&mdash;</td>
+                <td class="py-3 pl-4 text-right text-xs text-iron/40">Not awarded</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- SECTION: INTELLECTUAL CONTRIBUTIONS -->
+      <section>
+        <h2 class="text-lg font-bold uppercase text-caprock border-b border-sage pb-0 mb-0">Intellectual Contributions</h2>
+        
+        <div class="space-y-0 text-sm">
+          <div>
+            <h3 class="text-sm font-mono text-sage uppercase tracking-wider font-semibold mb-3">Journal Articles (Academic Journals)</h3>
+            <ul class="space-y-3 list-none pl-0">
+              <li class="pl-4 border-l-2 border-haze">Allison, Austin. "The Digitization of Edwards Plateau Newspapers." <span class="italic">Edwards Plateau Historian</span>. Under Review (Submitted October 2025)</li>
+              <li class="pl-4 border-l-2 border-caprock">Allison, Austin. "<a href="/publications/opportunity_knocking" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">'Opportunity Knocking': The Vaughan Land Company and Early Bailey County Development.</a>" <span class="italic">Panhandle-Plains Historical Review</span> 96 (2025), 40-65.</li>
+              <li class="pl-4 border-l-2 border-caprock">Allison, Austin. <a href="/publications/capitol_land" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">"Surveying the Capitol Land Reservation in Texas."</a> <span class="italic">Southwestern Historical Quarterly</span> 129, no.3 (January 2026), 335-364.</li>
+              <li class="pl-4 border-l-2 border-haze text-iron/50">Allison, Austin. "The Digitization of West Texas Newspapers." <span class="italic">Digital Library Perspectives</span>. Submitted September 2024, Refused January 2025</li>
+              <li class="pl-4 border-l-2 border-haze">Allison, Austin. <a href="/publications/spring_sprung_it" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">"A Spring Sprung It: Tracing and Understanding the True Genesis of North America's Longest River."</a> <span class="italic">Journal of the West</span> 58, no. 3 (2019), 6-21.</li>
+              <li class="pl-4 border-l-2 border-haze">Allison, Austin. <a href="/publications/maps_and_newspapers" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">"Maps and newspapers in the Southwest Collection."</a> <span class="italic">Archivation Exploration</span> 3, no. 2 (2018).</li>
+              <li class="pl-4 border-l-2 border-haze">Allison, Austin. "Notes, Documents, and Sundries: Newspapers, Oil, and Railroad Land." <span class="italic">West Texas Historical Review</span> XC (2014): 129-135.</li>
+              <li class="pl-4 border-l-2 border-haze">Allison, Austin. "Notes, Documents and Sundries: JA Cattle Company." <span class="italic">West Texas Historical Association Year Book</span> LXXXVIII (2012): 173-175.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="text-xs font-mono text-sage uppercase tracking-wider font-semibold mb-3">Book, Chapter in Scholarly Book</h3>
+            <p class="pl-4 border-l-2 border-caprock">Allison, Austin. <a href="/publications/tahoka_lake" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">"Tahoka Lake"</a> in <span class="italic">Caprock Chronicles: More Tales of the Llano Estacado</span>, edited by John T. (Jack) Becker and David J Murrah, 55-56. Charleston, South Carolina: The History Press, 2021.</p>
+          </div>
+
+          <div>
+            <h3 class="text-xs font-mono text-sage uppercase tracking-wider font-semibold mb-3">Magazines / Trade Publications</h3>
+            <ul class="space-y-2 list-disc list-inside text-iron/90 pl-2">
+              <li>Allison, Austin. "<a href="/publications/lipscomb_county_courthouse" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">Lipscomb County Courthouse: A Prairie Landmark with Enduring Presence</a>" <span class="italic">Authentic Texas</span>, Issue 33, Summer 2025.</li>
+              <li>Allison, Austin. "<a href="/publications/southwest_conference" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">The Remnants of the Southwest Conference: The Story of Landmark Archival Collection</a>" <span class="italic">Authentic Texas</span>, Issue 27, Winter 2024.</li>
+              <li>Allison, Austin. "<a href="/publications/sharps_rifle" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">The Sharps rifle, buffalo hunting, and the South Plains</a>" <span class="italic">Lubbock Avalanche-Journal</span>, January 28, 2024.</li>
+              <li>Allison, Austin. "<a href="/publications/tumbleweed_smith" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">Tumbleweed Smith and the Sounds of Texas.</a>" <span class="italic">Authentic Texas</span>, Issue 25, Spring 2023.</li>
+              <li>Allison, Austin. "<a href="/publications/comfortably_lodged" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">Comfortably Lodged: Transforming historic county jails into silos for historical and cultural heritage.</a>" <span class="italic">Authentic Texas</span>, Issue 22, Fall 2021, 40-42.</li>
+              <li>Allison, Austin. "<a href="/publications/unusual_annotations" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">Unusual Annotations in Stephen F. Austin's 1835 Map of Texas Tell Early Texas History.</a>" <span class="italic">The Southwestern Archivist</span> 42, no. 1 (2019), 19.</li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 class="text-xs font-mono text-sage uppercase tracking-wider font-semibold mb-2">Edited and Compiled Works</h3>
+            <p class="text-iron/90 pl-2">&bull; Compiler of "Publications in West Texas History" for the <span class="italic">West Texas Historical Review</span>, West Texas Historical Association, 2014, 2016-2026.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: PRESENTATIONS -->
+      <section>
+        <h2 class="text-lg font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Presentations</h2>
+        <div class="space-y-4 text-sm max-h-[500px] overflow-y-auto pr-2 border border-haze/40 p-4 bg-haze/10 rounded-sm">
+          <div>
+            <span class="text-xs font-mono text-iron/50 font-semibold block">April 10, 2026</span>
+            <p class="text-iron/90">Allison, Austin. "Early maps of Lubbock and Lubbock County at the Southwest Collection." <span class="italic">West Texas Historical Association 2026 annual meeting</span>. Lubbock, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-caprock font-semibold block">November 8, 2025 &bull; INVITED</span>
+            <p class="text-iron/90">Allison, Austin. "Opportunity Knocking: The Vaughan Land Company, Virginia City, and Early Bailey County Development." <span class="italic">31st Annual Center for Big Bend Studies Conference</span>. Alpine Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-caprock font-semibold block">May 6, 2025 &bull; Keynote Lecture</span>
+            <p class="text-iron/90">Allison, Austin. "Navigating the Southwest Collection: Accessing Digitized Archives for Genealogy and Research." <span class="italic">San Angelo Genealogical and Historical Society Speaker Series</span>. San Angelo, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-caprock font-semibold block">January 23, 2025 &bull; Workshop</span>
+            <p class="text-iron/90">Allison, Austin. "Digitizing West Texas: How a Small-Scale Effort Evolved to Become the Largest Archive of Digitized West Texas Newspapers." <span class="italic">Society of Southwest Archivists Workshop</span>. Online.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-caprock font-semibold block">November 9, 2024 &bull; INVITED</span>
+            <p class="text-iron/90">Allison, Austin. "Surveying the Capitol Land Reservation in 1879 and 1880." <span class="italic">30th Annual Center for Big Bend Studies Conference</span>. Alpine, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-iron/50 font-semibold block">September 21, 2024</span>
+            <p class="text-iron/90">Allison, Austin. "Preserving the history of the Edwards Plateau region through newspaper digitization." <span class="italic">Edwards Plateau Historical Association conference</span>. Ballinger, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-caprock font-semibold block">April 22, 2024 &bull; INVITED</span>
+            <p class="text-iron/90">Allison, Austin. "Digital Newspapers." <span class="italic">Texas Tech University - Digital Humanities Working Group Symposium</span>. Lubbock, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-caprock font-semibold block">November 12, 2022 &bull; INVITED</span>
+            <p class="text-iron/90">Allison, Austin. "The upper northwest Comanche Trail: using maps and drones to trace the trail." <span class="italic">Center for Big Bend Studies 28th annual conference</span>. Alpine Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-iron/50 font-semibold block">March 18, 2022</span>
+            <p class="text-iron/90">Allison, Austin. "Using drone technology to evaluate sites near and on the Comanche Trail." <span class="italic">West Texas Historical Association 97th annual conference</span>. Lubbock, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-caprock font-semibold block">November 5, 2021 &bull; INVITED</span>
+            <p class="text-iron/90">Allison, Austin. "Missing Links: Attempting to Reconcile Old Maps of the Llano Estacado." <span class="italic">Center for Big Bend Studies 27th Annual Conference</span>. Alpine, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-caprock font-semibold block">October 20, 2019 &bull; INVITED</span>
+            <p class="text-iron/90">Allison, Austin. "Drones for Historic Preservation." <span class="italic">West Texas Trails Association annual conference</span>. Graham, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-caprock font-semibold block">August 15, 2019 &bull; INVITED</span>
+            <p class="text-iron/90">Allison, Austin. "Drones for Historic Preservation." <span class="italic">Texas Plains Trail Region Board Meeting</span>. Wheeler, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-iron/50 font-semibold block">January 20, 2019</span>
+            <p class="text-iron/90">Allison, Austin. Southwest Collection Digital Newspaper program booth <span class="italic">Texas Press Association</span>. Denton, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-caprock font-semibold block">July 2018 &bull; INVITED</span>
+            <p class="text-iron/90">Allison, Austin. "Sandoval Plaza: Utilizing drone technology to survey pastores sites in West Texas." <span class="italic">Canyonlands Archaeological Society</span>. Matador, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-iron/50 font-semibold block">April 2018</span>
+            <p class="text-iron/90">Allison, Austin. "Southwest Collection newspaper digitization." <span class="italic">West Texas Historical Association</span>. San Angelo, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-iron/50 font-semibold block">April 2017 &bull; CITED</span>
+            <p class="text-iron/90">Allison, Austin. "From Wagon Trails to Flight Paths: Drone Technology in Surveying Historic Sites along the Yellow House Draw." <span class="italic">West Texas Historical Association</span>. Lubbock, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-iron/50 font-semibold block">October 15, 2016</span>
+            <p class="text-iron/90">Allison, Austin. "Drones to identify trails and historic locations." <span class="italic">West Texas Trails Association</span>. Wheeler, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-iron/50 font-semibold block">April 2016</span>
+            <p class="text-iron/90">Allison, Austin. Southwest Collection Digital Newspaper presentation and exhibition, <span class="italic">Texas Plains Trail meeting</span>. Spearman, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-iron/50 font-semibold block">January 20, 2016</span>
+            <p class="text-iron/90">Allison, Austin. Southwest Collection Digital Newspaper program booth <span class="italic">Texas Press Association</span>. San Marcos, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-iron/50 font-semibold block">April 25, 2015</span>
+            <p class="text-iron/90">Allison, Austin. "Texas Tech University, Southwest Collection/Special Collections Library, Newspaper Digitization Project." <span class="italic">Panhandle Press Association, 105th Annual Convention</span>. Amarillo, Texas.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-iron/50 font-semibold block">April 10, 2015</span>
+            <p class="text-iron/90">Allison, Austin. "Sifting through the Dust: The Process of Digitizing West Texas' Aging Newspapers." <span class="italic">West Texas Historical Association, 92nd Meeting</span>. Amarillo, Texas.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: PERFORMANCE & EXHIBITS -->
+      <section>
+        <h2 class="text-lg font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Artistic and Professional Performances and Exhibits</h2>
+        <div class="space-y-4 text-sm">
+          <div class="flex justify-between items-baseline gap-4">
+            <div>
+              <span class="font-semibold">Digital Newspapers Permanent Exhibit</span> &mdash; <span class="italic text-iron/80">Globe Room Rotunda</span>
+              <p class="text-xs text-iron/70 mt-1">Exhibit curated to showcase award after SWC/SCL received "Award of Excellence in Preserving History" from the Texas Historical Commission in April 2024.</p>
+            </div>
+            <span class="text-xs font-mono text-iron/60 whitespace-nowrap">May 2024</span>
+          </div>
+          <div class="flex justify-between items-baseline gap-4">
+            <div>
+              <span class="font-semibold">Black and Brown in Print</span> &mdash; <span class="italic text-iron/80">East Rotunda Rotating Exhibit Case</span>
+            </div>
+            <span class="text-xs font-mono text-iron/60 whitespace-nowrap">Oct 2022 - Mar 2023</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: METRICS (CATALOGING & DIGITIZATION) -->
+      <section>
+        <h2 class="text-lg font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Teaching & Project Specifications (Archival Pipelines)</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
+          
+          <!-- Column A: Map Digitization Growth Metrics -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-mono text-sage uppercase tracking-wider font-semibold border-b border-haze/40 pb-1">Map Digitization Project (DSpace Growth)</h3>
+            <ul class="space-y-1 font-mono text-xs text-iron/90">
+              <li><strong class="text-iron font-sans">2025:</strong> 335 maps digitized (30% growth)</li>
+              <li><strong class="text-iron font-sans">2024:</strong> 245 maps digitized (45% growth)</li>
+              <li><strong class="text-iron font-sans">2023:</strong> 109 maps digitized (27% growth)</li>
+              <li><strong class="text-iron font-sans">2022:</strong> 138 maps digitized (47% growth)</li>
+              <li><strong class="text-iron font-sans">2021:</strong> 63 maps digitized (27% growth from baseline)</li>
+            </ul>
+            <div class="pt-4">
+              <h4 class="text-xs font-mono text-sage uppercase tracking-wider font-semibold border-b border-haze/40 pb-1 mb-2">Instructional Footprint</h4>
+              <p class="text-xs font-mono text-iron/60">LIBR1100, Guest Lecture, Spring 2026</p>
+            </div>
+          </div>
+
+          <!-- Column B: Map/Oral History Cataloging Records -->
+          <div class="space-y-3">
+            <h3 class="text-xs font-mono text-sage uppercase tracking-wider font-semibold border-b border-haze/40 pb-1">Cataloging Projects Volume</h3>
+            <div class="space-y-2 text-xs">
+              <p><strong class="font-sans text-sm">Map Cataloging:</strong> <span class="font-mono text-iron/70">2025: 526 maps | 2024: 505 maps | 2023: 370 maps | 2022: 538 maps | 2021: 110 maps</span></p>
+              <p><strong class="font-sans text-sm">Mary McClurg Project (2026):</strong> <span class="font-mono text-iron/70">328 periodicals | 137 books</span></p>
+              <p><strong class="font-sans text-sm">Frederick Suppe Collection (P1 & P2):</strong> <span class="font-mono text-iron/70">2025: 614 books | 2024: 281 books | 2021: 22 boxes</span></p>
+              <p><strong class="font-sans text-sm">Oral History Cataloging:</strong> <span class="font-mono text-iron/70">2023: 78 in OCLC | 2022: 166 in OCLC</span></p>
+              <p><strong class="font-sans text-sm">Bruce Mitchell Collection (2023):</strong> <span class="font-mono text-iron/70">~1,500 records altered</span></p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Full-Width Pipeline Records Box -->
+        <div class="mt-6 bg-haze/20 border border-haze/60 p-5 rounded-sm text-xs space-y-3">
+          <h3 class="text-xs font-mono text-iron uppercase tracking-widest font-semibold">Newspaper Digitization Project Volumes</h3>
+          <p class="leading-relaxed"><strong class="font-sans text-sm text-caprock block mb-1">2026 Pipelines</strong> Midland Reporter-Telegram 1981-2018 (10,757 issues complete), Lubbock 1926-1930 (2,819 issues ongoing), Dawson County Courier (874 issues), Colorado City Record (5,135 issues), Junction Eagle (699 issues), Snyder Daily News (1,238 issues), West Texas Baptist (586 issues), Wichita Falls (102 issues).</p>
+          <p class="leading-relaxed"><strong class="font-sans text-sm text-iron block mb-1">2025 Pipelines</strong> Mitchell County News (2,074 issues), Portales Valley News (554 issues), Perryton Herald (1,848 issues), Texas Live Stock Journal (634 issues), Friona Star (51 issues).</p>
+          <p class="leading-relaxed"><strong class="font-sans text-sm text-iron/70 block mb-1">2024-2022 Cumulative Pipelines</strong> Texas Christian Advocate (2,543 issues), Burkburnett Star (2,336 issues), Stanton Reporter (1,209 issues), Neu-Braunfelser Zeitung (1,487 issues), Abernathy Review (1,568 issues), Talco Times (2,890 issues), El Mosquito (861 issues).</p>
+        </div>
+      </section>
+
+      <!-- SECTION: SERVICE -->
+      <section>
+        <h2 class="text-lg font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Professional Service</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
+          <div>
+            <h3 class="text-xs font-mono text-sage uppercase tracking-wider font-semibold mb-2">Department / School</h3>
+            <ul class="space-y-1 text-xs text-iron/90 list-disc list-inside">
+              <li>Libraries' Research Committee (Chair 2026-2027, Member 2025-2027)</li>
+              <li>Assistant Archivist Search (Chair 2024)</li>
+              <li>Rare Books Search Committee (Member 2023)</li>
+              <li>Libraries' Executive Committee (Member 2022-2024, Sec 2022-2023)</li>
+              <li>Public Programming/Outreach (Member 2016-2024)</li>
+              <li>HEB Fuel For Finals Volunteer (2022, 2024)</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xs font-mono text-sage uppercase tracking-wider font-semibold mb-2">University</h3>
+            <ul class="space-y-1 text-xs text-iron/90 list-disc list-inside">
+              <li>Graduate School 3MT Competition Judge (2025, 2022)</li>
+              <li>President's Faculty Book Award Reviewer (2024)</li>
+              <li>Student Research Poster Competition Judge (2024, 2023)</li>
+              <li>School of Art Search Consultant (2022)</li>
+            </ul>
+          </div>
+          <div>
+            <h3 class="text-xs font-mono text-sage uppercase tracking-wider font-semibold mb-2">Professional / Public</h3>
+            <ul class="space-y-1 text-xs text-iron/90 list-disc list-inside">
+              <li>WTHA Annual Events Coordinator (2017-Present)</li>
+              <li>WTHA Rupert N. Richardson Book Award Committee (2017-Present)</li>
+              <li>Texas Plains Trail Region Board Chair & President (2022-Present)</li>
+              <li>Texas Plains Trail Region Board Member (2021-Present)</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- SECTION: HONORS & AWARDS -->
+      <section>
+        <h2 class="text-lg font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Fellowships, Scholarships, and Awards</h2>
+        <div class="text-sm border-l-2 border-caprock pl-4 py-1">
+          <span class="text-xs font-mono text-caprock font-semibold block">April 4, 2024</span>
+          <strong class="text-iron">Award of Excellence in Preserving History | Texas Historical Commission</strong>
+          <p class="text-xs text-iron/80 mt-1">Awarded to the regional digital newspaper digitization project corpus.</p>
+        </div>
+      </section>
+
+      <!-- SECTION: MEDIA CONTRIBUTIONS -->
+      <section>
+        <h2 class="text-lg font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Media Contributions</h2>
+        <div class="space-y-4 text-sm">
+          <div>
+            <span class="text-xs font-mono text-iron/50 block">July 31, 2025</span>
+            <span class="font-semibold">KLBK News Segment: "On this day in 1891: Lubbock gets its first newspaper"</span>
+            <p class="text-xs text-iron/80 mt-0.5">Provided specialized quotes and collection discovery context for the primary historical feature.</p>
+          </div>
+          <div>
+            <span class="text-xs font-mono text-iron/50 block">July 9, 2022</span>
+            <span class="font-semibold">Hockley County Centennial Celebration</span>
+            <p class="text-xs text-iron/80 mt-0.5">Fielded detailed landscape and situational aerial drone video profiles documentation for the 100th anniversary event records.</p>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</RootLayout>
+
+<style>
+  /* Retain print layout safety constraints in line with PDF formats */
+  .vertical-top { vertical-align: top; }
+  @media print {
+    header, footer { display: none !important; }
+    .max-w-4xl { max-w: 100% !important; padding: 0 !important; }
+    body { background-color: #ffffff !important; color: #000000 !important; }
+  }
+</style>

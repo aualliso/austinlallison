@@ -1,0 +1,67 @@
+---
+// src/pages/publications/opportunity_knocking.astro
+import RootLayout from '../../layouts/RootLayout.astro';
+---
+
+<RootLayout title="‘Opportunity Knocking’: The Vaughan Land Company and Early Bailey County Development. | Austin Allison">
+  <div class="max-w-7xl mx-auto py-6 text-iron">
+    
+    <!-- Breadcrumb Anchor Navigation -->
+    <div class="mb-8">
+      <a href="/publications" class="text-xs font-mono text-sage hover:text-caprock transition-colors lowercase tracking-wide">
+        &larr; return to repository index
+      </a>
+    </div>
+
+    <!-- The Split-Pane Layout Grid -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+      
+      <!-- LEFT FLANK: Citation Details & Abstract (Spans 5 Columns) -->
+      <div class="lg:col-span-5 space-y-6">
+        <div class="space-y-2">
+          <span class="text-xs font-mono text-caprock font-semibold uppercase tracking-wider block">Peer-Reviewed Article</span>
+          <h1 class="font-serif text-2xl md:text-3xl font-medium tracking-tight text-iron leading-tight">
+            ‘Opportunity Knocking’: The Vaughan Land Company and Early Bailey County Development.
+          </h1>
+          <p class="text-xs font-mono text-iron/60 pt-1">
+            Published in <span class="italic font-sans text-iron font-medium">Panhandle-Plains Historical Review</span> &bull; Vol. 96,  (2025), 40-65.
+          </p>
+        </div>
+
+        <hr class="border-haze" />
+
+        <div class="space-y-3">
+          <h2 class="text-xs font-mono text-sage uppercase tracking-widest font-bold">Abstract</h2>
+          <p class="text-sm text-iron/80 leading-relaxed font-sans">
+            The settlement of the Llano Estacado during the closing decades of the 1800s and first decades of the 1900s entails the narrative of many facets of contemporary American life. Agriculture remained essential for national growth, railroads still reigned supreme for the transportation needs of its populace, and the abundance of cheap land in the undeveloped counties of Texas and elsewhere ignited the dreams and aspirations of those who aimed to harness its bounty. Marketing and selling this cheap land did not present a new venture when Matthew Charles (M.C.) Vaughan of Waterloo, Iowa, came to Texas in 1907. However, Vaughan and his contemporaries employed new advertising techniques to promote land sales that simultaneously padded regional climatological statistics and overstated the capability of the land for agriculture compared to its true value. Land prices surged as these promotions proliferated. The price of Bailey County land jumped from fifty cents per acre in 1882 to one dollar in 1900, but the most significant jump occurred over the next decade. The Vaughan Land Company advertised and sold land for twenty dollars or higher per acre in 1909, a nearly 4,000% increase in three decades. Natural and manipulated factors drove this growth as new settlers flooded the area, but what makes Bailey County's land rush and early development unique? This study aims to discuss the early history of Bailey County land use and development, including that of Virginia City, Texas, and the abrupt end to the Vaughan Land Company's colonization of west-central Bailey County.
+          </p>
+        </div>
+
+        <div class="pt-4 flex flex-wrap gap-3">
+          <a href="/documents/opportunity_knocking.pdf" download class="px-4 py-2 bg-iron text-canvas text-xs font-mono rounded-sm hover:bg-caprock transition-colors">
+            download print-ready version
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT FLANK: High-Fidelity Native Document View (Spans 7 Columns) -->
+      <div class="lg:col-span-7 w-full">
+        <div class="border border-haze rounded-sm p-2 bg-canvas shadow-sm">
+          <!-- Inline frame displaying the hosted file directly with top fit constraints -->
+          <iframe 
+            src="/documents/opportunity_knocking.pdf#view=FitH" 
+            class="w-full h-[650px] rounded-xs" 
+            title="Surveying the Capitol Land Reservation PDF Viewer"
+          >
+            <p class="text-sm p-4 font-mono">Your browser does not support inline frame displays. <a href="/documents/opportunity_knocking.pdf" class="text-caprock underline">Click here to view file directly.</a></p>
+          </iframe>
+        </div>
+        <div class="mt-2 text-center">
+          <span class="text-[10px] font-mono text-iron/40 lowercase">scroll inside panel to read full pagination or use text selection controls</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</RootLayout>
