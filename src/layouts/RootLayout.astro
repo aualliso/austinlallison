@@ -62,9 +62,38 @@ const { title, description = "Academic Librarian & Photographer Portfolio" } = A
 		</main>
 
 		<!-- Minimal Footer -->
-		<footer class="w-full max-w-7xl mx-auto px-6 py-8 border-t border-haze text-xs text-iron/60 flex justify-between">
-			<p>&copy; {new Date().getFullYear()} &mdash; Lubbock, TX</p>
-			<p class="font-serif italic">All Rights Reserved | Austin Allison</p>
-		</footer>
+		<footer class="w-full max-w-7xl mx-auto px-6 py-8 border-t border-haze text-xs text-iron/60 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+  
+  <!-- Left Flank: Copyright & Active Location -->
+  <div class="flex items-center space-x-2">
+    <p>&copy; {new Date().getFullYear()} &mdash; Lubbock, TX</p>
+  </div>
+
+  <!-- Center Flank: Minimalist Contact Node Network -->
+  <div class="flex items-center space-x-6 font-mono lowercase tracking-wide">
+    <a 
+      href="mailto:austinlallison@gmail.com" 
+      class="hover:text-caprock transition-colors duration-300 underline underline-offset-4 decoration-haze hover:decoration-caprock"
+    >
+      email
+    </a>
+    <span class="text-haze/60">&middot;</span>
+    <a 
+      href="https://github.com/aualliso" 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      class="hover:text-caprock transition-colors duration-300"
+    >
+      github
+    </a>
+    <span class="text-haze/60">&middot;</span>
+  </div>
+
+  <!-- Right Flank: Formal Monograph Credit -->
+  <p class="font-serif italic text-iron/70 pt-2 md:pt-0">
+    All Rights Reserved | Austin Allison
+  </p>
+
+</footer>
 	</body>
 </html>
