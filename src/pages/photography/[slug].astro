@@ -29,7 +29,7 @@ export async function getStaticPaths() {
           title: 'Palouse Canyon Basalt · Franklin and Whitman counties, Washington',
           coordinates: '46.662612° N, 118.227612° W',
           specs: '14mm · ƒ/8 · 1/100s',
-          coordsClass: 'top-[640px] left-[920px] w-[320px]'
+          coordsClass: 'top-[640px] left-[895px] w-[320px]'
         },
         {
           src: '/images/escarpments/escarpment4.jpg',
@@ -44,6 +44,42 @@ export async function getStaticPaths() {
           coordinates: '48.968683° N, 111.982261° W',
           specs: '12mm · ƒ/3.5 · 1/1250s',
           coordsClass: 'top-[550px] left-[1250px] w-[440px]'
+        },
+        {
+          src: '/images/escarpments/escarpment6.jpg',
+          title: 'Upper Yellow House Draw Canyon · Bailey County, Texas',
+          coordinates: '33.851419° N, 102.700752° W',
+          specs: '12mm · ƒ/2.8 · 1/2000s',
+          coordsClass: 'top-[260px] left-[1600px] w-[440px]'
+        },
+        {
+          src: '/images/escarpments/escarpment7.jpg',
+          title: 'Little Jerusalem with Sweetgrass Hills · Toole County, Montana',
+          coordinates: '48.966829° N, 111.965596° W',
+          specs: '12mm · ƒ/2.8 · 1/200s',
+          coordsClass: 'top-[600px] left-[1700px] w-[440px]'
+        },
+        {
+          src: '/images/escarpments/escarpment8.jpg',
+          title: 'Hoodoos at Little Jerusalem · Toole County, Montana',
+          coordinates: '48.966829° N, 111.965596° W',
+          specs: '12mm · ƒ/8 · 1/320s',
+          coordsClass: 'top-[850px] left-[1230px] w-[400px]'
+        }
+      ]
+    },
+    {
+      slug: 'water_on_the_llano_estacado',
+      title: 'Water on the Llano Estacado',
+      region: 'Texas | New Mexico',
+      essay: '',
+      plates: [
+        {
+          src: '/images/water/water1.jpg',
+          title: 'Little Jerusalem Hoodoos · Toole County, Montana',
+          coordinates: '48.968683° N, 111.982261° W',
+          specs: '12mm · ƒ/8 · 1/320s',
+          coordsClass: 'top-[250px] left-[800px] w-[300px]'
         }
       ]
     }
@@ -58,29 +94,69 @@ export async function getStaticPaths() {
 const { gallery } = Astro.props;
 ---
 
-<Layout title={`${gallery.title} — Spatial Survey`}>
+<Layout title={`${gallery.title} — Photograhic Survey`}>
   <main 
     id="workspace-viewport" 
     class="w-screen h-screen overflow-auto bg-canvas text-iron select-none cursor-grab active:cursor-grabbing relative scrollbar-none"
   >
     
-    <!-- Fixed Editorial HUD Overlay -->
-    <div class="fixed top-8 left-8 z-50 pointer-events-none max-w-sm bg-canvas/90 backdrop-blur-xs p-6 border border-haze rounded-sm shadow-xs">
-      <div class="flex items-center space-x-2 text-[10px] font-mono text-sage uppercase tracking-widest mb-2">
-        <span>{gallery.region}</span>
-      </div>
-      <h1 class="font-serif text-2xl font-light tracking-tight text-caprock mb-3">{gallery.title}</h1>
-      <p class="font-serif italic text-xs text-iron/70 leading-relaxed mb-4">{gallery.essay}</p>
-      <div class="font-mono text-[9px] uppercase tracking-wider text-sage/80 flex items-center gap-2">
-        <span class="animate-pulse">●</span> Click & drag canvas to explore space
-      </div>
-    </div>
+    
+<!-- Fixed Editorial HUD Overlay (Responsive, Collapsing, & Expandable) -->
+    <div class="fixed top-4 left-4 right-4 md:top-8 md:left-8 md:right-8 z-50 flex justify-between items-start pointer-events-none gap-4">
+      
+      <div 
+        id="hud-overlay" 
+        class="pointer-events-auto w-full max-w-[65%] md:max-w-sm bg-canvas/95 backdrop-blur-xs p-4 md:p-6 border border-haze rounded-sm shadow-xs transition-all duration-300"
+      >
+        <div class="flex items-center justify-between gap-2 mb-1 md:mb-2">
+          <div class="flex items-center space-x-2 text-[9px] md:text-[10px] font-mono text-sage uppercase tracking-widest truncate">
+            <span class="hidden md:inline">{gallery.region}</span>
+          </div>
+          
+          <button 
+            id="hud-toggle" 
+            class="md:hidden font-mono text-[9px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors flex items-center gap-1 focus:outline-none shrink-0"
+            aria-expanded="false"
+          >
+            <span id="toggle-text">info</span>
+            <span id="toggle-icon" class="transition-transform duration-300 inline-block">+</span>
+          </button>
+        </div>
+        
+        <h1 class="font-serif text-sm md:text-2xl font-light tracking-tight text-caprock mb-1 md:mb-3 truncate md:whitespace-normal">
+          {gallery.title}
+        </h1>
+        
+        <div id="hud-collapsible" class="hidden md:block transition-all duration-300 overflow-hidden">
+          <p class="font-serif italic text-xs text-iron/70 leading-relaxed mt-2 md:mt-0 mb-4">
+            {gallery.essay}
+          </p>
+          <p class="md:hidden font-mono text-[9px] text-sage uppercase tracking-widest mb-4">
+            Location: {gallery.region}
+          </p>
+        </div>
+        
+        <div class="hidden md:flex font-mono text-[12px] uppercase tracking-wider text-caprock items-center gap-2">
+          <span class="animate-pulse">●</span> Click & drag canvas to explore
+        </div>
 
-    <!-- Pinned Return Button -->
-    <div class="fixed top-8 right-8 z-50">
-      <a href="/photography" class="pointer-events-auto font-mono text-[10px] lowercase tracking-wide bg-canvas/80 backdrop-blur-xs px-4 py-2 border border-haze rounded-sm text-iron/60 hover:text-caprock transition-colors shadow-xs">
-        &larr; close workspace
-      </a>
+        <div 
+          id="mobile-instructions" 
+          class="hidden md:hidden font-mono text-[9px] uppercase tracking-wider text-sage/80 items-center gap-2 border-t border-haze/30 pt-3 mt-1"
+        >
+          <span class="animate-pulse">●</span> Swipe to navigate &middot; Tap to view
+        </div>
+      </div>
+
+      <div class="pointer-events-auto shrink-0">
+        <a 
+          href="/photography" 
+          class="font-mono text-[9px] md:text-[10px] lowercase tracking-wide bg-caprock/80 backdrop-blur-xs px-3 py-1.5 md:px-4 md:py-2 border border-haze rounded-sm text-canvas hover:text-caprock hover:bg-canvas transition-colors shadow-xs block"
+        >
+          &larr; close<span class="hidden sm:inline"> album</span>
+        </a>
+      </div>
+
     </div>
 
     <!-- THE CLEAN SURVEY TABLE SURFACE (Grid class replaced with pure bg-canvas) -->
@@ -102,7 +178,7 @@ const { gallery } = Astro.props;
           data-plate={`Plate ${String(index + 1).padStart(2, '0')}`}
         >
           <!-- Keep your existing frame and image code completely identical inside here -->
-          <div class="border border-haze p-3 bg-canvas shadow-md rounded-sm overflow-hidden transition-all duration-500 group-hover:shadow-xl group-hover:border-caprock/30">
+          <div class="border border-haze p-3 bg-sage/5 shadow-md rounded-sm overflow-hidden transition-all duration-500 group-hover:shadow-xl group-hover:border-caprock/30">
             <div class="overflow-hidden bg-iron/5 pointer-events-none">
               <img src={plate.src} alt={plate.title} class="w-full h-auto object-cover opacity-95 group-hover:opacity-100 transition-all duration-700" draggable="false" />
             </div>
@@ -117,7 +193,7 @@ const { gallery } = Astro.props;
 
       <!-- Spatial Artifact Last: Background Desk Stamp -->
       <div class="absolute top-[850px] left-[1300px] font-serif italic text-6xl text-iron/[0.02] pointer-events-none select-none">
-        Austin Allison Monograph
+        Austin Allison Photography
       </div>
 
     </div>
@@ -161,14 +237,50 @@ const { gallery } = Astro.props;
   const closeBtn = document.getElementById('close-lightbox');
   const triggers = document.querySelectorAll('[data-lightbox-trigger]');
 
+  // Drawer Elements
+  const hudToggle = document.getElementById('hud-toggle');
+  const hudCollapsible = document.getElementById('hud-collapsible');
+  const mobileInstructions = document.getElementById('mobile-instructions');
+  const toggleText = document.getElementById('toggle-text');
+  const toggleIcon = document.getElementById('toggle-icon');
+
   if (viewport && modal && modalImg) {
     let isDown = false;
     let startX, startY, scrollLeft, scrollTop;
     let isDragging = false;
+    let isExpanded = false; // Scoped globally for the viewport to access
 
-    // Center layout viewport on load
+    // Center viewport on load
     viewport.scrollLeft = 420;
     viewport.scrollTop = 180;
+
+    // Helper function to collapse the HUD drawer
+    const collapseHUD = () => {
+      if (!isExpanded) return;
+      isExpanded = false;
+      if (hudCollapsible) hudCollapsible.classList.add('hidden');
+      if (mobileInstructions) mobileInstructions.classList.add('hidden');
+      if (toggleText) toggleText.innerText = 'info';
+      if (toggleIcon) toggleIcon.style.transform = 'rotate(0deg)';
+    };
+
+    // Mobile HUD Toggle Listener
+    if (hudToggle && hudCollapsible && mobileInstructions) {
+      hudToggle.addEventListener('click', (e) => {
+        e.stopPropagation(); // Stop click from bubbling to viewport
+        isExpanded = !isExpanded;
+        hudToggle.setAttribute('aria-expanded', isExpanded.toString());
+
+        if (isExpanded) {
+          hudCollapsible.classList.remove('hidden');
+          mobileInstructions.classList.remove('hidden');
+          if (toggleText) toggleText.innerText = 'close';
+          if (toggleIcon) toggleIcon.style.transform = 'rotate(45deg)';
+        } else {
+          collapseHUD();
+        }
+      });
+    }
 
     // Grab and drag event framework
     viewport.addEventListener('mousedown', (e) => {
@@ -179,6 +291,9 @@ const { gallery } = Astro.props;
       startY = e.pageY - viewport.offsetTop;
       scrollLeft = viewport.scrollLeft;
       scrollTop = viewport.scrollTop;
+
+      // UX Touch: Collapse the HUD if they click down on the desk to navigate
+      collapseHUD();
     });
 
     viewport.addEventListener('mouseleave', () => { isDown = false; });
@@ -189,7 +304,7 @@ const { gallery } = Astro.props;
 
     viewport.addEventListener('mousemove', (e) => {
       if (!isDown) return;
-      isDragging = true; // User is dragging, do not open lightbox on mouseup
+      isDragging = true; 
       e.preventDefault();
       const x = e.pageX - viewport.offsetLeft;
       const y = e.pageY - viewport.offsetTop;
@@ -199,10 +314,9 @@ const { gallery } = Astro.props;
       viewport.scrollTop = scrollTop - walkY;
     });
 
-    // Lightbox Open Logic Intercept
+    // Lightbox Open Logic
     triggers.forEach(trigger => {
-      trigger.addEventListener('click', (e) => {
-        // Safety lock: if the user was just dragging the canvas, don't trigger the click
+      trigger.addEventListener('click', () => {
         if (isDragging) return;
 
         const el = trigger as HTMLElement;
@@ -212,13 +326,11 @@ const { gallery } = Astro.props;
         if (modalSpecs) modalSpecs.innerText = el.dataset.specs || '';
         if (modalCoords) modalCoords.innerText = el.dataset.coords || '';
 
-        // Display with dynamic fade transition
         modal.classList.remove('hidden');
         setTimeout(() => modal.classList.remove('opacity-0'), 10);
       });
     });
 
-    // Lightbox Close Closures
     const closeLightbox = () => {
       modal.classList.add('opacity-0');
       setTimeout(() => modal.classList.add('hidden'), 300);
