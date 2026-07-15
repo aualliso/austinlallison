@@ -76,10 +76,24 @@ export async function getStaticPaths() {
       plates: [
         {
           src: '/images/water/water1.jpg',
-          title: 'Little Jerusalem Hoodoos · Toole County, Montana',
-          coordinates: '48.968683° N, 111.982261° W',
+          title: 'Tule Creek Flow · Briscoe County, Texas',
+          coordinates: '34.54667° N, 101.429921° W',
           specs: '12mm · ƒ/8 · 1/320s',
-          coordsClass: 'top-[250px] left-[800px] w-[300px]'
+          coordsClass: 'top-[250px] left-[1000px] w-[250px]'
+        },
+        {
+          src: '/images/water/water2.jpg',
+          title: 'Canadian River Boundary · Hemphill County, Texas',
+          coordinates: '35.937055° N, 100.369943° W',
+          specs: '12mm · ƒ/5.6 · 1/500s',
+          coordsClass: 'top-[200px] left-[550px] w-[400px]'
+        },
+        {
+          src: '/images/water/water3.jpg',
+          title: 'Active Runningwater Draw· Parmer County, Texas',
+          coordinates: '34.471036° N, 102.720865° W', 
+          specs: '12mm · ƒ/5.6 · 1/640s',
+          coordsClass: 'top-[180px] left-[1300px] w-[400px]'
         }
       ]
     }
@@ -211,8 +225,13 @@ const { gallery } = Astro.props;
       </div>
 
       <!-- Center Active Image Target -->
-      <div class="max-w-5xl max-h-[70vh] mx-auto flex items-center justify-center overflow-hidden">
-        <img id="lightbox-img" src="" alt="" class="max-w-full max-h-full object-contain shadow-lg border border-haze p-2 bg-canvas" />
+      <div class="w-full max-w-5xl h-[60vh] md:h-[65vh] mx-auto flex items-center justify-center overflow-hidden">
+        <img 
+          id="lightbox-img" 
+          src="" 
+          alt="" 
+          class="max-w-full max-h-full object-contain shadow-lg border border-haze p-2 bg-canvas transition-all duration-200" 
+        />
       </div>
 
       <!-- Bottom Dynamic Ledger -->
@@ -314,18 +333,36 @@ const { gallery } = Astro.props;
       viewport.scrollTop = scrollTop - walkY;
     });
 
-    // Lightbox Open Logic
+    // Lightbox Open Logic with Automatic Orientation Detection
     triggers.forEach(trigger => {
       trigger.addEventListener('click', () => {
         if (isDragging) return;
 
         const el = trigger as HTMLElement;
+        
+        // 1. Reset any orientation constraints from previous clicks
+        modalImg.classList.remove('max-h-[50vh]', 'md:max-h-[55vh]', 'max-w-xs', 'md:max-w-md');
+        modalImg.classList.add('max-h-full', 'max-w-full');
+
+        // 2. Set the asset paths
         modalImg.src = el.dataset.src || '';
         modalImg.alt = el.dataset.title || '';
+        
         if (modalTitle) modalTitle.innerHTML = `<span class="text-iron/40">${el.dataset.plate}</span> &bull; ${el.dataset.title}`;
         if (modalSpecs) modalSpecs.innerText = el.dataset.specs || '';
         if (modalCoords) modalCoords.innerText = el.dataset.coords || '';
 
+        // 3. Automate Portrait Matting on File Load
+        modalImg.onload = () => {
+          // If height is greater than width, it's a vertical portrait print
+          if (modalImg.naturalHeight > modalImg.naturalWidth) {
+            modalImg.classList.remove('max-h-full', 'max-w-full');
+            // Tames the scale down to a perfectly balanced, compact central frame
+            modalImg.classList.add('max-h-[50vh]', 'md:max-h-[55vh]', 'max-w-xs', 'md:max-w-md');
+          }
+        };
+
+        // 4. Fire the smooth modal display transition
         modal.classList.remove('hidden');
         setTimeout(() => modal.classList.remove('opacity-0'), 10);
       });

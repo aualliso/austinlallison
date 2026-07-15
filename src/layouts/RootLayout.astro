@@ -24,34 +24,65 @@ const { title, description = "Academic Librarian & Photographer Portfolio" } = A
 	<body class="min-h-screen flex flex-col selection:bg-caprock/20 selection:text-caprock">
 		
 		<!-- Tripartite Grid Header -->
-<header class="w-full max-w-7xl mx-auto px-6 py-4 flex flex-col sm:flex-row md:grid md:grid-cols-3 items-center gap-4 sm:gap-6 md:gap-0 border-b border-haze">
-	
-	<!-- Left Column: Typeset Branding Name -->
-	<div class="sm:justify-start">
-		<a href="/" class="font-serif text-lg md:text-2xl font-medium tracking-tight text-iron/90 hover:text-caprock transition-colors duration-300 whitespace-nowrap">
-			Austin Allison
-		</a>
-	</div>
+<header class="w-full max-w-7xl mx-auto px-6 py-6 border-b border-haze text-iron select-none">
+  <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6 sm:gap-4 relative w-full">
+    
+    <!-- LEFT WING: The Unified Maker's Mark -->
+    <div class="flex items-center gap-4">
+      
+      <!-- The Historic Validation Signature Stamp -->
+      <div class="shrink-0 border-r border-haze/60 pr-4 h-10 flex items-center">
+        <a href="/" class="block hover:opacity-85 transition-opacity duration-300">
+          <Image 
+            src={signature} 
+            alt="Austin Allison Ledger Validation Signature" 
+            class="h-10 w-auto mix-blend-multiply opacity-90" 
+            loading="eager"
+          />
+        </a>
+      </div>
+      
+      <!-- Typeset Repository Branding Identity -->
+      <div class="flex flex-col">
+        <a href="/" class="font-serif text-xl font-medium tracking-tight text-iron/90 hover:text-caprock transition-colors duration-300 whitespace-nowrap">
+          Austin Allison
+        </a>
+        <span class="font-mono text-[9px] uppercase tracking-widest text-iron/40 mt-0.5 whitespace-nowrap">
+          Assistant Librarian
+        </span>
+		<span class="font-mono text-[9px] uppercase tracking-widest text-iron/40 mt-0.5 whitespace-nowrap">
+          Southwest Collection
+        </span>
+      </div>
+    </div>
 
-	<!-- Center Column: Artistic Signature Graphic -->
-	<div class="sm:justify-self-center order-first sm:order-none">
-		<a href="/" class="block hover:opacity-80 transition-opacity duration-300">
-			<Image 
-				src={signature} 
-				alt="Austin Allison Signature" 
-				class="h-8 sm:h-10 md:h-18 w-auto mix-blend-multiply" 
-				loading="eager"
-			/>
-		</a>
-	</div>
+    <!-- CENTER ELEMENT: The Institutional Accession Label (Hidden on small viewports) -->
+    <div class="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 font-mono text-[9px] uppercase tracking-[0.25em] text-iron/30 bg-canvas px-2 z-0">
 
-	<!-- Right Column: Navigation Links -->
-	<nav class="flex flex-wrap justify-center gap-4 sm:gap-6 md:gap-8 text-xs md:text-sm font-medium tracking-wider lowercase text-iron/70 sm:justify-end">
-		<a href="/cv" class="hover:text-caprock transition-colors duration-300">cv</a>
-		<a href="/publications" class="hover:text-caprock transition-colors duration-300">publications</a>
-		<a href="/photography" class="hover:text-caprock transition-colors duration-300">photography</a>
-	</nav>
+    </div>
 
+    <!-- RIGHT WING: The Catalog Index Navigation Axis -->
+    <nav class="flex flex-wrap items-center gap-x-4 sm:gap-x-5 text-md font-serif tracking-wider lowercase relative z-10">
+      
+      <a href="/cv" class="group flex items-center gap-1 text-iron/70 hover:text-caprock transition-colors duration-300">
+        <span class="text-[12px] text-iron/30 group-hover:text-caprock/50 transition-colors"></span>cv
+      </a>
+      
+      <span class="text-haze/60 hidden xs:inline">&middot;</span>
+      
+      <a href="/publications" class="group flex items-center gap-1 text-iron/70 hover:text-caprock transition-colors duration-300">
+        <span class="text-[9px] text-iron/30 group-hover:text-caprock/50 transition-colors"></span>publications
+      </a>
+      
+      <span class="text-haze/60 hidden xs:inline">&middot;</span>
+      
+      <a href="/photography" class="group flex items-center gap-1 text-iron/70 hover:text-caprock transition-colors duration-300">
+        <span class="text-[9px] text-iron/30 group-hover:text-caprock/50 transition-colors"></span>photography
+      </a>
+      
+    </nav>
+
+  </div>
 </header>
 
 		<!-- The main page content container -->
@@ -61,39 +92,119 @@ const { title, description = "Academic Librarian & Photographer Portfolio" } = A
   				</div>
 		</main>
 
-		<!-- Minimal Footer -->
-		<footer class="w-full max-w-7xl mx-auto px-6 py-8 border-t border-haze text-xs text-iron/60 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+<footer class="w-full bg-iron text-canvas mt-56 pt-16 pb-8 px-6 font-mono select-none overflow-hidden relative border-t-4 border-caprock">
   
-  <!-- Left Flank: Copyright & Active Location -->
-  <div class="flex items-center space-x-2">
-    <p>&copy; {new Date().getFullYear()} &mdash; Lubbock, TX</p>
+  <div class="absolute right-[-50px] bottom-[-20px] pointer-events-none opacity-[0.02] text-canvas transition-all duration-700 group-hover:opacity-[0.04]">
+    <svg width="600" height="600" viewBox="0 0 100 100" class="animate-[spin_120s_linear_infinite]">
+      <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1,2"/>
+      <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="0.2"/>
+      <path d="M50 2 L50 98 M2 50 L98 50" stroke="currentColor" stroke-width="0.2"/>
+      <text x="50" y="38" text-anchor="middle" font-size="3" font-family="monospace" letter-spacing="0.5">US GEODETIC SURVEY</text>
+      <text x="50" y="65" text-anchor="middle" font-size="3" font-family="monospace" letter-spacing="0.5">BENCHMARK &bull; 2026</text>
+    </svg>
   </div>
 
-  <!-- Center Flank: Minimalist Contact Node Network -->
-  <div class="flex items-center space-x-6 font-mono lowercase tracking-wide">
-    <a 
-      href="mailto:austinlallison@gmail.com" 
-      class="hover:text-caprock transition-colors duration-300 underline underline-offset-4 decoration-haze hover:decoration-caprock"
-    >
-      email
-    </a>
-    <span class="text-haze/60">&middot;</span>
-    <a 
-      href="https://github.com/aualliso" 
-      target="_blank" 
-      rel="noopener noreferrer" 
-      class="hover:text-caprock transition-colors duration-300"
-    >
-      github
-    </a>
-    <span class="text-haze/60">&middot;</span>
+  <div class="max-w-7xl mx-auto relative z-10">
+    
+    <div class="w-full flex justify-between items-center text-[9px] uppercase tracking-[0.3em] text-canvas/40 border-b border-canvas/10 pb-6 mb-12">
+      <div class="flex items-center space-x-6">
+        <span>website data</span>
+      </div>
+      <div class="flex items-center space-x-2">
+        <span>details 01</span>
+        <div class="flex space-x-[2px] h-3 items-center ml-2 opacity-60 hidden sm:flex">
+          <div class="w-[1px] h-full bg-canvas"></div>
+          <div class="w-[3px] h-full bg-canvas"></div>
+          <div class="w-[1px] h-full bg-canvas"></div>
+          <div class="w-[2px] h-full bg-canvas"></div>
+          <div class="w-[4px] h-full bg-canvas"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-y-12 gap-x-12 pb-16 items-start">
+      
+      <div class="col-span-12 sm:col-span-6 md:col-span-4 space-y-4">
+        <div class="text-[10px] uppercase tracking-widest text-sage font-bold flex items-center gap-2">
+          <span class="text-caprock">01 //</span> Index
+        </div>
+        <ul class="space-y-2 text-sm font-serif">
+          <li>
+            <a href="/photography" class="group flex items-baseline justify-between text-canvas/70 hover:text-canvas transition-colors duration-300">
+              <span>Photographic Surveys</span>
+              <span class="border-b border-dotted border-canvas/20 flex-grow mx-2 h-0 group-hover:border-canvas/40 transition-colors"></span>
+              <span class="font-mono text-[10px] text-canvas/40">[01]</span>
+            </a>
+          </li>
+          <li>
+            <a href="/publications" class="group flex items-baseline justify-between text-canvas/70 hover:text-canvas transition-colors duration-300">
+              <span>Scholarly Publications</span>
+              <span class="border-b border-dotted border-canvas/20 flex-grow mx-2 h-0 group-hover:border-canvas/40 transition-colors"></span>
+              <span class="font-mono text-[10px] text-canvas/40">[02]</span>
+            </a>
+          </li>
+          <li>
+            <a href="/cv" class="group flex items-baseline justify-between text-canvas/70 hover:text-canvas transition-colors duration-300">
+              <span>Curriculum Vitae & Bio</span>
+              <span class="border-b border-dotted border-canvas/20 flex-grow mx-2 h-0 group-hover:border-canvas/40 transition-colors"></span>
+              <span class="font-mono text-[10px] text-canvas/40">[03]</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+
+      <div class="col-span-12 sm:col-span-6 md:col-span-4 space-y-4 text-[11px] text-canvas/50">
+        <div class="text-[10px] uppercase tracking-widest text-sage font-bold flex items-center gap-2 text-canvas/80">
+          <span class="text-caprock">02 //</span> Website Details
+        </div>
+        <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 border-l border-canvas/10 pl-4 tracking-wide lowercase">
+          <span class="text-canvas/30">System Pipeline</span> <span>Astro Engine</span>
+          <span class="text-canvas/30">Edge Host</span> <span>Cloudflare Pages</span>
+          <span class="text-canvas/30">Software</span> <span>Visual Studio Code</span>
+        </div>
+      </div>
+
+      <div class="col-span-12 md:col-span-4 space-y-4 md:text-right md:items-end flex flex-col">
+        <div class="w-full">
+          <div class="text-[10px] uppercase tracking-widest text-sage font-bold flex items-center md:justify-end gap-2 mb-4">
+            <span class="text-caprock">03 //</span> Communication
+          </div>
+          <div class="flex flex-wrap items-center md:justify-end gap-6 text-xs lowercase">
+            <a 
+              href="mailto:austinlallison@gmail.com" 
+              class="text-canvas/70 hover:text-caprock underline underline-offset-8 decoration-canvas/20 hover:decoration-caprock transition-all duration-300"
+            >
+              comms@email
+            </a>
+            <a 
+              href="https://github.com/aualliso" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              class="text-canvas/70 hover:text-caprock underline underline-offset-8 decoration-canvas/20 hover:decoration-caprock transition-all duration-300"
+            >
+              source@github
+            </a>
+          </div>
+        </div>
+        
+        <div class="w-full text-[10px] text-canvas/30 tracking-[0.15em] uppercase pt-4 border-t border-canvas/15 mt-2">
+          Grid: 33.5779&deg; N &bull; 101.8552&deg; W
+        </div>
+      </div>
+
+    </div>
+
+    <div class="w-full pt-8 border-t border-canvas/10 flex flex-col sm:flex-row justify-between items-start sm:items-baseline gap-4 text-[9px] uppercase tracking-[0.2em] text-canvas/40">
+      <p class="font-serif italic text-canvas/50 text-xs normal-case tracking-normal">
+        &copy; {new Date().getFullYear()} Austin Allison. All Rights Reserved.
+      </p>
+      <div class="flex items-center space-x-4 border border-canvas/10 px-3 py-1 bg-canvas/[0.02] rounded-xs font-bold text-caprock">
+        <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span>
+        <span>Website Live</span>
+      </div>
+    </div>
+
   </div>
-
-  <!-- Right Flank: Formal Monograph Credit -->
-  <p class="font-serif italic text-iron/70 pt-2 md:pt-0">
-    All Rights Reserved | Austin Allison
-  </p>
-
 </footer>
 	</body>
 </html>
