@@ -9,62 +9,96 @@ export async function getStaticPaths() {
       title: 'American Escarpments',
       region: 'Texas | Montana | Washington',
       essay: 'From the rugged Permian red beds of the Southern Plains to the ancient volcanic chasms of the Pacific Northwest and the dramatic glacial coulees of Montana’s Big Sky country, this photo set captures the breathtaking geological fractures that define the American West. These landscapes are a masterclass in geomorphology, visually documenting the diverse forces of water, wind, and ancient cataclysms that have sculpted the continent’s vast interior tablelands. By showcasing the abrupt transitions where endless high prairies drop away into hidden canyons, valleys, and river floors, the collection highlights both the immense isolation and the unexpected productivity of the Western terrain. Ultimately, the images serve as a striking testament to human adaptation, where ancient natural fortresses and challenging migratory barriers have seamlessly transformed into modern landscapes of recreation and massive agricultural abundance.',
+      centerX: 1550, // Coordinates tailored to center mass of Escarpment layout elements
+      centerY: 920,
       plates: [
         {
           src: '/images/escarpments/escarpment1.jpg',
           title: 'Little Jerusalem Hoodoos · Toole County, Montana',
           coordinates: '48.968683° N, 111.982261° W',
           specs: '12mm · ƒ/8 · 1/320s',
-          coordsClass: 'top-[250px] left-[600px] w-[520px]'
+          coordsClass: 'top-[150px] left-[680px] w-[560px]',
+          caption: ''
         },
         {
           src: '/images/escarpments/escarpment2.jpg',
           title: 'Blooming Stratification · Garza County, Texas',
           coordinates: '33.090300° N, 101.500369° W',
           specs: '14mm · ƒ/8 · 1/320s',
-          coordsClass: 'top-[580px] left-[480px] w-[380px]'
+          coordsClass: 'top-[680px] left-[290px] w-[450px]',
+          caption: ''
         },
         {
           src: '/images/escarpments/escarpment3.jpg',
           title: 'Palouse Canyon Basalt · Franklin and Whitman counties, Washington',
           coordinates: '46.662612° N, 118.227612° W',
           specs: '14mm · ƒ/8 · 1/100s',
-          coordsClass: 'top-[640px] left-[895px] w-[320px]'
+          coordsClass: 'top-[840px] left-[770px] w-[520px]',
+          caption: ''
         },
         {
           src: '/images/escarpments/escarpment4.jpg',
           title: 'The Sea of Red and Cedar · Briscoe County, Texas',
           coordinates: '34.465959° N, 101.098786° W',
           specs: '12mm · ƒ/2.8 · 1/2000s',
-          coordsClass: 'top-[200px] left-[1150px] w-[440px]'
+          coordsClass: 'top-[180px] left-[1275px] w-[500px]',
+          caption: ''
         },
         {
           src: '/images/escarpments/escarpment5.jpg',
           title: 'Little Jerusalem Hoodoos · Toole County, Montana',
           coordinates: '48.968683° N, 111.982261° W',
           specs: '12mm · ƒ/3.5 · 1/1250s',
-          coordsClass: 'top-[550px] left-[1250px] w-[440px]'
+          coordsClass: 'top-[870px] left-[1310px] w-[340px]',
+          caption: ''
         },
         {
           src: '/images/escarpments/escarpment6.jpg',
           title: 'Upper Yellow House Draw Canyon · Bailey County, Texas',
           coordinates: '33.851419° N, 102.700752° W',
           specs: '12mm · ƒ/2.8 · 1/2000s',
-          coordsClass: 'top-[260px] left-[1600px] w-[440px]'
+          coordsClass: 'top-[420px] left-[1830px] w-[400px]',
+          caption: ''
         },
         {
           src: '/images/escarpments/escarpment7.jpg',
           title: 'Little Jerusalem with Sweetgrass Hills · Toole County, Montana',
           coordinates: '48.966829° N, 111.965596° W',
           specs: '12mm · ƒ/2.8 · 1/200s',
-          coordsClass: 'top-[600px] left-[1700px] w-[440px]'
+          coordsClass: 'top-[700px] left-[1850px] w-[540px]',
+          caption: ''
         },
         {
           src: '/images/escarpments/escarpment8.jpg',
           title: 'Hoodoos at Little Jerusalem · Toole County, Montana',
           coordinates: '48.966829° N, 111.965596° W',
           specs: '12mm · ƒ/8 · 1/320s',
-          coordsClass: 'top-[850px] left-[1230px] w-[400px]'
+          coordsClass: 'top-[350px] left-[160px] w-[500px]',
+          caption: ''
+        },
+        {
+          src: '/images/escarpments/escarpment9.jpg',
+          title: 'Beige Chasm · Garza County, Texas',
+          coordinates: '33.090300° N, 101.500369° W',
+          specs: '14mm · ƒ/8 · 1/320s',
+          coordsClass: 'top-[1050px] left-[1700px] w-[600px]',
+          caption: ''
+        },
+        {
+          src: '/images/escarpments/escarpment10.jpg',
+          title: 'Walls of the Pecos · Val Verde County, Texas',
+          coordinates: '29.720860° N, 101.347319° W',
+          specs: '12mm · ƒ/5.6 · 1/1000s',
+          coordsClass: 'top-[1050px] left-[370px] w-[360px]',
+          caption: ''
+        },
+        {
+          src: '/images/escarpments/escarpment11.jpg',
+          title: 'Walls of the Pecos · Val Verde County, Texas',
+          coordinates: '29.720860° N, 101.347319° W',
+          specs: '12mm · ƒ/5.6 · 1/1000s',
+          coordsClass: 'top-[500px] left-[750px] w-[1060px]',
+          caption: ''
         }
       ]
     },
@@ -73,27 +107,40 @@ export async function getStaticPaths() {
       title: 'Water on the Llano Estacado',
       region: 'Texas | New Mexico',
       essay: '',
+      centerX: 1250, // Coordinates tailored to center mass of Escarpment layout elements
+      centerY: 820,
       plates: [
         {
           src: '/images/water/water1.jpg',
           title: 'Tule Creek Flow · Briscoe County, Texas',
           coordinates: '34.54667° N, 101.429921° W',
           specs: '12mm · ƒ/8 · 1/320s',
-          coordsClass: 'top-[250px] left-[1000px] w-[250px]'
+          coordsClass: 'top-[250px] left-[750px] w-[250px]',
+          caption: ''
         },
         {
           src: '/images/water/water2.jpg',
           title: 'Canadian River Boundary · Hemphill County, Texas',
           coordinates: '35.937055° N, 100.369943° W',
           specs: '12mm · ƒ/5.6 · 1/500s',
-          coordsClass: 'top-[200px] left-[550px] w-[400px]'
+          coordsClass: 'top-[200px] left-[320px] w-[400px]',
+          caption: 'The Canadian River signifies the northern extent of the Llano Estacado for much of its northern extent. This view in Hemphill County shows the meandering river at sunset.'
         },
         {
           src: '/images/water/water3.jpg',
-          title: 'Active Runningwater Draw· Parmer County, Texas',
+          title: 'Active Runningwater Draw · Parmer County, Texas',
           coordinates: '34.471036° N, 102.720865° W', 
           specs: '12mm · ƒ/5.6 · 1/640s',
-          coordsClass: 'top-[180px] left-[1300px] w-[400px]'
+          coordsClass: 'top-[180px] left-[1100px] w-[400px]',
+          caption: ''
+        },
+        {
+          src: '/images/water/water4.jpg',
+          title: 'Colorful Basin · Bailey County, Texas',
+          coordinates: '33.991164° N, 102.708448° W',
+          specs: '12mm · ƒ/2.8 · 1/3200s',
+          coordsClass: 'top-[480px] left-[1080px] w-[400px]',
+          caption: ''
         }
       ]
     }
@@ -108,185 +155,214 @@ export async function getStaticPaths() {
 const { gallery } = Astro.props;
 ---
 
-<Layout title={`${gallery.title} — Photograhic Survey`}>
-  <main 
-    id="workspace-viewport" 
-    class="w-screen h-screen overflow-auto bg-canvas text-iron select-none cursor-grab active:cursor-grabbing relative scrollbar-none"
-  >
-    
-    
-<!-- Fixed Editorial HUD Overlay (Responsive, Collapsing, & Expandable) -->
-    <div class="fixed top-4 left-4 right-4 md:top-8 md:left-8 md:right-8 z-50 flex justify-between items-start pointer-events-none gap-4">
+<Layout title={`${gallery.title} — Austin Allison`}>
+  <!-- WORKSPACE VIEWPORT: Swapped 'overflow-auto' to 'overflow-hidden' for the transform engine -->
+    <main 
+      id="workspace-viewport" 
+      class="w-screen h-screen overflow-hidden bg-canvas text-iron select-none cursor-grab active:cursor-grabbing relative"
+    >
       
+      <!-- Fixed Editorial HUD Overlay (Responsive, Collapsing, & Expandable) -->
       <div 
-        id="hud-overlay" 
-        class="pointer-events-auto w-full max-w-[65%] md:max-w-sm bg-canvas/95 backdrop-blur-xs p-4 md:p-6 border border-haze rounded-sm shadow-xs transition-all duration-300"
-      >
-        <div class="flex items-center justify-between gap-2 mb-1 md:mb-2">
-          <div class="flex items-center space-x-2 text-[9px] md:text-[10px] font-mono text-sage uppercase tracking-widest truncate">
-            <span class="hidden md:inline">{gallery.region}</span>
+      id="fixed-hud-container"
+      class="fixed top-4 left-4 right-4 md:top-8 md:left-8 md:right-8 z-50 flex justify-between items-start pointer-events-none gap-4">
+        <div 
+          id="hud-overlay" 
+          class="pointer-events-auto w-full max-w-[65%] md:max-w-sm bg-canvas/95 backdrop-blur-xs p-4 md:p-6 border border-haze rounded-sm shadow-xs transition-all duration-300"
+        >
+          <div class="flex items-center justify-between gap-2 mb-1 md:mb-2">
+            <div class="flex items-center space-x-2 text-[9px] md:text-[10px] font-mono text-sage uppercase tracking-widest truncate">
+              <span class="hidden md:inline">{gallery.region}</span>
+            </div>
+            
+            <button 
+              id="hud-toggle" 
+              class="md:hidden font-mono text-[9px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors flex items-center gap-1 focus:outline-none shrink-0"
+              aria-expanded="false"
+            >
+              <span id="toggle-text">info</span>
+              <span id="toggle-icon" class="transition-transform duration-300 inline-block">+</span>
+            </button>
           </div>
           
-          <button 
-            id="hud-toggle" 
-            class="md:hidden font-mono text-[9px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors flex items-center gap-1 focus:outline-none shrink-0"
-            aria-expanded="false"
+          <h1 class="font-serif text-xl md:text-2xl font-light tracking-tight text-caprock mb-1 md:mb-3 truncate md:whitespace-normal">
+            {gallery.title}
+          </h1>
+          
+          <div id="hud-collapsible" class="hidden md:block transition-all duration-300 overflow-hidden">
+            <p class="font-serif italic text-xs text-iron/70 leading-relaxed mt-2 md:mt-0 mb-4">
+              {gallery.essay}
+            </p>
+            <p class="md:hidden font-mono text-[9px] text-sage uppercase tracking-widest mb-4">
+              {gallery.region}
+            </p>
+          </div>
+          
+          <div class="hidden md:flex font-mono text-[10px] uppercase tracking-wider text-caprock items-center gap-2">
+            <span class="animate-pulse">●</span> Scroll and drag to navigate
+          </div>
+          <div class="hidden md:flex font-mono text-[10px] uppercase tracking-wider text-caprock items-center gap-2">
+            <span class="animate-pulse">●</span> Click to open
+          </div>
+
+          <div 
+            id="mobile-instructions" 
+            class="hidden md:hidden font-mono text-[9px] uppercase tracking-wider text-sage/80 items-center gap-2 border-t border-haze/30 pt-3 mt-1"
           >
-            <span id="toggle-text">info</span>
-            <span id="toggle-icon" class="transition-transform duration-300 inline-block">+</span>
-          </button>
-        </div>
-        
-        <h1 class="font-serif text-sm md:text-2xl font-light tracking-tight text-caprock mb-1 md:mb-3 truncate md:whitespace-normal">
-          {gallery.title}
-        </h1>
-        
-        <div id="hud-collapsible" class="hidden md:block transition-all duration-300 overflow-hidden">
-          <p class="font-serif italic text-xs text-iron/70 leading-relaxed mt-2 md:mt-0 mb-4">
-            {gallery.essay}
-          </p>
-          <p class="md:hidden font-mono text-[9px] text-sage uppercase tracking-widest mb-4">
-            Location: {gallery.region}
-          </p>
-        </div>
-        
-        <div class="hidden md:flex font-mono text-[12px] uppercase tracking-wider text-caprock items-center gap-2">
-          <span class="animate-pulse">●</span> Click & drag canvas to explore
+            <span class="animate-pulse">●</span> Pinch and drag to explore. Click to open.
+          </div>
         </div>
 
-        <div 
-          id="mobile-instructions" 
-          class="hidden md:hidden font-mono text-[9px] uppercase tracking-wider text-sage/80 items-center gap-2 border-t border-haze/30 pt-3 mt-1"
-        >
-          <span class="animate-pulse">●</span> Swipe to navigate &middot; Tap to view
+        <div class="pointer-events-auto shrink-0">
+          <a 
+            href="/photography" 
+            class="font-mono text-[9px] md:text-[10px] lowercase tracking-wide bg-caprock/80 backdrop-blur-xs px-3 py-1.5 md:px-4 md:py-2 border border-haze rounded-sm text-canvas hover:text-caprock hover:bg-canvas transition-colors shadow-xs block"
+          >
+            &larr; close<span class="hidden sm:inline"> album</span>
+          </a>
         </div>
       </div>
 
-      <div class="pointer-events-auto shrink-0">
-        <a 
-          href="/photography" 
-          class="font-mono text-[9px] md:text-[10px] lowercase tracking-wide bg-caprock/80 backdrop-blur-xs px-3 py-1.5 md:px-4 md:py-2 border border-haze rounded-sm text-canvas hover:text-caprock hover:bg-canvas transition-colors shadow-xs block"
-        >
-          &larr; close<span class="hidden sm:inline"> album</span>
-        </a>
-      </div>
-
-    </div>
-
-    <!-- THE CLEAN SURVEY TABLE SURFACE (Grid class replaced with pure bg-canvas) -->
-    <div 
-      id="light-table" 
-      class="absolute w-[3200px] h-[2200px] bg-topo-canvas pointer-events-auto"
-    >
-      
-
-      <!-- Spatial Artifacts 2+: The Photo Prints -->
-      {gallery.plates.map((plate, index) => (
-        <div 
-          class={`absolute ${plate.coordsClass} flex flex-col group pointer-events-auto cursor-pointer`}
-          data-lightbox-trigger
-          data-src={plate.src}
-          data-title={plate.title}
-          data-specs={plate.specs}
-          data-coords={plate.coordinates}
-          data-plate={`Plate ${String(index + 1).padStart(2, '0')}`}
-        >
-          <!-- Keep your existing frame and image code completely identical inside here -->
-          <div class="border border-haze p-3 bg-sage/5 shadow-md rounded-sm overflow-hidden transition-all duration-500 group-hover:shadow-xl group-hover:border-caprock/30">
-            <div class="overflow-hidden bg-iron/5 pointer-events-none">
-              <img src={plate.src} alt={plate.title} class="w-full h-auto object-cover opacity-95 group-hover:opacity-100 transition-all duration-700" draggable="false" />
+      <!-- THE MOUNT DESK SURFACE: Added CSS transformation origin alignment -->
+      <div 
+        id="light-table" 
+        class="absolute w-[3200px] h-[2200px] bg-topo-canvas pointer-events-auto origin-top-left will-change-transform"
+        data-center-x={gallery.centerX}
+        data-center-y={gallery.centerY}
+      >
+        
+        <!-- Spatial Artifacts: The Photo Prints -->
+        {gallery.plates.map((plate, index) => (
+          <div 
+            class={`absolute ${plate.coordsClass} flex flex-col group pointer-events-auto cursor-pointer`}
+            data-lightbox-trigger
+            data-src={plate.src}
+            data-title={plate.title}
+            data-specs={plate.specs}
+            data-coords={plate.coordinates}
+            data-caption={plate.caption || "No archival notes registered for this station log entry."}
+            data-plate={`Plate ${String(index + 1).padStart(2, '0')}`}
+          >
+            <div class="border border-haze p-3 bg-sage/5 shadow-md rounded-sm overflow-hidden transition-all duration-500 group-hover:shadow-xl group-hover:border-caprock/30">
+              <div class="overflow-hidden bg-iron/5 pointer-events-none">
+                <img src={plate.src} alt={plate.title} class="w-full h-auto object-cover opacity-95 group-hover:opacity-100 transition-all duration-700" draggable="false" />
+              </div>
+            </div>
+            <div class="w-full flex justify-between items-baseline text-[10px] font-mono text-sage uppercase tracking-wider mt-2 px-1">
+              <span class="font-semibold text-iron/70">Plate {String(index + 1).padStart(2, '0')}</span>
+              <span>{plate.coordinates}</span>
             </div>
           </div>
-          <!-- Keep your existing layout subtext ledger here too -->
-          <div class="w-full flex justify-between items-baseline text-[10px] font-mono text-sage uppercase tracking-wider mt-2 px-1">
-            <span class="font-semibold text-iron/70">Plate {String(index + 1).padStart(2, '0')}</span>
-            <span>{plate.coordinates}</span>
+        ))}
+
+        <!-- Spatial Center Stamp -->
+        <div class="absolute top-[850px] left-[1300px] font-serif italic text-6xl text-iron/[0.02] pointer-events-none select-none">
+          Austin Allison Photography
+        </div>
+
+      </div>
+
+      <!-- Lightbox Layer Frame -->
+      <div 
+        id="lightbox-modal" 
+        class="fixed inset-0 z-[100] bg-canvas/98 backdrop-blur-md hidden opacity-0 flex flex-col justify-between p-4 md:p-8 transition-opacity duration-300 select-none"
+      >
+        <div class="w-full max-w-7xl mx-auto flex justify-end shrink-0">
+          <button id="close-lightbox" class="font-mono text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors p-2 cursor-zoom-out">
+            esc // close view
+          </button>
+        </div>
+
+        <div class="w-full max-w-5xl h-[45vh] md:h-[55vh] mx-auto flex items-center justify-center overflow-hidden my-auto shrink-0">
+          <img 
+            id="lightbox-img" 
+            src="" 
+            alt="" 
+            class="max-w-full max-h-full object-contain shadow-md border border-haze p-2 bg-canvas transition-all duration-200 cursor-zoom-out" 
+          />
+        </div>
+
+        <div class="w-full max-w-5xl mx-auto border-t border-haze/40 pt-4 pb-2 md:pb-4 shrink-0">
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start font-mono text-[11px] uppercase tracking-wider text-sage">
+            <div class="col-span-12 md:col-span-4 flex flex-col gap-1">
+              <span id="lightbox-plate-title" class="font-semibold text-iron"></span>
+              <div class="flex gap-4 text-iron/40 text-[10px] lowercase tracking-normal mt-0.5">
+                <span id="lightbox-specs"></span>
+                <span id="lightbox-coords"></span>
+              </div>
+            </div>
+            <div class="col-span-12 md:col-span-8 border-t border-dashed border-haze/40 pt-3 md:pt-0 md:border-t-0 font-serif normal-case tracking-normal text-xs text-iron/70 italic leading-relaxed max-h-[18vh] md:max-h-[14vh] overflow-y-auto pr-2 scrollbar-none select-text">
+              <p id="lightbox-caption" class="cursor-text"></p>
+            </div>
           </div>
         </div>
-      ))}
-
-      <!-- Spatial Artifact Last: Background Desk Stamp -->
-      <div class="absolute top-[850px] left-[1300px] font-serif italic text-6xl text-iron/[0.02] pointer-events-none select-none">
-        Austin Allison Photography
       </div>
-
-    </div>
-
-    <!-- Minimalist Lightbox Overlay Layer -->
-    <div 
-      id="lightbox-modal" 
-      class="fixed inset-0 z-[100] bg-canvas/95 backdrop-blur-md hidden opacity-0 flex-col justify-between p-8 transition-opacity duration-300 cursor-zoom-out select-none"
-    >
-      <!-- Top Bar -->
-      <div class="w-full max-w-7xl mx-auto flex justify-end">
-        <button id="close-lightbox" class="font-mono text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors">
-          esc // close view
-        </button>
-      </div>
-
-      <!-- Center Active Image Target -->
-      <div class="w-full max-w-5xl h-[60vh] md:h-[65vh] mx-auto flex items-center justify-center overflow-hidden">
-        <img 
-          id="lightbox-img" 
-          src="" 
-          alt="" 
-          class="max-w-full max-h-full object-contain shadow-lg border border-haze p-2 bg-canvas transition-all duration-200" 
-        />
-      </div>
-
-      <!-- Bottom Dynamic Ledger -->
-      <div class="w-full max-w-5xl mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-baseline text-[11px] font-mono text-sage uppercase tracking-wider border-t border-haze/40 pt-4 mb-4">
-        <span id="lightbox-plate-title" class="font-semibold text-iron"></span>
-        <div class="flex space-x-6 text-iron/50 mt-1 sm:mt-0">
-          <span id="lightbox-specs"></span>
-          <span id="lightbox-coords"></span>
-        </div>
-      </div>
-    </div>
-  </main>
+    </main>
 </Layout>
 
 <script>
   const viewport = document.getElementById('workspace-viewport');
+  const table = document.getElementById('light-table');
   const modal = document.getElementById('lightbox-modal');
   const modalImg = document.getElementById('lightbox-img') as HTMLImageElement;
   const modalTitle = document.getElementById('lightbox-plate-title');
   const modalSpecs = document.getElementById('lightbox-specs');
   const modalCoords = document.getElementById('lightbox-coords');
+  const modalCaption = document.getElementById('lightbox-caption');
   const closeBtn = document.getElementById('close-lightbox');
   const triggers = document.querySelectorAll('[data-lightbox-trigger]');
 
-  // Drawer Elements
+  // HUD Layout Items
+  const hudContainer = document.getElementById('fixed-hud-container');
   const hudToggle = document.getElementById('hud-toggle');
   const hudCollapsible = document.getElementById('hud-collapsible');
   const mobileInstructions = document.getElementById('mobile-instructions');
   const toggleText = document.getElementById('toggle-text');
   const toggleIcon = document.getElementById('toggle-icon');
 
-  if (viewport && modal && modalImg) {
+  if (viewport && table && modal && modalImg) {
+    // 1. Core State Variables
     let isDown = false;
-    let startX, startY, scrollLeft, scrollTop;
+    let startX = 0, startY = 0;
     let isDragging = false;
-    let isExpanded = false; // Scoped globally for the viewport to access
+    let isExpanded = false;
+    
+    let scale = 0.45; 
+    let panX = -350;  
+    let panY = -150;
+    
+    // Dynamically retrieve unique album coordinates passed from Astro data layout maps
+    const centerX = Number(table.dataset.centerX) || 1150;
+    const centerY = Number(table.dataset.centerY) || 520;
+    
+    // 2. Responsive Desktop Centering Gate
+    if (window.innerWidth >= 768) {
+      scale = 0.65; 
+      panX = (window.innerWidth / 2) - (centerX * scale);
+      panY = (window.innerHeight / 2) - (centerY * scale);
+    }
 
-    // Center viewport on load
-    viewport.scrollLeft = 420;
-    viewport.scrollTop = 180;
+    let initialTouchDist = 0;
+    let initialTouchScale = 0;
 
-    // Helper function to collapse the HUD drawer
+    const updateTransform = () => {
+      table.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
+    };
+
+    updateTransform();
+
     const collapseHUD = () => {
-      if (!isExpanded) return;
       isExpanded = false;
       if (hudCollapsible) hudCollapsible.classList.add('hidden');
       if (mobileInstructions) mobileInstructions.classList.add('hidden');
       if (toggleText) toggleText.innerText = 'info';
       if (toggleIcon) toggleIcon.style.transform = 'rotate(0deg)';
+      if (hudToggle) hudToggle.setAttribute('aria-expanded', 'false');
     };
 
-    // Mobile HUD Toggle Listener
     if (hudToggle && hudCollapsible && mobileInstructions) {
       hudToggle.addEventListener('click', (e) => {
-        e.stopPropagation(); // Stop click from bubbling to viewport
+        e.stopPropagation();
         isExpanded = !isExpanded;
         hudToggle.setAttribute('aria-expanded', isExpanded.toString());
 
@@ -301,68 +377,149 @@ const { gallery } = Astro.props;
       });
     }
 
-    // Grab and drag event framework
-    viewport.addEventListener('mousedown', (e) => {
+    // DESKTOP: Precision Zoom Wheel Tracking
+    viewport.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      
+      const zoomFactor = 0.08;
+      const targetScale = e.deltaY < 0 ? scale + zoomFactor : scale - zoomFactor;
+      
+      const minScale = 0.25; 
+      const maxScale = 1.5;  
+      const newScale = Math.min(Math.max(targetScale, minScale), maxScale);
+
+      const rect = viewport.getBoundingClientRect();
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+
+      const baseXSpatial = (mouseX - panX) / scale;
+      const baseYSpatial = (mouseY - panY) / scale;
+
+      scale = newScale;
+      panX = mouseX - baseXSpatial * scale;
+      panY = mouseY - baseYSpatial * scale;
+
+      updateTransform();
+    }, { passive: false });
+
+    // UNIFIED DRAG SYSTEM: Core Transform Calculations
+    const startDrag = (clientX: number, clientY: number) => {
       isDown = true;
-      isDragging = false; 
+      isDragging = false;
       viewport.classList.replace('cursor-grab', 'cursor-grabbing');
-      startX = e.pageX - viewport.offsetLeft;
-      startY = e.pageY - viewport.offsetTop;
-      scrollLeft = viewport.scrollLeft;
-      scrollTop = viewport.scrollTop;
-
-      // UX Touch: Collapse the HUD if they click down on the desk to navigate
+      startX = clientX - panX;
+      startY = clientY - panY;
       collapseHUD();
-    });
+    };
 
-    viewport.addEventListener('mouseleave', () => { isDown = false; });
-    viewport.addEventListener('mouseup', () => { 
+    const moveDrag = (clientX: number, clientY: number) => {
+      if (!isDown) return;
+      isDragging = true;
+      panX = clientX - startX;
+      panY = clientY - startY;
+      updateTransform();
+    };
+
+    const endDrag = () => {
       isDown = false;
       viewport.classList.replace('cursor-grabbing', 'cursor-grab');
+    };
+
+    viewport.addEventListener('mousedown', (e) => {
+      if ((e.target as HTMLElement).closest('#fixed-hud-container')) return;
+      startDrag(e.clientX, e.clientY);
+    });
+    
+    viewport.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
+    window.addEventListener('mouseup', endDrag);
+
+    // MOBILE TOUCH ENGINE: Audit-proofed multi-finger prioritization
+    viewport.addEventListener('touchstart', (e) => {
+      // Prioritize pinch gestures immediately. If two fingers touch down, bypass all HUD blocks
+      if (e.touches.length === 2) {
+        isDown = false; 
+        initialTouchDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        initialTouchScale = scale;
+        return;
+      }
+      
+      // Standard interface boundary gate logic for single-finger drag interactions
+      if ((e.target as HTMLElement).closest('#fixed-hud-container')) return;
+      if (e.touches.length === 1) {
+        startDrag(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: true });
+
+    viewport.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 1 && isDown) {
+        moveDrag(e.touches[0].clientX, e.touches[0].clientY);
+      } else if (e.touches.length === 2 && initialTouchDist > 0) {
+        e.preventDefault(); 
+        const currentDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const targetTouchScale = (currentDist / initialTouchDist) * initialTouchScale;
+        scale = Math.min(Math.max(targetTouchScale, 0.25), 1.5);
+        updateTransform();
+      }
+    }, { passive: false });
+
+    viewport.addEventListener('touchend', (e) => {
+      if (e.touches.length === 0) {
+        endDrag();
+        initialTouchDist = 0;
+      }
     });
 
-    viewport.addEventListener('mousemove', (e) => {
-      if (!isDown) return;
-      isDragging = true; 
-      e.preventDefault();
-      const x = e.pageX - viewport.offsetLeft;
-      const y = e.pageY - viewport.offsetTop;
-      const walkX = (x - startX) * 1.4; 
-      const walkY = (y - startY) * 1.4;
-      viewport.scrollLeft = scrollLeft - walkX;
-      viewport.scrollTop = scrollTop - walkY;
+    // ACCESSIBILITY LOGIC: Key Command Keyboard Panning System
+    window.addEventListener('keydown', (e) => {
+      // Abort key mapping calculations if a photograph lightbox is currently active
+      if (!modal.classList.contains('hidden')) return;
+
+      const step = 40; // Pixel pan travel velocity increment per click vector
+      let triggered = false;
+
+      if (e.key === 'ArrowUp' || e.key === 'w')    { panY += step; triggered = true; }
+      if (e.key === 'ArrowDown' || e.key === 's')  { panY -= step; triggered = true; }
+      if (e.key === 'ArrowLeft' || e.key === 'a')  { panX += step; triggered = true; }
+      if (e.key === 'ArrowRight' || e.key === 'd') { panX -= step; triggered = true; }
+
+      if (triggered) {
+        e.preventDefault();
+        collapseHUD();
+        updateTransform();
+      }
     });
 
-    // Lightbox Open Logic with Automatic Orientation Detection
+    // LIGHTBOX ENGAGEMENT ROUTINES
     triggers.forEach(trigger => {
       trigger.addEventListener('click', () => {
         if (isDragging) return;
 
         const el = trigger as HTMLElement;
         
-        // 1. Reset any orientation constraints from previous clicks
-        modalImg.classList.remove('max-h-[50vh]', 'md:max-h-[55vh]', 'max-w-xs', 'md:max-w-md');
+        modalImg.classList.remove('max-h-[45vh]', 'md:max-h-[50vh]', 'max-w-xs', 'md:max-w-md');
         modalImg.classList.add('max-h-full', 'max-w-full');
 
-        // 2. Set the asset paths
         modalImg.src = el.dataset.src || '';
         modalImg.alt = el.dataset.title || '';
         
         if (modalTitle) modalTitle.innerHTML = `<span class="text-iron/40">${el.dataset.plate}</span> &bull; ${el.dataset.title}`;
         if (modalSpecs) modalSpecs.innerText = el.dataset.specs || '';
         if (modalCoords) modalCoords.innerText = el.dataset.coords || '';
+        if (modalCaption) modalCaption.innerText = el.dataset.caption || '';
 
-        // 3. Automate Portrait Matting on File Load
         modalImg.onload = () => {
-          // If height is greater than width, it's a vertical portrait print
           if (modalImg.naturalHeight > modalImg.naturalWidth) {
             modalImg.classList.remove('max-h-full', 'max-w-full');
-            // Tames the scale down to a perfectly balanced, compact central frame
-            modalImg.classList.add('max-h-[50vh]', 'md:max-h-[55vh]', 'max-w-xs', 'md:max-w-md');
+            modalImg.classList.add('max-h-[42vh]', 'md:max-h-[50vh]', 'max-w-xs', 'md:max-w-md');
           }
         };
 
-        // 4. Fire the smooth modal display transition
         modal.classList.remove('hidden');
         setTimeout(() => modal.classList.remove('opacity-0'), 10);
       });
@@ -373,30 +530,23 @@ const { gallery } = Astro.props;
       setTimeout(() => modal.classList.add('hidden'), 300);
     };
 
-    modal.addEventListener('click', closeLightbox);
+    modal.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('#lightbox-caption')) return;
+      closeLightbox();
+    });
+    
     closeBtn?.addEventListener('click', closeLightbox);
     window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
   }
 </script>
 
 <style is:global>
-  /* Clean interface locks */
-  .scrollbar-none::-webkit-scrollbar {
-    display: none;
-  }
-  .scrollbar-none {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-  }
+  .scrollbar-none::-webkit-scrollbar { display: none; }
+  .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
 
-  /* The Ghost Topography Surface Engine */
   .bg-topo-canvas {
-    background-color: #FBFBF9; /* Core bg-canvas tone */
-    
-    /* Seamless inline vector topographic contour curves. 
-      Uses your exact structural 'haze' color token (#E6E4DF) 
-      scaled down to a highly muted, non-distracting opacity.
-    */
+    background-color: #FBFBF9;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Cpath d='M0 250 C 200 210, 250 420, 450 370 C 650 320, 600 580, 800 550 M0 450 C 150 480, 350 280, 550 320 C 750 360, 700 680, 800 700 M0 650 C 180 600, 280 720, 450 620 C 620 520, 680 780, 800 720 M0 50 C 100 80, 200 20, 350 120 C 500 220, 650 100, 800 180' fill='none' stroke='%23E6E4DF' stroke-width='1.2' stroke-opacity='0.62'/%3E%3C/svg%3E");
     background-size: 800px 800px;
   }

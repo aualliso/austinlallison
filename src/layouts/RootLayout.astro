@@ -92,10 +92,12 @@ const { title, description = "Academic Librarian & Photographer Portfolio" } = A
   				</div>
 		</main>
 
-<footer class="w-full bg-iron text-canvas mt-56 pt-16 pb-8 px-6 font-mono select-none overflow-hidden relative border-t-4 border-caprock">
+<!-- The Large-Format Film Rebate & Geodetic Matrix -->
+<footer class="w-full bg-iron text-canvas mt-32 md:mt-56 pt-12 pb-8 px-4 sm:px-6 font-mono select-none overflow-hidden relative border-t-4 border-caprock">
   
-  <div class="absolute right-[-50px] bottom-[-20px] pointer-events-none opacity-[0.02] text-canvas transition-all duration-700 group-hover:opacity-[0.04]">
-    <svg width="600" height="600" viewBox="0 0 100 100" class="animate-[spin_120s_linear_infinite]">
+  <!-- RESPONSIVE BACKGROUND WATERMARK: Scaled down and safe positioned for mobile screens -->
+  <div class="absolute right-[-80px] bottom-[-80px] md:right-[-50px] md:bottom-[-20px] pointer-events-none opacity-[0.015] md:opacity-[0.02] text-canvas transition-all duration-700 w-[360px] h-[360px] md:w-[600px] md:h-[600px]">
+    <svg width="100%" height="100%" viewBox="0 0 100 100" class="animate-[spin_180s_linear_infinite]">
       <circle cx="50" cy="50" r="48" fill="none" stroke="currentColor" stroke-width="0.5" stroke-dasharray="1,2"/>
       <circle cx="50" cy="50" r="40" fill="none" stroke="currentColor" stroke-width="0.2"/>
       <path d="M50 2 L50 98 M2 50 L98 50" stroke="currentColor" stroke-width="0.2"/>
@@ -106,13 +108,13 @@ const { title, description = "Academic Librarian & Photographer Portfolio" } = A
 
   <div class="max-w-7xl mx-auto relative z-10">
     
-    <div class="w-full flex justify-between items-center text-[9px] uppercase tracking-[0.3em] text-canvas/40 border-b border-canvas/10 pb-6 mb-12">
-      <div class="flex items-center space-x-6">
-        <span>website data</span>
+    <!-- TIER 1: The Film Rebate Edge Ledger (Dynamic Tracking) -->
+    <div class="w-full flex justify-between items-center text-[8px] md:text-[9px] uppercase tracking-widest md:tracking-[0.3em] text-canvas/40 border-b border-canvas/10 pb-4 md:pb-6 mb-8 md:mb-12 gap-4">
+      <div class="flex items-center">
       </div>
       <div class="flex items-center space-x-2">
-        <span>details 01</span>
-        <div class="flex space-x-[2px] h-3 items-center ml-2 opacity-60 hidden sm:flex">
+        <!-- Calibrated barcode strip collapses seamlessly on small mobile frames -->
+        <div class="flex space-x-[2px] h-3 items-center ml-2 opacity-60 hidden xs:flex">
           <div class="w-[1px] h-full bg-canvas"></div>
           <div class="w-[3px] h-full bg-canvas"></div>
           <div class="w-[1px] h-full bg-canvas"></div>
@@ -122,57 +124,61 @@ const { title, description = "Academic Librarian & Photographer Portfolio" } = A
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-12 gap-y-12 gap-x-12 pb-16 items-start">
+    <!-- TIER 2: The Structural Monograph Columns (Responsive row gaps) -->
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-y-10 gap-x-6 md:gap-x-12 pb-12 md:pb-16 items-start">
       
-      <div class="col-span-12 sm:col-span-6 md:col-span-4 space-y-4">
+      <!-- Column 01: The Navigation Directory -->
+      <div class="col-span-12 sm:col-span-6 md:col-span-4 space-y-3 md:space-y-4">
         <div class="text-[10px] uppercase tracking-widest text-sage font-bold flex items-center gap-2">
           <span class="text-caprock">01 //</span> Index
         </div>
-        <ul class="space-y-2 text-sm font-serif">
+        <ul class="space-y-2.5 text-sm font-serif">
           <li>
             <a href="/photography" class="group flex items-baseline justify-between text-canvas/70 hover:text-canvas transition-colors duration-300">
-              <span>Photographic Surveys</span>
-              <span class="border-b border-dotted border-canvas/20 flex-grow mx-2 h-0 group-hover:border-canvas/40 transition-colors"></span>
-              <span class="font-mono text-[10px] text-canvas/40">[01]</span>
+              <span class="z-10 bg-iron pr-1">Photographic Surveys</span>
+              <span class="border-b border-dotted border-canvas/20 flex-grow mx-1 h-0 group-hover:border-canvas/40 transition-colors"></span>
+              <span class="font-mono text-[10px] text-canvas/40 pl-1">[01]</span>
             </a>
           </li>
           <li>
             <a href="/publications" class="group flex items-baseline justify-between text-canvas/70 hover:text-canvas transition-colors duration-300">
-              <span>Scholarly Publications</span>
-              <span class="border-b border-dotted border-canvas/20 flex-grow mx-2 h-0 group-hover:border-canvas/40 transition-colors"></span>
-              <span class="font-mono text-[10px] text-canvas/40">[02]</span>
+              <span class="z-10 bg-iron pr-1">Scholarly Publications</span>
+              <span class="border-b border-dotted border-canvas/20 flex-grow mx-1 h-0 group-hover:border-canvas/40 transition-colors"></span>
+              <span class="font-mono text-[10px] text-canvas/40 pl-1">[02]</span>
             </a>
           </li>
           <li>
             <a href="/cv" class="group flex items-baseline justify-between text-canvas/70 hover:text-canvas transition-colors duration-300">
-              <span>Curriculum Vitae & Bio</span>
-              <span class="border-b border-dotted border-canvas/20 flex-grow mx-2 h-0 group-hover:border-canvas/40 transition-colors"></span>
-              <span class="font-mono text-[10px] text-canvas/40">[03]</span>
+              <span class="z-10 bg-iron pr-1">Curriculum Vitae & Bio</span>
+              <span class="border-b border-dotted border-canvas/20 flex-grow mx-1 h-0 group-hover:border-canvas/40 transition-colors"></span>
+              <span class="font-mono text-[10px] text-canvas/40 pl-1">[03]</span>
             </a>
           </li>
         </ul>
       </div>
 
-      <div class="col-span-12 sm:col-span-6 md:col-span-4 space-y-4 text-[11px] text-canvas/50">
+      <!-- Column 02: Website Details -->
+      <div class="col-span-12 sm:col-span-6 md:col-span-4 space-y-3 md:space-y-4 text-[11px] text-canvas/50">
         <div class="text-[10px] uppercase tracking-widest text-sage font-bold flex items-center gap-2 text-canvas/80">
           <span class="text-caprock">02 //</span> Website Details
         </div>
         <div class="grid grid-cols-2 gap-x-4 gap-y-1.5 border-l border-canvas/10 pl-4 tracking-wide lowercase">
           <span class="text-canvas/30">System Pipeline</span> <span>Astro Engine</span>
           <span class="text-canvas/30">Edge Host</span> <span>Cloudflare Pages</span>
-          <span class="text-canvas/30">Software</span> <span>Visual Studio Code</span>
+          <span class="text-canvas/30">Software</span> <span>VS Code</span>
         </div>
       </div>
 
+      <!-- Column 03: Communication / Locality Metrics -->
       <div class="col-span-12 md:col-span-4 space-y-4 md:text-right md:items-end flex flex-col">
         <div class="w-full">
-          <div class="text-[10px] uppercase tracking-widest text-sage font-bold flex items-center md:justify-end gap-2 mb-4">
+          <div class="text-[10px] uppercase tracking-widest text-sage font-bold flex items-center md:justify-end gap-2 mb-3 md:mb-4">
             <span class="text-caprock">03 //</span> Communication
           </div>
-          <div class="flex flex-wrap items-center md:justify-end gap-6 text-xs lowercase">
+          <div class="flex flex-wrap items-center md:justify-end gap-x-6 gap-y-3 text-xs lowercase">
             <a 
               href="mailto:austinlallison@gmail.com" 
-              class="text-canvas/70 hover:text-caprock underline underline-offset-8 decoration-canvas/20 hover:decoration-caprock transition-all duration-300"
+              class="text-canvas/70 hover:text-caprock underline underline-offset-6 md:underline-offset-8 decoration-canvas/20 hover:decoration-caprock transition-all duration-300"
             >
               comms@email
             </a>
@@ -180,25 +186,28 @@ const { title, description = "Academic Librarian & Photographer Portfolio" } = A
               href="https://github.com/aualliso" 
               target="_blank" 
               rel="noopener noreferrer" 
-              class="text-canvas/70 hover:text-caprock underline underline-offset-8 decoration-canvas/20 hover:decoration-caprock transition-all duration-300"
+              class="text-canvas/70 hover:text-caprock underline underline-offset-6 md:underline-offset-8 decoration-canvas/20 hover:decoration-caprock transition-all duration-300"
             >
               source@github
             </a>
           </div>
         </div>
         
-        <div class="w-full text-[10px] text-canvas/30 tracking-[0.15em] uppercase pt-4 border-t border-canvas/15 mt-2">
+        <div class="w-full text-[10px] text-canvas/30 tracking-[0.12em] md:tracking-[0.15em] uppercase pt-4 border-t border-canvas/15 mt-2">
           Grid: 33.5779&deg; N &bull; 101.8552&deg; W
         </div>
       </div>
 
     </div>
 
-    <div class="w-full pt-8 border-t border-canvas/10 flex flex-col sm:flex-row justify-between items-start sm:items-baseline gap-4 text-[9px] uppercase tracking-[0.2em] text-canvas/40">
+    <!-- TIER 3: The Terminal Calibration Strip (Fluid Baseline Layout) -->
+    <div class="w-full pt-6 md:pt-8 border-t border-canvas/10 flex flex-col sm:flex-row justify-between items-start sm:items-baseline gap-4 text-[8px] md:text-[9px] uppercase tracking-wider md:tracking-[0.2em] text-canvas/40">
       <p class="font-serif italic text-canvas/50 text-xs normal-case tracking-normal">
         &copy; {new Date().getFullYear()} Austin Allison. All Rights Reserved.
       </p>
-      <div class="flex items-center space-x-4 border border-canvas/10 px-3 py-1 bg-canvas/[0.02] rounded-xs font-bold text-caprock">
+      
+      <!-- Live marker component tames its internal layout tracking for tight spaces -->
+      <div class="flex items-center space-x-3 border border-canvas/10 px-2.5 py-1 bg-canvas/[0.02] rounded-xs font-bold text-caprock tracking-widest shrink-0">
         <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-ping"></span>
         <span>Website Live</span>
       </div>
