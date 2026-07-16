@@ -1,0 +1,184 @@
+---
+// src/components/Header.astro
+import { Image } from 'astro:assets';
+import signature from '../assets/signature.svg'; 
+---
+
+<div class="w-full sticky top-0 z-50 select-none pointer-events-none">
+  <!-- THE UNIFIED METAMORPHIC HEADER -->
+  <header 
+    id="metamorphic-header" 
+    class="w-full max-w-7xl mx-auto px-6 bg-canvas border-b border-haze border-r border-haze border-l border-haze pointer-events-auto"
+  >
+    <div class="w-full flex flex-col md:grid md:grid-cols-12 items-center justify-between py-4 md:py-0 h-auto md:h-full gap-3 md:gap-0">
+      
+      <!-- LEFT REGISTRY -->
+      <div class="w-full md:col-span-7 flex items-center justify-center md:justify-start gap-4">
+        
+        <div id="signature-wrapper" class="shrink-0 border-r border-dust/70 pr-4 flex items-center justify-center overflow-hidden">
+          <a href="/" class="block hover:opacity-85 transition-opacity duration-300">
+            <Image 
+              src={signature} 
+              alt="Austin Allison Ledger Validation Signature" 
+              class="w-auto object-contain signature-img" 
+              loading="eager"
+            />
+          </a>
+        </div>
+        
+        <div class="flex flex-col md:flex-row md:items-baseline md:gap-3 overflow-hidden">
+          <!-- The flex container perfectly stacks the two spans automatically -->
+          <a href="/" class="header-title-link font-serif text-lg md:text-xl font-medium tracking-tight whitespace-nowrap flex items-center justify-center md:justify-start relative">
+            <span class="base-text transition-opacity duration-300">Austin Allison</span>
+            <span class="hover-text absolute text-[#C1AD8A] opacity-0 transition-opacity duration-300 pointer-events-none">Austin Allison</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- RIGHT REGISTRY -->
+      <nav id="header-nav" class="w-full md:w-auto md:col-span-5 flex items-center justify-between md:justify-end gap-x-2 sm:gap-x-4 text-md font-serif tracking-wider lowercase border-t border-haze pt-3 md:pt-0 md:border-t-0 relative z-20">
+        
+        <a href="/cv" class="nav-link px-3 py-1.5 md:py-1 flex items-center justify-center relative">
+          <span class="base-text transition-opacity duration-300">cv</span>
+          <span class="hover-text absolute text-[#C1AD8A] opacity-0 transition-opacity duration-300 pointer-events-none">cv</span>
+        </a>
+        
+        <span class="nav-dot select-none">&middot;</span>
+        
+        <a href="/publications" class="nav-link px-3 py-1.5 md:py-1 flex items-center justify-center relative">
+          <span class="base-text transition-opacity duration-300">publications</span>
+          <span class="hover-text absolute text-[#C1AD8A] opacity-0 transition-opacity duration-300 pointer-events-none">publications</span>
+        </a>
+        
+        <span class="nav-dot select-none">&middot;</span>
+        
+        <a href="/photography" class="nav-link px-3 py-1.5 md:py-1 flex items-center justify-center relative">
+          <span class="base-text transition-opacity duration-300">photography</span>
+          <span class="hover-text absolute text-[#C1AD8A] opacity-0 transition-opacity duration-300 pointer-events-none">photography</span>
+        </a>
+        
+      </nav>
+
+    </div>
+  </header>
+</div>
+
+<style is:global>
+  /* ========================================================================== */
+  /* STATIC MOBILE BASELINE PROFILE (Viewports under 768px) */
+  /* ========================================================================== */
+  .signature-img {
+    height: 2.75rem;
+    filter: brightness(1) invert(0);
+  }
+  
+  /* Wrapper links set the base colors */
+  .header-title-link { color: rgba(26, 25, 25, 0.9); }
+  .nav-link { color: rgba(26, 25, 25, 0.7); }
+  .nav-dot { color: rgba(230, 228, 223, 0.6); }
+
+  /* Crossfade logic for the smooth hover transition */
+  .header-title-link:hover .base-text, 
+  .nav-link:hover .base-text {
+    opacity: 0;
+  }
+  
+  .header-title-link:hover .hover-text, 
+  .nav-link:hover .hover-text {
+    opacity: 1;
+  }
+
+  /* ========================================================================== */
+  /* DESKTOP SCROLL-COMPRESSION SYSTEM (Viewports 768px and up) */
+  /* ========================================================================== */
+  @media (min-width: 768px) {
+    
+    #metamorphic-header {
+      padding-top: 2rem;
+      padding-bottom: 2rem;
+    }
+    
+    .signature-img {
+      height: 2.75rem;
+    }
+
+    @supports (animation-timeline: scroll()) {
+      @media (prefers-reduced-motion: no-preference) {
+        
+        @keyframes compressPadding {
+          from {
+            padding-top: 2rem;
+            padding-bottom: 2rem;
+            background-color: #FBFBF9;
+            backdrop-filter: blur(0px);
+          }
+          to {
+            padding-top: 0.65rem;
+            padding-bottom: 0.65rem;
+            background-color: rgba(110, 126, 106, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom-color: rgba(184, 91, 53, 0.2);
+            border-left-color: rgba(184, 91, 53, 0.2);
+            border-right-color: rgba(184, 91, 53, 0.2);
+          }
+        }
+
+        @keyframes shrinkSignature {
+          from {
+            height: 2.75rem;
+            filter: brightness(1) invert(0);
+          }
+          to {
+            height: 2.75rem;
+            filter: brightness(0) invert(1); 
+          }
+        }
+
+        @keyframes lightenTitle {
+          from { color: rgba(26, 25, 25, 0.9); }
+          to { color: #FBFBF9; }
+        }
+
+        @keyframes lightenNavLink {
+          from { color: rgba(26, 25, 25, 0.7); }
+          to { color: #FBFBF9; }
+        }
+
+        @keyframes lightenNavDot {
+          from { color: rgba(230, 228, 223, 0.6); }
+          to { color: rgba(251, 251, 249, 0.5); }
+        }
+
+        #metamorphic-header {
+          animation: compressPadding linear both;
+          animation-timeline: scroll(root);
+          animation-range: 0px 120px;
+        }
+
+        .signature-img {
+          animation: shrinkSignature linear both;
+          animation-timeline: scroll(root);
+          animation-range: 0px 120px;
+        }
+
+        .header-title-link {
+          animation: lightenTitle linear both;
+          animation-timeline: scroll(root);
+          animation-range: 0px 120px;
+        }
+
+        .nav-link {
+          animation: lightenNavLink linear both;
+          animation-timeline: scroll(root);
+          animation-range: 0px 120px;
+        }
+
+        .nav-dot {
+          animation: lightenNavDot linear both;
+          animation-timeline: scroll(root);
+          animation-range: 0px 120px;
+        }
+      }
+    }
+  }
+</style>
