@@ -129,7 +129,7 @@ import signature from '../assets/signature.svg';
           filter: brightness(1) invert(0);
         }
         to {
-          height: 2.75rem;
+          height: 1.85rem; /* Core Fix: Scaled down cleanly to match the compressed header profile */
           filter: brightness(0) invert(1); 
         }
       }
@@ -149,7 +149,6 @@ import signature from '../assets/signature.svg';
         to { color: rgba(251, 251, 249, 0.5); }
       }
 
-      /* SAFE LONGHAND DECLARATIONS: Protected from minifier overrides */
       #metamorphic-header {
         animation-name: compressPadding;
         animation-timing-function: linear;
@@ -166,7 +165,9 @@ import signature from '../assets/signature.svg';
         animation-range: 0px 120px;
       }
 
-      .header-title-link {
+      /* Core Fix: Force inheritance repaint down into the inner base text layout layers */
+      .header-title-link,
+      .header-title-link .base-text {
         animation-name: lightenTitle;
         animation-timing-function: linear;
         animation-fill-mode: both;
