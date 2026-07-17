@@ -10,7 +10,7 @@ export async function getStaticPaths() {
       title: 'American Escarpments',
       region: 'Texas | Montana | Washington',
       essay: 'From the rugged Permian red beds of the Southern Plains to the ancient volcanic chasms of the Pacific Northwest and the dramatic glacial coulees of Montana’s Big Sky country, this photo set captures the breathtaking geological fractures that define the American West. These landscapes are a masterclass in geomorphology, visually documenting the diverse forces of water, wind, and ancient cataclysms that have sculpted the continent’s vast interior tablelands. By showcasing the abrupt transitions where endless high prairies drop away into hidden canyons, valleys, and river floors, the collection highlights both the immense isolation and the unexpected productivity of the Western terrain. Ultimately, the images serve as a striking testament to human adaptation, where ancient natural fortresses and challenging migratory barriers have seamlessly transformed into modern landscapes of recreation and massive agricultural abundance.',
-      centerX: 1550, // Coordinates tailored to center mass of Escarpment layout elements
+      centerX: 1550, 
       centerY: 920,
       plates: [
         {
@@ -109,7 +109,7 @@ export async function getStaticPaths() {
       title: 'Water on the Llano Estacado',
       region: 'Texas | New Mexico',
       essay: '',
-      centerX: 1250, // Coordinates tailored to center mass of Escarpment layout elements
+      centerX: 1250, 
       centerY: 820,
       plates: [
         {
@@ -158,10 +158,10 @@ const { gallery } = Astro.props;
 ---
 
 <Layout title={`${gallery.title} — Austin Allison`} hideNav={true}>
-  <!-- WORKSPACE VIEWPORT: Swapped 'overflow-auto' to 'overflow-hidden' for the transform engine -->
+  <!-- touch-none applied to prevent mobile browsers from hijacking swipes -->
     <main 
       id="workspace-viewport" 
-      class="w-screen h-screen overflow-hidden bg-canvas text-iron select-none cursor-grab active:cursor-grabbing relative"
+      class="w-screen h-screen overflow-hidden bg-canvas text-iron select-none cursor-grab active:cursor-grabbing relative touch-none"
     >
       
       <!-- Fixed Editorial HUD Overlay (Responsive, Collapsing, & Expandable) -->
@@ -224,7 +224,7 @@ const { gallery } = Astro.props;
         </div>
       </div>
 
-      <!-- THE MOUNT DESK SURFACE: Added CSS transformation origin alignment -->
+      <!-- THE MOUNT DESK SURFACE -->
       <div 
         id="light-table" 
         class="absolute w-[3200px] h-[2200px] bg-topo-canvas pointer-events-auto origin-top-left will-change-transform"
@@ -246,7 +246,8 @@ const { gallery } = Astro.props;
           >
             <div class="border border-iron/10 p-3 bg-dust/35 shadow-md rounded-sm overflow-hidden transition-all duration-500 group-hover:shadow-xl group-hover:border-caprock/30">
               <div class="overflow-hidden bg-iron/5 pointer-events-none">
-                <img src={plate.src} alt={plate.title} class="w-full h-auto object-cover opacity-95 group-hover:opacity-100 transition-all duration-700" draggable="false" />
+                <!-- loading="lazy" decoding="async" for memory performance -->
+                <img src={plate.src} alt={plate.title} loading="lazy" decoding="async" class="w-full h-auto object-cover opacity-95 group-hover:opacity-100 transition-all duration-700" draggable="false" />
               </div>
             </div>
             <div class="w-full flex justify-between items-baseline text-[10px] font-mono text-sage uppercase tracking-wider mt-2 px-1">
@@ -264,17 +265,18 @@ const { gallery } = Astro.props;
         class="fixed inset-0 z-[100] bg-canvas/98 backdrop-blur-md hidden opacity-0 flex flex-col justify-between p-4 md:p-8 transition-opacity duration-300 select-none"
       >
         <div class="w-full max-w-7xl mx-auto flex justify-end shrink-0">
-          <button id="close-lightbox" class="font-mono text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors p-2 cursor-zoom-out">
+          <button id="close-lightbox" class="font-mono text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors p-2 z-50">
             esc // close view
           </button>
         </div>
 
-        <div class="w-full max-w-5xl h-[45vh] md:h-[55vh] mx-auto flex items-center justify-center overflow-hidden my-auto shrink-0">
+        <div class="w-full max-w-5xl h-[45vh] md:h-[55vh] mx-auto flex items-center justify-center overflow-hidden my-auto shrink-0 relative">
+          <!-- Updated zoom-ready image class -->
           <img 
             id="lightbox-img" 
             src="" 
             alt="" 
-            class="max-w-full max-h-full object-contain shadow-md border border-haze p-2 bg-canvas transition-all duration-200 cursor-zoom-out" 
+            class="max-w-full max-h-full object-contain shadow-md border border-haze p-2 bg-canvas transition-transform duration-300 ease-out cursor-zoom-in" 
           />
         </div>
 
@@ -323,25 +325,38 @@ const { gallery } = Astro.props;
     let isDragging = false;
     let isExpanded = false;
     
-    let scale = 0.45; 
-    let panX = -350;  
-    let panY = -150;
-    
     // Dynamically retrieve unique album coordinates passed from Astro data layout maps
     const centerX = Number(table.dataset.centerX) || 1150;
     const centerY = Number(table.dataset.centerY) || 520;
     
-    // 2. Responsive Desktop Centering Gate
-    if (window.innerWidth >= 768) {
-      scale = 0.65; 
-      panX = (window.innerWidth / 2) - (centerX * scale);
-      panY = (window.innerHeight / 2) - (centerY * scale);
-    }
+    // Dynamic initialization for all screen sizes
+    let scale = window.innerWidth >= 768 ? 0.65 : 0.45;
+    let panX = (window.innerWidth / 2) - (centerX * scale);
+    let panY = (window.innerHeight / 2) - (centerY * scale);
 
     let initialTouchDist = 0;
     let initialTouchScale = 0;
+    
+    // Pinch Center coordinates
+    let initialPinchCenterX = 0;
+    let initialPinchCenterY = 0;
+
+    // Boundary clamping logic
+    const constrainPan = () => {
+      const scaledWidth = 3200 * scale;
+      const scaledHeight = 2200 * scale;
+      
+      const minX = window.innerWidth / 2 - scaledWidth;
+      const maxX = window.innerWidth / 2;
+      const minY = window.innerHeight / 2 - scaledHeight;
+      const maxY = window.innerHeight / 2;
+
+      panX = Math.min(Math.max(panX, minX), maxX);
+      panY = Math.min(Math.max(panY, minY), maxY);
+    };
 
     const updateTransform = () => {
+      constrainPan();
       table.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
     };
 
@@ -439,6 +454,10 @@ const { gallery } = Astro.props;
           e.touches[0].clientY - e.touches[1].clientY
         );
         initialTouchScale = scale;
+        
+        // Find the midpoint between the two fingers
+        initialPinchCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+        initialPinchCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
         return;
       }
       
@@ -458,8 +477,18 @@ const { gallery } = Astro.props;
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
         );
+        
         const targetTouchScale = (currentDist / initialTouchDist) * initialTouchScale;
-        scale = Math.min(Math.max(targetTouchScale, 0.25), 1.5);
+        const newScale = Math.min(Math.max(targetTouchScale, 0.25), 1.5);
+
+        // Zoom into the midpoint just like the desktop mouse wheel
+        const baseXSpatial = (initialPinchCenterX - panX) / scale;
+        const baseYSpatial = (initialPinchCenterY - panY) / scale;
+
+        scale = newScale;
+        panX = initialPinchCenterX - baseXSpatial * scale;
+        panY = initialPinchCenterY - baseYSpatial * scale;
+
         updateTransform();
       }
     }, { passive: false });
@@ -491,7 +520,17 @@ const { gallery } = Astro.props;
       }
     });
 
-    // LIGHTBOX ENGAGEMENT ROUTINES
+    // --- LIGHTBOX ENGAGEMENT ROUTINES ---
+    let isLightboxZoomed = false;
+
+    // Helper to reset image back to normal
+    const resetLightboxZoom = () => {
+      isLightboxZoomed = false;
+      modalImg.style.transform = 'scale(1)';
+      modalImg.style.cursor = 'zoom-in';
+      modalImg.style.transformOrigin = 'center center';
+    };
+
     triggers.forEach(trigger => {
       trigger.addEventListener('click', () => {
         if (isDragging) return;
@@ -523,17 +562,73 @@ const { gallery } = Astro.props;
 
     const closeLightbox = () => {
       modal.classList.add('opacity-0');
-      setTimeout(() => modal.classList.add('hidden'), 300);
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        resetLightboxZoom(); // Ensure zoom is reset for the next image
+      }, 300);
     };
 
+    // Close Modal Logic (Prevents closing if interacting with the image)
     modal.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
-      if (target.closest('#lightbox-caption')) return;
+      // Do not close if clicking the caption OR the image itself
+      if (target.closest('#lightbox-caption') || target === modalImg) return;
       closeLightbox();
     });
     
     closeBtn?.addEventListener('click', closeLightbox);
     window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+
+    // --- NEW: LIGHTBOX ZOOM ENGINE ---
+    
+    // 1. Toggle Zoom on Click
+    modalImg.addEventListener('click', (e) => {
+      isLightboxZoomed = !isLightboxZoomed;
+      
+      if (isLightboxZoomed) {
+        modalImg.style.cursor = 'zoom-out';
+        modalImg.style.transform = 'scale(2.5)'; // Adjust this number for more/less zoom
+        
+        // Immediately set the origin to where they clicked so it zooms into that exact spot
+        const rect = modalImg.getBoundingClientRect();
+        const x = ((e.clientX - rect.left) / rect.width) * 100;
+        const y = ((e.clientY - rect.top) / rect.height) * 100;
+        modalImg.style.transformOrigin = `${x}% ${y}%`;
+      } else {
+        resetLightboxZoom();
+      }
+    });
+
+    // 2. Panning logic for both Mouse and Touch
+    const panZoomedImage = (clientX: number, clientY: number) => {
+      if (!isLightboxZoomed) return;
+      const container = modalImg.parentElement;
+      if (!container) return;
+      
+      const rect = container.getBoundingClientRect();
+      const x = ((clientX - rect.left) / rect.width) * 100;
+      const y = ((clientY - rect.top) / rect.height) * 100;
+      
+      // Clamp values between 0 and 100 so the image doesn't pan off-screen
+      const clampedX = Math.min(Math.max(x, 0), 100);
+      const clampedY = Math.min(Math.max(y, 0), 100);
+      
+      modalImg.style.transformOrigin = `${clampedX}% ${clampedY}%`;
+    };
+
+    // Desktop hover to pan
+    modalImg.parentElement?.addEventListener('mousemove', (e) => {
+      panZoomedImage(e.clientX, e.clientY);
+    });
+
+    // Mobile swipe to pan
+    modalImg.parentElement?.addEventListener('touchmove', (e) => {
+      if (e.touches.length === 1 && isLightboxZoomed) {
+        // Prevent default scrolling behavior while panning the image
+        e.preventDefault(); 
+        panZoomedImage(e.touches[0].clientX, e.touches[0].clientY);
+      }
+    }, { passive: false });
   }
 </script>
 
