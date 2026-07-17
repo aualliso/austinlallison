@@ -6,6 +6,7 @@ export async function getStaticPaths() {
   const galleries = [
     {
       slug: 'escarpments',
+      number: 'I',
       title: 'American Escarpments',
       region: 'Texas | Montana | Washington',
       essay: 'From the rugged Permian red beds of the Southern Plains to the ancient volcanic chasms of the Pacific Northwest and the dramatic glacial coulees of Montana’s Big Sky country, this photo set captures the breathtaking geological fractures that define the American West. These landscapes are a masterclass in geomorphology, visually documenting the diverse forces of water, wind, and ancient cataclysms that have sculpted the continent’s vast interior tablelands. By showcasing the abrupt transitions where endless high prairies drop away into hidden canyons, valleys, and river floors, the collection highlights both the immense isolation and the unexpected productivity of the Western terrain. Ultimately, the images serve as a striking testament to human adaptation, where ancient natural fortresses and challenging migratory barriers have seamlessly transformed into modern landscapes of recreation and massive agricultural abundance.',
@@ -104,6 +105,7 @@ export async function getStaticPaths() {
     },
     {
       slug: 'water_on_the_llano_estacado',
+      number: 'II',
       title: 'Water on the Llano Estacado',
       region: 'Texas | New Mexico',
       essay: '',
@@ -171,9 +173,6 @@ const { gallery } = Astro.props;
           class="pointer-events-auto w-full max-w-[65%] md:max-w-sm bg-canvas/95 backdrop-blur-xs p-4 md:p-6 border border-haze rounded-sm shadow-lg transition-all duration-300"
         >
           <div class="flex items-center justify-between gap-2 mb-1 md:mb-2">
-            <div class="flex items-center space-x-2 text-[9px] md:text-[10px] font-mono text-sage uppercase tracking-widest truncate">
-              <span class="hidden md:inline">{gallery.region}</span>
-            </div>
             
             <button 
               id="hud-toggle" 
@@ -184,9 +183,11 @@ const { gallery } = Astro.props;
               <span id="toggle-icon" class="transition-transform duration-300 inline-block">+</span>
             </button>
           </div>
-          
+        <div class="flex items-center -mt-3 space-x-2 text-[9px] md:text-[10px] font-mono text-sage uppercase tracking-widest truncate">
+              <span class="hidden md:inline">{gallery.region}</span>
+        </div>
           <h1 class="font-serif text-xl md:text-2xl font-light tracking-tight text-caprock mb-1 md:mb-3 truncate md:whitespace-normal">
-            {gallery.title}
+            <span class="font-serif text-xl md:text-2xl font-light tracking-tight text-sage/80 mb-1 truncate md:whitespace-normal">{gallery.number}.</span> {gallery.title}
           </h1>
           
           <div id="hud-collapsible" class="hidden md:block transition-all duration-300 overflow-hidden">

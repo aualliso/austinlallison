@@ -2,21 +2,25 @@
 // src/components/Header.astro
 import { Image } from 'astro:assets';
 import signature from '../assets/signature.svg'; 
+
+// Bulletproof path normalization (handles trailing slashes so /cv and /cv/ match)
+const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
+const isActive = (path: string) => currentPath === (path.replace(/\/$/, "") || "/");
 ---
 
 <div class="w-full sticky top-0 z-50 select-none pointer-events-none">
   <!-- THE UNIFIED METAMORPHIC HEADER -->
   <header 
     id="metamorphic-header" 
-    class="w-full max-w-7xl mx-auto px-6 bg-canvas border-b border-haze border-r border-haze border-l border-haze pointer-events-auto"
+    class="w-full max-w-7xl mx-auto px-4 sm:px-6 border-b border-r border-l border-transparent pointer-events-auto"
   >
-    <div class="w-full flex flex-col md:grid md:grid-cols-12 items-center justify-between py-4 md:py-0 h-auto md:h-full gap-3 md:gap-0">
+    <div class="w-full flex flex-col md:grid md:grid-cols-12 items-center justify-between py-5 md:py-0 h-auto md:h-full gap-4 md:gap-0">
       
       <!-- LEFT REGISTRY -->
       <div class="w-full md:col-span-7 flex items-center justify-center md:justify-start gap-4">
         
-        <div id="signature-wrapper" class="shrink-0 border-r border-dust/70 pr-4 flex items-center justify-center overflow-hidden">
-          <a href="/" class="block hover:opacity-85 transition-opacity duration-300">
+        <div id="signature-wrapper" class="shrink-0 border-r border-dust/70 pr-4 flex items-center justify-center">
+          <a href="/" aria-label="Home" class="block transition-opacity duration-300 hover:opacity-85 focus-visible:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] rounded-sm">
             <Image 
               src={signature} 
               alt="Austin Allison Ledger Validation Signature" 
@@ -26,34 +30,61 @@ import signature from '../assets/signature.svg';
           </a>
         </div>
         
-        <div class="flex flex-col md:flex-row md:items-baseline md:gap-3 overflow-hidden">
-          <a href="/" class="header-title-link font-serif text-lg md:text-xl font-medium tracking-tight whitespace-nowrap flex items-center justify-center md:justify-start relative">
-            <span class="base-text transition-opacity duration-300">Austin Allison</span>
-            <span class="hover-text absolute text-[#C1AD8A] opacity-0 transition-opacity duration-300 pointer-events-none">Austin Allison</span>
+        <div class="flex flex-col md:flex-row md:items-baseline md:gap-3">
+          <a href="/" class={`group header-title-link font-serif text-lg md:text-xl font-medium tracking-tight whitespace-nowrap flex items-center justify-center md:justify-start relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] rounded-sm pb-1 ${isActive('/') ? 'is-active' : ''}`}>
+            
+            {/* TEXT CROSSFADE */}
+            <span class={`transition-opacity duration-300 ${isActive('/') ? 'opacity-0' : 'opacity-100 group-hover:opacity-0 group-focus-visible:opacity-0'}`}>Austin Allison</span>
+            <span class={`absolute top-0 text-[#C1AD8A] transition-opacity duration-300 pointer-events-none ${isActive('/') ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'}`}>Austin Allison</span>
+            
+            {/* THE SURVEYOR'S BRACKET */}
+            <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[6px] pointer-events-none flex items-end justify-between px-[2px]">
+              <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-left"></span>
+              <span class="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#C1AD8A] origin-left surveyor-line"></span>
+              <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-right"></span>
+            </span>
           </a>
         </div>
       </div>
 
       <!-- RIGHT REGISTRY -->
-      <nav id="header-nav" class="w-full md:w-auto md:col-span-5 flex items-center justify-between md:justify-end gap-x-2 sm:gap-x-4 text-md font-serif tracking-wider lowercase border-t border-haze pt-3 md:pt-0 md:border-t-0 relative z-20">
+      <nav id="header-nav" aria-label="Main Navigation" class="w-full md:w-auto md:col-span-5 flex items-center justify-center md:justify-end gap-x-1 sm:gap-x-2 text-[13px] font-serif tracking-wider lowercase relative z-20">
         
-        <a href="/cv" class="nav-link px-3 py-1.5 md:py-1 flex items-center justify-center relative">
-          <span class="base-text transition-opacity duration-300">cv</span>
-          <span class="hover-text absolute text-[#C1AD8A] opacity-0 transition-opacity duration-300 pointer-events-none">cv</span>
+        <a href="/cv" class={`group nav-link px-3.5 py-2 md:py-1.5 flex items-center justify-center relative rounded-sm bg-iron/[0.02] border border-iron/[0.04] md:bg-transparent md:border-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] ${isActive('/cv') ? 'is-active' : ''}`}>
+          <span class={`transition-opacity duration-300 ${isActive('/cv') ? 'opacity-0' : 'opacity-100 group-hover:opacity-0 group-focus-visible:opacity-0'}`}>cv</span>
+          <span class={`absolute text-[#C1AD8A] transition-opacity duration-300 pointer-events-none ${isActive('/cv') ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'}`}>cv</span>
+          
+          <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-[5px] pointer-events-none flex items-end justify-between px-[1px]">
+            <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-left"></span>
+            <span class="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#C1AD8A] origin-left surveyor-line"></span>
+            <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-right"></span>
+          </span>
         </a>
         
-        <span class="nav-dot select-none">&middot;</span>
+        <span class="nav-dot px-1 select-none opacity-40 md:opacity-100">&middot;</span>
         
-        <a href="/publications" class="nav-link px-3 py-1.5 md:py-1 flex items-center justify-center relative">
-          <span class="base-text transition-opacity duration-300">publications</span>
-          <span class="hover-text absolute text-[#C1AD8A] opacity-0 transition-opacity duration-300 pointer-events-none">publications</span>
+        <a href="/publications" class={`group nav-link px-3.5 py-2 md:py-1.5 flex items-center justify-center relative rounded-sm bg-iron/[0.02] border border-iron/[0.04] md:bg-transparent md:border-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] ${isActive('/publications') ? 'is-active' : ''}`}>
+          <span class={`transition-opacity duration-300 ${isActive('/publications') ? 'opacity-0' : 'opacity-100 group-hover:opacity-0 group-focus-visible:opacity-0'}`}>publications</span>
+          <span class={`absolute text-[#C1AD8A] transition-opacity duration-300 pointer-events-none ${isActive('/publications') ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'}`}>publications</span>
+          
+          <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-[5px] pointer-events-none flex items-end justify-between px-[1px]">
+            <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-left"></span>
+            <span class="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#C1AD8A] origin-left surveyor-line"></span>
+            <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-right"></span>
+          </span>
         </a>
         
-        <span class="nav-dot select-none">&middot;</span>
+        <span class="nav-dot px-1 select-none opacity-40 md:opacity-100">&middot;</span>
         
-        <a href="/photography" class="nav-link px-3 py-1.5 md:py-1 flex items-center justify-center relative">
-          <span class="base-text transition-opacity duration-300">photography</span>
-          <span class="hover-text absolute text-[#C1AD8A] opacity-0 transition-opacity duration-300 pointer-events-none">photography</span>
+        <a href="/photography" class={`group nav-link px-3.5 py-2 md:py-1.5 flex items-center justify-center relative rounded-sm bg-iron/[0.02] border border-iron/[0.04] md:bg-transparent md:border-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] ${isActive('/photography') ? 'is-active' : ''}`}>
+          <span class={`transition-opacity duration-300 ${isActive('/photography') ? 'opacity-0' : 'opacity-100 group-hover:opacity-0 group-focus-visible:opacity-0'}`}>photography</span>
+          <span class={`absolute text-[#C1AD8A] transition-opacity duration-300 pointer-events-none ${isActive('/photography') ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'}`}>photography</span>
+          
+          <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-[5px] pointer-events-none flex items-end justify-between px-[1px]">
+            <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-left"></span>
+            <span class="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#C1AD8A] origin-left surveyor-line"></span>
+            <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-right"></span>
+          </span>
         </a>
         
       </nav>
@@ -67,116 +98,157 @@ import signature from '../assets/signature.svg';
     const header = document.getElementById('metamorphic-header');
     if (!header) return;
 
-    const handleScroll = () => {
+    let ticking = false;
+
+    const updateHeaderState = () => {
       const scrollPos = window.scrollY;
 
-      // HYSTERESIS BUFFER ENGINE: Prevents threshold bouncing
+      // HYSTERESIS BUFFER ENGINE
       if (scrollPos > 50) {
-        // Compress only after passing 50px scrolling down
         header.classList.add('is-scrolled');
       } else if (scrollPos < 15) {
-        // Expand only after crossing back under 15px near the top
         header.classList.remove('is-scrolled');
+      }
+      ticking = false;
+    };
+
+    const handleScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(updateHeaderState);
+        ticking = true;
       }
     };
 
     window.addEventListener('scroll', handleScroll, { passive: true });
-    // Initialize positioning on state transition load
-    handleScroll();
+    updateHeaderState(); 
   };
 
-  // Run initial script instantiation
   setupHeader();
-
-  // Protect execution flow during Astro view transition lifecycles
   document.addEventListener('astro:after-swap', setupHeader);
 </script>
 
 <style is:global>
   /* ========================================================================== */
-  /* STATIC MOBILE BASELINE PROFILE (Viewports under 768px) */
+  /* THE SURVEYOR'S BRACKET KINETICS                                            */
   /* ========================================================================== */
+  
+  /* 
+    BASE STATE: When unhovered, transitions run in REVERSE. 
+    The right mark disappears instantly (0s), the line retracts (0.15s delay), 
+    and the left mark disappears last (0.45s delay).
+  */
+  .surveyor-mark-left {
+    transform: scaleY(0);
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0.45s; 
+  }
+  .surveyor-line {
+    transform: scaleX(0);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.15s; 
+  }
+  .surveyor-mark-right {
+    transform: scaleY(0);
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0s; 
+  }
+
+  /* 
+    HOVER & ACTIVE STATE: Transitions run FORWARD.
+    Left mark drops instantly (0s), the line extends (0.15s delay), 
+    and the right mark drops to lock it in (0.45s delay).
+  */
+  .group:hover .surveyor-mark-left,
+  .group.is-active .surveyor-mark-left,
+  .group:focus-visible .surveyor-mark-left {
+    transform: scaleY(1);
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0s;
+  }
+  
+  .group:hover .surveyor-line,
+  .group.is-active .surveyor-line,
+  .group:focus-visible .surveyor-line {
+    transform: scaleX(1);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.15s;
+  }
+  
+  .group:hover .surveyor-mark-right,
+  .group.is-active .surveyor-mark-right,
+  .group:focus-visible .surveyor-mark-right {
+    transform: scaleY(1);
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0.45s;
+  }
+
+  /* ========================================================================== */
+  /* BASELINE METAMORPHIC PROFILE                                               */
+  /* ========================================================================== */
+  #metamorphic-header {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+    background-color: var(--color-canvas);
+    backdrop-filter: blur(0px);
+    border-color: rgba(230, 228, 223, 1); 
+    transition: 
+      padding 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+      background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+      backdrop-filter 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+      border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
   .signature-img {
-    height: 2.75rem;
+    height: 2.25rem;
     filter: brightness(1) invert(0);
+    transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1), filter 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
   
   .header-title-link { color: rgba(26, 25, 25, 0.9); }
   .nav-link { color: rgba(26, 25, 25, 0.7); }
   .nav-dot { color: rgba(230, 228, 223, 0.6); }
 
-  /* Crossfade logic for the smooth hover transition */
-  .header-title-link:hover .base-text, 
-  .nav-link:hover .base-text {
-    opacity: 0;
-  }
-  
-  .header-title-link:hover .hover-text, 
-  .nav-link:hover .hover-text {
-    opacity: 1;
+  .header-title-link,
+  .nav-link,
+  .nav-dot {
+    transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   /* ========================================================================== */
-  /* DESKTOP SCROLL-COMPRESSION SYSTEM (Viewports 768px and up) */
+  /* DESKTOP TYPOGRAPHY & SPACING UPGRADES                                      */
   /* ========================================================================== */
   @media (min-width: 768px) {
-    
     #metamorphic-header {
       padding-top: 2rem;
       padding-bottom: 2rem;
-      background-color: #FBFBF9;
-      backdrop-filter: blur(0px);
-      transition: 
-        padding 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
-        background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
-        backdrop-filter 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
-        border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .signature-img {
-      height: 2.75rem;
-      transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1), filter 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      height: 3.75rem; 
     }
 
-    .header-title-link,
-    .header-title-link .base-text,
-    .nav-link,
-    .nav-link .base-text,
-    .nav-dot {
-      transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-    }
+    .nav-link { font-size: 1rem; }
+    .nav-dot { font-size: 1.25rem; }
+  }
 
-    /* ------------------------------------------------------------------ */
-    /* THE ACTIVE COMPRESSED SCROLLED STATE                               */
-    /* ------------------------------------------------------------------ */
-    
-    #metamorphic-header.is-scrolled {
-      padding-top: 0.65rem;
-      padding-bottom: 0.65rem;
-      background-color: rgba(110, 126, 106, 0.95);
-      backdrop-filter: blur(12px);
-      border-bottom-color: rgba(184, 91, 53, 0.2);
-      border-left-color: rgba(184, 91, 53, 0.2);
-      border-right-color: rgba(184, 91, 53, 0.2);
-    }
+  /* ========================================================================== */
+  /* THE ACTIVE COMPRESSED SCROLLED STATE                                       */
+  /* ========================================================================== */
+  #metamorphic-header.is-scrolled {
+    padding-top: 0.65rem;
+    padding-bottom: 0.65rem;
+    background-color: var(--color-sage);
+    backdrop-filter: blur(12px);
+    border-bottom-color: var(--color-dust);
+    border-left-color: var(--color-dust);
+    border-right-color: var(--color-dust);
+  }
 
+  #metamorphic-header.is-scrolled .signature-img {
+    filter: brightness(0) invert(1);
+  }
+  
+  @media (min-width: 768px) {
     #metamorphic-header.is-scrolled .signature-img {
-      height: 2.75rem;
-      filter: brightness(0) invert(1);
-    }
-
-    #metamorphic-header.is-scrolled .header-title-link,
-    #metamorphic-header.is-scrolled .header-title-link .base-text {
-      color: #FBFBF9;
-    }
-
-    #metamorphic-header.is-scrolled .nav-link,
-    #metamorphic-header.is-scrolled .nav-link .base-text {
-      color: #FBFBF9;
-    }
-
-    #metamorphic-header.is-scrolled .nav-dot {
-      color: rgba(251, 251, 249, 0.5);
+      height: 3.75rem; 
     }
   }
+
+  #metamorphic-header.is-scrolled .header-title-link { color: #FBFBF9; }
+  #metamorphic-header.is-scrolled .nav-link { color: #FBFBF9; }
+  #metamorphic-header.is-scrolled .nav-dot { color: rgba(251, 251, 249, 0.5); }
 </style>
