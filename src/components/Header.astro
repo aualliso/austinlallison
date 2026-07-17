@@ -88,97 +88,108 @@ import signature from '../assets/signature.svg';
     opacity: 1;
   }
 
-  /* ========================================================================== */
-  /* DESKTOP SCROLL-COMPRESSION SYSTEM (Viewports 768px and up) */
-  /* ========================================================================== */
-  @media (min-width: 768px) {
-    
-    #metamorphic-header {
-      padding-top: 2rem;
-      padding-bottom: 2rem;
-    }
-    
-    .signature-img {
-      height: 2.75rem;
-    }
+/* ========================================================================== */
+/* DESKTOP SCROLL-COMPRESSION SYSTEM (Viewports 768px and up) */
+/* ========================================================================== */
+@media (min-width: 768px) {
+  
+  #metamorphic-header {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+  
+  .signature-img {
+    height: 2.75rem;
+  }
 
-    @supports (animation-timeline: scroll()) {
-      @media (prefers-reduced-motion: no-preference) {
-        
-        @keyframes compressPadding {
-          from {
-            padding-top: 2rem;
-            padding-bottom: 2rem;
-            background-color: #FBFBF9;
-            backdrop-filter: blur(0px);
-          }
-          to {
-            padding-top: 0.65rem;
-            padding-bottom: 0.65rem;
-            background-color: rgba(110, 126, 106, 0.95);
-            backdrop-filter: blur(12px);
-            border-bottom-color: rgba(184, 91, 53, 0.2);
-            border-left-color: rgba(184, 91, 53, 0.2);
-            border-right-color: rgba(184, 91, 53, 0.2);
-          }
+  @supports (animation-timeline: scroll()) {
+    @media (prefers-reduced-motion: no-preference) {
+      
+      @keyframes compressPadding {
+        from {
+          padding-top: 2rem;
+          padding-bottom: 2rem;
+          background-color: #FBFBF9;
+          backdrop-filter: blur(0px);
         }
+        to {
+          padding-top: 0.65rem;
+          padding-bottom: 0.65rem;
+          background-color: rgba(110, 126, 106, 0.95);
+          backdrop-filter: blur(12px);
+          border-bottom-color: rgba(184, 91, 53, 0.2);
+          border-left-color: rgba(184, 91, 53, 0.2);
+          border-right-color: rgba(184, 91, 53, 0.2);
+        }
+      }
 
-        @keyframes shrinkSignature {
-          from {
-            height: 2.75rem;
-            filter: brightness(1) invert(0);
-          }
-          to {
-            height: 2.75rem;
-            filter: brightness(0) invert(1); 
-          }
+      @keyframes shrinkSignature {
+        from {
+          height: 2.75rem;
+          filter: brightness(1) invert(0);
         }
+        to {
+          height: 2.75rem;
+          filter: brightness(0) invert(1); 
+        }
+      }
 
-        @keyframes lightenTitle {
-          from { color: rgba(26, 25, 25, 0.9); }
-          to { color: #FBFBF9; }
-        }
+      @keyframes lightenTitle {
+        from { color: rgba(26, 25, 25, 0.9); }
+        to { color: #FBFBF9; }
+      }
 
-        @keyframes lightenNavLink {
-          from { color: rgba(26, 25, 25, 0.7); }
-          to { color: #FBFBF9; }
-        }
+      @keyframes lightenNavLink {
+        from { color: rgba(26, 25, 25, 0.7); }
+        to { color: #FBFBF9; }
+      }
 
-        @keyframes lightenNavDot {
-          from { color: rgba(230, 228, 223, 0.6); }
-          to { color: rgba(251, 251, 249, 0.5); }
-        }
+      @keyframes lightenNavDot {
+        from { color: rgba(230, 228, 223, 0.6); }
+        to { color: rgba(251, 251, 249, 0.5); }
+      }
 
-        #metamorphic-header {
-          animation: compressPadding linear both;
-          animation-timeline: scroll(root);
-          animation-range: 0px 120px;
-        }
+      /* SAFE LONGHAND DECLARATIONS: Protected from minifier overrides */
+      #metamorphic-header {
+        animation-name: compressPadding;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: scroll();
+        animation-range: 0px 120px;
+      }
 
-        .signature-img {
-          animation: shrinkSignature linear both;
-          animation-timeline: scroll(root);
-          animation-range: 0px 120px;
-        }
+      .signature-img {
+        animation-name: shrinkSignature;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: scroll();
+        animation-range: 0px 120px;
+      }
 
-        .header-title-link {
-          animation: lightenTitle linear both;
-          animation-timeline: scroll(root);
-          animation-range: 0px 120px;
-        }
+      .header-title-link {
+        animation-name: lightenTitle;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: scroll();
+        animation-range: 0px 120px;
+      }
 
-        .nav-link {
-          animation: lightenNavLink linear both;
-          animation-timeline: scroll(root);
-          animation-range: 0px 120px;
-        }
+      .nav-link {
+        animation-name: lightenNavLink;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: scroll();
+        animation-range: 0px 120px;
+      }
 
-        .nav-dot {
-          animation: lightenNavDot linear both;
-          animation-timeline: scroll(root);
-          animation-range: 0px 120px;
-        }
+      .nav-dot {
+        animation-name: lightenNavDot;
+        animation-timing-function: linear;
+        animation-fill-mode: both;
+        animation-timeline: scroll();
+        animation-range: 0px 120px;
       }
     }
   }
+}
 </style>
