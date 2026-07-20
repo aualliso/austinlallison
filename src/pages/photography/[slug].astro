@@ -157,7 +157,7 @@ export async function getStaticPaths() {
 const { gallery } = Astro.props;
 ---
 
-<Layout title={`${gallery.title} — Austin Allison`} hideNav={true}>
+<Layout title={`${gallery.title} — Austin Allison`} hideNav={true} hideFoot={true}>
   <!-- touch-none applied to prevent mobile browsers from hijacking swipes -->
     <main 
       id="workspace-viewport" 

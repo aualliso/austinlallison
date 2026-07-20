@@ -105,14 +105,14 @@ const groundPath = `${silhouette} V22 H0 Z`;
     </svg>
 
     <!-- EVERYTHING STANDS ON THE LINE -->
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 pb-[3px] flex items-end justify-between gap-4">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 pb-[3px] flex items-end justify-between gap-2 sm:gap-4">
 
       <!-- THE LANDMARK: signature + name + benchmark station plate -->
       <a
         href="/"
         aria-label="Home"
         aria-current={isActive('/') ? 'page' : undefined}
-        class={`landmark group flex items-end gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] rounded-sm ${isActive('/') ? 'is-active' : ''}`}
+        class={`landmark group flex items-end gap-3 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] rounded-sm ${isActive('/') ? 'is-active' : ''}`}
       >
         <Image
           src={signature}
@@ -130,19 +130,19 @@ const groundPath = `${silhouette} V22 H0 Z`;
               <circle cx="5.5" cy="6" r="0.9" fill="currentColor" />
             </svg>
             <span class="station-meta font-mono uppercase whitespace-nowrap">
-              Lubbock, Texas &middot; 3,256 ft
+              Lubbock, Texas<span class="station-elev"> &middot; 3,256 ft</span>
             </span>
           </span>
         </span>
       </a>
 
       <!-- MILE MARKERS -->
-      <nav id="horizon-nav" aria-label="Main Navigation" class="flex items-end font-serif lowercase tracking-wider">
+      <nav id="horizon-nav" aria-label="Main Navigation" class="flex items-end font-serif lowercase tracking-normal sm:tracking-wider shrink-0">
         {navItems.map((item) => (
           <a
             href={item.href}
             aria-current={isActive(item.href) ? 'page' : undefined}
-            class={`marker group relative flex flex-col items-center justify-end px-2.5 sm:px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] rounded-sm ${isActive(item.href) ? 'is-active' : ''}`}
+            class={`marker group relative flex flex-col items-center justify-end px-1.5 sm:px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] rounded-sm ${isActive(item.href) ? 'is-active' : ''}`}
           >
             <span class="marker-label">{item.label}</span>
             <span class="marker-tick" aria-hidden="true"></span>
@@ -547,10 +547,20 @@ const groundPath = `${silhouette} V22 H0 Z`;
 
   @media (min-width: 768px) {
     #horizon-header { padding-top: 3.5rem; }
-    .signature-img  { height: 3.25rem; }
+    .signature-img  { height: 2.75rem; }
     .landmark-name  { font-size: 1.3rem; }
     .station-meta   { font-size: 9px; }
     .marker-label   { font-size: 13px; }
+  }
+
+  /* Narrow phones: the name + three full words is over budget. Trim the
+     name and labels a touch, and drop the elevation suffix — on these
+     widths the plate is wider than the name and would otherwise be the
+     floor on how far the landmark can yield. The line stays intact. */
+  @media (max-width: 380px) {
+    .landmark-name { font-size: 0.92rem; }
+    .marker-label  { font-size: 10.5px; }
+    .station-elev  { display: none; }
   }
 
   /* ======================================================================== */

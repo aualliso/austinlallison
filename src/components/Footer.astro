@@ -1,0 +1,295 @@
+---
+// src/components/Footer.astro
+// A full-bleed dust footer anchored by the name at architectural scale. A
+// pointer-tracked spotlight inks the name in from a faint ghost to solid as
+// the cursor crosses it (auto-drifts on touch/idle); a live Lubbock clock sits
+// in the eyebrow; the modules carry affiliation, index, and contact. Colors
+// derive from the site's --color-* tokens so the dust ground tracks the rest
+// of the palette. Full-bleed via a 100vw break-out so it spans the viewport
+// even when mounted inside a max-width layout wrapper.
+const { pathname } = Astro.url;
+const pathSegments = pathname.split('/').filter(Boolean);
+const year = new Date().getFullYear();
+
+const index = [
+  { href: '/photography',  label: 'Photography' },
+  { href: '/publications', label: 'Scholarly Publications' },
+  { href: '/cv',           label: 'Curriculum Vitae' },
+];
+---
+
+<footer class="ftr" aria-label="Site footer">
+  <div class="ftr-inner">
+
+    <div class="ftr-eyebrow">
+      <span class="status">
+        <span class="pulse" aria-hidden="true"></span>
+        <span>Lubbock, Texas</span>
+        <span class="clock" aria-hidden="true">&mdash;</span>
+      </span>
+      <button type="button" class="to-top" aria-label="Back to top">
+        Back to top <span class="arr" aria-hidden="true">&uarr;</span>
+      </button>
+    </div>
+
+    <div class="ftr-rule"></div>
+
+    <div class="ftr-modules">
+      <div class="mod">
+        <div class="mod-head font-mono">Affiliation</div>
+        <p class="affil-main">Southwest Collection / Special Collections Library</p>
+        <p class="affil-sub">Texas Tech University</p>
+      </div>
+
+      <nav class="mod index" aria-label="Footer">
+        <div class="mod-head font-mono">Index</div>
+        {index.map((item) => (
+          <a href={item.href} class="index-link font-serif">
+            <span class="lab">{item.label}</span>
+            <span class="go" aria-hidden="true">&rarr;</span>
+          </a>
+        ))}
+      </nav>
+
+      <div class="mod contact">
+        <div class="mod-head font-mono">Contact</div>
+        <a href="mailto:austinlallison@gmail.com" class="contact-link">austinlallison@gmail.com</a>
+        <p class="avail">Open to research inquiries, print requests, and collaborations.</p>
+      </div>
+    </div>
+
+    <div class="name-block">
+      <div class="name-wrap" id="ftr-name">
+        <h2 class="name-layer name-base font-serif">Austin Allison</h2>
+        <span class="name-layer name-lit font-serif" aria-hidden="true">Austin Allison</span>
+      </div>
+      <p class="roles font-mono">Cataloging &amp; Metadata Librarian &nbsp;&middot;&nbsp; Historian &nbsp;&middot;&nbsp; Photographer</p>
+    </div>
+
+    <div class="ftr-baseline font-mono">
+      <span class="pos">
+        <span class="pos-k">Position</span>
+        <a href="/" class="pos-seg">root</a>
+        {pathSegments.map((segment, index) => {
+          const href = `/${pathSegments.slice(0, index + 1).join('/')}`;
+          const label = segment.replace(/-/g, ' ');
+          return (
+            <span class="pos-part">
+              <span class="pos-slash">/</span>
+              <a href={href} class="pos-seg">{label}</a>
+            </span>
+          );
+        })}
+      </span>
+      <span class="colophon">&copy; {year} Austin Allison &nbsp;&middot;&nbsp; Built with Astro &amp; Tailwind CSS</span>
+    </div>
+
+  </div>
+</footer>
+
+<style>
+  .ftr {
+    /* full-bleed: fill the viewport width regardless of any wrapper */
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    overflow: hidden;
+    user-select: none;
+
+    /* palette, derived from the site tokens so the dust tracks everything else */
+    --fb-base: color-mix(in oklch, var(--color-dust, #B3A38F) 60%, var(--color-canvas, #FBFBF9));
+    --fb-ink: color-mix(in oklch, var(--color-sage, #1A1919) 92%, var(--color-dust, #B3A38F));
+    --fb-accent: var(--color-caprock, #9C5B3F);
+    --fb-muted: color-mix(in oklch, var(--fb-ink) 56%, transparent);
+    --fb-faint: color-mix(in oklch, var(--fb-ink) 22%, transparent);
+    --fb-hair: color-mix(in oklch, var(--fb-ink) 16%, transparent);
+
+    background: var(--fb-base);
+    color: var(--fb-ink);
+    padding: 2.25rem clamp(1.25rem, 4vw, 3.25rem) 1.75rem;
+  }
+  .ftr-inner { max-width: 1600px; margin: 0 auto; }
+
+  /* ---- eyebrow ---- */
+  .ftr-eyebrow {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--fb-muted); font-family: var(--font-mono, ui-monospace, monospace);
+  }
+  .status { display: inline-flex; align-items: center; gap: 0.6rem; }
+  .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--fb-accent); position: relative; flex: none; }
+  .pulse::after {
+    content: ''; position: absolute; inset: -4px; border-radius: 50%;
+    border: 1px solid var(--fb-accent); opacity: 0.6;
+    animation: ftr-pulse 2.4s ease-out infinite;
+  }
+  @keyframes ftr-pulse { to { transform: scale(2.4); opacity: 0; } }
+  .clock { color: var(--fb-ink); }
+  .to-top {
+    color: var(--fb-muted); background: none; border: none; cursor: pointer;
+    font: inherit; letter-spacing: inherit; text-transform: inherit;
+    display: inline-flex; gap: 0.5rem; align-items: center; padding: 0;
+    transition: color 0.3s ease;
+  }
+  .to-top:hover, .to-top:focus-visible { color: var(--fb-accent); outline: none; }
+  .to-top:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
+  .to-top .arr { transition: transform 0.3s cubic-bezier(0.25,1,0.5,1); }
+  .to-top:hover .arr, .to-top:focus-visible .arr { transform: translateY(-3px); }
+
+  .ftr-rule { height: 1px; background: var(--fb-hair); margin: 1.5rem 0 2.25rem; }
+
+  /* ---- modules ---- */
+  .ftr-modules {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2rem 2.5rem;
+    margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
+  }
+  .mod-head {
+    font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase;
+    color: var(--fb-accent); margin-bottom: 1.1rem;
+  }
+  .affil-main { font-size: 0.9rem; line-height: 1.65; color: color-mix(in oklch, var(--fb-ink) 78%, transparent); }
+  .affil-sub { font-size: 0.9rem; line-height: 1.65; color: var(--fb-muted); margin-top: 0.4rem; }
+
+  .index-link {
+    display: flex; align-items: center; justify-content: space-between;
+    font-size: 1.15rem; color: color-mix(in oklch, var(--fb-ink) 82%, transparent);
+    text-decoration: none; padding: 0.4rem 0; position: relative;
+    transition: color 0.3s ease, padding-left 0.3s cubic-bezier(0.25,1,0.5,1);
+  }
+  .index-link .lab { position: relative; }
+  .index-link .lab::after {
+    content: ''; position: absolute; left: 0; bottom: -2px; height: 1px; width: 0;
+    background: var(--fb-accent); transition: width 0.35s cubic-bezier(0.25,1,0.5,1);
+  }
+  .index-link .go { opacity: 0; color: var(--fb-accent); transform: translateX(-6px); transition: opacity 0.3s ease, transform 0.3s ease; }
+  .index-link:hover, .index-link:focus-visible { color: var(--fb-ink); padding-left: 0.35rem; outline: none; }
+  .index-link:hover .lab::after, .index-link:focus-visible .lab::after { width: 100%; }
+  .index-link:hover .go, .index-link:focus-visible .go { opacity: 1; transform: translateX(0); }
+
+  .contact-link {
+    font-family: var(--font-sans, system-ui, sans-serif);
+    font-size: 0.95rem; color: color-mix(in oklch, var(--fb-ink) 82%, transparent);
+    text-decoration: none; border-bottom: 1px solid var(--fb-hair); padding-bottom: 2px;
+    transition: color 0.3s ease, border-color 0.3s ease;
+  }
+  .contact-link:hover, .contact-link:focus-visible { color: var(--fb-accent); border-color: var(--fb-accent); outline: none; }
+  .avail { font-size: 0.82rem; color: var(--fb-muted); margin-top: 1rem; line-height: 1.6; max-width: 26ch; }
+
+  /* ---- the name, at architectural scale ---- */
+  .name-block { position: relative; }
+  .name-wrap { position: relative; line-height: 0.85; cursor: default; --mx: 50%; --my: 50%; }
+  .name-layer {
+    display: block; font-weight: 500;
+    font-size: clamp(3rem, 13.5vw, 13rem);
+    letter-spacing: -0.02em; margin: 0;
+  }
+  .name-base { color: var(--fb-faint); }
+  .name-lit {
+    position: absolute; inset: 0; color: var(--fb-ink); pointer-events: none;
+    -webkit-mask-image: radial-gradient(circle 280px at var(--mx) var(--my), #000 0%, #000 22%, transparent 62%);
+            mask-image: radial-gradient(circle 280px at var(--mx) var(--my), #000 0%, #000 22%, transparent 62%);
+  }
+  .roles {
+    font-size: clamp(10px, 1.1vw, 12px); letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--fb-muted); margin-top: 1.25rem;
+  }
+
+  /* ---- baseline ---- */
+  .ftr-baseline {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 0.75rem 1.5rem; flex-wrap: wrap;
+    margin-top: 2rem; padding-top: 1.1rem; border-top: 1px solid var(--fb-hair);
+    font-size: 10.5px; letter-spacing: 0.06em; color: var(--fb-muted);
+  }
+  .ftr-baseline a { color: color-mix(in oklch, var(--fb-ink) 62%, transparent); text-decoration: none; transition: color 0.25s ease; }
+  .ftr-baseline a:hover, .ftr-baseline a:focus-visible { color: var(--fb-accent); outline: none; }
+  .pos-k { color: var(--fb-accent); text-transform: uppercase; letter-spacing: 0.2em; margin-right: 0.5rem; font-size: 9px; }
+  .pos-part { display: inline-flex; align-items: center; }
+  .pos-slash { opacity: 0.35; margin: 0 0.35rem; }
+  @media (max-width: 640px) { .ftr-baseline { justify-content: flex-start; } }
+
+  @media (prefers-reduced-motion: reduce) {
+    .pulse::after { animation: none; }
+    .name-lit { -webkit-mask-image: none; mask-image: none; color: color-mix(in oklch, var(--fb-ink) 55%, transparent); }
+    .to-top .arr, .index-link, .index-link .go, .index-link .lab::after, .contact-link { transition: none; }
+  }
+</style>
+
+<script>
+  // Live clock + pointer spotlight. Re-entrant across view transitions:
+  // every timer, frame, and observer is torn down on navigation so nothing
+  // accumulates. The footer DOM is replaced per page, so element-bound
+  // listeners fall away with it; only window/document/timer handles are freed.
+
+  let clockTimer = 0;
+  let raf = 0;
+  let io: IntersectionObserver | null = null;
+  let onTop: (() => void) | null = null;
+  let topBtn: HTMLButtonElement | null = null;
+
+  const fmt = new Intl.DateTimeFormat('en-US', {
+    timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true, timeZoneName: 'short',
+  });
+
+  const setup = () => {
+    const footer = document.querySelector<HTMLElement>('.ftr');
+    if (!footer) return;
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // live Lubbock time
+    const clock = footer.querySelector<HTMLElement>('.clock');
+    if (clock) {
+      const tick = () => { clock.textContent = fmt.format(new Date()); };
+      tick();
+      clockTimer = window.setInterval(tick, 1000);
+    }
+
+    // back to top
+    topBtn = footer.querySelector<HTMLButtonElement>('.to-top');
+    if (topBtn) {
+      onTop = () => window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
+      topBtn.addEventListener('click', onTop);
+    }
+
+    // pointer spotlight on the name (auto-drifts when idle / on touch)
+    const wrap = footer.querySelector<HTMLElement>('#ftr-name');
+    if (wrap && !reduce) {
+      let hovering = false, visible = true, t = 0;
+      wrap.addEventListener('pointerenter', () => (hovering = true));
+      wrap.addEventListener('pointerleave', () => (hovering = false));
+      wrap.addEventListener('pointermove', (e) => {
+        const r = wrap.getBoundingClientRect();
+        wrap.style.setProperty('--mx', e.clientX - r.left + 'px');
+        wrap.style.setProperty('--my', e.clientY - r.top + 'px');
+      });
+
+      io = new IntersectionObserver((es) => { visible = es[0]?.isIntersecting ?? false; }, { rootMargin: '80px' });
+      io.observe(wrap);
+
+      const drift = () => {
+        if (visible && !hovering) {
+          t += 0.006;
+          const r = wrap.getBoundingClientRect();
+          wrap.style.setProperty('--mx', (0.5 + 0.42 * Math.sin(t)) * r.width + 'px');
+          wrap.style.setProperty('--my', (0.5 + 0.32 * Math.sin(t * 1.7)) * r.height + 'px');
+        }
+        raf = requestAnimationFrame(drift);
+      };
+      raf = requestAnimationFrame(drift);
+    }
+  };
+
+  const teardown = () => {
+    if (clockTimer) { clearInterval(clockTimer); clockTimer = 0; }
+    if (raf) { cancelAnimationFrame(raf); raf = 0; }
+    if (io) { io.disconnect(); io = null; }
+    if (topBtn && onTop) { topBtn.removeEventListener('click', onTop); }
+    topBtn = null; onTop = null;
+  };
+
+  setup();
+  document.addEventListener('astro:page-load', () => { teardown(); setup(); });
+  document.addEventListener('astro:before-swap', teardown);
+</script>
