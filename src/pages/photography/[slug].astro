@@ -161,7 +161,7 @@ const { gallery } = Astro.props;
   <!-- touch-none applied to prevent mobile browsers from hijacking swipes -->
     <main 
       id="workspace-viewport" 
-      class="w-screen h-screen overflow-hidden bg-canvas text-iron select-none cursor-grab active:cursor-grabbing relative touch-none"
+      class="w-screen h-[100dvh] overflow-hidden bg-canvas text-iron select-none cursor-grab active:cursor-grabbing relative touch-none"
     >
       
       <!-- Fixed Editorial HUD Overlay (Responsive, Collapsing, & Expandable) -->
@@ -272,15 +272,15 @@ const { gallery } = Astro.props;
       <!-- Lightbox Layer Frame -->
       <div 
         id="lightbox-modal" 
-        class="fixed inset-0 z-[100] bg-canvas/98 backdrop-blur-md hidden opacity-0 flex flex-col justify-between p-4 md:p-8 transition-opacity duration-300 select-none"
+        class="fixed inset-0 z-[100] h-[100dvh] bg-canvas/98 backdrop-blur-md hidden opacity-0 flex flex-col justify-between p-4 md:p-8 transition-opacity duration-300 select-none touch-auto"
       >
+        <!-- Top Toolbar (Locks to Top) -->
         <div class="w-full max-w-7xl mx-auto flex justify-between items-center shrink-0">
           
-          <!-- NEW: Toolbar (Progress + Explicit Zoom Controls) -->
+          <!-- Toolbar (Progress + Explicit Zoom Controls) -->
           <div class="font-mono text-[10px] uppercase tracking-widest text-iron/50 flex items-center gap-3 md:gap-6">
             <span id="lightbox-progress"></span>
             
-            <!-- FIXED: Changed 'hidden md:flex' to 'flex' and adjusted mobile padding (pl-3) -->
             <div class="flex items-center gap-1.5 border-l border-haze/60 pl-3 md:pl-6">
               <button id="btn-zoom-out" class="hover:text-caprock transition-colors p-1 md:p-1.5 rounded-sm hover:bg-iron/5 focus:outline-none" aria-label="Zoom Out" title="Zoom Out">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
@@ -307,12 +307,12 @@ const { gallery } = Astro.props;
           </div>
         </div>
 
-        <div class="w-full max-w-5xl h-[45vh] md:h-[55vh] mx-auto flex items-center justify-center overflow-hidden my-auto shrink-0 relative">
+        <!-- Dynamic Middle Image Container (Grows/Shrinks safely without pushing text off screen) -->
+        <div class="w-full max-w-5xl mx-auto flex-1 min-h-0 flex items-center justify-center overflow-hidden my-4 relative">
           <button id="nav-prev" class="absolute left-0 md:-left-12 z-50 text-iron/30 hover:text-caprock transition-colors p-4 focus:outline-none hidden md:block">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
           </button>
           
-          <!-- High-Res Zoom Container -->
           <img 
             id="lightbox-img" 
             src="" 
@@ -327,7 +327,8 @@ const { gallery } = Astro.props;
           </button>
         </div>
 
-        <div class="w-full max-w-5xl mx-auto border-t border-haze/40 pt-4 pb-2 shrink-0">
+        <!-- Bottom Metadata & Thumbnails (Locks to Bottom) -->
+        <div class="w-full max-w-5xl mx-auto border-t border-haze/40 pt-4 pb-2 md:pb-4 shrink-0 pb-safe">
           <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start font-mono text-[11px] uppercase tracking-wider text-sage">
             <div class="col-span-12 md:col-span-5 flex flex-col gap-1">
               <span id="lightbox-plate-title" class="font-semibold text-iron"></span>
@@ -336,12 +337,12 @@ const { gallery } = Astro.props;
                 <span id="lightbox-coords"></span>
               </div>
             </div>
-            <div class="col-span-12 md:col-span-7 border-t border-dashed border-haze/40 pt-3 md:pt-0 md:border-t-0 font-serif normal-case tracking-normal text-xs text-iron/70 italic leading-relaxed max-h-[12vh] overflow-y-auto pr-2 scrollbar-none select-text">
+            <div class="col-span-12 md:col-span-7 border-t border-dashed border-haze/40 pt-3 md:pt-0 md:border-t-0 font-serif normal-case tracking-normal text-xs text-iron/70 italic leading-relaxed max-h-[12dvh] overflow-y-auto pr-2 scrollbar-none select-text touch-pan-y">
               <p id="lightbox-caption" class="cursor-text"></p>
             </div>
           </div>
           
-          <div id="thumbnail-strip" class="w-full flex gap-2 overflow-x-auto scrollbar-none mt-4 md:mt-6 pt-2 pb-1 snap-x">
+          <div id="thumbnail-strip" class="w-full flex gap-2 overflow-x-auto scrollbar-none mt-4 md:mt-6 pt-2 pb-1 snap-x touch-pan-x">
             {gallery.plates.map((plate, index) => (
               <button 
                 class="thumbnail-btn shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-xs opacity-40 hover:opacity-100 transition-all border border-transparent focus:outline-none snap-center"
@@ -659,9 +660,6 @@ const { gallery } = Astro.props;
       
       resetLightboxZoom();
 
-      modalImg.classList.remove('max-h-[45vh]', 'md:max-h-[50vh]', 'max-w-xs', 'md:max-w-md');
-      modalImg.classList.add('max-h-full', 'max-w-full');
-
       modalImg.src = el.dataset.src || '';
       modalImg.alt = el.dataset.title || '';
       
@@ -671,13 +669,6 @@ const { gallery } = Astro.props;
       if (modalCaption) modalCaption.innerText = el.dataset.caption || '';
       
       if (progressText) progressText.innerText = `Plate ${index + 1} of ${totalPlates}`;
-
-      modalImg.onload = () => {
-        if (modalImg.naturalHeight > modalImg.naturalWidth) {
-          modalImg.classList.remove('max-h-full', 'max-w-full');
-          modalImg.classList.add('max-h-[42vh]', 'md:max-h-[50vh]', 'max-w-xs', 'md:max-w-md');
-        }
-      };
 
       updateThumbnails(index);
     };

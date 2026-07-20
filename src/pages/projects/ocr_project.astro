@@ -3,7 +3,7 @@
 import RootLayout from '../../layouts/RootLayout.astro';
 ---
 
-<RootLayout title="Archival OCR Pipeline Matrix // Austin Allison">
+<RootLayout title="OCR Pipeline for Digitized Newspapers // Austin Allison">
   <article class="space-y-12">
     
     <!-- HEADER MANIFEST -->
@@ -27,6 +27,9 @@ import RootLayout from '../../layouts/RootLayout.astro';
         </p>
         <p>
           This webpage details a modular, local Python pipeline optimized for high-throughput processing, contrast normalizing, and hidden text-layer injection for digital newspaper images. By decoupling image processing from the core OCR functions, this program ensures clean, search-optimized PDF creation for repository ingestion.
+        </p>
+        <p>
+          <span class="text-caprock font-bold">Note:</span> While this program does well and comes close to or matches some proprietary OCR software, it still is extremely reliant on input images for accuracy. It will not magically produce perfect text for a very faded microfilm image that was under or overexposed originally. It also suffers from artifact disruption and character loss when characters are obscured. That said, adjustments can be made to some functions to make  images more tolerable for Tesseract. Users can also adjust the final DPI of the output PDF/A file. 
         </p>
       </div>
     </section>

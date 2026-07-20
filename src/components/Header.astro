@@ -1,254 +1,763 @@
 ---
-// src/components/Header.astro
+// src/components/Header.astro — "The Horizon" (v3)
+// The header is now an observation, not an illustration:
+//
+//   1. REAL TIME — the sky, sun, and horizon key to the visitor's clock.
+//      Four phases: dawn (5–8), day (8–17), dusk (17–20), night (20–5).
+//      A visitor at 9pm gets a moon over a cooled line; scrolling always
+//      advances the light toward evening from wherever it started.
+//   2. PER-PAGE GEOGRAPHY — each route carries its own silhouette in the
+//      middle distance: the low mesa for home, dead-flat Llano for cv,
+//      a stacked mesa for publications, the Caprock breaking down to the
+//      rolling plains for photography. The line morphs between them on
+//      navigation (CSS `d` transition; instant swap where unsupported).
+//   3. ONE OBJECT ON THE LINE — an Aermotor windmill, 1px strokes, sails
+//      turning once every 22 seconds. Hidden below md; frozen under
+//      prefers-reduced-motion.
+//   4. THE PLATE IS FINISHED — the benchmark now carries its elevation.
+//
+// Also folded in from review: the frost is its own layer (opacity +
+// backdrop-filter animate; gradients never snap), the scroll listener
+// attaches once and only where scroll-timeline is unavailable, and
+// active states + silhouettes refresh on astro:after-swap (the persisted
+// header no longer goes stale on navigation).
 import { Image } from 'astro:assets';
-import signature from '../assets/signature.svg'; 
+import signature from '../assets/signature.svg';
 
-// Bulletproof path normalization (handles trailing slashes so /cv and /cv/ match)
 const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
 const isActive = (path: string) => currentPath === (path.replace(/\/$/, "") || "/");
+
+const navItems = [
+  { href: '/cv', label: 'cv' },
+  { href: '/publications', label: 'publications' },
+  { href: '/photography', label: 'photography' },
+];
+
+// All silhouettes share an identical command structure (M, H, 13×L, H) so
+// the CSS `d` property can interpolate between them. Features stay inside
+// x 640–800 — the open gap between the landmark and the nav — so terrain
+// never rises under the mile-marker ticks.
+const SILHOUETTES: Record<string, string> = {
+  home:         "M0 19 H340 L400 18.6 L470 18.8 L560 18.3 L640 18.9 L664 18.5 L682 9.8 L696 9.3 L744 9.5 L758 10 L776 18.4 L800 19 L900 18.5 L1010 19 H1440",
+  cv:           "M0 19 H340 L400 18.9 L470 19 L560 18.8 L640 19 L664 18.9 L682 19 L696 18.85 L744 19 L758 18.9 L776 19 L800 18.9 L900 19 L1010 19 H1440",
+  publications: "M0 19 H340 L400 18.8 L470 18.6 L560 18.9 L640 18.7 L664 13.2 L682 12.9 L696 13.1 L744 8.9 L758 8.6 L776 8.9 L800 18.6 L900 18.8 L1010 19 H1440",
+  photography:  "M0 19 H340 L400 18.7 L470 18.9 L560 18.6 L640 18.8 L664 9.2 L682 9.0 L696 9.4 L744 12.8 L758 15.6 L776 17.8 L800 18.7 L900 18.9 L1010 19 H1440",
+};
+
+const routeKey = (p: string): string => {
+  const clean = p.replace(/\/$/, "") || "/";
+  if (clean.startsWith('/cv')) return 'cv';
+  if (clean.startsWith('/publications')) return 'publications';
+  if (clean.startsWith('/photography')) return 'photography';
+  return 'home';
+};
+
+const silhouette = SILHOUETTES[routeKey(currentPath)];
+const groundPath = `${silhouette} V22 H0 Z`;
 ---
 
-<div class="w-full sticky top-0 z-50 select-none pointer-events-none">
-  <!-- THE UNIFIED METAMORPHIC HEADER -->
-  <header 
-    id="metamorphic-header" 
-    class="w-full max-w-7xl mx-auto px-4 sm:px-6 border-b border-r border-l border-transparent pointer-events-auto"
-  >
-    <div class="w-full flex flex-col md:grid md:grid-cols-12 items-center justify-between py-5 md:py-0 h-auto md:h-full gap-4 md:gap-0">
-      
-      <!-- LEFT REGISTRY -->
-      <div class="w-full md:col-span-7 flex items-center justify-center md:justify-start gap-4">
-        
-        <div id="signature-wrapper" class="shrink-0 border-r border-dust/70 pr-4 flex items-center justify-center">
-          <a href="/" aria-label="Home" class="block transition-opacity duration-300 hover:opacity-85 focus-visible:opacity-85 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] rounded-sm">
-            <Image 
-              src={signature} 
-              alt="Austin Allison Ledger Validation Signature" 
-              class="w-auto object-contain signature-img" 
-              loading="eager"
-            />
-          </a>
-        </div>
-        
-        <div class="flex flex-col md:flex-row md:items-baseline md:gap-3">
-          <a href="/" class={`group header-title-link font-serif text-lg md:text-xl font-medium tracking-tight whitespace-nowrap flex items-center justify-center md:justify-start relative focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] rounded-sm pb-1 ${isActive('/') ? 'is-active' : ''}`}>
-            
-            {/* TEXT CROSSFADE */}
-            <span class={`transition-opacity duration-300 ${isActive('/') ? 'opacity-0' : 'opacity-100 group-hover:opacity-0 group-focus-visible:opacity-0'}`}>Austin Allison</span>
-            <span class={`absolute top-0 text-[#C1AD8A] transition-opacity duration-300 pointer-events-none ${isActive('/') ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'}`}>Austin Allison</span>
-            
-            {/* THE SURVEYOR'S BRACKET */}
-            <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-full h-[6px] pointer-events-none flex items-end justify-between px-[2px]">
-              <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-left"></span>
-              <span class="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#C1AD8A] origin-left surveyor-line"></span>
-              <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-right"></span>
-            </span>
-          </a>
-        </div>
-      </div>
+<div class="w-full sticky top-0 z-50 select-none pointer-events-none" transition:persist="horizon-header">
+  <header id="horizon-header" class="relative w-full pointer-events-auto overflow-hidden">
 
-      <!-- RIGHT REGISTRY -->
-      <nav id="header-nav" aria-label="Main Navigation" class="w-full md:w-auto md:col-span-5 flex items-center justify-center md:justify-end gap-x-1 sm:gap-x-2 text-[13px] font-serif tracking-wider lowercase relative z-20">
-        
-        <a href="/cv" class={`group nav-link px-3.5 py-2 md:py-1.5 flex items-center justify-center relative rounded-sm bg-iron/[0.02] border border-iron/[0.04] md:bg-transparent md:border-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] ${isActive('/cv') ? 'is-active' : ''}`}>
-          <span class={`transition-opacity duration-300 ${isActive('/cv') ? 'opacity-0' : 'opacity-100 group-hover:opacity-0 group-focus-visible:opacity-0'}`}>cv</span>
-          <span class={`absolute text-[#C1AD8A] transition-opacity duration-300 pointer-events-none ${isActive('/cv') ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'}`}>cv</span>
-          
-          <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-[5px] pointer-events-none flex items-end justify-between px-[1px]">
-            <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-left"></span>
-            <span class="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#C1AD8A] origin-left surveyor-line"></span>
-            <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-right"></span>
-          </span>
-        </a>
-        
-        <span class="nav-dot px-1 select-none opacity-40 md:opacity-100">&middot;</span>
-        
-        <a href="/publications" class={`group nav-link px-3.5 py-2 md:py-1.5 flex items-center justify-center relative rounded-sm bg-iron/[0.02] border border-iron/[0.04] md:bg-transparent md:border-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] ${isActive('/publications') ? 'is-active' : ''}`}>
-          <span class={`transition-opacity duration-300 ${isActive('/publications') ? 'opacity-0' : 'opacity-100 group-hover:opacity-0 group-focus-visible:opacity-0'}`}>publications</span>
-          <span class={`absolute text-[#C1AD8A] transition-opacity duration-300 pointer-events-none ${isActive('/publications') ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'}`}>publications</span>
-          
-          <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-[5px] pointer-events-none flex items-end justify-between px-[1px]">
-            <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-left"></span>
-            <span class="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#C1AD8A] origin-left surveyor-line"></span>
-            <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-right"></span>
-          </span>
-        </a>
-        
-        <span class="nav-dot px-1 select-none opacity-40 md:opacity-100">&middot;</span>
-        
-        <a href="/photography" class={`group nav-link px-3.5 py-2 md:py-1.5 flex items-center justify-center relative rounded-sm bg-iron/[0.02] border border-iron/[0.04] md:bg-transparent md:border-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] ${isActive('/photography') ? 'is-active' : ''}`}>
-          <span class={`transition-opacity duration-300 ${isActive('/photography') ? 'opacity-0' : 'opacity-100 group-hover:opacity-0 group-focus-visible:opacity-0'}`}>photography</span>
-          <span class={`absolute text-[#C1AD8A] transition-opacity duration-300 pointer-events-none ${isActive('/photography') ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-visible:opacity-100'}`}>photography</span>
-          
-          <span class="absolute bottom-0 left-1/2 -translate-x-1/2 w-[85%] h-[5px] pointer-events-none flex items-end justify-between px-[1px]">
-            <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-left"></span>
-            <span class="absolute bottom-0 left-0 w-full h-[1.5px] bg-[#C1AD8A] origin-left surveyor-line"></span>
-            <span class="w-[1.5px] h-full bg-[#C1AD8A] origin-bottom surveyor-mark-right"></span>
-          </span>
-        </a>
-        
-      </nav>
+    <!-- SKY: base layer, tinted per phase of day -->
+    <div id="sky-base" class="absolute inset-0 -z-10 pointer-events-none"></div>
+    <!-- SKY: frost layer — its opacity/blur animate; gradients never snap -->
+    <div id="sky-frost" class="absolute inset-0 -z-10 pointer-events-none"></div>
+    <!-- SKY: evening layer (rises with scroll depth; tint depends on phase) -->
+    <div id="sky-dusk" class="absolute inset-0 -z-10 pointer-events-none"></div>
+    <!-- SKY: dust haze hugging the line -->
+    <div id="horizon-haze" class="absolute bottom-0 left-0 w-full h-8 -z-10 pointer-events-none"></div>
+    <!-- SKY: film grain -->
+    <div id="sky-grain" class="absolute inset-0 -z-10 pointer-events-none"></div>
 
+    <!-- THE SUN (dawn / day / dusk) -->
+    <div id="sun-wrap" aria-hidden="true" class="absolute pointer-events-none">
+      <div id="horizon-sun"></div>
     </div>
+
+    <!-- THE MOON (night only) -->
+    <div id="night-sky" aria-hidden="true" class="absolute inset-0 pointer-events-none">
+      <div id="horizon-moon"></div>
+    </div>
+
+    <!-- THE WINDMILL — one object in the middle distance, feet on the line -->
+    <svg
+      id="windmill"
+      aria-hidden="true"
+      class="absolute pointer-events-none hidden md:block"
+      width="22" height="34" viewBox="0 0 22 34"
+    >
+      <g stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round">
+        <!-- tower + braces -->
+        <path d="M7 34 L10.4 9" />
+        <path d="M15 34 L11.6 9" />
+        <path d="M8.3 26 H13.7" />
+        <path d="M9.2 18 H12.8" />
+        <!-- tail vane -->
+        <path d="M11.6 7.6 L17 10 L16.3 11.9 L11.6 9.4 Z" fill="currentColor" stroke="none" opacity="0.85" />
+        <!-- rotor -->
+        <g id="windmill-rotor">
+          <circle cx="11" cy="8" r="5.2" opacity="0.65" />
+          <path d="M11 2.8 V13.2 M5.8 8 H16.2 M7.3 4.3 L14.7 11.7 M7.3 11.7 L14.7 4.3" />
+        </g>
+        <circle cx="11" cy="8" r="0.9" fill="currentColor" stroke="none" />
+      </g>
+    </svg>
+
+    <!-- EVERYTHING STANDS ON THE LINE -->
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 pb-[3px] flex items-end justify-between gap-4">
+
+      <!-- THE LANDMARK: signature + name + benchmark station plate -->
+      <a
+        href="/"
+        aria-label="Home"
+        aria-current={isActive('/') ? 'page' : undefined}
+        class={`landmark group flex items-end gap-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] rounded-sm ${isActive('/') ? 'is-active' : ''}`}
+      >
+        <Image
+          src={signature}
+          alt="Austin Allison signature"
+          class="signature-img w-auto object-contain hidden sm:block"
+          loading="eager"
+        />
+        <span class="flex flex-col items-start justify-end">
+          <span class="landmark-name font-serif font-medium tracking-tight whitespace-nowrap">
+            Austin Allison
+          </span>
+          <span class="station-plate flex items-end gap-1.5">
+            <svg class="station-mark" width="11" height="9" viewBox="0 0 11 9" aria-hidden="true">
+              <path d="M5.5 0.8 L10.2 8.2 L0.8 8.2 Z" fill="none" stroke="currentColor" stroke-width="1" />
+              <circle cx="5.5" cy="6" r="0.9" fill="currentColor" />
+            </svg>
+            <span class="station-meta font-mono uppercase whitespace-nowrap">
+              Lubbock, Texas &middot; 3,256 ft
+            </span>
+          </span>
+        </span>
+      </a>
+
+      <!-- MILE MARKERS -->
+      <nav id="horizon-nav" aria-label="Main Navigation" class="flex items-end font-serif lowercase tracking-wider">
+        {navItems.map((item) => (
+          <a
+            href={item.href}
+            aria-current={isActive(item.href) ? 'page' : undefined}
+            class={`marker group relative flex flex-col items-center justify-end px-2.5 sm:px-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] rounded-sm ${isActive(item.href) ? 'is-active' : ''}`}
+          >
+            <span class="marker-label">{item.label}</span>
+            <span class="marker-tick" aria-hidden="true"></span>
+            <svg class="marker-station" width="11" height="9" viewBox="0 0 11 9" aria-hidden="true">
+              <path d="M5.5 0.8 L10.2 8.2 L0.8 8.2 Z" fill="none" stroke="currentColor" stroke-width="1" />
+              <circle cx="5.5" cy="6" r="0.9" fill="currentColor" />
+            </svg>
+          </a>
+        ))}
+      </nav>
+    </div>
+
+    <!-- THE HORIZON — the line is the land, and the land depends on the page -->
+    <svg
+      id="the-horizon"
+      class="absolute bottom-0 left-0 w-full h-[22px] pointer-events-none"
+      viewBox="0 0 1440 22"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+      data-silhouettes={JSON.stringify(SILHOUETTES)}
+    >
+      <path
+        class="horizon-ground"
+        d={groundPath}
+        fill="currentColor"
+        stroke="none"
+      />
+      <path
+        class="horizon-path"
+        d={silhouette}
+        fill="none"
+        stroke="currentColor"
+        stroke-width="1"
+        vector-effect="non-scaling-stroke"
+        pathLength="1"
+      />
+    </svg>
   </header>
+
+  <!-- Set the phase before first paint so a night visitor never sees a
+       daytime flash. Runs once; the module script maintains it after. -->
+  <script is:inline>
+    (function () {
+      var h = new Date().getHours();
+      var p = h >= 5 && h < 8 ? 'dawn' : h >= 8 && h < 17 ? 'day' : h >= 17 && h < 20 ? 'dusk' : 'night';
+      var el = document.getElementById('horizon-header');
+      if (el) el.setAttribute('data-phase', p);
+    })();
+  </script>
 </div>
 
 <script>
-  const setupHeader = () => {
-    const header = document.getElementById('metamorphic-header');
+  // This module runs exactly once per site load. The header itself persists
+  // across view transitions, so everything below is written to be re-entrant
+  // via astro:after-swap — never re-bound.
+
+  const header = document.getElementById('horizon-header');
+
+  /* ---- time of day ------------------------------------------------------ */
+  const applyPhase = () => {
     if (!header) return;
+    const h = new Date().getHours();
+    const phase =
+      h >= 5 && h < 8 ? 'dawn' :
+      h >= 8 && h < 17 ? 'day' :
+      h >= 17 && h < 20 ? 'dusk' : 'night';
+    if (header.dataset.phase !== phase) header.dataset.phase = phase;
+  };
 
+  /* ---- per-page geography ----------------------------------------------- */
+  const horizonSvg = document.getElementById('the-horizon');
+  const silhouettes = horizonSvg?.dataset.silhouettes
+    ? JSON.parse(horizonSvg.dataset.silhouettes)
+    : null;
+
+  const routeKey = (p: string): string => {
+    const clean = p.replace(/\/$/, '') || '/';
+    if (clean.startsWith('/cv')) return 'cv';
+    if (clean.startsWith('/publications')) return 'publications';
+    if (clean.startsWith('/photography')) return 'photography';
+    return 'home';
+  };
+
+  const setHorizon = () => {
+    if (!horizonSvg || !silhouettes) return;
+    const d = silhouettes[routeKey(location.pathname)] ?? silhouettes.home;
+    const pairs: Array<[Element | null, string]> = [
+      [horizonSvg.querySelector('.horizon-path'), d],
+      [horizonSvg.querySelector('.horizon-ground'), `${d} V22 H0 Z`],
+    ];
+    for (const [el, val] of pairs) {
+      if (!el) continue;
+      // Style first: browsers that support the `d` property morph via the
+      // CSS transition. Attribute second: everyone else swaps instantly
+      // (in supporting browsers the style wins the cascade, so no jump).
+      (el as SVGPathElement).style.setProperty('d', `path('${val}')`);
+      el.setAttribute('d', val);
+    }
+  };
+
+  /* ---- active states (the persisted header goes stale without this) ----- */
+  const refreshActive = () => {
+    if (!header) return;
+    const current = location.pathname.replace(/\/$/, '') || '/';
+    header.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((a) => {
+      const target = (a.getAttribute('href') ?? '').replace(/\/$/, '') || '/';
+      const active = target === current;
+      a.classList.toggle('is-active', active);
+      if (active) a.setAttribute('aria-current', 'page');
+      else a.removeAttribute('aria-current');
+    });
+  };
+
+  /* ---- scroll fallback -------------------------------------------------- */
+  // Only where CSS scroll-timelines can't do the job: Safari/Firefox, or
+  // any browser with reduced motion (animations are off, so states must
+  // come from the class). Chrome with motion enabled never attaches this.
+  const supportsScrollTimeline = CSS.supports('animation-timeline: scroll()');
+  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (header && (!supportsScrollTimeline || prefersReducedMotion)) {
     let ticking = false;
-
     const updateHeaderState = () => {
       const scrollPos = window.scrollY;
-
-      // HYSTERESIS BUFFER ENGINE
-      if (scrollPos > 50) {
-        header.classList.add('is-scrolled');
-      } else if (scrollPos < 15) {
-        header.classList.remove('is-scrolled');
-      }
+      if (scrollPos > 60) header.classList.add('is-scrolled');
+      else if (scrollPos < 15) header.classList.remove('is-scrolled');
       ticking = false;
     };
-
-    const handleScroll = () => {
+    window.addEventListener('scroll', () => {
       if (!ticking) {
         window.requestAnimationFrame(updateHeaderState);
         ticking = true;
       }
-    };
+    }, { passive: true });
+    updateHeaderState();
+  }
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    updateHeaderState(); 
-  };
+  /* ---- lifecycle -------------------------------------------------------- */
+  applyPhase();
+  setHorizon();
+  refreshActive();
+  setInterval(applyPhase, 60_000); // long-lived tabs cross phase boundaries
 
-  setupHeader();
-  document.addEventListener('astro:after-swap', setupHeader);
+  document.addEventListener('astro:after-swap', () => {
+    applyPhase();
+    setHorizon();
+    refreshActive();
+  });
 </script>
 
 <style is:global>
-  /* ========================================================================== */
-  /* THE SURVEYOR'S BRACKET KINETICS                                            */
-  /* ========================================================================== */
-  
-  /* 
-    BASE STATE: When unhovered, transitions run in REVERSE. 
-    The right mark disappears instantly (0s), the line retracts (0.15s delay), 
-    and the left mark disappears last (0.45s delay).
-  */
-  .surveyor-mark-left {
-    transform: scaleY(0);
-    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0.45s; 
-  }
-  .surveyor-line {
-    transform: scaleX(0);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.15s; 
-  }
-  .surveyor-mark-right {
-    transform: scaleY(0);
-    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0s; 
+  /* ======================================================================== */
+  /* BASELINE — the wide-open state. Base values are DAY; the other phases    */
+  /* override below. `--evening-tint` is what scrolling mixes into the sky.   */
+  /* ======================================================================== */
+  #horizon-header {
+    padding-top: 2.5rem; /* sky height; collapsing = lowering the sky */
+    --sun-elev: 34%;
+    --evening-tint: #C98F4E;
   }
 
-  /* 
-    HOVER & ACTIVE STATE: Transitions run FORWARD.
-    Left mark drops instantly (0s), the line extends (0.15s delay), 
-    and the right mark drops to lock it in (0.45s delay).
-  */
-  .group:hover .surveyor-mark-left,
-  .group.is-active .surveyor-mark-left,
-  .group:focus-visible .surveyor-mark-left {
-    transform: scaleY(1);
-    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0s;
-  }
-  
-  .group:hover .surveyor-line,
-  .group.is-active .surveyor-line,
-  .group:focus-visible .surveyor-line {
-    transform: scaleX(1);
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) 0.15s;
-  }
-  
-  .group:hover .surveyor-mark-right,
-  .group.is-active .surveyor-mark-right,
-  .group:focus-visible .surveyor-mark-right {
-    transform: scaleY(1);
-    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1) 0.45s;
+  #sky-base {
+    /* Near-white overhead settling into a perceptible cool band at the line */
+    background: linear-gradient(
+      to bottom,
+      var(--color-canvas, #FBFBF9) 0%,
+      var(--color-canvas, #FBFBF9) 45%,
+      color-mix(in oklch, var(--color-canvas, #FBFBF9) 84%, #7F98A6) 100%
+    );
   }
 
-  /* ========================================================================== */
-  /* BASELINE METAMORPHIC PROFILE                                               */
-  /* ========================================================================== */
-  #metamorphic-header {
-    padding-top: 1rem;
-    padding-bottom: 1rem;
-    background-color: var(--color-canvas);
+  #sky-frost {
+    background: color-mix(in oklch, var(--color-canvas, #FBFBF9) 82%, transparent);
     backdrop-filter: blur(0px);
-    border-color: rgba(230, 228, 223, 1); 
-    transition: 
-      padding 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
-      background-color 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
-      backdrop-filter 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
-      border-color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
   }
 
+  #sky-dusk {
+    background: linear-gradient(
+      to top,
+      color-mix(in oklch, var(--color-canvas, #FBFBF9) 68%, var(--evening-tint)) 0%,
+      transparent 70%
+    );
+    opacity: 0;
+  }
+
+  #horizon-haze {
+    background: linear-gradient(
+      to top,
+      color-mix(in oklch, var(--color-dust, #B3A38F) 22%, transparent) 0%,
+      transparent 100%
+    );
+  }
+
+  #sky-grain {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)'/%3E%3C/svg%3E");
+    opacity: 0.04;
+    mix-blend-mode: multiply;
+  }
+
+  #sun-wrap {
+    left: calc(50% - 6px); /* 6px = half the sun's 12px width */
+    bottom: var(--sun-elev);
+  }
+
+  #horizon-sun {
+    width: 12px;
+    height: 12px;
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle at 40% 35%,
+      color-mix(in oklch, #E8B45C 80%, white) 0%,
+      color-mix(in oklch, var(--color-dust, #B3A38F) 55%, #D9913F) 100%
+    );
+    box-shadow:
+      0 0 0 3px color-mix(in oklch, #D9913F 10%, transparent),
+      0 0 16px 5px color-mix(in oklch, #D9913F 22%, transparent),
+      0 0 34px 12px color-mix(in oklch, #D9913F 8%, transparent);
+    transform: translateY(0);
+    opacity: 0.9;
+  }
+
+  #night-sky { display: none; }
+
+  #horizon-moon {
+    position: absolute;
+    left: 61%;
+    bottom: 56%;
+    width: 11px;
+    height: 11px;
+    border-radius: 9999px;
+    background: radial-gradient(circle at 38% 32%, #F4F6F8 0%, #C3CDDA 100%);
+    box-shadow:
+      0 0 10px 3px rgba(195, 205, 218, 0.4),
+      0 0 24px 9px rgba(195, 205, 218, 0.14);
+    opacity: 0.9;
+  }
+
+  #windmill {
+    left: 57.5%;
+    bottom: 3px; /* the line sits 3px up inside the horizon svg */
+    color: color-mix(in oklch, var(--color-dust, #B3A38F) 68%, var(--color-iron, #1A1919));
+    opacity: 0.45;
+  }
+
+  #windmill-rotor {
+    transform-origin: 11px 8px;
+    animation: windmill-turn 22s linear infinite;
+  }
+  @keyframes windmill-turn {
+    to { transform: rotate(360deg); }
+  }
+
+  #the-horizon {
+    color: color-mix(in oklch, var(--color-dust, #B3A38F) 85%, var(--color-iron, #1A1919));
+  }
+  .horizon-path {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 0;
+  }
+  /* Per-page geography: navigation morphs the land where `d` is a CSS
+     property; elsewhere the attribute swap is instant. */
+  .horizon-path,
+  .horizon-ground {
+    transition: d 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  /* ======================================================================== */
+  /* PHASES OF DAY — set before first paint, refreshed every minute           */
+  /* ======================================================================== */
+  #horizon-header[data-phase="dawn"] {
+    --sun-elev: 12%;
+    --evening-tint: #C97E5C; /* scrolling at dawn warms toward rose-gold */
+  }
+  #horizon-header[data-phase="dawn"] #sky-base {
+    background: linear-gradient(
+      to bottom,
+      var(--color-canvas, #FBFBF9) 0%,
+      var(--color-canvas, #FBFBF9) 40%,
+      color-mix(in oklch, var(--color-canvas, #FBFBF9) 82%, #D9917A) 100%
+    );
+  }
+  #horizon-header[data-phase="dawn"] #horizon-sun {
+    filter: hue-rotate(-12deg) saturate(1.1);
+  }
+
+  #horizon-header[data-phase="dusk"] {
+    --sun-elev: 9%;
+    --evening-tint: #6B5B7A; /* scrolling at dusk cools toward violet night */
+  }
+  #horizon-header[data-phase="dusk"] #sky-base {
+    background: linear-gradient(
+      to bottom,
+      var(--color-canvas, #FBFBF9) 0%,
+      var(--color-canvas, #FBFBF9) 38%,
+      color-mix(in oklch, var(--color-canvas, #FBFBF9) 80%, #C98F4E) 100%
+    );
+  }
+  #horizon-header[data-phase="dusk"] #horizon-sun {
+    filter: hue-rotate(8deg) saturate(1.25);
+  }
+
+  #horizon-header[data-phase="night"] {
+    --evening-tint: #33415C; /* scrolling at night only deepens the dark */
+  }
+  #horizon-header[data-phase="night"] #sky-base {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklch, var(--color-canvas, #FBFBF9) 93%, #33415C) 0%,
+      color-mix(in oklch, var(--color-canvas, #FBFBF9) 90%, #33415C) 45%,
+      color-mix(in oklch, var(--color-canvas, #FBFBF9) 79%, #33415C) 100%
+    );
+  }
+  #horizon-header[data-phase="night"] #sun-wrap { display: none; }
+  #horizon-header[data-phase="night"] #night-sky { display: block; }
+  #horizon-header[data-phase="night"] #the-horizon {
+    color: color-mix(in oklch, var(--color-dust, #B3A38F) 48%, var(--color-iron, #1A1919));
+  }
+  #horizon-header[data-phase="night"] #windmill {
+    opacity: 0.55; /* silhouettes read darker against a dimmed sky */
+  }
+
+  /* --- The landmark ------------------------------------------------------ */
   .signature-img {
-    height: 2.25rem;
-    filter: brightness(1) invert(0);
-    transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1), filter 0.35s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  
-  .header-title-link { color: rgba(26, 25, 25, 0.9); }
-  .nav-link { color: rgba(26, 25, 25, 0.7); }
-  .nav-dot { color: rgba(230, 228, 223, 0.6); }
-
-  .header-title-link,
-  .nav-link,
-  .nav-dot {
-    transition: color 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+    height: 2rem;
+    transform-origin: left bottom;
+    margin-bottom: 1px; /* feet on the ground */
   }
 
-  /* ========================================================================== */
-  /* DESKTOP TYPOGRAPHY & SPACING UPGRADES                                      */
-  /* ========================================================================== */
+  .landmark-name {
+    font-size: 1.05rem;
+    color: rgba(26, 25, 25, 0.9);
+    line-height: 1;
+    padding-bottom: 0.45rem;
+    transform-origin: left bottom;
+  }
+
+  .landmark.is-active .landmark-name,
+  .landmark:hover .landmark-name {
+    color: var(--color-iron, #1A1919);
+  }
+
+  .station-mark {
+    color: color-mix(in oklch, var(--color-iron, #1A1919) 60%, var(--color-dust, #B3A38F));
+    display: block;
+  }
+  .landmark.is-active .station-mark,
+  .landmark:hover .station-mark {
+    color: #C1AD8A;
+  }
+
+  .station-meta {
+    font-size: 8.5px;
+    letter-spacing: 0.18em;
+    line-height: 1;
+    padding-bottom: 1px;
+    color: rgba(26, 25, 25, 0.45);
+  }
+
+  /* --- Mile markers ------------------------------------------------------- */
+  .marker-label {
+    font-size: 11px;
+    color: rgba(26, 25, 25, 0.55);
+    padding-bottom: 0.35rem;
+    transform: translateY(0);
+    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), color 0.25s ease;
+  }
+
+  .marker-tick {
+    width: 1.5px;
+    height: 9px;
+    background-color: color-mix(in oklch, var(--color-iron, #1A1919) 55%, var(--color-dust, #B3A38F));
+    transition: height 0.25s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.25s ease;
+  }
+
+  /* Active page: a benchmark station, same mark as the name */
+  .marker-station { display: none; color: #C1AD8A; }
+  .marker.is-active .marker-tick { display: none; }
+  .marker.is-active .marker-station { display: block; }
+  .marker.is-active .marker-label {
+    color: var(--color-iron, #1A1919);
+  }
+
+  /* Heat shimmer — the label rises and resolves */
+  @keyframes heat-shimmer {
+    0%   { opacity: 0.55; filter: blur(0.6px); }
+    60%  { opacity: 1;    filter: blur(0.25px); }
+    100% { opacity: 1;    filter: blur(0); }
+  }
+
+  .marker:hover .marker-label,
+  .marker:focus-visible .marker-label {
+    color: var(--color-iron, #1A1919);
+    transform: translateY(-3px);
+    animation: heat-shimmer 0.35s ease-out both;
+  }
+
+  .marker:hover .marker-tick,
+  .marker:focus-visible .marker-tick {
+    height: 13px;
+  }
+
   @media (min-width: 768px) {
-    #metamorphic-header {
-      padding-top: 2rem;
-      padding-bottom: 2rem;
+    #horizon-header { padding-top: 3.5rem; }
+    .signature-img  { height: 3.25rem; }
+    .landmark-name  { font-size: 1.3rem; }
+    .station-meta   { font-size: 9px; }
+    .marker-label   { font-size: 13px; }
+  }
+
+  /* ======================================================================== */
+  /* ENTRANCE CHOREOGRAPHY (first load only — transition:persist keeps the    */
+  /* header alive across view transitions, so this never replays on nav)      */
+  /* Keyframes define only `from`; base styles are the resting state.         */
+  /* Entrance animations live on different elements than scroll animations.   */
+  /* ======================================================================== */
+  @keyframes draw-in {
+    from { stroke-dashoffset: 1; }
+  }
+  .horizon-path {
+    animation: draw-in 0.9s cubic-bezier(0.25, 1, 0.5, 1) 0.1s both;
+  }
+  .horizon-ground {
+    animation: fade-in 0.9s cubic-bezier(0.25, 1, 0.5, 1) 0.1s both;
+  }
+
+  @keyframes rise-in {
+    from { opacity: 0; transform: translateY(5px); }
+  }
+  .landmark {
+    animation: rise-in 0.6s cubic-bezier(0.25, 1, 0.5, 1) 0.35s both;
+  }
+
+  @keyframes fade-in {
+    from { opacity: 0; }
+  }
+  .station-plate {
+    animation: fade-in 0.5s ease-out 0.9s both;
+  }
+
+  .marker {
+    animation: rise-in 0.5s cubic-bezier(0.25, 1, 0.5, 1) both;
+  }
+  #horizon-nav .marker:nth-child(1) { animation-delay: 0.55s; }
+  #horizon-nav .marker:nth-child(2) { animation-delay: 0.67s; }
+  #horizon-nav .marker:nth-child(3) { animation-delay: 0.79s; }
+
+  #sun-wrap, #night-sky {
+    animation: fade-in 1s ease-out 1.1s both;
+  }
+
+  #windmill {
+    animation: rise-in 0.6s cubic-bezier(0.25, 1, 0.5, 1) 0.9s both;
+  }
+
+  /* ======================================================================== */
+  /* FALLBACK TRANSITIONS (Safari / Firefox / reduced motion — driven by      */
+  /* .is-scrolled, which JS only toggles where scroll-timeline can't run)     */
+  /* ======================================================================== */
+  #horizon-header, #sky-frost, #sky-dusk, #horizon-sun, #the-horizon,
+  .signature-img, .landmark-name, .station-meta {
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  #horizon-header.is-scrolled {
+    padding-top: 0.8rem;
+  }
+  @media (min-width: 768px) {
+    #horizon-header.is-scrolled { padding-top: 1rem; }
+  }
+
+  #horizon-header.is-scrolled #sky-frost {
+    opacity: 1;
+    backdrop-filter: blur(10px);
+  }
+
+  #horizon-header.is-scrolled #sky-dusk {
+    opacity: 0.85;
+  }
+
+  #horizon-header.is-scrolled #horizon-sun {
+    transform: translateY(500%);
+    opacity: 0;
+  }
+
+  #horizon-header.is-scrolled #the-horizon {
+    color: var(--color-iron, #1A1919);
+  }
+
+  #horizon-header.is-scrolled .signature-img {
+    transform: scale(0.8);
+  }
+
+  #horizon-header.is-scrolled .landmark-name {
+    transform: scale(0.88);
+  }
+
+  #horizon-header.is-scrolled .station-meta {
+    opacity: 0;
+  }
+
+  /* ======================================================================== */
+  /* SCROLL-DRIVEN ANIMATIONS (Chrome / Edge)                                 */
+  /* ======================================================================== */
+  @supports (animation-timeline: scroll()) {
+
+    /* Disable fallback transitions so the two systems don't fight.
+       Entrance animations and the `d` morph live on other elements/props. */
+    #horizon-header, #sky-frost, #sky-dusk, #horizon-sun, #the-horizon,
+    .signature-img, .landmark-name, .station-meta {
+      transition: none;
     }
-    
+
+    /* 1. The sky lowers */
+    @keyframes lower-sky {
+      to { padding-top: 0.8rem; }
+    }
+    @media (min-width: 768px) {
+      @keyframes lower-sky {
+        to { padding-top: 1rem; }
+      }
+    }
+    #horizon-header {
+      animation: lower-sky linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0px 120px;
+    }
+
+    /* 2. The frost settles for pinned legibility (opacity + blur only —
+       both interpolate; the sky gradient itself never animates) */
+    @keyframes frost-sky {
+      to {
+        opacity: 1;
+        backdrop-filter: blur(10px);
+      }
+    }
+    #sky-frost {
+      animation: frost-sky linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0px 120px;
+    }
+
+    /* 3. Evening rises slowly — a full-page-depth effect, not a threshold */
+    @keyframes dusk-rise {
+      to { opacity: 1; }
+    }
+    #sky-dusk {
+      animation: dusk-rise linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0px 600px;
+    }
+
+    /* 4. The sun sets (from wherever the hour placed it) */
+    @keyframes sun-set {
+      70%  { opacity: 0.9; }
+      100% { transform: translateY(500%); opacity: 0; }
+    }
+    #horizon-sun {
+      animation: sun-set linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0px 400px;
+    }
+
+    /* 5. The horizon deepens against the evening (composes with the
+       phase baseline — night starts darker and still deepens to iron) */
+    @keyframes deepen-horizon {
+      to { color: var(--color-iron, #1A1919); }
+    }
+    #the-horizon {
+      animation: deepen-horizon linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0px 300px;
+    }
+
+    /* 6. The landmark recedes slightly, feet still on the line */
+    @keyframes recede-signature {
+      to { transform: scale(0.8); }
+    }
     .signature-img {
-      height: 3.75rem; 
+      animation: recede-signature linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0px 120px;
+    }
+    @keyframes recede-name {
+      to { transform: scale(0.88); }
+    }
+    .landmark-name {
+      animation: recede-name linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0px 120px;
     }
 
-    .nav-link { font-size: 1rem; }
-    .nav-dot { font-size: 1.25rem; }
-  }
-
-  /* ========================================================================== */
-  /* THE ACTIVE COMPRESSED SCROLLED STATE                                       */
-  /* ========================================================================== */
-  #metamorphic-header.is-scrolled {
-    padding-top: 0.65rem;
-    padding-bottom: 0.65rem;
-    background-color: var(--color-sage);
-    backdrop-filter: blur(12px);
-    border-bottom-color: var(--color-dust);
-    border-left-color: var(--color-dust);
-    border-right-color: var(--color-dust);
-  }
-
-  #metamorphic-header.is-scrolled .signature-img {
-    filter: brightness(0) invert(1);
-  }
-  
-  @media (min-width: 768px) {
-    #metamorphic-header.is-scrolled .signature-img {
-      height: 3.75rem; 
+    /* 7. The elevation plate text fades; the benchmark stays */
+    @keyframes fade-meta {
+      to { opacity: 0; }
+    }
+    .station-meta {
+      animation: fade-meta linear both;
+      animation-timeline: scroll(root block);
+      animation-range: 0px 100px;
     }
   }
 
-  #metamorphic-header.is-scrolled .header-title-link { color: #FBFBF9; }
-  #metamorphic-header.is-scrolled .nav-link { color: #FBFBF9; }
-  #metamorphic-header.is-scrolled .nav-dot { color: rgba(251, 251, 249, 0.5); }
+  /* ======================================================================== */
+  /* REDUCED MOTION — states still change (via .is-scrolled, which JS always  */
+  /* drives here), but nothing glides, draws, spins, morphs, or shimmers      */
+  /* ======================================================================== */
+  @media (prefers-reduced-motion: reduce) {
+    #horizon-header, #sky-base, #sky-frost, #sky-dusk, #sun-wrap, #horizon-sun,
+    #night-sky, #horizon-moon, #windmill, #windmill-rotor,
+    #the-horizon, .horizon-path, .horizon-ground, .signature-img, .landmark-name,
+    .landmark, .station-plate, .station-meta, .marker, .marker-label, .marker-tick {
+      transition: none !important;
+      animation: none !important;
+    }
+    #sun-wrap { display: none; }
+  }
 </style>
