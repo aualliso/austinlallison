@@ -186,8 +186,11 @@ const { gallery } = Astro.props;
         <div class="flex items-center -mt-3 space-x-2 text-[9px] md:text-[10px] font-mono text-sage uppercase tracking-widest truncate">
               <span class="hidden md:inline">{gallery.region}</span>
         </div>
-          <h1 class="font-serif text-xl md:text-2xl font-light tracking-tight text-caprock mb-1 md:mb-3 truncate md:whitespace-normal">
-            <span class="font-serif text-xl md:text-2xl font-light tracking-tight text-sage/80 mb-1 truncate md:whitespace-normal">{gallery.number}.</span> {gallery.title}
+          <h2 class="font-serif text-md md:text-2xl font-light tracking-tight text-sage mb-1 md:mb-3 mt-1 truncate md:whitespace-normal">
+            Series {gallery.number}.
+          </h2>
+          <h1 class="font-serif text-lg md:text-2xl font-light tracking-tight text-caprock mb-1 md:mb-3 truncate md:whitespace-normal -mt-2">
+             {gallery.title}.
           </h1>
           
           <div id="hud-collapsible" class="hidden md:block transition-all duration-300 overflow-hidden">
@@ -197,9 +200,16 @@ const { gallery } = Astro.props;
             <p class="md:hidden font-mono text-[9px] text-sage uppercase tracking-widest mb-4">
               {gallery.region}
             </p>
+            
+            <nav class="flex flex-col gap-1.5 mt-4 border-t border-haze/40 pt-4 pb-2">
+              <span class="font-mono text-[9px] uppercase tracking-widest text-iron/40 mb-1">Series Registry</span>
+              <a href="/photography/escarpments" class="font-mono text-[10px] text-sage hover:text-caprock transition-colors truncate">I. American Escarpments</a>
+              <a href="/photography/water_on_the_llano_estacado" class="font-mono text-[10px] text-sage hover:text-caprock transition-colors truncate">II. Water on the Llano Estacado</a>
+              <a href="/photography/cotton_gins_of_texas" class="font-mono text-[10px] text-sage hover:text-caprock transition-colors truncate">III. Cotton Gins of Texas</a>
+            </nav>
           </div>
           
-          <div class="hidden md:flex font-mono text-[10px] uppercase tracking-wider text-caprock items-center gap-2">
+          <div class="hidden md:flex font-mono text-[10px] uppercase tracking-wider text-caprock items-center gap-2 mt-2">
             <span class="animate-pulse">●</span> Scroll and drag to navigate
           </div>
           <div class="hidden md:flex font-mono text-[10px] uppercase tracking-wider text-caprock items-center gap-2">
@@ -237,6 +247,7 @@ const { gallery } = Astro.props;
           <div 
             class={`absolute ${plate.coordsClass} flex flex-col group pointer-events-auto cursor-pointer`}
             data-lightbox-trigger
+            data-index={index}
             data-src={plate.src}
             data-title={plate.title}
             data-specs={plate.specs}
@@ -246,7 +257,6 @@ const { gallery } = Astro.props;
           >
             <div class="border border-iron/10 p-3 bg-dust/35 shadow-md rounded-sm overflow-hidden transition-all duration-500 group-hover:shadow-xl group-hover:border-caprock/30">
               <div class="overflow-hidden bg-iron/5 pointer-events-none">
-                <!-- loading="lazy" decoding="async" for memory performance -->
                 <img src={plate.src} alt={plate.title} loading="lazy" decoding="async" class="w-full h-auto object-cover opacity-95 group-hover:opacity-100 transition-all duration-700" draggable="false" />
               </div>
             </div>
@@ -264,34 +274,83 @@ const { gallery } = Astro.props;
         id="lightbox-modal" 
         class="fixed inset-0 z-[100] bg-canvas/98 backdrop-blur-md hidden opacity-0 flex flex-col justify-between p-4 md:p-8 transition-opacity duration-300 select-none"
       >
-        <div class="w-full max-w-7xl mx-auto flex justify-end shrink-0">
-          <button id="close-lightbox" class="font-mono text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors p-2 z-50">
-            esc // close view
-          </button>
+        <div class="w-full max-w-7xl mx-auto flex justify-between items-center shrink-0">
+          
+          <!-- NEW: Toolbar (Progress + Explicit Zoom Controls) -->
+          <div class="font-mono text-[10px] uppercase tracking-widest text-iron/50 flex items-center gap-3 md:gap-6">
+            <span id="lightbox-progress"></span>
+            
+            <!-- FIXED: Changed 'hidden md:flex' to 'flex' and adjusted mobile padding (pl-3) -->
+            <div class="flex items-center gap-1.5 border-l border-haze/60 pl-3 md:pl-6">
+              <button id="btn-zoom-out" class="hover:text-caprock transition-colors p-1 md:p-1.5 rounded-sm hover:bg-iron/5 focus:outline-none" aria-label="Zoom Out" title="Zoom Out">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              </button>
+              <button id="btn-zoom-reset" class="hover:text-caprock transition-colors p-1 md:p-1.5 rounded-sm hover:bg-iron/5 focus:outline-none" aria-label="Reset Zoom" title="Reset Zoom">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+              </button>
+              <button id="btn-zoom-in" class="hover:text-caprock transition-colors p-1 md:p-1.5 rounded-sm hover:bg-iron/5 focus:outline-none" aria-label="Zoom In" title="Zoom In">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+              </button>
+            </div>
+          </div>
+          
+          <!-- Right Controls (Fullscreen + Close) -->
+          <div class="flex items-center gap-2 md:gap-4">
+            <button id="btn-fullscreen" class="font-mono text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors p-2 focus:outline-none flex items-center gap-1.5">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+              <span class="hidden md:inline">fullscreen</span>
+            </button>
+            
+            <button id="close-lightbox" class="font-mono text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors p-2 z-50 focus:outline-none">
+              esc // close view
+            </button>
+          </div>
         </div>
 
         <div class="w-full max-w-5xl h-[45vh] md:h-[55vh] mx-auto flex items-center justify-center overflow-hidden my-auto shrink-0 relative">
-          <!-- Updated zoom-ready image class -->
+          <button id="nav-prev" class="absolute left-0 md:-left-12 z-50 text-iron/30 hover:text-caprock transition-colors p-4 focus:outline-none hidden md:block">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+          </button>
+          
+          <!-- High-Res Zoom Container -->
           <img 
             id="lightbox-img" 
             src="" 
             alt="" 
-            class="max-w-full max-h-full object-contain shadow-md border border-haze p-2 bg-canvas transition-transform duration-300 ease-out cursor-zoom-in" 
+            class="max-w-full max-h-full object-contain shadow-md border border-haze p-2 bg-canvas transition-transform duration-200 ease-out cursor-zoom-in relative z-40" 
+            style="image-rendering: high-quality;"
+            decoding="async"
           />
+
+          <button id="nav-next" class="absolute right-0 md:-right-12 z-50 text-iron/30 hover:text-caprock transition-colors p-4 focus:outline-none hidden md:block">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
+          </button>
         </div>
 
-        <div class="w-full max-w-5xl mx-auto border-t border-haze/40 pt-4 pb-2 md:pb-4 shrink-0">
+        <div class="w-full max-w-5xl mx-auto border-t border-haze/40 pt-4 pb-2 shrink-0">
           <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start font-mono text-[11px] uppercase tracking-wider text-sage">
-            <div class="col-span-12 md:col-span-4 flex flex-col gap-1">
+            <div class="col-span-12 md:col-span-5 flex flex-col gap-1">
               <span id="lightbox-plate-title" class="font-semibold text-iron"></span>
               <div class="flex gap-4 text-iron/40 text-[10px] lowercase tracking-normal mt-0.5">
                 <span id="lightbox-specs"></span>
                 <span id="lightbox-coords"></span>
               </div>
             </div>
-            <div class="col-span-12 md:col-span-8 border-t border-dashed border-haze/40 pt-3 md:pt-0 md:border-t-0 font-serif normal-case tracking-normal text-xs text-iron/70 italic leading-relaxed max-h-[18vh] md:max-h-[14vh] overflow-y-auto pr-2 scrollbar-none select-text">
+            <div class="col-span-12 md:col-span-7 border-t border-dashed border-haze/40 pt-3 md:pt-0 md:border-t-0 font-serif normal-case tracking-normal text-xs text-iron/70 italic leading-relaxed max-h-[12vh] overflow-y-auto pr-2 scrollbar-none select-text">
               <p id="lightbox-caption" class="cursor-text"></p>
             </div>
+          </div>
+          
+          <div id="thumbnail-strip" class="w-full flex gap-2 overflow-x-auto scrollbar-none mt-4 md:mt-6 pt-2 pb-1 snap-x">
+            {gallery.plates.map((plate, index) => (
+              <button 
+                class="thumbnail-btn shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-xs opacity-40 hover:opacity-100 transition-all border border-transparent focus:outline-none snap-center"
+                data-index={index}
+                aria-label={`Jump to Plate ${index + 1}`}
+              >
+                <img src={plate.src} class="w-full h-full object-cover rounded-xs pointer-events-none" alt={`Thumbnail ${index + 1}`} loading="lazy" />
+              </button>
+            ))}
           </div>
         </div>
       </div>
@@ -307,8 +366,18 @@ const { gallery } = Astro.props;
   const modalSpecs = document.getElementById('lightbox-specs');
   const modalCoords = document.getElementById('lightbox-coords');
   const modalCaption = document.getElementById('lightbox-caption');
+  const progressText = document.getElementById('lightbox-progress');
   const closeBtn = document.getElementById('close-lightbox');
   const triggers = document.querySelectorAll('[data-lightbox-trigger]');
+  
+  // Navigation & Toolbar Elements
+  const thumbnails = document.querySelectorAll('.thumbnail-btn');
+  const navPrev = document.getElementById('nav-prev');
+  const navNext = document.getElementById('nav-next');
+  const btnZoomIn = document.getElementById('btn-zoom-in');
+  const btnZoomOut = document.getElementById('btn-zoom-out');
+  const btnZoomReset = document.getElementById('btn-zoom-reset');
+  const btnFullscreen = document.getElementById('btn-fullscreen');
 
   // HUD Layout Items
   const hudContainer = document.getElementById('fixed-hud-container');
@@ -325,19 +394,22 @@ const { gallery } = Astro.props;
     let isDragging = false;
     let isExpanded = false;
     
-    // Dynamically retrieve unique album coordinates passed from Astro data layout maps
+    // Lightbox State
+    let currentPlateIndex = 0;
+    const totalPlates = triggers.length;
+    let lightboxScale = 1; // Replaces binary boolean with strict numeric scale
+    
+    // Dynamically retrieve unique album coordinates
     const centerX = Number(table.dataset.centerX) || 1150;
     const centerY = Number(table.dataset.centerY) || 520;
     
-    // Dynamic initialization for all screen sizes
+    // Dynamic initialization
     let scale = window.innerWidth >= 768 ? 0.65 : 0.45;
     let panX = (window.innerWidth / 2) - (centerX * scale);
     let panY = (window.innerHeight / 2) - (centerY * scale);
 
     let initialTouchDist = 0;
     let initialTouchScale = 0;
-    
-    // Pinch Center coordinates
     let initialPinchCenterX = 0;
     let initialPinchCenterY = 0;
 
@@ -388,8 +460,10 @@ const { gallery } = Astro.props;
       });
     }
 
-    // DESKTOP: Precision Zoom Wheel Tracking
+    // DESKTOP: Precision Zoom Wheel Tracking for Mapping Desk
     viewport.addEventListener('wheel', (e) => {
+      if (!modal.classList.contains('hidden')) return;
+
       e.preventDefault();
       
       const zoomFactor = 0.08;
@@ -413,7 +487,7 @@ const { gallery } = Astro.props;
       updateTransform();
     }, { passive: false });
 
-    // UNIFIED DRAG SYSTEM: Core Transform Calculations
+    // UNIFIED DRAG SYSTEM
     const startDrag = (clientX: number, clientY: number) => {
       isDown = true;
       isDragging = false;
@@ -437,6 +511,7 @@ const { gallery } = Astro.props;
     };
 
     viewport.addEventListener('mousedown', (e) => {
+      if (!modal.classList.contains('hidden')) return;
       if ((e.target as HTMLElement).closest('#fixed-hud-container')) return;
       startDrag(e.clientX, e.clientY);
     });
@@ -444,9 +519,10 @@ const { gallery } = Astro.props;
     viewport.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
     window.addEventListener('mouseup', endDrag);
 
-    // MOBILE TOUCH ENGINE: Audit-proofed multi-finger prioritization
+    // MOBILE TOUCH ENGINE
     viewport.addEventListener('touchstart', (e) => {
-      // Prioritize pinch gestures immediately. If two fingers touch down, bypass all HUD blocks
+      if (!modal.classList.contains('hidden')) return;
+
       if (e.touches.length === 2) {
         isDown = false; 
         initialTouchDist = Math.hypot(
@@ -455,13 +531,11 @@ const { gallery } = Astro.props;
         );
         initialTouchScale = scale;
         
-        // Find the midpoint between the two fingers
         initialPinchCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
         initialPinchCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
         return;
       }
       
-      // Standard interface boundary gate logic for single-finger drag interactions
       if ((e.target as HTMLElement).closest('#fixed-hud-container')) return;
       if (e.touches.length === 1) {
         startDrag(e.touches[0].clientX, e.touches[0].clientY);
@@ -469,6 +543,8 @@ const { gallery } = Astro.props;
     }, { passive: true });
 
     viewport.addEventListener('touchmove', (e) => {
+      if (!modal.classList.contains('hidden')) return;
+
       if (e.touches.length === 1 && isDown) {
         moveDrag(e.touches[0].clientX, e.touches[0].clientY);
       } else if (e.touches.length === 2 && initialTouchDist > 0) {
@@ -481,7 +557,6 @@ const { gallery } = Astro.props;
         const targetTouchScale = (currentDist / initialTouchDist) * initialTouchScale;
         const newScale = Math.min(Math.max(targetTouchScale, 0.25), 1.5);
 
-        // Zoom into the midpoint just like the desktop mouse wheel
         const baseXSpatial = (initialPinchCenterX - panX) / scale;
         const baseYSpatial = (initialPinchCenterY - panY) / scale;
 
@@ -500,12 +575,167 @@ const { gallery } = Astro.props;
       }
     });
 
-    // ACCESSIBILITY LOGIC: Key Command Keyboard Panning System
-    window.addEventListener('keydown', (e) => {
-      // Abort key mapping calculations if a photograph lightbox is currently active
-      if (!modal.classList.contains('hidden')) return;
+    // --- NEW: CENTRALIZED LIGHTBOX SCALAR ZOOM ENGINE ---
+    
+    const applyLightboxTransform = () => {
+      modalImg.style.transform = `scale(${lightboxScale})`;
+      if (lightboxScale === 1) {
+        modalImg.style.cursor = 'zoom-in';
+        modalImg.style.transformOrigin = 'center center';
+      } else {
+        modalImg.style.cursor = 'grab';
+      }
+    };
 
-      const step = 40; // Pixel pan travel velocity increment per click vector
+    const resetLightboxZoom = () => {
+      lightboxScale = 1;
+      applyLightboxTransform();
+    };
+
+    const adjustLightboxZoom = (delta: number) => {
+      lightboxScale = Math.min(Math.max(lightboxScale + delta, 1), 4);
+      applyLightboxTransform();
+    };
+
+    // Bind explicit UI Toolbar Controls
+    btnZoomIn?.addEventListener('click', (e) => { e.stopPropagation(); adjustLightboxZoom(0.5); });
+    btnZoomOut?.addEventListener('click', (e) => { e.stopPropagation(); adjustLightboxZoom(-0.5); });
+    btnZoomReset?.addEventListener('click', (e) => { e.stopPropagation(); resetLightboxZoom(); });
+
+    // Enable precision scroll wheel zooming inside the Lightbox
+    modalImg.parentElement?.addEventListener('wheel', (e) => {
+      if (modal.classList.contains('hidden')) return;
+      e.preventDefault();
+      
+      const zoomVelocity = 0.15;
+      if (e.deltaY < 0) {
+        lightboxScale = Math.min(lightboxScale + zoomVelocity, 4);
+      } else {
+        lightboxScale = Math.max(lightboxScale - zoomVelocity, 1);
+      }
+      
+      // Keep focal point centered dynamically as user wheels over the image
+      if (lightboxScale > 1) {
+        const container = modalImg.parentElement;
+        if (container) {
+          const rect = container.getBoundingClientRect();
+          const x = ((e.clientX - rect.left) / rect.width) * 100;
+          const y = ((e.clientY - rect.top) / rect.height) * 100;
+          modalImg.style.transformOrigin = `${Math.min(Math.max(x, 0), 100)}% ${Math.min(Math.max(y, 0), 100)}%`;
+        }
+      }
+      applyLightboxTransform();
+    }, { passive: false });
+
+    // Native Fullscreen API Integration
+    btnFullscreen?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!document.fullscreenElement) {
+        modal.requestFullscreen().catch((err) => console.log(`Error attempting to enable fullscreen: ${err.message}`));
+      } else {
+        document.exitFullscreen();
+      }
+    });
+
+    const updateThumbnails = (activeIndex: number) => {
+      thumbnails.forEach((thumb, i) => {
+        if (i === activeIndex) {
+          thumb.classList.add('opacity-100', 'border-caprock');
+          thumb.classList.remove('opacity-40', 'border-transparent');
+          thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        } else {
+          thumb.classList.remove('opacity-100', 'border-caprock');
+          thumb.classList.add('opacity-40', 'border-transparent');
+        }
+      });
+    };
+
+    const loadPlate = (index: number) => {
+      if (index < 0) index = totalPlates - 1;
+      if (index >= totalPlates) index = 0;
+      
+      currentPlateIndex = index;
+      const el = triggers[index] as HTMLElement;
+      
+      resetLightboxZoom();
+
+      modalImg.classList.remove('max-h-[45vh]', 'md:max-h-[50vh]', 'max-w-xs', 'md:max-w-md');
+      modalImg.classList.add('max-h-full', 'max-w-full');
+
+      modalImg.src = el.dataset.src || '';
+      modalImg.alt = el.dataset.title || '';
+      
+      if (modalTitle) modalTitle.innerHTML = `<span class="text-iron/40">${el.dataset.plate}</span> &bull; ${el.dataset.title}`;
+      if (modalSpecs) modalSpecs.innerText = el.dataset.specs || '';
+      if (modalCoords) modalCoords.innerText = el.dataset.coords || '';
+      if (modalCaption) modalCaption.innerText = el.dataset.caption || '';
+      
+      if (progressText) progressText.innerText = `Plate ${index + 1} of ${totalPlates}`;
+
+      modalImg.onload = () => {
+        if (modalImg.naturalHeight > modalImg.naturalWidth) {
+          modalImg.classList.remove('max-h-full', 'max-w-full');
+          modalImg.classList.add('max-h-[42vh]', 'md:max-h-[50vh]', 'max-w-xs', 'md:max-w-md');
+        }
+      };
+
+      updateThumbnails(index);
+    };
+
+    triggers.forEach((trigger, index) => {
+      trigger.addEventListener('click', () => {
+        if (isDragging) return;
+        modal.classList.remove('hidden');
+        setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        loadPlate(index);
+      });
+    });
+
+    thumbnails.forEach((thumb) => {
+      thumb.addEventListener('click', (e) => {
+        e.stopPropagation(); 
+        const targetIndex = parseInt((thumb as HTMLElement).dataset.index || '0', 10);
+        loadPlate(targetIndex);
+      });
+    });
+
+    navPrev?.addEventListener('click', (e) => { e.stopPropagation(); loadPlate(currentPlateIndex - 1); });
+    navNext?.addEventListener('click', (e) => { e.stopPropagation(); loadPlate(currentPlateIndex + 1); });
+
+    const closeLightbox = () => {
+      modal.classList.add('opacity-0');
+      setTimeout(() => {
+        modal.classList.add('hidden');
+        resetLightboxZoom(); 
+        if (document.fullscreenElement) document.exitFullscreen(); // Exit fullscreen on modal close
+      }, 300);
+    };
+
+    modal.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (
+        target.closest('#lightbox-caption') || 
+        target === modalImg || 
+        target.closest('#thumbnail-strip') ||
+        target.closest('button')
+      ) return;
+      closeLightbox();
+    });
+    
+    closeBtn?.addEventListener('click', closeLightbox);
+
+    // --- ACCESSIBILITY & KEYBOARD SYSTEM ---
+    window.addEventListener('keydown', (e) => { 
+      if (!modal.classList.contains('hidden')) {
+        if (e.key === 'Escape') closeLightbox();
+        if (e.key === 'ArrowRight') loadPlate(currentPlateIndex + 1);
+        if (e.key === 'ArrowLeft') loadPlate(currentPlateIndex - 1);
+        if (e.key === '=' || e.key === '+') adjustLightboxZoom(0.5); // Keyboard shortcut for Zoom In
+        if (e.key === '-') adjustLightboxZoom(-0.5); // Keyboard shortcut for Zoom Out
+        return;
+      }
+
+      const step = 40; 
       let triggered = false;
 
       if (e.key === 'ArrowUp' || e.key === 'w')    { panY += step; triggered = true; }
@@ -519,89 +749,23 @@ const { gallery } = Astro.props;
         updateTransform();
       }
     });
-
-    // --- LIGHTBOX ENGAGEMENT ROUTINES ---
-    let isLightboxZoomed = false;
-
-    // Helper to reset image back to normal
-    const resetLightboxZoom = () => {
-      isLightboxZoomed = false;
-      modalImg.style.transform = 'scale(1)';
-      modalImg.style.cursor = 'zoom-in';
-      modalImg.style.transformOrigin = 'center center';
-    };
-
-    triggers.forEach(trigger => {
-      trigger.addEventListener('click', () => {
-        if (isDragging) return;
-
-        const el = trigger as HTMLElement;
-        
-        modalImg.classList.remove('max-h-[45vh]', 'md:max-h-[50vh]', 'max-w-xs', 'md:max-w-md');
-        modalImg.classList.add('max-h-full', 'max-w-full');
-
-        modalImg.src = el.dataset.src || '';
-        modalImg.alt = el.dataset.title || '';
-        
-        if (modalTitle) modalTitle.innerHTML = `<span class="text-iron/40">${el.dataset.plate}</span> &bull; ${el.dataset.title}`;
-        if (modalSpecs) modalSpecs.innerText = el.dataset.specs || '';
-        if (modalCoords) modalCoords.innerText = el.dataset.coords || '';
-        if (modalCaption) modalCaption.innerText = el.dataset.caption || '';
-
-        modalImg.onload = () => {
-          if (modalImg.naturalHeight > modalImg.naturalWidth) {
-            modalImg.classList.remove('max-h-full', 'max-w-full');
-            modalImg.classList.add('max-h-[42vh]', 'md:max-h-[50vh]', 'max-w-xs', 'md:max-w-md');
-          }
-        };
-
-        modal.classList.remove('hidden');
-        setTimeout(() => modal.classList.remove('opacity-0'), 10);
-      });
-    });
-
-    const closeLightbox = () => {
-      modal.classList.add('opacity-0');
-      setTimeout(() => {
-        modal.classList.add('hidden');
-        resetLightboxZoom(); // Ensure zoom is reset for the next image
-      }, 300);
-    };
-
-    // Close Modal Logic (Prevents closing if interacting with the image)
-    modal.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-      // Do not close if clicking the caption OR the image itself
-      if (target.closest('#lightbox-caption') || target === modalImg) return;
-      closeLightbox();
-    });
     
-    closeBtn?.addEventListener('click', closeLightbox);
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
-
-    // --- NEW: LIGHTBOX ZOOM ENGINE ---
-    
-    // 1. Toggle Zoom on Click
+    // Quick Click Zoom Toggle
     modalImg.addEventListener('click', (e) => {
-      isLightboxZoomed = !isLightboxZoomed;
-      
-      if (isLightboxZoomed) {
-        modalImg.style.cursor = 'zoom-out';
-        modalImg.style.transform = 'scale(2.5)'; // Adjust this number for more/less zoom
-        
-        // Immediately set the origin to where they clicked so it zooms into that exact spot
+      if (lightboxScale === 1) {
+        lightboxScale = 2.5;
         const rect = modalImg.getBoundingClientRect();
         const x = ((e.clientX - rect.left) / rect.width) * 100;
         const y = ((e.clientY - rect.top) / rect.height) * 100;
         modalImg.style.transformOrigin = `${x}% ${y}%`;
       } else {
-        resetLightboxZoom();
+        lightboxScale = 1;
       }
+      applyLightboxTransform();
     });
 
-    // 2. Panning logic for both Mouse and Touch
     const panZoomedImage = (clientX: number, clientY: number) => {
-      if (!isLightboxZoomed) return;
+      if (lightboxScale === 1) return;
       const container = modalImg.parentElement;
       if (!container) return;
       
@@ -609,22 +773,18 @@ const { gallery } = Astro.props;
       const x = ((clientX - rect.left) / rect.width) * 100;
       const y = ((clientY - rect.top) / rect.height) * 100;
       
-      // Clamp values between 0 and 100 so the image doesn't pan off-screen
       const clampedX = Math.min(Math.max(x, 0), 100);
       const clampedY = Math.min(Math.max(y, 0), 100);
       
       modalImg.style.transformOrigin = `${clampedX}% ${clampedY}%`;
     };
 
-    // Desktop hover to pan
     modalImg.parentElement?.addEventListener('mousemove', (e) => {
       panZoomedImage(e.clientX, e.clientY);
     });
 
-    // Mobile swipe to pan
     modalImg.parentElement?.addEventListener('touchmove', (e) => {
-      if (e.touches.length === 1 && isLightboxZoomed) {
-        // Prevent default scrolling behavior while panning the image
+      if (e.touches.length === 1 && lightboxScale > 1) {
         e.preventDefault(); 
         panZoomedImage(e.touches[0].clientX, e.touches[0].clientY);
       }

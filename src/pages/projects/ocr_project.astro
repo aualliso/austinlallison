@@ -1,0 +1,471 @@
+---
+// src/pages/projects/ocr-pipeline.astro
+import RootLayout from '../../layouts/RootLayout.astro';
+---
+
+<RootLayout title="Archival OCR Pipeline Matrix // Austin Allison">
+  <article class="space-y-12">
+    
+    <!-- HEADER MANIFEST -->
+    <header class="border-b border-haze pb-6 space-y-2">
+      <h1 class="font-serif text-3xl md:text-4xl font-medium tracking-tight text-caprock leading-tight">
+        Open Source Optical Character Recognition Software
+      </h1>
+      <p class="font-mono text-mds text-iron/50 tracking-normal pt-1">
+        Optimized for microfilm and hardcopy newspaper images and whole issues
+      </p>
+    </header>
+
+    <!-- SECTION 1: PROJECT ABSTRACT -->
+    <section class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+      <h2 class="md:col-span-4 font-mono text-[10px] uppercase tracking-widest text-iron pt-1">
+        [ 01 // abstract ]
+      </h2>
+      <div class="md:col-span-8 font-serif text-md text-iron/80 leading-relaxed space-y-4">
+        <p>
+          Historical digital newspaper repositories frequently suffer from text loss due to ink bleed, paper discoloration, and irregular multi-column layouts. Standard off-the-shelf optical character recognition engines struggle with these artifacts, resulting in degraded transcription layers and broken search indexes. Open-source engines suffer from the same vulnerabilities, but it is possible to control them with granular functions to process images more cleanly.
+        </p>
+        <p>
+          This webpage details a modular, local Python pipeline optimized for high-throughput processing, contrast normalizing, and hidden text-layer injection for digital newspaper images. By decoupling image processing from the core OCR functions, this program ensures clean, search-optimized PDF creation for repository ingestion.
+        </p>
+      </div>
+    </section>
+
+    <hr class="border-haze border-t border-dashed" />
+
+    <!-- SECTION 2: PRODUCTION SOURCE LEDGER (INTEGRATED SCRIPT) -->
+    <section class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+      <h2 class="md:col-span-4 font-mono text-[10px] uppercase tracking-widest text-iron pt-1">
+        [ 02 // source_code ]
+      </h2>
+      
+      <div class="md:col-span-8 space-y-3">
+        <div class="flex justify-between items-baseline font-mono text-[9px] uppercase tracking-wider text-iron px-1">
+          <span>Execution Module: `*filename.py`</span>
+          <span class="text-caprock">Dependencies: Ghostscript, OpenCV (cv2), PyMuPDF (fitz), Scikit-Image (skimage), numpy, pytesseract</span>
+        </div>
+        
+        <!-- Code Terminal Container -->
+        <div class="w-full max-h-96 overflow-y-auto border border-haze rounded-sm bg-[#1A1919] text-[#E6E4DF] font-mono text-xs p-4 shadow-inner custom-scrollbar">
+          <pre><code is:raw class="language-python">import os
+os.environ['OMP_THREAD_LIMIT'] = '1' # Prevents CPU context-switching overload
+import cv2
+import numpy as np
+import pytesseract
+import concurrent.futures
+import subprocess
+import time
+import fitz  # PyMuPDF handles both injection and merging
+from skimage.filters import threshold_sauvola
+
+# Lock OpenCV to prevent thread thrashing in the multiprocessing pool
+cv2.setNumThreads(0) 
+
+# ================= CONFIGURATION =================
+ENABLE_DESKEW = False 
+pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
+# =================================================
+
+def deskew_image(image):
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    gray = cv2.bitwise_not(gray)
+    thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+    
+    h, w = thresh.shape
+    margin_h, margin_w = int(h * 0.1), int(w * 0.1)
+    center_roi = thresh[margin_h:h-margin_h, margin_w:w-margin_w]
+    
+    coords = np.column_stack(np.where(center_roi > 0))
+    if len(coords) == 0:
+        return image
+        
+    angle = cv2.minAreaRect(coords)[-1]
+    if angle > 45: angle = angle - 90
+        
+    if abs(angle) > 15 or abs(angle) < 0.5:
+        return image
+        
+    (h, w) = image.shape[:2]
+    center = (w // 2, h // 2)
+    M = cv2.getRotationMatrix2D(center, angle, 1.0)
+    return cv2.warpAffine(image, M, (w, h), flags=cv2.INTER_CUBIC, borderMode=cv2.BORDER_REPLICATE)
+
+def chunked_sauvola(image, window_size=51, k=0.12, chunk_height=1000):
+    """
+    Runs skimage's Sauvola thresholding in horizontal chunks to prevent memory overload.
+    Includes an overlap buffer so the window calculations remain perfectly accurate at the seams.
+    """
+    h, w = image.shape
+    # Pre-allocate the final output array
+    full_thresh = np.zeros_like(image, dtype=np.float64)
+    
+    # Overlap buffer matches window size to provide context to edge pixels
+    overlap = window_size  
+    
+    for y in range(0, h, chunk_height):
+        # Define the padded chunk boundaries
+        y_start = max(0, y - overlap)
+        y_end = min(h, y + chunk_height + overlap)
+        
+        # Extract the chunk
+        chunk = image[y_start:y_end, :]
+        
+        # Process only this smaller chunk
+        chunk_thresh = threshold_sauvola(chunk, window_size=window_size, k=k)
+        
+        # Calculate exactly which pixels belong in the final image (stripping the overlap)
+        valid_start = y - y_start
+        valid_height = min(chunk_height, h - y)
+        valid_end = valid_start + valid_height
+        
+        # Stitch the valid region back into the full matrix
+        full_thresh[y:y+valid_height, :] = chunk_thresh[valid_start:valid_end, :]
+        
+    return full_thresh
+
+def preprocess_image(image_path):
+    img = cv2.imread(image_path)
+    height, width = img.shape[:2]
+    
+    # Keep high resolution for dense newspaper columns
+    scale_ratio = 1.0
+    if width > 5000:
+        scale_ratio = 5000 / width
+        img = cv2.resize(img, (0,0), fx=scale_ratio, fy=scale_ratio, interpolation=cv2.INTER_AREA)
+
+    if ENABLE_DESKEW:
+        img = deskew_image(img)
+
+    original_visual = img.copy()
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    
+    # --- ABBYY-STYLE ENGINE CRUX: LOCAL CONTRAST BOOSTING ---
+    clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(16, 16))
+    local_contrast = clahe.apply(gray)
+    
+    # Gentle illumination smoothing
+    background_map = cv2.GaussianBlur(local_contrast, (51, 51), 0)
+    normalized = cv2.divide(local_contrast, background_map, scale=255)
+    
+    # Fast smoothing to remove micro-noise
+    denoised = cv2.GaussianBlur(normalized, (3, 3), 0)
+    
+    # --- TUNED SAUVOLA PARAMETERS ---
+    thresh_sauvola = chunked_sauvola(denoised, window_size=51, k=0.12, chunk_height=1000)
+    # Background becomes 255 (white), text becomes 0 (black) for optimal Tesseract input
+    binary_img = (denoised > thresh_sauvola).astype(np.uint8) * 255
+    
+    return original_visual, binary_img
+
+def process_single_page(img_path, page_num):
+    print(f"  -> Processing Page {page_num} ({os.path.basename(img_path)})...")
+    
+    original_visual, binary_img = preprocess_image(img_path)
+    
+    # --- TIMEOUT LOGIC & PDF FALLBACK ---
+    try:
+        start_time = time.time()
+        # Feed the SAUVOLA binary image directly to Tesseract to bypass internal thresholding
+
+        # --- GUTTER ENHANCEMENT FOR COLUMN DETECTION ---
+        # Create a horizontal kernel (3 pixels wide, 1 pixel tall)
+        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (3, 1))
+        # Dilate the white background to push columns apart horizontally
+        tesseract_input = cv2.dilate(binary_img, kernel, iterations=1)
+
+        text_only_pdf_bytes = pytesseract.image_to_pdf_or_hocr(
+            binary_img, 
+            extension='pdf', 
+            config='--oem 1 --psm 3 -c textonly_pdf=1',
+            timeout=80 # Bumped timeout slightly since it's scanning the whole page at once now
+        )
+        print(f"  -> [TIMER] Page {page_num} PDF layer generated in {round(time.time() - start_time, 2)} seconds")
+        
+        doc = fitz.open("pdf", text_only_pdf_bytes)
+        page = doc[0]
+
+        # --- STRIP TESSERACT'S AUTO-ROTATION ---
+        if page.rotation != 0:
+            print(f"  -> [!] Stripping Tesseract auto-rotation of {page.rotation} degrees.")
+            page.set_rotation(0)
+            
+    except RuntimeError:
+        print(f"  -> [!] Page {page_num} timed out during PDF generation! Falling back to image-only page.")
+        doc = fitz.open()
+        h, w = original_visual.shape[:2]
+        page = doc.new_page(width=w, height=h)
+    except Exception as e:
+        print(f"  -> [!] Unexpected error on Page {page_num}: {e}. Falling back to image-only page.")
+        doc = fitz.open()
+        h, w = original_visual.shape[:2]
+        page = doc.new_page(width=w, height=h)
+    
+    # Insert the original high-quality visual over the invisible text layer
+    success, jpeg_buffer = cv2.imencode('.jpg', original_visual, [cv2.IMWRITE_JPEG_QUALITY, 50])
+    if success:
+        page.insert_image(page.rect, stream=jpeg_buffer.tobytes(), overlay=False)
+        
+    pdf_bytes = doc.write()
+    doc.close()
+    
+    return page_num, pdf_bytes
+
+def optimize_to_pdfa(input_pdf_path):
+    output_pdf_path = input_pdf_path.replace('.pdf', '_compressed_pdfa.pdf')
+    gs_command = [
+        'gswin64c', '-dPDFA=2', '-dBATCH', '-dNOPAUSE', '-dQUIET', '-dAutoRotatePages=/None',
+        '-sDEVICE=pdfwrite', '-dPDFACompatibilityPolicy=1',
+        '-dDownsampleColorImages=true', '-dColorImageResolution=150',
+        '-dColorImageFilter=/DCTEncode', '-dDownsampleGrayImages=true',
+        '-dGrayImageResolution=150', '-dGrayImageFilter=/DCTEncode',
+        '-dDownsampleMonoImages=true', '-dMonoImageResolution=300',
+        '-sProcessColorModel=DeviceRGB', '-dEmbedAllFonts=true',
+        '-dSubsetFonts=true', f'-sOutputFile={output_pdf_path}',
+        input_pdf_path
+    ]
+    try:
+        subprocess.run(gs_command, check=True)
+        os.replace(output_pdf_path, input_pdf_path)
+    except subprocess.CalledProcessError as e:
+        print(f"  -> PDF/A compression failed: {e}")
+
+def process_single_issue(issue_folder_path, output_directory):
+    issue_name = os.path.basename(issue_folder_path)
+    print(f"\nStarting Issue: {issue_name}")
+    
+    valid_extensions = ('.jpg', '.jpeg', '.png', '.tif', '.tiff')
+    image_files = sorted([os.path.join(issue_folder_path, f) for f in os.listdir(issue_folder_path) if f.lower().endswith(valid_extensions)])
+    if not image_files: return
+
+    pdf_pages_dict = {}
+
+    # Increased workers to 6 since YOLO is no longer consuming RAM
+    with concurrent.futures.ProcessPoolExecutor(max_workers=6) as executor:
+        futures = {executor.submit(process_single_page, img_path, page_num): page_num for page_num, img_path in enumerate(image_files, start=1)}
+        
+        for future in concurrent.futures.as_completed(futures):
+            page_num, pdf_bytes = future.result()
+            pdf_pages_dict[page_num] = pdf_bytes
+
+    os.makedirs(output_directory, exist_ok=True)
+    
+    final_pdf = fitz.open()
+    
+    for page_num in sorted(pdf_pages_dict.keys()):
+        single_page_doc = fitz.open("pdf", pdf_pages_dict[page_num])
+        final_pdf.insert_pdf(single_page_doc)
+        single_page_doc.close()
+        
+    pdf_output_path = os.path.join(output_directory, f"{issue_name}.pdf")
+    final_pdf.save(pdf_output_path)
+    final_pdf.close()
+        
+    optimize_to_pdfa(pdf_output_path)
+    print(f"Issue Complete!\n")
+
+def main():
+    BASE_INPUT_DIR = r"INPUT PATH HERE"
+    BASE_OUTPUT_DIR = r"OUTPUT PATH HERE"
+    
+    if not os.path.exists(BASE_INPUT_DIR):
+        print(f"Error: The directory '{BASE_INPUT_DIR}' does not exist.")
+        return
+
+    for item in os.listdir(BASE_INPUT_DIR):
+        item_path = os.path.join(BASE_INPUT_DIR, item)
+        if os.path.isdir(item_path):
+            process_single_issue(item_path, BASE_OUTPUT_DIR)
+
+if __name__ == "__main__":
+    main()
+</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <hr class="border-haze border-t border-dashed" />
+
+    <!-- SECTION 3: REPOSITORY DATA TEST-CASE MATRIX (IMAGE PARAMETERS) -->
+    <section class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+      <h2 class="md:col-span-4 font-mono text-[10px] uppercase tracking-widest text-iron pt-1">
+        [ 03 // test_case ]
+      </h2>
+      
+      <div class="md:col-span-8 space-y-3">
+        <span class="font-serif text-xs text-caprock italic leading-normal block">Hover to show bounding boxes</span>
+        
+        <div class="border border-haze rounded-sm p-1.5 bg-iron/[0.01] overflow-hidden group relative cursor-crosshair">
+          <div class="w-full bg-iron/5 rounded-xs flex items-center justify-center relative overflow-hidden">
+  
+  <!-- Base Broadsheet Image -->
+  <img 
+    src="/images/test.jpg" 
+    alt="The Snyder Daily News Front Page Validation Target" 
+    class="w-full h-auto filter grayscale contrast-[1.15] mix-blend-multiply transition-opacity duration-300 group-hover:opacity-0"
+    loading="eager"
+  />
+
+  <!-- Bounding Boxes Overlay Image -->
+  <img 
+    src="/images/test_boxes.jpg" 
+    alt="Bounding Box Layout Detection Overlay" 
+    class="absolute inset-0 w-full h-full filter grayscale contrast-[1.15] mix-blend-multiply opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+    loading="eager"
+  />
+  
+  <!-- Clean Identifying Technical Frame Label -->
+  <div class="absolute bottom-2 left-2 bg-canvas/90 border border-haze px-2 py-0.5 rounded-xs font-mono text-[8px] text-iron/70 tracking-tight z-10 transition-colors duration-300 group-hover:border-caprock group-hover:text-caprock">
+    target_file: gray00055.jpg
+  </div>
+
+</div>
+        </div>
+        
+        <p class="font-serif text-xs text-iron/60 italic leading-normal">
+          Figure 1.1: Core validation broadsheet profile tracking multi-column boundaries, title banners, and dense text gutters.
+        </p>
+      </div>
+    </section>
+
+    <hr class="border-haze border-t border-dashed" />
+
+    <!-- SECTION 4: Definitions -->
+    <section class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+      <h2 class="md:col-span-4 font-mono text-[10px] uppercase tracking-widest text-iron pt-1">
+        [ 04 // function_ledger ]
+      </h2>
+      
+      <div class="md:col-span-8 overflow-hidden border border-haze rounded-sm">
+        <table class="w-full text-left font-mono text-xs border-collapse">
+          <thead>
+            <tr class="bg-iron/[0.03] border-b border-haze text-iron/50 uppercase text-[9px] tracking-wider">
+              <th class="p-3 font-bold w-1/4">Function</th>
+              <th class="p-3 font-bold w-1/4">Dependencies</th>
+              <th class="p-3 font-bold w-1/2">Pipeline Role & Execution</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-haze/60 text-iron/80">
+            <tr>
+              <td class="p-3 font-bold text-caprock"><code is:raw>deskew_image()</code></td>
+              <td class="p-3 text-[11px]">OpenCV (<code is:raw>cv2</code>)</td>
+              <td class="p-3 text-[11px] leading-relaxed">
+                Straightens crooked scans using ROI bounding boxes (<code is:raw>cv2.minAreaRect</code>). Includes safety limits (0.5° to 15° threshold). Bypassed by default via <code is:raw>ENABLE_DESKEW = False</code>.
+              </td>
+            </tr>
+
+            <tr>
+              <td class="p-3 font-bold text-caprock"><code is:raw>chunked_sauvola()</code></td>
+              <td class="p-3 text-[11px]">Scikit-Image, NumPy</td>
+              <td class="p-3 text-[11px] leading-relaxed">
+                Memory-safe Sauvola thresholding. Slices high-res scans into 1,000px horizontal chunks with a 51px overlap buffer to eliminate seam artifacts while conserving RAM.
+              </td>
+            </tr>
+
+            <tr>
+              <td class="p-3 font-bold text-caprock"><code is:raw>preprocess_image()</code></td>
+              <td class="p-3 text-[11px]">OpenCV, Scikit-Image, NumPy</td>
+              <td class="p-3 text-[11px] leading-relaxed">
+                Core cleanup pipeline. Handles downscaling (&gt;5000px), contrast normalization via CLAHE grid filtering, Gaussian illumination division, and binarization.
+              </td>
+            </tr>
+
+            <tr>
+              <td class="p-3 font-bold text-caprock"><code is:raw>process_single_page()</code></td>
+              <td class="p-3 text-[11px]">PyTesseract, PyMuPDF (<code is:raw>fitz</code>), OpenCV</td>
+              <td class="p-3 text-[11px] leading-relaxed">
+                Page OCR worker. Applies a (3,1) dilation kernel to widen column gutters, enforces an 80s Tesseract timeout safeguard, and overlays high-res visuals over hidden text layers.
+              </td>
+            </tr>
+
+            <tr>
+              <td class="p-3 font-bold text-caprock"><code is:raw>optimize_to_pdfa()</code></td>
+              <td class="p-3 text-[11px]">Ghostscript (<code is:raw>gswin64c</code>)</td>
+              <td class="p-3 text-[11px] leading-relaxed">
+                Archival compiler. Converts merged PDFs to ISO-compliant PDF/A-2 envelopes while downsampling color photos to 150 DPI and embedded fonts.
+              </td>
+            </tr>
+
+            <tr>
+              <td class="p-3 font-bold text-caprock"><code is:raw>process_single_issue()</code></td>
+              <td class="p-3 text-[11px]">Concurrent Futures, PyMuPDF</td>
+              <td class="p-3 text-[11px] leading-relaxed">
+                Multiprocessing manager. Spawns up to 6 worker processes, catches out-of-order page completions into an indexed map, merges pages chronologically, and triggers compression.
+              </td>
+            </tr>
+
+            <tr>
+              <td class="p-3 font-bold text-caprock"><code is:raw>main()</code></td>
+              <td class="p-3 text-[11px]">Standard Library (<code is:raw>os</code>)</td>
+              <td class="p-3 text-[11px] leading-relaxed">
+                Entry point. Validates filesystem target directories and iterates over input issue folders sequentially.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <hr class="border-haze border-t border-dashed" />
+
+    <!-- SECTION 5: INTERACTIVE PDF PROOF OF CONCEPT (OVERRIDDEN FIT) -->
+    <section class="space-y-4">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-2">
+        <h2 class="font-mono text-[10px] uppercase tracking-widest text-iron pt-1">
+          [ 05 // interactive_pdf ]
+        </h2>
+        <div class="flex justify-between md:justify-end items-baseline gap-4 font-mono text-[9px] uppercase tracking-wider text-iron w-full md:w-auto">
+          <span>Target Export: `test.pdf`</span>
+          <span class="text-caprock">Format: Searchable PDF/A-2</span>
+        </div>
+      </div>
+
+      <!-- Out-of-grid container expansion -->
+      <div class="w-full border border-haze rounded-sm p-1 bg-iron/[0.01]">
+        <!-- Explicit min-height ensures browser plugin doesn't shrink vertically -->
+        <div class="w-full h-[1000px] min-h-[1000px] bg-iron/5 rounded-xs overflow-hidden relative">
+          <object 
+            data="/images/test.pdf#view=FitH&toolbar=0&navpanes=0" 
+            type="application/pdf" 
+            class="w-full h-full block"
+            style="width: 100%; height: 1000px !important;"
+          >
+            <!-- Fallback message for unsupported browsers -->
+            <div class="p-6 text-center space-y-3 font-mono text-xs text-iron/70">
+              <p>Your browser does not support embedded PDF previews.</p>
+              <a 
+                href="/images/test.pdf" 
+                target="_blank" 
+                class="inline-block border border-haze px-3 py-1.5 rounded-xs text-caprock hover:bg-iron/5 transition-colors"
+              >
+                Download Sample PDF Result
+              </a>
+            </div>
+          </object>
+        </div>
+      </div>
+
+      <p class="font-serif text-xs text-iron/60 italic leading-normal">
+        Figure 1.2: Interactive PDF/A output. Highlight text or use Ctrl+F to test search capability on the injected OCR plane.
+      </p>
+    </section>
+
+  </article>
+</RootLayout>
+
+<style>
+  /* Custom thin line scrollbar for the clean code interface */
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #242323;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(230, 228, 223, 0.2);
+    border-radius: 2px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(230, 228, 223, 0.4);
+  }
+</style>

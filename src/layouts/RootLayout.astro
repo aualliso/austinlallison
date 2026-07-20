@@ -12,7 +12,10 @@ interface Props {
 }
 
 const { title, hideNav = false, description = "Academic Librarian & Photographer Portfolio" } = Astro.props;
-
+// Get the current path (e.g., "/projects/ocr-pipeline")
+const currentPath = Astro.url.pathname;
+// Split into array and remove empty strings
+const pathSegments = currentPath.split('/').filter(segment => segment !== '');
 ---
 
 <!DOCTYPE html>
@@ -40,7 +43,7 @@ const { title, hideNav = false, description = "Academic Librarian & Photographer
 
 <footer class="relative w-full overflow-hidden bg-sage text-[var(--color-canvas)] py-8 md:py-12 px-4 sm:px-6 font-sans border-t border-[var(--color-canvas)]/10 select-none">
   
-  <!-- 01: THE AMBIENT DESERT HAZE (Scaled down for smaller footprint) -->
+  <!-- 01: THE AMBIENT DESERT HAZE -->
   <div class="absolute inset-0 pointer-events-none opacity-50 mix-blend-screen blur-[80px] z-0 overflow-hidden">
     <div class="absolute top-[-30%] left-[-10%] w-[60vw] h-[60vw] max-w-[500px] max-h-[500px] bg-[var(--color-caprock)]/40 rounded-full animate-[pulse_14s_ease-in-out_infinite_alternate]"></div>
     <div class="absolute bottom-[-20%] right-[-10%] w-[50vw] h-[50vw] max-w-[400px] max-h-[400px] bg-[var(--color-dust)]/30 rounded-full animate-[pulse_18s_ease-in-out_infinite_alternate-reverse]"></div>
@@ -61,13 +64,14 @@ const { title, hideNav = false, description = "Academic Librarian & Photographer
           <p class="text-xs md:text-sm text-[var(--color-canvas)]/60 max-w-sm font-light leading-relaxed">
             Cataloging and Metadata Librarian &bull; Historian &bull; Photographer
           </p>
-		  <p class="text-xs md:text-sm text-[var(--color-canvas)]/60 max-w-sm font-light leading-relaxed">
+          <p class="text-xs md:text-sm text-[var(--color-canvas)]/60 max-w-sm font-light leading-relaxed">
             Southwest Collection/Special Collections Library
           </p>
         </div>
         
         <div class="flex items-center gap-3 mt-8 md:mt-12">
           <div class="relative flex h-2 w-2">
+            <!-- Ping animation element can go here -->
           </div>
           <span class="text-[9px] md:text-[10px] uppercase tracking-[0.2em] font-mono text-[var(--color-dust)]">
             Website constructed using Visual Studio Code, Tailwind CSS, and Astro 7.1 web framework.
@@ -82,28 +86,50 @@ const { title, hideNav = false, description = "Academic Librarian & Photographer
         </div>
         
         <nav class="flex flex-col gap-3 md:gap-4 text-base md:text-lg font-light tracking-wide">
-          <a href="/photography" class="text-[var(--color-canvas)]/70 hover:text-[var(--color-canvas)] hover:translate-x-1.5 transition-all duration-300 flex items-center justify-between group">
+          <a href="/photography" class="text-[var(--color-canvas)]/70 hover:text-[var(--color-dust)] hover:translate-x-1.5 transition-all duration-300 flex items-center justify-between group">
             <span>Photography</span>
             <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-[var(--color-caprock)] text-xs md:text-sm">&rarr;</span>
           </a>
-          <a href="/publications" class="text-[var(--color-canvas)]/70 hover:text-[var(--color-canvas)] hover:translate-x-1.5 transition-all duration-300 flex items-center justify-between group">
+          <a href="/publications" class="text-[var(--color-canvas)]/70 hover:text-[var(--color-dust)] hover:translate-x-1.5 transition-all duration-300 flex items-center justify-between group">
             <span>Scholarly Publications</span>
             <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-[var(--color-caprock)] text-xs md:text-sm">&rarr;</span>
           </a>
-          <a href="/cv" class="text-[var(--color-canvas)]/70 hover:text-[var(--color-canvas)] hover:translate-x-1.5 transition-all duration-300 flex items-center justify-between group">
+          <a href="/cv" class="text-[var(--color-canvas)]/70 hover:text-[var(--color-dust)] hover:translate-x-1.5 transition-all duration-300 flex items-center justify-between group">
             <span>Curriculum Vitae</span>
             <span class="opacity-0 group-hover:opacity-100 transition-opacity duration-300 text-[var(--color-caprock)] text-xs md:text-sm">&rarr;</span>
           </a>
         </nav>
       </div>
       
+      <!-- 02.5: WAYFINDING / BREADCRUMBS (DYNAMIC ASTRO MODULE) -->
+      <div class="col-span-12 bg-[var(--color-haze)]/[0.02] border border-[var(--color-canvas)]/[0.04] rounded-xl p-3 md:px-6 backdrop-blur-xl flex flex-wrap items-center gap-2 font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-[var(--color-canvas)]/50 shadow-sm">
+        <span class="text-[var(--color-dust)] mr-2">// Breadcrumbs //</span>
+        <a href="/" class="text-[var(--color-dust)] hover:text-[var(--color-dust)] transition-colors">root</a>
+        
+        {pathSegments.length > 0 && pathSegments.map((segment, index) => {
+          // Rebuild the URL path up to the current segment
+          const href = `/${pathSegments.slice(0, index + 1).join('/')}`;
+          // Clean up the text (e.g., 'ocr-pipeline' -> 'ocr pipeline')
+          const label = segment.replace(/-/g, ' ');
+          
+          return (
+            <div class="flex items-center gap-2">
+              <span class="text-[var(--color-canvas)]/20">/</span>
+              <a href={href} class="hover:text-[var(--color-dust)] transition-colors">
+                {label}
+              </a>
+            </div>
+          );
+        })}
+      </div>
+
     </div>
 
     <!-- 03: THE HORIZON STRIP -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-1">
       <!-- Locality / Comm Module -->
       <div class="bg-[var(--color-haze)]/[0.02] border border-[var(--color-canvas)]/[0.04] rounded-xl p-4 md:px-6 backdrop-blur-xl flex flex-wrap items-center justify-between gap-3 text-[10px] md:text-xs font-mono text-[var(--color-canvas)]/80 hover:bg-[var(--color-haze)]/[0.04] transition-colors duration-500">
-        <a href="mailto:austinlallison@gmail.com" class="hover:text-[var(--color-caprock)] transition-colors">comms@email.com</a>
+        <a href="mailto:austinlallison@gmail.com" class="hover:text-[var(--color-dust)] transition-colors">austinlallison@gmail.com</a>
       </div>
       
       <!-- Legal / Copyright Module -->
