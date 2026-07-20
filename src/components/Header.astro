@@ -12,9 +12,9 @@
 //      rolling plains for photography. The line morphs between them on
 //      navigation (CSS `d` transition; instant swap where unsupported).
 //   3. ONE OBJECT ON THE LINE — an Aermotor windmill, 1px strokes, sails
-//      turning once every 22 seconds. Hidden below md; frozen under
-//      prefers-reduced-motion.
-//   4. THE PLATE IS FINISHED — the benchmark now carries its elevation.
+//      turning once every 22 seconds. Stands left of the sun and shows at
+//      every width; frozen under prefers-reduced-motion.
+//   4. THE PLATE — the benchmark and its station name (Lubbock, Texas).
 //
 // Also folded in from review: the frost is its own layer (opacity +
 // backdrop-filter animate; gradients never snap), the scroll listener
@@ -84,7 +84,7 @@ const groundPath = `${silhouette} V22 H0 Z`;
     <svg
       id="windmill"
       aria-hidden="true"
-      class="absolute pointer-events-none hidden md:block"
+      class="absolute pointer-events-none"
       width="22" height="34" viewBox="0 0 22 34"
     >
       <g stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round">
@@ -130,7 +130,7 @@ const groundPath = `${silhouette} V22 H0 Z`;
               <circle cx="5.5" cy="6" r="0.9" fill="currentColor" />
             </svg>
             <span class="station-meta font-mono uppercase whitespace-nowrap">
-              Lubbock, Texas<span class="station-elev"> &middot; 3,256 ft</span>
+              Lubbock, Texas
             </span>
           </span>
         </span>
@@ -382,7 +382,7 @@ const groundPath = `${silhouette} V22 H0 Z`;
   }
 
   #windmill {
-    left: 57.5%;
+    left: 40%; /* left of the sun (centered at 50%) */
     bottom: 3px; /* the line sits 3px up inside the horizon svg */
     color: color-mix(in oklch, var(--color-dust, #B3A38F) 68%, var(--color-iron, #1A1919));
     opacity: 0.45;
@@ -560,7 +560,6 @@ const groundPath = `${silhouette} V22 H0 Z`;
   @media (max-width: 380px) {
     .landmark-name { font-size: 0.92rem; }
     .marker-label  { font-size: 10.5px; }
-    .station-elev  { display: none; }
   }
 
   /* ======================================================================== */
