@@ -1,293 +1,315 @@
 ---
-// src/components/Footer.astro
-// A full-bleed dust footer anchored by the name at architectural scale. A
-// pointer-tracked spotlight inks the name in from a faint ghost to solid as
-// the cursor crosses it (auto-drifts on touch/idle); a live Lubbock clock sits
-// in the eyebrow; the modules carry affiliation, index, and contact. Colors
-// derive from the site's --color-* tokens so the dust ground tracks the rest
-// of the palette. Full-bleed via a 100vw break-out so it spans the viewport
-// even when mounted inside a max-width layout wrapper.
-const { pathname } = Astro.url;
-const pathSegments = pathname.split('/').filter(Boolean);
+// src/components/Footer.astro — "The Catalog Drawer"
+// The footer is a card catalog. Cream index cards (call number, ruled lines,
+// punch-hole) sit filed in a fan on a dark oak drawer; on desktop you can drag
+// and fling them around, with a Re-file button to snap them home. Every card
+// title is a real link, so the play never costs usability.
+//
+// Mobile-friendly: below 760px the physics turn off and the cards lay out as a
+// clean, tappable grid (same card styling, no scatter). prefers-reduced-motion
+// keeps cards filed and still. Full-bleed via a 100vw break-out.
 const year = new Date().getFullYear();
 
-const index = [
-  { href: '/photography',  label: 'Photography' },
-  { href: '/publications', label: 'Scholarly Publications' },
-  { href: '/cv',           label: 'Curriculum Vitae' },
+const cards = [
+  { cls: 'identity', w: 300, h: 176, call: 'Main Entry · AA', title: 'Austin Allison', href: '/', role: true },
+  { cls: '', w: 204, h: 128, call: 'TR 654', title: 'Photography',           href: '/photography',  sub: 'Landscapes · Texas & the American West' },
+  { cls: '', w: 212, h: 128, call: 'Z 1201', title: 'Scholarly Publications', href: '/publications', sub: 'Panhandle-Plains Review · 2025' },
+  { cls: '', w: 188, h: 122, call: 'CV 01',  title: 'Curriculum Vitae',       href: '/cv',           sub: 'Full academic record' },
+  { cls: 'contact', w: 210, h: 122, call: 'Correspondence', title: 'austinlallison@gmail.com', href: 'mailto:austinlallison@gmail.com', sub: 'Inquiries · prints · collaborations' },
 ];
 ---
 
-<footer class="ftr" aria-label="Site footer">
-  <div class="ftr-inner">
+<footer class="drawer" id="al-drawer" aria-label="Site footer">
+  <div class="grain" aria-hidden="true"></div>
 
-    <div class="ftr-eyebrow">
-      <span class="status">
-        <span class="pulse" aria-hidden="true"></span>
-        <span>Lubbock, Texas</span>
-        <span class="clock" aria-hidden="true">&mdash;</span>
-      </span>
-      <button type="button" class="to-top" aria-label="Back to top">
-        Back to top <span class="arr" aria-hidden="true">&uarr;</span>
-      </button>
-    </div>
+  <div class="bar">
+    <div class="drawer-label font-mono"><span class="pin" aria-hidden="true"></span> Card Catalog · Drawer AA</div>
+    <button class="refile font-mono" type="button" data-refile>&#8635; Re-file</button>
+  </div>
 
-    <div class="ftr-rule"></div>
-
-    <div class="ftr-modules">
-      <div class="mod">
-        <div class="mod-head font-mono">Affiliation</div>
-        <p class="affil-main">Southwest Collection / Special Collections Library</p>
-        <p class="affil-sub">Texas Tech University</p>
+  <div class="stage" id="al-stage">
+    {cards.map((c) => (
+      <div class={`card ${c.cls}`.trim()} data-w={c.w} data-h={c.h}>
+        <div class="top"></div>
+        <div class="pad">
+          <span class="callno font-mono">{c.call}</span>
+          <a class="title font-serif" href={c.href} draggable={false}>{c.title}</a>
+          {c.role && <div class="roles font-mono">Cataloging &amp; Metadata Librarian · Historian · Photographer</div>}
+          {c.role && <div class="affil">Southwest Collection / Special Collections Library</div>}
+          {c.sub && <div class="sub font-mono">{c.sub}</div>}
+          <div class="hole" aria-hidden="true"></div>
+        </div>
       </div>
+    ))}
+  </div>
 
-      <nav class="mod index" aria-label="Footer">
-        <div class="mod-head font-mono">Index</div>
-        {index.map((item) => (
-          <a href={item.href} class="index-link font-serif">
-            <span class="lab">{item.label}</span>
-            <span class="go" aria-hidden="true">&rarr;</span>
-          </a>
-        ))}
-      </nav>
-
-      <div class="mod contact">
-        <div class="mod-head font-mono">Contact</div>
-        <a href="mailto:austinlallison@gmail.com" class="contact-link">austinlallison@gmail.com</a>
-        <p class="avail">Open to collaborations and inquiries.</p>
-      </div>
-    </div>
-
-    <div class="name-block">
-      <div class="name-wrap" id="ftr-name">
-        <h2 class="name-layer name-base font-serif">Austin Allison</h2>
-        <span class="name-layer name-lit font-serif" aria-hidden="true">Austin Allison</span>
-      </div>
-      <p class="roles font-mono">Cataloging &amp; Metadata Librarian &nbsp;&middot;&nbsp; Historian &nbsp;&middot;&nbsp; Photographer</p>
-    </div>
-
-    <div class="ftr-baseline font-mono">
-      <span class="pos">
-        <span class="pos-k">Position</span>
-        <a href="/" class="pos-seg">root</a>
-        {pathSegments.map((segment, index) => {
-          const href = `/${pathSegments.slice(0, index + 1).join('/')}`;
-          const label = segment.replace(/-/g, ' ');
-          return (
-            <span class="pos-part">
-              <span class="pos-slash">/</span>
-              <a href={href} class="pos-seg">{label}</a>
-            </span>
-          );
-        })}
-      </span>
-      <span class="colophon">&copy; {year} Austin Allison &nbsp;&middot;&nbsp; Built with Astro &amp; Tailwind CSS</span>
-    </div>
-
+  <div class="foot">
+    <div class="hint font-mono" data-hint aria-hidden="true">Drag &amp; toss the cards</div>
+    <div class="copyline font-mono">&copy; {year} Austin Allison &nbsp;·&nbsp; Built with Astro &amp; Tailwind CSS</div>
   </div>
 </footer>
 
 <style>
-  .ftr {
-    /* full-bleed: fill the viewport width regardless of any wrapper */
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
-    overflow: hidden;
-    user-select: none;
+  .drawer {
+    width: 100vw; margin-left: calc(50% - 50vw);
+    position: relative; overflow: hidden; isolation: isolate; user-select: none;
+    color: color-mix(in oklch, var(--color-canvas, #FBFBF9) 82%, var(--color-dust, #B3A38F));
 
-    /* palette, derived from the site tokens so the dust tracks everything else */
-    --fb-base: color-mix(in oklch, var(--color-dust, #B3A38F) 60%, var(--color-canvas, #FBFBF9));
-    --fb-ink: color-mix(in oklch, var(--color-sage, #1A1919) 92%, var(--color-dust, #B3A38F));
-    --fb-accent: var(--color-caprock, #9C5B3F);
-    --fb-muted: color-mix(in oklch, var(--fb-ink) 56%, transparent);
-    --fb-faint: color-mix(in oklch, var(--fb-ink) 22%, transparent);
-    --fb-hair: color-mix(in oklch, var(--fb-ink) 16%, transparent);
+    --dr-oak-hi: color-mix(in oklch, var(--color-iron, #1A1919) 72%, var(--color-caprock, #9C5B3F));
+    --dr-oak-lo: var(--color-iron, #1A1919);
+    --dr-card: color-mix(in oklch, var(--color-canvas, #FBFBF9) 88%, var(--color-dust, #B3A38F));
+    --dr-ink: color-mix(in oklch, var(--color-iron, #1A1919) 88%, var(--color-caprock, #9C5B3F));
+    --dr-accent: var(--color-caprock, #9C5B3F);
 
-    background: var(--fb-base);
-    color: var(--fb-ink);
-    padding: 2.25rem clamp(1.25rem, 4vw, 3.25rem) 1.75rem;
+    background:
+      repeating-linear-gradient(90deg, rgba(0,0,0,0.05) 0 2px, transparent 2px 6px),
+      radial-gradient(140% 120% at 50% -20%, var(--dr-oak-hi) 0%, var(--dr-oak-lo) 62%, #0f0a06 100%);
   }
-  .ftr-inner { max-width: 1600px; margin: 0 auto; }
-
-  /* ---- eyebrow ---- */
-  .ftr-eyebrow {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 1rem; flex-wrap: wrap;
-    font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--fb-muted); font-family: var(--font-mono, ui-monospace, monospace);
-  }
-  .status { display: inline-flex; align-items: center; gap: 0.6rem; }
-  .pulse { width: 7px; height: 7px; border-radius: 50%; background: var(--fb-accent); position: relative; flex: none; }
-  .pulse::after {
-    content: ''; position: absolute; inset: -4px; border-radius: 50%;
-    border: 1px solid var(--fb-accent); opacity: 0.6;
-    animation: ftr-pulse 2.4s ease-out infinite;
-  }
-  @keyframes ftr-pulse { to { transform: scale(2.4); opacity: 0; } }
-  .clock { color: var(--fb-ink); }
-  .to-top {
-    color: var(--fb-muted); background: none; border: none; cursor: pointer;
-    font: inherit; letter-spacing: inherit; text-transform: inherit;
-    display: inline-flex; gap: 0.5rem; align-items: center; padding: 0;
-    transition: color 0.3s ease;
-  }
-  .to-top:hover, .to-top:focus-visible { color: var(--fb-accent); outline: none; }
-  .to-top:focus-visible { text-decoration: underline; text-underline-offset: 3px; }
-  .to-top .arr { transition: transform 0.3s cubic-bezier(0.25,1,0.5,1); }
-  .to-top:hover .arr, .to-top:focus-visible .arr { transform: translateY(-3px); }
-
-  .ftr-rule { height: 1px; background: var(--fb-hair); margin: 1.5rem 0 2.25rem; }
-
-  /* ---- modules ---- */
-  .ftr-modules {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 2rem 2.5rem;
-    margin-bottom: clamp(2.5rem, 6vw, 4.5rem);
-  }
-  .mod-head {
-    font-size: 10px; letter-spacing: 0.26em; text-transform: uppercase;
-    color: var(--fb-accent); margin-bottom: 1.1rem;
-  }
-  .affil-main { font-size: 0.9rem; line-height: 1.65; color: color-mix(in oklch, var(--fb-ink) 78%, transparent); }
-  .affil-sub { font-size: 0.9rem; line-height: 1.65; color: var(--fb-muted); margin-top: 0.4rem; }
-
-  .index-link {
-    display: flex; align-items: center; justify-content: space-between;
-    font-size: 1.15rem; color: color-mix(in oklch, var(--fb-ink) 82%, transparent);
-    text-decoration: none; padding: 0.4rem 0; position: relative;
-    transition: color 0.3s ease, padding-left 0.3s cubic-bezier(0.25,1,0.5,1);
-  }
-  .index-link .lab { position: relative; }
-  .index-link .lab::after {
-    content: ''; position: absolute; left: 0; bottom: -2px; height: 1px; width: 0;
-    background: var(--fb-accent); transition: width 0.35s cubic-bezier(0.25,1,0.5,1);
-  }
-  .index-link .go { opacity: 0; color: var(--fb-accent); transform: translateX(-6px); transition: opacity 0.3s ease, transform 0.3s ease; }
-  .index-link:hover, .index-link:focus-visible { color: var(--fb-ink); padding-left: 0.35rem; outline: none; }
-  .index-link:hover .lab::after, .index-link:focus-visible .lab::after { width: 100%; }
-  .index-link:hover .go, .index-link:focus-visible .go { opacity: 1; transform: translateX(0); }
-
-  .contact-link {
-    font-family: var(--font-sans, system-ui, sans-serif);
-    font-size: 0.95rem; color: color-mix(in oklch, var(--fb-ink) 82%, transparent);
-    text-decoration: none; border-bottom: 1px solid var(--fb-hair); padding-bottom: 2px;
-    transition: color 0.3s ease, border-color 0.3s ease;
-  }
-  .contact-link:hover, .contact-link:focus-visible { color: var(--fb-accent); border-color: var(--fb-accent); outline: none; }
-  .avail { font-size: 0.82rem; color: var(--fb-muted); margin-top: 1rem; line-height: 1.6; max-width: 26ch; }
-
-  /* ---- the name, at architectural scale ---- */
-  .name-block { position: relative; }
-  .name-wrap { position: relative; line-height: 0.85; cursor: default; --mx: 50%; --my: 50%; }
-  .name-layer {
-    display: block; font-weight: 500;
-    font-size: clamp(3rem, 13.5vw, 13rem);
-    letter-spacing: -0.02em; margin: 0;
-  }
-  .name-base { color: var(--fb-faint); }
-  .name-lit {
-    position: absolute; inset: 0; color: var(--fb-ink); pointer-events: none;
-    -webkit-mask-image: radial-gradient(circle 280px at var(--mx) var(--my), #000 0%, #000 22%, transparent 62%);
-            mask-image: radial-gradient(circle 280px at var(--mx) var(--my), #000 0%, #000 22%, transparent 62%);
-  }
-  .roles {
-    font-size: clamp(10px, 1.1vw, 12px); letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--fb-muted); margin-top: 1.25rem;
+  .grain {
+    position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5; mix-blend-mode: overlay;
+    background-image: repeating-linear-gradient(88deg, rgba(255,240,210,0.05) 0 1px, transparent 1px 3px);
   }
 
-  /* ---- baseline ---- */
-  .ftr-baseline {
-    display: flex; align-items: center; justify-content: space-between;
-    gap: 0.75rem 1.5rem; flex-wrap: wrap;
-    margin-top: 2rem; padding-top: 1.1rem; border-top: 1px solid var(--fb-hair);
-    font-size: 10.5px; letter-spacing: 0.06em; color: var(--fb-muted);
+  .bar, .foot {
+    position: relative; z-index: 4;
+    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem 1rem; flex-wrap: wrap;
+    padding: 1rem clamp(1rem, 4vw, 3.25rem);
   }
-  .ftr-baseline a { color: color-mix(in oklch, var(--fb-ink) 62%, transparent); text-decoration: none; transition: color 0.25s ease; }
-  .ftr-baseline a:hover, .ftr-baseline a:focus-visible { color: var(--fb-accent); outline: none; }
-  .pos-k { color: var(--fb-accent); text-transform: uppercase; letter-spacing: 0.2em; margin-right: 0.5rem; font-size: 9px; }
-  .pos-part { display: inline-flex; align-items: center; }
-  .pos-slash { opacity: 0.35; margin: 0 0.35rem; }
-  @media (max-width: 640px) { .ftr-baseline { justify-content: flex-start; } }
+  .drawer-label { font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: color-mix(in oklch, var(--color-canvas,#FBFBF9) 66%, var(--color-dust,#B3A38F)); display: flex; align-items: center; gap: 0.6rem; }
+  .drawer-label .pin { width: 8px; height: 8px; border-radius: 50%; background: color-mix(in oklch, var(--color-canvas,#FBFBF9) 62%, var(--color-dust,#B3A38F)); box-shadow: inset 0 0 0 2px var(--dr-oak-lo); }
 
-  @media (prefers-reduced-motion: reduce) {
-    .pulse::after { animation: none; }
-    .name-lit { -webkit-mask-image: none; mask-image: none; color: color-mix(in oklch, var(--fb-ink) 55%, transparent); }
-    .to-top .arr, .index-link, .index-link .go, .index-link .lab::after, .contact-link { transition: none; }
+  .refile {
+    font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase;
+    background: rgba(244,238,223,0.08); border: 1px solid rgba(244,238,223,0.28);
+    color: rgba(244,238,223,0.82); padding: 0.5rem 0.85rem; cursor: pointer; transition: all 0.25s ease;
   }
+  .refile:hover, .refile:focus-visible { background: var(--dr-accent); border-color: var(--dr-accent); color: #fff; outline: none; }
+
+  .hint { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(232,220,201,0.4); transition: opacity 0.5s ease; }
+  .copyline { font-size: 9px; letter-spacing: 0.1em; color: rgba(232,220,201,0.42); text-align: right; }
+
+  /* ---- play mode (desktop): absolute toss area ---- */
+  .stage.play { position: relative; z-index: 3; min-height: clamp(400px, 52vh, 520px); }
+  .stage.play .card { position: absolute; top: 0; left: 0; will-change: transform; cursor: grab; touch-action: none; }
+  .stage.play .card.grab { cursor: grabbing; }
+
+  /* ---- list mode (mobile): tidy tappable grid ---- */
+  .stage.list { position: relative; z-index: 3; display: grid; grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); gap: 0.9rem; padding: 0.25rem clamp(1rem, 4vw, 3.25rem) 1rem; }
+  .stage.list .card { position: static; transform: none !important; width: auto !important; height: auto !important; min-height: 118px; cursor: default; }
+  .stage.list .card.identity { grid-column: 1 / -1; }
+
+  /* ---- the card itself ---- */
+  .card {
+    position: relative;
+    background: var(--dr-card); color: var(--dr-ink);
+    border-radius: 3px; overflow: hidden;
+    box-shadow: 0 6px 16px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.3) inset;
+    transition: box-shadow 0.2s ease;
+  }
+  .stage.play .card.grab { box-shadow: 0 20px 40px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.4) inset; }
+  .card .top { height: 5px; background: var(--dr-accent); }
+  .card .pad {
+    padding: 0.7rem 0.85rem 0.9rem; height: calc(100% - 5px); display: flex; flex-direction: column;
+    background-image: repeating-linear-gradient(transparent 0 22px, color-mix(in oklch, var(--dr-ink) 8%, transparent) 22px 23px);
+    background-position: 0 10px;
+  }
+  .callno { font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dr-accent); }
+  .card .title { font-weight: 600; font-size: 1.12rem; line-height: 1.05; margin-top: 0.15rem; color: var(--dr-ink); text-decoration: none; width: max-content; max-width: 100%; }
+  .card .title:hover, .card .title:focus-visible { color: var(--dr-accent); outline: none; }
+  /* stretched link: the whole card is clickable, not just the title text */
+  .card .title::after { content: ''; position: absolute; inset: 0; z-index: 2; }
+  .stage.play .card .title { cursor: grab; }
+  .stage.play .card.grab .title { cursor: grabbing; }
+  .card.identity .title { font-size: 1.5rem; }
+  .card.contact .title { font-size: 0.98rem; word-break: break-word; }
+  .card .roles { font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: color-mix(in oklch, var(--dr-ink) 60%, transparent); margin-top: 0.55rem; }
+  .card .affil { font-size: 0.72rem; color: color-mix(in oklch, var(--dr-ink) 62%, transparent); margin-top: 0.5rem; line-height: 1.4; }
+  .card .sub { font-size: 8.5px; letter-spacing: 0.06em; color: color-mix(in oklch, var(--dr-ink) 55%, transparent); margin-top: 0.35rem; line-height: 1.5; }
+  .card .hole { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 11px; height: 11px; border-radius: 50%; background: var(--dr-oak-lo); box-shadow: inset 0 1px 2px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.4); }
+  .stage.list .card { position: relative; }
+  .stage.list .card .hole { display: none; }
+
+  /* hide the play-only chrome in list mode */
+  .drawer.is-list .refile, .drawer.is-list .hint { display: none; }
+
+  @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
 </style>
 
 <script>
-  // Live clock + pointer spotlight. Re-entrant across view transitions:
-  // every timer, frame, and observer is torn down on navigation so nothing
-  // accumulates. The footer DOM is replaced per page, so element-bound
-  // listeners fall away with it; only window/document/timer handles are freed.
+  // Catalog-drawer physics with a mobile grid fallback. Re-entrant across view
+  // transitions: all timers, frames, and global listeners tear down on nav.
 
-  let clockTimer = 0;
-  let raf = 0;
-  let io: IntersectionObserver | null = null;
-  let onTop: (() => void) | null = null;
-  let topBtn: HTMLButtonElement | null = null;
+  const PLAY_MIN = 760;
+  const spots = [
+    { dx:-340, dy:  8, rot:-3 },
+    { dx: -78, dy:-36, rot: 4 },
+    { dx: 132, dy:-12, rot:-5 },
+    { dx: 286, dy:-42, rot: 7 },
+    { dx: 210, dy: 64, rot:-3 },
+  ];
 
-  const fmt = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'America/Chicago', hour: 'numeric', minute: '2-digit', hour12: true, timeZoneName: 'short',
-  });
+  let drawer: HTMLElement | null = null;
+  let stage: HTMLElement | null = null;
+  let cards: any[] = [];
+  let W = 0, H = 0, raf = 0, zTop = 10;
+  let active: any = null, offX = 0, offY = 0, lastX = 0, lastY = 0, lastT = 0, moved = 0;
+  let isPlay = false, reduce = false;
+  let onMoveRef: any = null, onUpRef: any = null, onResizeRef: any = null, mql: MediaQueryList | null = null, mqlRef: any = null, resizeTimer = 0;
 
-  const setup = () => {
-    const footer = document.querySelector<HTMLElement>('.ftr');
-    if (!footer) return;
-    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const clamp = (v: number, m: number) => Math.max(-m, Math.min(m, v));
+  const rect = () => stage!.getBoundingClientRect();
+  const pt = (e: PointerEvent) => { const r = rect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
+  const draw = (c: any) => { c.el.style.transform = `translate(${c.x}px,${c.y}px) rotate(${c.rot}deg)`; };
+  const startLoop = () => { if (!raf) raf = requestAnimationFrame(frame); };
+  const stopLoop = () => { if (raf) { cancelAnimationFrame(raf); raf = 0; } };
 
-    // live Lubbock time
-    const clock = footer.querySelector<HTMLElement>('.clock');
-    if (clock) {
-      const tick = () => { clock.textContent = fmt.format(new Date()); };
-      tick();
-      clockTimer = window.setInterval(tick, 1000);
+  function layout(){
+    if (!isPlay) return;
+    const r = rect(); W = r.width; H = r.height;
+    const s = Math.min(1, W/1060), cx = W/2, baseY = H*0.54;
+    cards.forEach((c, i) => {
+      c.w = c.bw*s; c.h = c.bh*s;
+      c.el.style.width = c.w+'px'; c.el.style.height = c.h+'px';
+      const sp = spots[i] || {dx:0,dy:0,rot:0};
+      c.fx = cx + sp.dx*s - c.w/2; c.fy = baseY + sp.dy*s - c.h/2; c.frot = sp.rot;
+      if (c !== active && c.mode !== 'free'){
+        if (reduce){ c.x=c.fx; c.y=c.fy; c.rot=c.frot; c.mode='idle'; draw(c); }
+        else { c.tx=c.fx; c.ty=c.fy; c.trot=c.frot; c.mode='tween'; }
+      }
+    });
+    if (!reduce) startLoop();
+  }
+
+  function frame(){
+    let alive = false;
+    for (const c of cards){
+      if (c === active){ alive = true; continue; }
+      if (c.mode === 'tween'){
+        c.x += (c.tx-c.x)*0.2; c.y += (c.ty-c.y)*0.2; c.rot += (c.trot-c.rot)*0.2;
+        if (Math.abs(c.tx-c.x)<0.4 && Math.abs(c.ty-c.y)<0.4 && Math.abs(c.trot-c.rot)<0.2){ c.x=c.tx; c.y=c.ty; c.rot=c.trot; c.mode='idle'; }
+        else alive = true;
+        draw(c);
+      } else if (c.mode === 'free'){
+        c.x += c.vx; c.y += c.vy; c.rot += c.vrot;
+        c.vx *= 0.94; c.vy *= 0.94; c.vrot *= 0.92;
+        const pad = -28;
+        if (c.x < pad){ c.x=pad; c.vx=Math.abs(c.vx)*0.45; }
+        if (c.x > W-c.w-pad){ c.x=W-c.w-pad; c.vx=-Math.abs(c.vx)*0.45; }
+        if (c.y < pad){ c.y=pad; c.vy=Math.abs(c.vy)*0.45; }
+        if (c.y > H-c.h-pad){ c.y=H-c.h-pad; c.vy=-Math.abs(c.vy)*0.45; }
+        if (Math.hypot(c.vx,c.vy)<0.12 && Math.abs(c.vrot)<0.05){ c.vx=c.vy=c.vrot=0; c.mode='idle'; }
+        else alive = true;
+        draw(c);
+      }
     }
+    raf = alive ? requestAnimationFrame(frame) : 0;
+  }
 
-    // back to top
-    topBtn = footer.querySelector<HTMLButtonElement>('.to-top');
-    if (topBtn) {
-      onTop = () => window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
-      topBtn.addEventListener('click', onTop);
+  function onDown(e: PointerEvent, c: any){
+    if (!isPlay) return;
+    if (e.button != null && e.button !== 0) return;
+    active = c; c.mode = 'grab'; c.dragged = false; moved = 0;
+    // NOTE: no setPointerCapture — it retargets the click off the link and
+    // breaks navigation. The window-level move/up listeners track the drag,
+    // and touch pointers capture implicitly, so capture isn't needed here.
+    const p = pt(e); offX = p.x-c.x; offY = p.y-c.y;
+    lastX = p.x; lastY = p.y; lastT = performance.now();
+    c.vx=c.vy=c.vrot=0; c.el.style.zIndex = String(++zTop); c.el.classList.add('grab');
+    const hint = drawer!.querySelector<HTMLElement>('[data-hint]'); if (hint) hint.style.opacity = '0';
+    window.addEventListener('pointermove', onMoveRef);
+    window.addEventListener('pointerup', onUpRef);
+    startLoop();
+  }
+  function onMove(e: PointerEvent){
+    if (!active) return;
+    const p = pt(e);
+    active.x = p.x-offX; active.y = p.y-offY;
+    const now = performance.now(), dt = Math.max(8, now-lastT);
+    active.vx = clamp((p.x-lastX)/dt*15, 42);
+    active.vy = clamp((p.y-lastY)/dt*15, 42);
+    moved += Math.hypot(p.x-lastX, p.y-lastY);
+    lastX = p.x; lastY = p.y; lastT = now;
+    draw(active);
+  }
+  function onUp(){
+    if (!active) return;
+    const c = active; active = null;
+    c.el.classList.remove('grab');
+    c.dragged = moved > 6;
+    window.removeEventListener('pointermove', onMoveRef);
+    window.removeEventListener('pointerup', onUpRef);
+    if (reduce || !c.dragged){ c.vx=c.vy=c.vrot=0; c.mode='idle'; }
+    else { c.vrot = c.vx*0.08; c.mode='free'; startLoop(); }
+  }
+
+  function refile(){
+    const hint = drawer!.querySelector<HTMLElement>('[data-hint]'); if (hint) hint.style.opacity = '';
+    if (!isPlay) return;
+    cards.forEach((c, i) => {
+      if (reduce){ c.x=c.fx; c.y=c.fy; c.rot=c.frot; c.mode='idle'; draw(c); }
+      else { c.tx=c.fx; c.ty=c.fy; c.trot=c.frot; c.mode='tween'; c.el.style.zIndex = String(10+i); }
+    });
+    startLoop();
+  }
+
+  function setMode(){
+    const play = window.matchMedia(`(min-width:${PLAY_MIN}px)`).matches && !reduce ? true
+               : window.matchMedia(`(min-width:${PLAY_MIN}px)`).matches; // wide always => play (reduce handled inside)
+    const wantPlay = window.matchMedia(`(min-width:${PLAY_MIN}px)`).matches;
+    if (wantPlay === isPlay && stage!.classList.contains(wantPlay ? 'play' : 'list')) { if (isPlay) layout(); return; }
+    isPlay = wantPlay;
+    if (isPlay){
+      drawer!.classList.remove('is-list');
+      stage!.classList.remove('list'); stage!.classList.add('play');
+      // seed from center, then settle into the fan
+      const r = rect();
+      cards.forEach(c => { c.mode = 'idle'; c.x = r.width/2 - 90; c.y = r.height*0.5; c.rot = 0; });
+      layout();
+    } else {
+      drawer!.classList.add('is-list');
+      stage!.classList.remove('play'); stage!.classList.add('list');
+      stopLoop(); active = null;
+      cards.forEach(c => { c.el.style.transform=''; c.el.style.width=''; c.el.style.height=''; c.el.style.zIndex=''; c.mode='idle'; });
     }
+  }
 
-    // pointer spotlight on the name (auto-drifts when idle / on touch)
-    const wrap = footer.querySelector<HTMLElement>('#ftr-name');
-    if (wrap && !reduce) {
-      let hovering = false, visible = true, t = 0;
-      wrap.addEventListener('pointerenter', () => (hovering = true));
-      wrap.addEventListener('pointerleave', () => (hovering = false));
-      wrap.addEventListener('pointermove', (e) => {
-        const r = wrap.getBoundingClientRect();
-        wrap.style.setProperty('--mx', e.clientX - r.left + 'px');
-        wrap.style.setProperty('--my', e.clientY - r.top + 'px');
-      });
+  function setup(){
+    drawer = document.getElementById('al-drawer');
+    stage = document.getElementById('al-stage');
+    if (!drawer || !stage) return;
+    reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-      io = new IntersectionObserver((es) => { visible = es[0]?.isIntersecting ?? false; }, { rootMargin: '80px' });
-      io.observe(wrap);
+    cards = [...stage.querySelectorAll<HTMLElement>('.card')].map((el, i) => {
+      const c: any = { el, bw:+(el.dataset.w||200), bh:+(el.dataset.h||120), i,
+        x:0,y:0,rot:0,vx:0,vy:0,vrot:0, fx:0,fy:0,frot:0, tx:0,ty:0,trot:0, mode:'idle', dragged:false };
+      el.addEventListener('pointerdown', (e) => onDown(e, c));
+      el.addEventListener('click', (e) => { if (c.dragged){ e.preventDefault(); e.stopPropagation(); } }, true);
+      return c;
+    });
 
-      const drift = () => {
-        if (visible && !hovering) {
-          t += 0.006;
-          const r = wrap.getBoundingClientRect();
-          wrap.style.setProperty('--mx', (0.5 + 0.42 * Math.sin(t)) * r.width + 'px');
-          wrap.style.setProperty('--my', (0.5 + 0.32 * Math.sin(t * 1.7)) * r.height + 'px');
-        }
-        raf = requestAnimationFrame(drift);
-      };
-      raf = requestAnimationFrame(drift);
-    }
-  };
+    onMoveRef = onMove; onUpRef = onUp;
+    onResizeRef = () => { clearTimeout(resizeTimer); resizeTimer = window.setTimeout(() => { setMode(); }, 150); };
+    window.addEventListener('resize', onResizeRef, { passive: true });
 
-  const teardown = () => {
-    if (clockTimer) { clearInterval(clockTimer); clockTimer = 0; }
-    if (raf) { cancelAnimationFrame(raf); raf = 0; }
-    if (io) { io.disconnect(); io = null; }
-    if (topBtn && onTop) { topBtn.removeEventListener('click', onTop); }
-    topBtn = null; onTop = null;
-  };
+    mql = window.matchMedia(`(min-width:${PLAY_MIN}px)`);
+    mqlRef = () => setMode();
+    mql.addEventListener('change', mqlRef);
+
+    const btn = drawer.querySelector('[data-refile]');
+    if (btn) btn.addEventListener('click', refile);
+
+    isPlay = !stage.classList.contains('play'); // force first setMode to apply
+    setMode();
+  }
+
+  function teardown(){
+    stopLoop();
+    if (onResizeRef) window.removeEventListener('resize', onResizeRef);
+    if (onMoveRef) window.removeEventListener('pointermove', onMoveRef);
+    if (onUpRef) window.removeEventListener('pointerup', onUpRef);
+    if (mql && mqlRef) mql.removeEventListener('change', mqlRef);
+    active = null; cards = []; drawer = null; stage = null; mql = null;
+  }
 
   setup();
   document.addEventListener('astro:page-load', () => { teardown(); setup(); });
