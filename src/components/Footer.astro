@@ -1,317 +1,506 @@
 ---
-// src/components/Footer.astro — "The Catalog Drawer"
-// The footer is a card catalog. Cream index cards (call number, ruled lines,
-// punch-hole) sit filed in a fan on a dark oak drawer; on desktop you can drag
-// and fling them around, with a Re-file button to snap them home. Every card
-// title is a real link, so the play never costs usability.
-//
-// Mobile-friendly: below 760px the physics turn off and the cards lay out as a
-// clean, tappable grid (same card styling, no scatter). prefers-reduced-motion
-// keeps cards filed and still. Full-bleed via a 100vw break-out.
+/**
+ * CaprockFooter.astro — "The Caprock"
+ *
+ * A measured stratigraphic section of the Llano Estacado:
+ * flat plateau · hard rim break · colluvium apron · basin.
+ *
+ * Full-bleed by design. See the break-out note in <style> if your
+ * layout wraps this in a max-width container.
+ */
+
+interface Link {
+  label: string;
+  href: string;
+}
+
+interface Props {
+  name?: string;
+  roles?: string[];
+  tagline?: string;
+  index?: Link[];
+  contact?: Link[];
+  location?: string;
+  coordinates?: string;
+  status?: string;
+  /** Survey marks drawn in the sky above the profile */
+  plateauMark?: string;
+  basinMark?: string;
+  /** Elevations ticked against each bedding plane */
+  ledeElevation?: string;
+  linksElevation?: string;
+}
+
+const {
+  name = 'Austin Allison',
+  roles = ['Cataloging & Metadata Librarian', 'Historian', 'Photographer'],
+  tagline = 'Cataloging, preserving, and capturing the history of the American West.',
+  index = [
+    { label: 'Home', href: '/' },
+    { label: 'Curriculum Vitae', href: '/cv' },
+    { label: 'Publications', href: '/publications' },
+    { label: 'Photography', href: '/photography' },
+  ],
+  contact = [
+    { label: 'Email', href: 'mailto:austinlallison@gmail.com' },
+    { label: 'ORCID ID', href: 'https://orcid.org/0000-0001-6787-9636' },
+  ],
+  location = 'Lubbock, Texas',
+  coordinates = '33.5779° N, 101.8552° W',
+  status = 'Section open',
+  plateauMark = 'Llano Estacado — 3,241 ft',
+  basinMark = 'Rolling Plains — 2,410 ft',
+  ledeElevation = '3,241 ft',
+  linksElevation = '2,908 ft',
+} = Astro.props;
+
 const year = new Date().getFullYear();
 
-const cards = [
-  { cls: 'identity', w: 300, h: 176, call: 'Main Entry · AA', title: 'Austin Allison', href: '/', role: true },
-  { cls: '', w: 204, h: 128, call: 'TR 654', title: 'Photography',           href: '/photography',  sub: 'Landscapes · Texas & the American West' },
-  { cls: '', w: 212, h: 128, call: 'Z 1201', title: 'Scholarly Publications', href: '/publications', sub: 'Panhandle-Plains Review · 2025' },
-  { cls: '', w: 188, h: 122, call: 'CV 01',  title: 'Curriculum Vitae',       href: '/cv',           sub: 'Full academic record' },
-  { cls: 'contact', w: 210, h: 122, call: 'Correspondence', title: 'austinlallison@gmail.com', href: 'mailto:austinlallison@gmail.com', sub: 'Inquiries · prints · collaborations' },
-];
+// The ground profile, shared by the rock body and the caliche cap so the
+// two can never drift apart. Plateau → rim rollover → face → apron → basin.
+const PLATEAU = 'M0,26 L170,26 C232,26 250,32 296,32 C342,32 360,26 424,26 L600,26';
+const RIM = 'C610,26 616,33 620,44';
+const FACE = 'C624,57 626,70 632,86';
+const APRON =
+  'C648,98 668,105 700,110 C752,118 812,123 872,126 L928,127 C946,127 954,129 966,131 C1024,137 1112,141 1216,142 L1440,144';
+
+const groundPath = `${PLATEAU} ${RIM} ${FACE} ${APRON} L1440,180 L0,180 Z`;
+const capPath = `${PLATEAU} ${RIM}`;
+const talusPath = `M632,86 ${APRON} L1440,170 L1216,168 C1112,167 1024,163 966,157 L928,153 L872,152 C812,149 752,144 700,136 C668,131 648,124 636,112 Z`;
 ---
 
-<footer class="drawer" id="al-drawer" aria-label="Site footer">
-  <div class="grain" aria-hidden="true"></div>
+<footer class="caprock" data-caprock>
+  <!-- ── the escarpment ─────────────────────────────────────── -->
+  <div class="scarp-wrap">
+    <svg class="scarp" viewBox="0 0 1440 180" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="caprock-talus" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stop-color="#E8E1D1" stop-opacity=".050" />
+          <stop offset="1" stop-color="#E8E1D1" stop-opacity="0" />
+        </linearGradient>
+      </defs>
 
-  <div class="bar">
-    <div class="drawer-label font-mono"><span class="pin" aria-hidden="true"></span> Card Catalog · Drawer AA</div>
-    <button class="refile font-mono" type="button" data-refile>&#8635; Re-file</button>
+      <path class="rock" d={groundPath} />
+      <path class="talus" d={talusPath} />
+      <!-- the cap stops at the rim: resistant rock does not run down a slope -->
+      <path class="cap" d={capPath} />
+    </svg>
+
+    <span class="mark mark--plateau">{plateauMark}</span>
+    <span class="mark mark--basin">{basinMark}</span>
   </div>
 
-  <div class="stage" id="al-stage">
-    {cards.map((c) => (
-      <div class={`card ${c.cls}`.trim()} data-w={c.w} data-h={c.h}>
-        <div class="top"></div>
-        <div class="pad">
-          <span class="callno font-mono">{c.call}</span>
-          <a class="title font-serif" href={c.href} draggable={false}>{c.title}</a>
-          {c.role && <div class="roles font-mono">Cataloging &amp; Metadata Librarian · Historian · Photographer</div>}
-          {c.role && <div class="affil">Southwest Collection / Special Collections Library</div>}
-          {c.sub && <div class="sub font-mono">{c.sub}</div>}
-          <div class="hole" aria-hidden="true"></div>
+  <!-- ── the section ────────────────────────────────────────── -->
+  <div class="section">
+    <div class="rake" aria-hidden="true"></div>
+
+    <div class="stratum s-lede">
+      <div class="inner">
+        <div class="rail">{ledeElevation}</div>
+        <div>
+          <a href="/"><p class="name">{name}</p></a>
+          <p class="roles">{roles.join(' · ')}</p>
+          <p class="tagline">{tagline}</p>
         </div>
       </div>
-    ))}
+    </div>
+
+    <div class="stratum s-links">
+      <div class="inner">
+        <div class="rail">{linksElevation}</div>
+        <div class="cols">
+          <nav class="col" aria-label="Site index">
+            <p class="label">Index</p>
+            <ul>
+              {index.map((l) => (
+                <li><a href={l.href}>{l.label}</a></li>
+              ))}
+            </ul>
+          </nav>
+          <div class="col">
+            <p class="label">Contact</p>
+            <ul>
+              {contact.map((l) => (
+                <li>
+                  <a
+                    href={l.href}
+                    {...(l.href.startsWith('http')
+                      ? { target: '_blank', rel: 'noopener noreferrer' }
+                      : {})}
+                  >
+                    {l.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
-  <div class="foot">
-    <div class="hint font-mono" data-hint aria-hidden="true">Drag &amp; toss the cards</div>
-    <div class="copyline font-mono">&copy; {year} Austin Allison &nbsp;·&nbsp; Built with Astro &amp; Tailwind CSS</div>
+  <!-- ── basement ───────────────────────────────────────────── -->
+  <div class="basement">
+    <div class="wrap">
+      <span>© {year} {name}</span>
+      <span>{location}</span>
+      <span>{coordinates}</span>
+      
+    </div>
   </div>
 </footer>
 
 <style>
-  .drawer {
-    width: 100vw; margin-left: calc(50% - 50vw);
-    position: relative; overflow: hidden; isolation: isolate; user-select: none;
-    color: color-mix(in oklch, var(--color-canvas, #FBFBF9) 82%, var(--color-dust, #B3A38F));
+  .caprock {
+    /* Tailwind v4 exposes theme colors as --color-*; the fallbacks cover v3.
+       Swap the fallback hexes for your real token values either way. */
 
-    --dr-oak-hi: color-mix(in oklch, var(--color-iron, #1A1919) 72%, var(--color-caprock, #9C5B3F));
-    --dr-oak-lo: var(--color-iron, #1A1919);
-    --dr-card: color-mix(in oklch, var(--color-canvas, #FBFBF9) 88%, var(--color-dust, #B3A38F));
-    --dr-ink: color-mix(in oklch, var(--color-iron, #1A1919) 88%, var(--color-caprock, #9C5B3F));
-    --dr-accent: var(--color-caprock, #9C5B3F);
+    /* ── FULL-BLEED BREAK-OUT ──
+       Works inside a max-width wrapper. If you get a horizontal
+       scrollbar, add `scrollbar-gutter: stable;` to html — or move
+       this component outside the wrapper and delete these two lines. */
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
 
-    background:
-      repeating-linear-gradient(90deg, rgba(0,0,0,0.05) 0 2px, transparent 2px 6px),
-      radial-gradient(140% 120% at 50% -20%, var(--dr-oak-hi) 0%, var(--dr-oak-lo) 62%, #0f0a06 100%);
-  }
-  .grain {
-    position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5; mix-blend-mode: overlay;
-    background-image: repeating-linear-gradient(88deg, rgba(255,240,210,0.05) 0 1px, transparent 1px 3px);
-  }
-
-  .bar, .foot {
-    position: relative; z-index: 4;
-    display: flex; align-items: center; justify-content: space-between; gap: 0.75rem 1rem; flex-wrap: wrap;
-    padding: 1rem clamp(1rem, 4vw, 3.25rem);
-  }
-  .drawer-label { font-size: 10px; letter-spacing: 0.28em; text-transform: uppercase; color: color-mix(in oklch, var(--color-canvas,#FBFBF9) 66%, var(--color-dust,#B3A38F)); display: flex; align-items: center; gap: 0.6rem; }
-  .drawer-label .pin { width: 8px; height: 8px; border-radius: 50%; background: color-mix(in oklch, var(--color-canvas,#FBFBF9) 62%, var(--color-dust,#B3A38F)); box-shadow: inset 0 0 0 2px var(--dr-oak-lo); }
-
-  .refile {
-    font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase;
-    background: rgba(244,238,223,0.08); border: 1px solid rgba(244,238,223,0.28);
-    color: rgba(244,238,223,0.82); padding: 0.5rem 0.85rem; cursor: pointer; transition: all 0.25s ease;
-  }
-  .refile:hover, .refile:focus-visible { background: var(--dr-accent); border-color: var(--dr-accent); color: #fff; outline: none; }
-
-  .hint { font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: rgba(232,220,201,0.4); transition: opacity 0.5s ease; }
-  .copyline { font-size: 9px; letter-spacing: 0.1em; color: rgba(232,220,201,0.42); text-align: right; }
-
-  /* ---- play mode (desktop): absolute toss area ---- */
-  .stage.play { position: relative; z-index: 3; min-height: clamp(400px, 52vh, 520px); }
-  .stage.play .card { position: absolute; top: 0; left: 0; will-change: transform; cursor: grab; touch-action: none; }
-  .stage.play .card.grab { cursor: grabbing; }
-
-  /* ---- list mode (mobile): tidy tappable grid ---- */
-  .stage.list { position: relative; z-index: 3; display: grid; grid-template-columns: repeat(auto-fit, minmax(158px, 1fr)); gap: 0.9rem; padding: 0.25rem clamp(1rem, 4vw, 3.25rem) 1rem; }
-  .stage.list .card { position: static; transform: none !important; width: auto !important; height: auto !important; min-height: 118px; cursor: default; }
-  .stage.list .card.identity { grid-column: 1 / -1; }
-
-  /* ---- the card itself ---- */
-  .card {
     position: relative;
-    background: var(--dr-card); color: var(--dr-ink);
-    border-radius: 3px; overflow: hidden;
-    box-shadow: 0 6px 16px rgba(0,0,0,0.4), 0 1px 0 rgba(255,255,255,0.3) inset;
-    transition: box-shadow 0.2s ease;
+    color: var(--color-caliche);
+    font-family: theme('fontFamily.mono', ui-monospace, Menlo, monospace);
+    isolation: isolate;
+    overflow: hidden;
   }
-  .stage.play .card.grab { box-shadow: 0 20px 40px rgba(0,0,0,0.55), 0 1px 0 rgba(255,255,255,0.4) inset; }
-  .card .top { height: 5px; background: var(--dr-accent); }
-  .card .pad {
-    padding: 0.7rem 0.85rem 0.9rem; height: calc(100% - 5px); display: flex; flex-direction: column;
-    background-image: repeating-linear-gradient(transparent 0 22px, color-mix(in oklch, var(--dr-ink) 8%, transparent) 22px 23px);
-    background-position: 0 10px;
+
+  /* ── escarpment profile ─────────────────────────────────── */
+  .scarp-wrap {
+    position: relative;
   }
-  .callno { font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dr-accent); }
-  .card .title { font-weight: 600; font-size: 1.12rem; line-height: 1.05; margin-top: 0.15rem; color: var(--dr-ink); text-decoration: none; width: max-content; max-width: 100%; }
-  .card .title:hover, .card .title:focus-visible { color: var(--dr-accent); outline: none; }
-  /* stretched link: the whole card is clickable, not just the title text */
-  .card .title::after { content: ''; position: absolute; inset: 0; z-index: 2; }
-  .stage.play .card .title { cursor: grab; }
-  .stage.play .card.grab .title { cursor: grabbing; }
-  .card.identity .title { font-size: 1.5rem; }
-  .card.contact .title { font-size: 0.98rem; word-break: break-word; }
-  .card .roles { font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: color-mix(in oklch, var(--dr-ink) 60%, transparent); margin-top: 0.55rem; }
-  .card .affil { font-size: 0.72rem; color: color-mix(in oklch, var(--dr-ink) 62%, transparent); margin-top: 0.5rem; line-height: 1.4; }
-  .card .sub { font-size: 8.5px; letter-spacing: 0.06em; color: color-mix(in oklch, var(--dr-ink) 55%, transparent); margin-top: 0.35rem; line-height: 1.5; }
-  .card .hole { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 11px; height: 11px; border-radius: 50%; background: var(--dr-oak-lo); box-shadow: inset 0 1px 2px rgba(0,0,0,0.8), 0 1px 0 rgba(255,255,255,0.4); }
-  .stage.list .card { position: relative; }
-  .stage.list .card .hole { display: none; }
+  .scarp {
+    display: block;
+    width: 100%;
+    height: clamp(104px, 12vw, 184px);
+  }
+  .rock {
+    fill: var(--color-llano);
+  }
+  .talus {
+    fill: url(#caprock-talus);
+  }
+  .cap {
+    fill: none;
+    stroke: var(--color-caliche);
+    stroke-width: 2;
+    stroke-linecap: butt;
+    vector-effect: non-scaling-stroke;
+  }
 
-  /* hide the play-only chrome in list mode */
-  .drawer.is-list .refile, .drawer.is-list .hint { display: none; }
+  /* survey marks are HTML, not SVG text — the non-uniform viewBox
+     scaling would stretch real letterforms */
+  .mark {
+    position: absolute;
+    font-size: 0.5625rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--iron) 38%, transparent);
+    white-space: nowrap;
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+  }
+  .mark--plateau {
+    color: var(--color-redbed);
+    left: clamp(1.25rem, 4vw, 3.5rem);
+    top: 2%;
+  }
+  .mark--basin {
+    color: var(--color-redbed);
+    right: clamp(1.25rem, 4vw, 3.5rem);
+    bottom: 23%;
+  }
 
-  @media (prefers-reduced-motion: reduce) { .card { transition: none; } }
+  /* ── the section ────────────────────────────────────────── */
+  .section {
+    position: relative;
+    margin-top: -1px;
+    background: linear-gradient(
+      to bottom,
+      var(--color-llano) 10%,
+      var(--color-ogallala) 25%,
+      var(--color-caprock-accent) 43%,
+      var(--color-redbed) 65%,
+      var(--color-dockum) 79%,
+      var(--color-basement) 100%
+    );
+  }
+
+  /* bedding planes + grain — this is what reads as rock
+     rather than as a CSS gradient */
+  .section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      to bottom,
+      rgba(0, 0, 0, 0.055) 0px,
+      rgba(0, 0, 0, 0.055) 1px,
+      transparent 1px,
+      transparent 7px,
+      rgba(255, 255, 255, 0.028) 7px,
+      rgba(255, 255, 255, 0.028) 8px,
+      transparent 8px,
+      transparent 23px
+    );
+    mix-blend-mode: multiply;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+  .section::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
+    opacity: 0.13;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  /* ── the one interaction: a raking field light ──────────── */
+  .rake {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.55s ease;
+    background: radial-gradient(
+      46rem 28rem at var(--mx, 50%) var(--my, 50%),
+      rgba(255, 241, 214, 0.15),
+      rgba(255, 241, 214, 0.045) 12%,
+      transparent 70%
+    );
+  }
+  .caprock:hover .rake {
+    opacity: 1;
+  }
+
+  /* ── strata: dividers run full bleed, like true bedding ─── */
+  .stratum {
+    position: relative;
+    z-index: 2;
+    border-bottom: 1px solid rgba(232, 225, 209, 0.13);
+  }
+  .stratum:last-of-type {
+    border-bottom: 0;
+  }
+  .inner {
+    max-width: 78rem;
+    margin: 0 auto;
+    padding: 0 clamp(1.25rem, 4vw, 3.5rem);
+    display: grid;
+    grid-template-columns: 5.5rem 1fr;
+    gap: clamp(1rem, 4vw, 3rem);
+  }
+  .s-lede .inner {
+    padding-top: clamp(2.75rem, 5vw, 4.25rem);
+    padding-bottom: clamp(2.5rem, 4.5vw, 3.75rem);
+  }
+  .s-links .inner {
+    padding-top: clamp(2.25rem, 3.6vw, 3rem);
+    padding-bottom: clamp(2.25rem, 3.6vw, 3rem);
+  }
+
+  /* left rail: bare elevation, ticked to the bedding plane */
+  .rail {
+    position: relative;
+    padding-top: 0.55rem;
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    color: rgba(232, 225, 209, 0.55);
+    font-variant-numeric: tabular-nums;
+  }
+  .rail::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1.375rem;
+    height: 1px;
+    background: rgba(232, 225, 209, 0.4);
+  }
+
+  /* ── lede ───────────────────────────────────────────────── */
+  .name {
+    font-family: theme('fontFamily.serif', Georgia, serif);
+    font-weight: 400;
+    font-size: clamp(2.5rem, 7vw, 5.75rem);
+    line-height: 0.92;
+    letter-spacing: 0em;
+    margin: 0;
+    color: var(--color-caliche);
+  }
+  .roles {
+    font-size: 0.6875rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(232, 225, 209, 0.55);
+    margin: 1.5rem 0 0;
+  }
+  .tagline {
+    font-family: theme('fontFamily.serif', Georgia, serif);
+    font-size: clamp(1.0625rem, 1.5vw, 1.1875rem);
+    line-height: 1.55;
+    color: rgba(232, 225, 209, 0.82);
+    max-width: 39rem;
+    margin: 1.15rem 0 0;
+  }
+
+  /* ── links ──────────────────────────────────────────────── */
+  .cols {
+    display: flex;
+    flex-wrap: wrap;
+    gap: clamp(2rem, 7vw, 6rem);
+  }
+  .label {
+    font-size: 0.625rem;
+    font-weight: 400;
+    letter-spacing: 0.19em;
+    text-transform: uppercase;
+    color: var(--color-caliche);
+    margin: 0 0 1rem;
+  }
+  .col ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .col li {
+    margin-bottom: 0.6rem;
+  }
+  .col li:last-child {
+    margin-bottom: 0;
+  }
+  .col a {
+    color: var(--color-caliche);
+    text-decoration: none;
+    font-size: 0.9375rem;
+    letter-spacing: 0.015em;
+    position: relative;
+    padding-bottom: 2px;
+  }
+  .col a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  .col a:hover::after,
+  .col a:focus-visible::after {
+    transform: scaleX(1);
+  }
+  .col a:focus-visible {
+    outline: 2px solid var(--color-caliche);
+    outline-offset: 4px;
+    border-radius: 1px;
+  }
+
+  /* ── basement ───────────────────────────────────────────── */
+  .basement {
+    position: relative;
+    z-index: 2;
+    background: var(--color-basement);
+    border-top: 1px solid rgba(232, 225, 209, 0.1);
+  }
+  .basement .wrap {
+    max-width: 78rem;
+    margin: 0 auto;
+    padding: 1.15rem clamp(1.25rem, 4vw, 3.5rem);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.6rem 1.75rem;
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(232, 225, 209, 0.38);
+    font-variant-numeric: tabular-nums;
+  }
+  .spacer {
+    margin-left: auto;
+  }
+  .live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+  }
+  .dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--sage);
+    animation: caprock-pulse 2.8s ease-out infinite;
+  }
+  @keyframes caprock-pulse {
+    0% {
+      box-shadow: 0 0 0 0 rgba(138, 154, 123, 0.5);
+    }
+    70% {
+      box-shadow: 0 0 0 7px rgba(138, 154, 123, 0);
+    }
+    100% {
+      box-shadow: 0 0 0 0 rgba(138, 154, 123, 0);
+    }
+  }
+
+  /* ── responsive ─────────────────────────────────────────── */
+  @media (max-width: 680px) {
+    .mark {
+      display: none;
+    }
+    .inner {
+      grid-template-columns: 1fr;
+      gap: 0.85rem;
+    }
+    .rail {
+      padding-top: 0.75rem;
+    }
+    .cols {
+      gap: 2rem 3rem;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .rake {
+      display: none;
+    }
+    .dot {
+      animation: none;
+    }
+    .col a::after {
+      transition: none;
+    }
+  }
 </style>
 
 <script>
-  // Catalog-drawer physics with a mobile grid fallback. Re-entrant across view
-  // transitions: all timers, frames, and global listeners tear down on nav.
+  function initCaprock() {
+    const footer = document.querySelector<HTMLElement>('[data-caprock]');
+    if (!footer || footer.dataset.caprockReady === 'true') return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-  const PLAY_MIN = 760;
-  const spots = [
-    { dx:-340, dy:  8, rot:-3 },
-    { dx: -78, dy:-36, rot: 4 },
-    { dx: 132, dy:-12, rot:-5 },
-    { dx: 286, dy:-42, rot: 7 },
-    { dx: 210, dy: 64, rot:-3 },
-  ];
+    const rake = footer.querySelector<HTMLElement>('.rake');
+    if (!rake) return;
 
-  let drawer: HTMLElement | null = null;
-  let stage: HTMLElement | null = null;
-  let cards: any[] = [];
-  let W = 0, H = 0, raf = 0, zTop = 10;
-  let active: any = null, offX = 0, offY = 0, lastX = 0, lastY = 0, lastT = 0, moved = 0;
-  let isPlay = false, reduce = false;
-  let onMoveRef: any = null, onUpRef: any = null, onResizeRef: any = null, mql: MediaQueryList | null = null, mqlRef: any = null, resizeTimer = 0;
-
-  const clamp = (v: number, m: number) => Math.max(-m, Math.min(m, v));
-  const rect = () => stage!.getBoundingClientRect();
-  const pt = (e: PointerEvent) => { const r = rect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
-  const draw = (c: any) => { c.el.style.transform = `translate(${c.x}px,${c.y}px) rotate(${c.rot}deg)`; };
-  const startLoop = () => { if (!raf) raf = requestAnimationFrame(frame); };
-  const stopLoop = () => { if (raf) { cancelAnimationFrame(raf); raf = 0; } };
-
-  function layout(){
-    if (!isPlay) return;
-    const r = rect(); W = r.width; H = r.height;
-    const s = Math.min(1, W/1060), cx = W/2, baseY = H*0.54;
-    cards.forEach((c, i) => {
-      c.w = c.bw*s; c.h = c.bh*s;
-      c.el.style.width = c.w+'px'; c.el.style.height = c.h+'px';
-      const sp = spots[i] || {dx:0,dy:0,rot:0};
-      c.fx = cx + sp.dx*s - c.w/2; c.fy = baseY + sp.dy*s - c.h/2; c.frot = sp.rot;
-      if (c !== active && c.mode !== 'free'){
-        if (reduce){ c.x=c.fx; c.y=c.fy; c.rot=c.frot; c.mode='idle'; draw(c); }
-        else { c.tx=c.fx; c.ty=c.fy; c.trot=c.frot; c.mode='tween'; }
-      }
+    footer.dataset.caprockReady = 'true';
+    footer.addEventListener('pointermove', (event: PointerEvent) => {
+      const rect = footer.getBoundingClientRect();
+      rake.style.setProperty('--mx', `${((event.clientX - rect.left) / rect.width) * 100}%`);
+      rake.style.setProperty('--my', `${((event.clientY - rect.top) / rect.height) * 100}%`);
     });
-    if (!reduce) startLoop();
   }
 
-  function frame(){
-    let alive = false;
-    for (const c of cards){
-      if (c === active){ alive = true; continue; }
-      if (c.mode === 'tween'){
-        c.x += (c.tx-c.x)*0.2; c.y += (c.ty-c.y)*0.2; c.rot += (c.trot-c.rot)*0.2;
-        if (Math.abs(c.tx-c.x)<0.4 && Math.abs(c.ty-c.y)<0.4 && Math.abs(c.trot-c.rot)<0.2){ c.x=c.tx; c.y=c.ty; c.rot=c.trot; c.mode='idle'; }
-        else alive = true;
-        draw(c);
-      } else if (c.mode === 'free'){
-        c.x += c.vx; c.y += c.vy; c.rot += c.vrot;
-        c.vx *= 0.94; c.vy *= 0.94; c.vrot *= 0.92;
-        const pad = -28;
-        if (c.x < pad){ c.x=pad; c.vx=Math.abs(c.vx)*0.45; }
-        if (c.x > W-c.w-pad){ c.x=W-c.w-pad; c.vx=-Math.abs(c.vx)*0.45; }
-        if (c.y < pad){ c.y=pad; c.vy=Math.abs(c.vy)*0.45; }
-        if (c.y > H-c.h-pad){ c.y=H-c.h-pad; c.vy=-Math.abs(c.vy)*0.45; }
-        if (Math.hypot(c.vx,c.vy)<0.12 && Math.abs(c.vrot)<0.05){ c.vx=c.vy=c.vrot=0; c.mode='idle'; }
-        else alive = true;
-        draw(c);
-      }
-    }
-    raf = alive ? requestAnimationFrame(frame) : 0;
-  }
-
-  function onDown(e: PointerEvent, c: any){
-    if (!isPlay) return;
-    if (e.button != null && e.button !== 0) return;
-    active = c; c.mode = 'grab'; c.dragged = false; moved = 0;
-    // NOTE: no setPointerCapture — it retargets the click off the link and
-    // breaks navigation. The window-level move/up listeners track the drag,
-    // and touch pointers capture implicitly, so capture isn't needed here.
-    const p = pt(e); offX = p.x-c.x; offY = p.y-c.y;
-    lastX = p.x; lastY = p.y; lastT = performance.now();
-    c.vx=c.vy=c.vrot=0; c.el.style.zIndex = String(++zTop); c.el.classList.add('grab');
-    const hint = drawer!.querySelector<HTMLElement>('[data-hint]'); if (hint) hint.style.opacity = '0';
-    window.addEventListener('pointermove', onMoveRef);
-    window.addEventListener('pointerup', onUpRef);
-    startLoop();
-  }
-  function onMove(e: PointerEvent){
-    if (!active) return;
-    const p = pt(e);
-    active.x = p.x-offX; active.y = p.y-offY;
-    const now = performance.now(), dt = Math.max(8, now-lastT);
-    active.vx = clamp((p.x-lastX)/dt*15, 42);
-    active.vy = clamp((p.y-lastY)/dt*15, 42);
-    moved += Math.hypot(p.x-lastX, p.y-lastY);
-    lastX = p.x; lastY = p.y; lastT = now;
-    draw(active);
-  }
-  function onUp(){
-    if (!active) return;
-    const c = active; active = null;
-    c.el.classList.remove('grab');
-    c.dragged = moved > 6;
-    window.removeEventListener('pointermove', onMoveRef);
-    window.removeEventListener('pointerup', onUpRef);
-    if (reduce || !c.dragged){ c.vx=c.vy=c.vrot=0; c.mode='idle'; }
-    else { c.vrot = c.vx*0.08; c.mode='free'; startLoop(); }
-  }
-
-  function refile(){
-    const hint = drawer!.querySelector<HTMLElement>('[data-hint]'); if (hint) hint.style.opacity = '';
-    if (!isPlay) return;
-    cards.forEach((c, i) => {
-      if (reduce){ c.x=c.fx; c.y=c.fy; c.rot=c.frot; c.mode='idle'; draw(c); }
-      else { c.tx=c.fx; c.ty=c.fy; c.trot=c.frot; c.mode='tween'; c.el.style.zIndex = String(10+i); }
-    });
-    startLoop();
-  }
-
-  function setMode(){
-    const play = window.matchMedia(`(min-width:${PLAY_MIN}px)`).matches && !reduce ? true
-               : window.matchMedia(`(min-width:${PLAY_MIN}px)`).matches; // wide always => play (reduce handled inside)
-    const wantPlay = window.matchMedia(`(min-width:${PLAY_MIN}px)`).matches;
-    if (wantPlay === isPlay && stage!.classList.contains(wantPlay ? 'play' : 'list')) { if (isPlay) layout(); return; }
-    isPlay = wantPlay;
-    if (isPlay){
-      drawer!.classList.remove('is-list');
-      stage!.classList.remove('list'); stage!.classList.add('play');
-      // seed from center, then settle into the fan
-      const r = rect();
-      cards.forEach(c => { c.mode = 'idle'; c.x = r.width/2 - 90; c.y = r.height*0.5; c.rot = 0; });
-      layout();
-    } else {
-      drawer!.classList.add('is-list');
-      stage!.classList.remove('play'); stage!.classList.add('list');
-      stopLoop(); active = null;
-      cards.forEach(c => { c.el.style.transform=''; c.el.style.width=''; c.el.style.height=''; c.el.style.zIndex=''; c.mode='idle'; });
-    }
-  }
-
-  function setup(){
-    drawer = document.getElementById('al-drawer');
-    stage = document.getElementById('al-stage');
-    if (!drawer || !stage) return;
-    reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    cards = [...stage.querySelectorAll<HTMLElement>('.card')].map((el, i) => {
-      const c: any = { el, bw:+(el.dataset.w||200), bh:+(el.dataset.h||120), i,
-        x:0,y:0,rot:0,vx:0,vy:0,vrot:0, fx:0,fy:0,frot:0, tx:0,ty:0,trot:0, mode:'idle', dragged:false };
-      el.addEventListener('pointerdown', (e) => onDown(e, c));
-      el.addEventListener('click', (e) => { if (c.dragged){ e.preventDefault(); e.stopPropagation(); } }, true);
-      return c;
-    });
-
-    onMoveRef = onMove; onUpRef = onUp;
-    onResizeRef = () => { clearTimeout(resizeTimer); resizeTimer = window.setTimeout(() => { setMode(); }, 150); };
-    window.addEventListener('resize', onResizeRef, { passive: true });
-
-    mql = window.matchMedia(`(min-width:${PLAY_MIN}px)`);
-    mqlRef = () => setMode();
-    mql.addEventListener('change', mqlRef);
-
-    const btn = drawer.querySelector('[data-refile]');
-    if (btn) btn.addEventListener('click', refile);
-
-    isPlay = !stage.classList.contains('play'); // force first setMode to apply
-    setMode();
-  }
-
-  function teardown(){
-    stopLoop();
-    if (onResizeRef) window.removeEventListener('resize', onResizeRef);
-    if (onMoveRef) window.removeEventListener('pointermove', onMoveRef);
-    if (onUpRef) window.removeEventListener('pointerup', onUpRef);
-    if (mql && mqlRef) mql.removeEventListener('change', mqlRef);
-    active = null; cards = []; drawer = null; stage = null; mql = null;
-  }
-
-  setup();
-  document.addEventListener('astro:page-load', () => { teardown(); setup(); });
-  document.addEventListener('astro:before-swap', teardown);
+  initCaprock();
+  // re-run after client-side navigation if you use <ViewTransitions />
+  document.addEventListener('astro:page-load', initCaprock);
 </script>

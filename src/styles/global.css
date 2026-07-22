@@ -5,10 +5,17 @@
   --color-canvas: #FBFBF9;
   --color-iron: #1A1919;
   --color-caprock: #B85A38; /* Terracotta Rust */
+  --color-caprock-accent: var(--color-caprock, #9c5b3f);
   --color-sage: #6E7E6A;    /* Desert Sage Green */
   --color-haze: #E6E4DF;
   --color-dust: #C1AD8A;    /* Sandy Gray */
   --color-sky: #2E85B2; /*Sky Blue */
+  --color-caliche: #e8e1d1;
+  --color-llano: #bfb49a;
+  --color-ogallala: #9e7c56;
+  --color-redbed: #7e4632;
+  --color-dockum: #55322a;
+  --color-basement: #1c1917;
 
   --font-serif: "Georgia", "Cambria", "Times New Roman", "Times", serif;
   --font-sans: "Inter", "system-ui", "-apple-system", "BlinkMacSystemFont", sans-serif;
