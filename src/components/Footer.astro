@@ -71,6 +71,7 @@ const talusPath = `M632,86 ${APRON} L1440,170 L1216,168 C1112,167 1024,163 966,1
 
 <footer class="caprock" data-caprock>
   <!-- ── the escarpment ─────────────────────────────────────── -->
+  <div class="rake" aria-hidden="true"></div>
   <div class="scarp-wrap">
     <svg class="scarp" viewBox="0 0 1440 180" preserveAspectRatio="none" aria-hidden="true">
       <defs>
@@ -92,7 +93,7 @@ const talusPath = `M632,86 ${APRON} L1440,170 L1216,168 C1112,167 1024,163 966,1
 
   <!-- ── the section ────────────────────────────────────────── -->
   <div class="section">
-    <div class="rake" aria-hidden="true"></div>
+    
 
     <div class="stratum s-lede">
       <div class="inner">
@@ -172,6 +173,8 @@ const talusPath = `M632,86 ${APRON} L1440,170 L1216,168 C1112,167 1024,163 966,1
   /* ── escarpment profile ─────────────────────────────────── */
   .scarp-wrap {
     position: relative;
+    .scarp-wrap { background: #1A1310; }   /* the book's hide-3 */
+
   }
   .scarp {
     display: block;
@@ -179,7 +182,7 @@ const talusPath = `M632,86 ${APRON} L1440,170 L1216,168 C1112,167 1024,163 966,1
     height: clamp(104px, 12vw, 184px);
   }
   .rock {
-    fill: var(--color-llano);
+    fill: var(--color-dockum);
   }
   .talus {
     fill: url(#caprock-talus);
@@ -195,6 +198,7 @@ const talusPath = `M632,86 ${APRON} L1440,170 L1216,168 C1112,167 1024,163 966,1
   /* survey marks are HTML, not SVG text — the non-uniform viewBox
      scaling would stretch real letterforms */
   .mark {
+    z-index: 2;
     position: absolute;
     font-size: 0.5625rem;
     letter-spacing: 0.18em;
@@ -205,12 +209,12 @@ const talusPath = `M632,86 ${APRON} L1440,170 L1216,168 C1112,167 1024,163 966,1
     font-variant-numeric: tabular-nums;
   }
   .mark--plateau {
-    color: var(--color-redbed);
+    color: var(--color-dockum);
     left: clamp(1.25rem, 4vw, 3.5rem);
     top: 2%;
   }
   .mark--basin {
-    color: var(--color-redbed);
+    color: var(--color-dockum);
     right: clamp(1.25rem, 4vw, 3.5rem);
     bottom: 23%;
   }
@@ -219,16 +223,13 @@ const talusPath = `M632,86 ${APRON} L1440,170 L1216,168 C1112,167 1024,163 966,1
   .section {
     position: relative;
     margin-top: -1px;
-    background: linear-gradient(
-      to bottom,
-      var(--color-llano) 10%,
-      var(--color-ogallala) 25%,
-      var(--color-caprock-accent) 43%,
-      var(--color-redbed) 65%,
-      var(--color-dockum) 79%,
-      var(--color-basement) 100%
-    );
-  }
+    background: linear-gradient(to bottom,
+    var(--color-dockum) 0%,
+    var(--color-redbed) 29%,
+    var(--color-caprock-accent) 44%,
+    var(--color-dockum) 70%,
+    var(--color-basement) 100%);
+}
 
   /* bedding planes + grain — this is what reads as rock
      rather than as a CSS gradient */
@@ -263,6 +264,7 @@ const talusPath = `M632,86 ${APRON} L1440,170 L1216,168 C1112,167 1024,163 966,1
 
   /* ── the one interaction: a raking field light ──────────── */
   .rake {
+    z-index: 1; /
     position: absolute;
     inset: 0;
     pointer-events: none;

@@ -33,8 +33,8 @@ article blockquote, .prose blockquote {
 }
 
 article p, .prose p {
-  margin-bottom: 1.25rem;
-  font-family: var(--font-sans);
+  margin-bottom: 1.1rem;
+  font-family: var(--font-serif);
 }
 
 article h3, .prose h3 {

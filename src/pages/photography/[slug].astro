@@ -1,6 +1,74 @@
 ---
-// src/pages/photography/[slug].astro
+/**
+ * src/pages/photography/[slug].astro — "The Light Table"
+ *
+ * A pannable 3200x2200 mount desk. Plates are pinned at surveyed
+ * coordinates; clicking one opens a viewing station.
+ *
+ * ── WHAT CHANGED FROM THE PREVIOUS VERSION ────────────────────────
+ *
+ *  1. SERIES is one array. getStaticPaths, the HUD registry, and the
+ *     `built` flag all read from it, so a series can never be linked
+ *     before it exists. Unbuilt entries render as dim text, not links.
+ *  2. Plate positions are numbers (x/y/w) instead of Tailwind arbitrary
+ *     classes. Needed for the bounding-box math below, and they survive
+ *     being moved into JSON or a content collection later — arbitrary
+ *     classes would be purged.
+ *  3. Images go through astro:assets when they live in
+ *     src/assets/photography/, with three derivatives per plate (board /
+ *     lightbox / thumbnail). If a file isn't there yet it falls back to
+ *     the old /public path, so this ships before the migration.  See
+ *     IMAGE MIGRATION below.
+ *  4. Pan/zoom rewritten on Pointer Events: one code path for mouse,
+ *     touch and pen. No setPointerCapture (that broke link navigation in
+ *     the footer). Transform writes are coalesced into rAF.
+ *  5. Panning is clamped to the CONTENT bounds, not the 3200x2200 sheet,
+ *     so you can't drag the board into blank canvas and get lost.
+ *  6. Fit-to-board: the `fit` button, the 0 key, or double-click on
+ *     empty canvas. Mobile opens fitted; desktop keeps your composed
+ *     centerX/centerY view.
+ *  7. Trackpad two-finger scroll now PANS. Zoom is ctrl/cmd+wheel
+ *     (which is what a trackpad pinch sends) or a notched mouse wheel.
+ *  8. Lightbox pans by translate, drag-following the pointer 1:1,
+ *     clamped to the image edges. Pinch to zoom, swipe to advance.
+ *  9. Plate triggers are <button>s. The lightbox is a real dialog with
+ *     a focus trap and focus restore; the board is inert while it's open.
+ * 10. Script is idempotent and re-binds on astro:page-load, so it
+ *     survives View Transitions.
+ *
+ * ── IMAGE MIGRATION ───────────────────────────────────────────────
+ *
+ *   mkdir -p src/assets/photography
+ *   git mv public/images/escarpments src/assets/photography/escarpments
+ *   git mv public/images/water       src/assets/photography/water
+ *
+ * Nothing else to change — `file` paths below are relative to that
+ * folder and resolve either way. Until you move them you'll see a build
+ * warning per plate and get no srcset, no AVIF, and full-size originals
+ * feeding 64px thumbnails.
+ *
+ * ── ADDING A PLATE ────────────────────────────────────────────────
+ *
+ * x/y are the top-left corner on the 3200x2200 sheet, w is the printed
+ * width. Height comes from the real image. In dev, overlapping plates
+ * are reported in the terminal at build time.
+ */
 import Layout from '../../layouts/RootLayout.astro';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+const BOARD_W = 3200;
+const BOARD_H = 2200;
+
+/* ── the register of series ──────────────────────────────────────
+   `built: false` keeps a series visible in the registry without
+   linking to a page that doesn't exist. Set it true when the gallery
+   below is filled in. The slug must match the href on the home page. */
+const SERIES = [
+  { slug: 'escarpments',                 number: 'I',   title: 'American Escarpments',        built: true  },
+  { slug: 'water_on_the_llano_estacado', number: 'II',  title: 'Water on the Llano Estacado', built: true  },
+  { slug: 'cotton_gins',                 number: 'III', title: 'Cotton Gins of Texas',        built: false },
+];
 
 export async function getStaticPaths() {
   const galleries = [
@@ -9,99 +77,100 @@ export async function getStaticPaths() {
       number: 'I',
       title: 'American Escarpments',
       region: 'Texas | Montana | Washington',
-      essay: 'From the rugged Permian red beds of the Southern Plains to the ancient volcanic chasms of the Pacific Northwest and the dramatic glacial coulees of Montana’s Big Sky country, this photo set captures the breathtaking geological fractures that define the American West. These landscapes are a masterclass in geomorphology, visually documenting the diverse forces of water, wind, and ancient cataclysms that have sculpted the continent’s vast interior tablelands. By showcasing the abrupt transitions where endless high prairies drop away into hidden canyons, valleys, and river floors, the collection highlights both the immense isolation and the unexpected productivity of the Western terrain. Ultimately, the images serve as a striking testament to human adaptation, where ancient natural fortresses and challenging migratory barriers have seamlessly transformed into modern landscapes of recreation and massive agricultural abundance.',
-      centerX: 1550, 
+      essay:
+        'From the rugged Permian red beds of the Southern Plains to the ancient volcanic chasms of the Pacific Northwest and the dramatic glacial coulees of Montana\u2019s Big Sky country, this photo set captures the breathtaking geological fractures that define the American West. These landscapes are a masterclass in geomorphology, visually documenting the diverse forces of water, wind, and ancient cataclysms that have sculpted the continent\u2019s vast interior tablelands. By showcasing the abrupt transitions where endless high prairies drop away into hidden canyons, valleys, and river floors, the collection highlights both the immense isolation and the unexpected productivity of the Western terrain. Ultimately, the images serve as a striking testament to human adaptation, where ancient natural fortresses and challenging migratory barriers have seamlessly transformed into modern landscapes of recreation and massive agricultural abundance.',
+      centerX: 1550,
       centerY: 920,
       plates: [
         {
-          src: '/images/escarpments/escarpment1.jpg',
-          title: 'Little Jerusalem Hoodoos · Toole County, Montana',
-          coordinates: '48.968683° N, 111.982261° W',
-          specs: '12mm · ƒ/8 · 1/320s',
-          coordsClass: 'top-[120px] left-[680px] w-[560px]',
-          caption: ''
+          file: 'escarpments/escarpment1.jpg',
+          title: 'Little Jerusalem Hoodoos \u00B7 Toole County, Montana',
+          coordinates: '48.968683\u00B0 N, 111.982261\u00B0 W',
+          specs: '12mm \u00B7 \u0192/8 \u00B7 1/320s',
+          x: 680, y: 120, w: 560,
+          caption: '',
         },
         {
-          src: '/images/escarpments/escarpment2.jpg',
-          title: 'Blooming Stratification · Garza County, Texas',
-          coordinates: '33.090300° N, 101.500369° W',
-          specs: '14mm · ƒ/8 · 1/320s',
-          coordsClass: 'top-[680px] left-[290px] w-[450px]',
-          caption: ''
+          file: 'escarpments/escarpment2.jpg',
+          title: 'Blooming Stratification \u00B7 Garza County, Texas',
+          coordinates: '33.090300\u00B0 N, 101.500369\u00B0 W',
+          specs: '14mm \u00B7 \u0192/8 \u00B7 1/320s',
+          x: 290, y: 680, w: 450,
+          caption: '',
         },
         {
-          src: '/images/escarpments/escarpment3.jpg',
-          title: 'Palouse Canyon Basalt · Franklin and Whitman counties, Washington',
-          coordinates: '46.662612° N, 118.227612° W',
-          specs: '14mm · ƒ/8 · 1/100s',
-          coordsClass: 'top-[840px] left-[770px] w-[520px]',
-          caption: ''
+          file: 'escarpments/escarpment3.jpg',
+          title: 'Palouse Canyon Basalt \u00B7 Franklin and Whitman counties, Washington',
+          coordinates: '46.662612\u00B0 N, 118.227612\u00B0 W',
+          specs: '14mm \u00B7 \u0192/8 \u00B7 1/100s',
+          x: 770, y: 840, w: 520,
+          caption: '',
         },
         {
-          src: '/images/escarpments/escarpment4.jpg',
-          title: 'The Sea of Red and Cedar · Briscoe County, Texas',
-          coordinates: '34.465959° N, 101.098786° W',
-          specs: '12mm · ƒ/2.8 · 1/2000s',
-          coordsClass: 'top-[180px] left-[1275px] w-[500px]',
-          caption: ''
+          file: 'escarpments/escarpment4.jpg',
+          title: 'The Sea of Red and Cedar \u00B7 Briscoe County, Texas',
+          coordinates: '34.465959\u00B0 N, 101.098786\u00B0 W',
+          specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/2000s',
+          x: 1275, y: 180, w: 500,
+          caption: '',
         },
         {
-          src: '/images/escarpments/escarpment5.jpg',
-          title: 'Little Jerusalem Hoodoos · Toole County, Montana',
-          coordinates: '48.968683° N, 111.982261° W',
-          specs: '12mm · ƒ/3.5 · 1/1250s',
-          coordsClass: 'top-[870px] left-[1310px] w-[340px]',
-          caption: ''
+          file: 'escarpments/escarpment5.jpg',
+          title: 'Little Jerusalem Hoodoos \u00B7 Toole County, Montana',
+          coordinates: '48.968683\u00B0 N, 111.982261\u00B0 W',
+          specs: '12mm \u00B7 \u0192/3.5 \u00B7 1/1250s',
+          x: 1310, y: 870, w: 340,
+          caption: '',
         },
         {
-          src: '/images/escarpments/escarpment6.jpg',
-          title: 'Upper Yellow House Draw Canyon · Bailey County, Texas',
-          coordinates: '33.851419° N, 102.700752° W',
-          specs: '12mm · ƒ/2.8 · 1/2000s',
-          coordsClass: 'top-[420px] left-[1830px] w-[400px]',
-          caption: ''
+          file: 'escarpments/escarpment6.jpg',
+          title: 'Upper Yellow House Draw Canyon \u00B7 Bailey County, Texas',
+          coordinates: '33.851419\u00B0 N, 102.700752\u00B0 W',
+          specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/2000s',
+          x: 1830, y: 420, w: 400,
+          caption: '',
         },
         {
-          src: '/images/escarpments/escarpment7.jpg',
-          title: 'Little Jerusalem with Sweetgrass Hills · Toole County, Montana',
-          coordinates: '48.966829° N, 111.965596° W',
-          specs: '12mm · ƒ/2.8 · 1/200s',
-          coordsClass: 'top-[700px] left-[1850px] w-[540px]',
-          caption: ''
+          file: 'escarpments/escarpment7.jpg',
+          title: 'Little Jerusalem with Sweetgrass Hills \u00B7 Toole County, Montana',
+          coordinates: '48.966829\u00B0 N, 111.965596\u00B0 W',
+          specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/200s',
+          x: 1850, y: 700, w: 540,
+          caption: '',
         },
         {
-          src: '/images/escarpments/escarpment8.jpg',
-          title: 'Hoodoos at Little Jerusalem · Toole County, Montana',
-          coordinates: '48.966829° N, 111.965596° W',
-          specs: '12mm · ƒ/8 · 1/320s',
-          coordsClass: 'top-[350px] left-[160px] w-[500px]',
-          caption: 'The Hoodoos!'
+          file: 'escarpments/escarpment8.jpg',
+          title: 'Tule Creek \u00B7 Briscoe County, Texas',
+          coordinates: '48.966829\u00B0 N, 111.965596\u00B0 W',
+          specs: '12mm \u00B7 \u0192/8 \u00B7 1/320s',
+          x: 160, y: 350, w: 500,
+          caption: 'The Hoodoos!',
         },
         {
-          src: '/images/escarpments/escarpment9.jpg',
-          title: 'Beige Chasm · Garza County, Texas',
-          coordinates: '33.090300° N, 101.500369° W',
-          specs: '14mm · ƒ/8 · 1/320s',
-          coordsClass: 'top-[1050px] left-[1700px] w-[600px]',
-          caption: ''
+          file: 'escarpments/escarpment9.jpg',
+          title: 'Beige Chasm \u00B7 Garza County, Texas',
+          coordinates: '33.090300\u00B0 N, 101.500369\u00B0 W',
+          specs: '14mm \u00B7 \u0192/8 \u00B7 1/320s',
+          x: 1700, y: 1050, w: 600,
+          caption: '',
         },
         {
-          src: '/images/escarpments/escarpment10.jpg',
-          title: 'Walls of the Pecos · Val Verde County, Texas',
-          coordinates: '29.720860° N, 101.347319° W',
-          specs: '12mm · ƒ/5.6 · 1/1000s',
-          coordsClass: 'top-[1050px] left-[370px] w-[360px]',
-          caption: ''
+          file: 'escarpments/escarpment10.jpg',
+          title: 'Walls of the Pecos \u00B7 Val Verde County, Texas',
+          coordinates: '29.720860\u00B0 N, 101.347319\u00B0 W',
+          specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/1000s',
+          x: 370, y: 1050, w: 360,
+          caption: '',
         },
         {
-          src: '/images/escarpments/escarpment11.jpg',
-          title: 'Brazos Headwaters · Garza County, Texas',
-          coordinates: '33.090300° N, 101.500369° W',
-          specs: '12mm · ƒ/5.6 · 1/1000s',
-          coordsClass: 'top-[500px] left-[750px] w-[1060px]',
-          caption: ''
-        }
-      ]
+          file: 'escarpments/escarpment11.jpg',
+          title: 'Brazos Headwaters \u00B7 Garza County, Texas',
+          coordinates: '33.090300\u00B0 N, 101.500369\u00B0 W',
+          specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/1000s',
+          x: 850, y: 500, w: 660,
+          caption: '',
+        },
+      ],
     },
     {
       slug: 'water_on_the_llano_estacado',
@@ -109,687 +178,1188 @@ export async function getStaticPaths() {
       title: 'Water on the Llano Estacado',
       region: 'Texas | New Mexico',
       essay: '',
-      centerX: 1250, 
+      centerX: 1250,
       centerY: 820,
       plates: [
         {
-          src: '/images/water/water1.jpg',
-          title: 'Tule Creek Flow · Briscoe County, Texas',
-          coordinates: '34.54667° N, 101.429921° W',
-          specs: '12mm · ƒ/8 · 1/320s',
-          coordsClass: 'top-[250px] left-[750px] w-[250px]',
-          caption: ''
+          file: 'water/water1.jpg',
+          title: 'Tule Creek Flow \u00B7 Briscoe County, Texas',
+          coordinates: '34.54667\u00B0 N, 101.429921\u00B0 W',
+          specs: '12mm \u00B7 \u0192/8 \u00B7 1/320s',
+          x: 750, y: 250, w: 250,
+          caption: '',
         },
         {
-          src: '/images/water/water2.jpg',
-          title: 'Canadian River Boundary · Hemphill County, Texas',
-          coordinates: '35.937055° N, 100.369943° W',
-          specs: '12mm · ƒ/5.6 · 1/500s',
-          coordsClass: 'top-[200px] left-[320px] w-[400px]',
-          caption: 'The Canadian River signifies the northern extent of the Llano Estacado for much of its northern extent. This view in Hemphill County shows the meandering river at sunset.'
+          file: 'water/water2.jpg',
+          title: 'Canadian River Boundary \u00B7 Hemphill County, Texas',
+          coordinates: '35.937055\u00B0 N, 100.369943\u00B0 W',
+          specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/500s',
+          x: 320, y: 200, w: 400,
+          caption:
+            'The Canadian River signifies the northern extent of the Llano Estacado for much of its northern extent. This view in Hemphill County shows the meandering river at sunset.',
         },
         {
-          src: '/images/water/water3.jpg',
-          title: 'Active Runningwater Draw · Parmer County, Texas',
-          coordinates: '34.471036° N, 102.720865° W', 
-          specs: '12mm · ƒ/5.6 · 1/640s',
-          coordsClass: 'top-[180px] left-[1100px] w-[400px]',
-          caption: ''
+          file: 'water/water3.jpg',
+          title: 'Active Runningwater Draw \u00B7 Parmer County, Texas',
+          coordinates: '34.471036\u00B0 N, 102.720865\u00B0 W',
+          specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/640s',
+          x: 1100, y: 180, w: 400,
+          caption: '',
         },
         {
-          src: '/images/water/water4.jpg',
-          title: 'Colorful Basin · Bailey County, Texas',
-          coordinates: '33.991164° N, 102.708448° W',
-          specs: '12mm · ƒ/2.8 · 1/3200s',
-          coordsClass: 'top-[480px] left-[1080px] w-[400px]',
-          caption: ''
-        }
-      ]
-    }
+          file: 'water/water4.jpg',
+          title: 'Colorful Basin \u00B7 Bailey County, Texas',
+          coordinates: '33.991164\u00B0 N, 102.708448\u00B0 W',
+          specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
+          x: 1080, y: 480, w: 400,
+          caption: '',
+        },
+      ],
+    },
   ];
 
   return galleries.map((gallery) => ({
     params: { slug: gallery.slug },
-    props: { gallery }
+    props: { gallery },
   }));
 }
 
 const { gallery } = Astro.props;
+
+/* ── image pipeline ──────────────────────────────────────────────
+   Three derivatives per plate. The board version is sized for the
+   largest printed width on the sheet, not the original capture; the
+   thumbnail is 160px instead of the multi-megabyte original. */
+const LOCAL = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/photography/**/*.{jpg,jpeg,png,webp,avif}',
+  { eager: true },
+);
+
+const BOARD_MAX = 1400;   // 2x the widest plate on the sheet
+const FULL_MAX = 2400;    // what the station opens with
+const DETAIL_MAX = 4000;  // fetched only if the reader zooms past 1.5x
+const THUMB_MAX = 160;
+
+async function resolveImage(file: string) {
+  const mod = LOCAL[`/src/assets/photography/${file}`];
+
+  if (!mod) {
+    if (import.meta.env.DEV) {
+      console.warn(
+        `[photography] ${file} is not in src/assets/photography — serving the unoptimized original from /public. See IMAGE MIGRATION in [slug].astro.`,
+      );
+    }
+    return {
+      board: `/images/${file}`,
+      boardSrcset: undefined as string | undefined,
+      full: `/images/${file}`,
+      detail: `/images/${file}`,
+      thumb: `/images/${file}`,
+      width: 1500,
+      height: 1000, // assumed 3:2 until the file is a real asset
+      optimized: false,
+    };
+  }
+
+  const src = mod.default;
+  const cap = (w: number) => Math.min(w, src.width);
+
+  const [b1, b2, full, thumb] = await Promise.all([
+    getImage({ src, width: cap(BOARD_MAX / 2), format: 'webp', quality: 78 }),
+    getImage({ src, width: cap(BOARD_MAX), format: 'webp', quality: 70 }),
+    getImage({ src, width: cap(FULL_MAX), format: 'webp', quality: 84 }),
+    getImage({ src, width: cap(THUMB_MAX), format: 'webp', quality: 62 }),
+  ]);
+
+  // only worth generating if the original actually has the pixels
+  const detail =
+    src.width > FULL_MAX
+      ? await getImage({ src, width: cap(DETAIL_MAX), format: 'webp', quality: 82 })
+      : full;
+
+  return {
+    board: b1.src,
+    boardSrcset: `${b1.src} 1x, ${b2.src} 2x`,
+    full: full.src,
+    detail: detail.src,
+    thumb: thumb.src,
+    width: src.width,
+    height: src.height,
+    optimized: true,
+  };
+}
+
+const plates = await Promise.all(
+  gallery.plates.map(async (p, i) => {
+    const img = await resolveImage(p.file);
+    const h = Math.round((img.height / img.width) * p.w);
+    // distance from the composed opening view — the nearest few load eagerly
+    const d = Math.hypot(p.x + p.w / 2 - gallery.centerX, p.y + h / 2 - gallery.centerY);
+    return { ...p, img, h, d, index: i, plate: `Plate ${String(i + 1).padStart(2, '0')}` };
+  }),
+);
+
+const EAGER = new Set(
+  [...plates].sort((a, b) => a.d - b.d).slice(0, 4).map((p) => p.index),
+);
+
+/* content bounds, +22px for the caption row under each print */
+const CAPTION_H = 22;
+const bounds = plates.reduce(
+  (acc, p) => ({
+    minX: Math.min(acc.minX, p.x),
+    minY: Math.min(acc.minY, p.y),
+    maxX: Math.max(acc.maxX, p.x + p.w),
+    maxY: Math.max(acc.maxY, p.y + p.h + CAPTION_H),
+  }),
+  { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity },
+);
+
+/* dev-only collision report — hand-placed coordinates drift */
+if (import.meta.env.DEV) {
+  for (let i = 0; i < plates.length; i++) {
+    for (let j = i + 1; j < plates.length; j++) {
+      const a = plates[i], b = plates[j];
+      const hit =
+        a.x < b.x + b.w && b.x < a.x + a.w &&
+        a.y < b.y + b.h + CAPTION_H && b.y < a.y + a.h + CAPTION_H;
+      if (hit) {
+        console.warn(`[photography/${gallery.slug}] ${a.plate} and ${b.plate} overlap on the sheet.`);
+      }
+    }
+  }
+}
+
+const registry = SERIES;
 ---
 
 <Layout title={`${gallery.title} — Austin Allison`} hideNav={true} hideFoot={true}>
-  <!-- touch-none applied to prevent mobile browsers from hijacking swipes -->
-    <main 
-      id="workspace-viewport" 
-      class="w-screen h-[100dvh] overflow-hidden bg-canvas text-iron select-none cursor-grab active:cursor-grabbing relative touch-none"
-    >
-      
-      <!-- Fixed Editorial HUD Overlay (Responsive, Collapsing, & Expandable) -->
-      <div 
+  <main
+    id="workspace-viewport"
+    class="w-screen h-[100dvh] overflow-hidden bg-canvas text-iron select-none cursor-grab active:cursor-grabbing relative touch-none"
+  >
+    <!-- ── field notebook (fixed HUD) ─────────────────────────── -->
+    <div
       id="fixed-hud-container"
-      class="fixed top-4 left-4 right-4 md:top-8 md:left-8 md:right-8 z-50 flex justify-between items-start pointer-events-none gap-4">
-        <div 
-          id="hud-overlay" 
-          class="pointer-events-auto w-full max-w-[65%] md:max-w-sm bg-canvas/95 backdrop-blur-xs p-4 md:p-6 border border-haze rounded-sm shadow-lg transition-all duration-300"
-        >
-          <div class="flex items-center justify-between gap-2 mb-1 md:mb-2">
-            
-            <button 
-              id="hud-toggle" 
-              class="md:hidden font-mono text-[9px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors flex items-center gap-1 focus:outline-none shrink-0"
-              aria-expanded="false"
-            >
-              <span id="toggle-text">info</span>
-              <span id="toggle-icon" class="transition-transform duration-300 inline-block">+</span>
-            </button>
-          </div>
-        <div class="flex items-center -mt-3 space-x-2 text-[9px] md:text-[10px] font-mono text-sage uppercase tracking-widest truncate">
-              <span class="hidden md:inline">{gallery.region}</span>
-        </div>
-          <h2 class="font-serif text-md md:text-2xl font-light tracking-tight text-sage mb-1 md:mb-3 mt-1 truncate md:whitespace-normal">
+      class="fixed top-4 left-4 right-4 md:top-8 md:left-8 md:right-8 z-50 flex justify-between items-start pointer-events-none gap-4"
+    >
+      <div
+        id="hud-overlay"
+        data-expanded="false"
+        class="pointer-events-auto w-full bg-canvas/95 backdrop-blur-xs p-4 md:p-6 border border-haze rounded-sm shadow-lg transition-all duration-300 flex flex-col gap-1.5"
+      >
+        <div class="flex items-start justify-between gap-3">
+          <span class="font-serif text-2xl md:text-2xl tracking text-sage">
             Series {gallery.number}.
-          </h2>
-          <h1 class="font-serif text-lg md:text-2xl font-light tracking-tight text-caprock mb-1 md:mb-3 truncate md:whitespace-normal -mt-2">
-             {gallery.title}.
-          </h1>
-          
-          <div id="hud-collapsible" class="hidden md:block transition-all duration-300 overflow-hidden">
-            <p class="font-serif italic text-xs text-iron/70 leading-relaxed mt-2 md:mt-0 mb-4">
+          </span>
+          <button
+            id="hud-toggle"
+            type="button"
+            class="md:hidden font-mono text-[9px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors flex items-center gap-1 focus:outline-none shrink-0"
+            aria-expanded="false"
+            aria-controls="hud-collapsible"
+          >
+            <span id="toggle-text">info</span>
+            <span id="toggle-icon" class="transition-transform duration-300 inline-block">+</span>
+          </button>
+        </div>
+
+        <h1 class="font-serif text-lg md:text-2xl font-light tracking-tight text-caprock leading-tight">
+          {gallery.title}
+        </h1>
+
+        <p class="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-sage/90">
+          {gallery.region}
+        </p>
+
+        <div id="hud-collapsible" class="hidden md:block transition-all duration-300 overflow-hidden">
+          {gallery.essay && (
+            <p class="font-sans text-xs text-iron/70 leading-relaxed mt-3 mb-4">
               {gallery.essay}
             </p>
-            <p class="md:hidden font-mono text-[9px] text-sage uppercase tracking-widest mb-4">
-              {gallery.region}
-            </p>
-            
-            <nav class="flex flex-col gap-1.5 mt-4 border-t border-haze/40 pt-4 pb-2">
-              <span class="font-mono text-[9px] uppercase tracking-widest text-iron/40 mb-1">Series Registry</span>
-              <a href="/photography/escarpments" class="font-mono text-[10px] text-sage hover:text-caprock transition-colors truncate">I. American Escarpments</a>
-              <a href="/photography/water_on_the_llano_estacado" class="font-mono text-[10px] text-sage hover:text-caprock transition-colors truncate">II. Water on the Llano Estacado</a>
-              <a href="/photography/cotton_gins_of_texas" class="font-mono text-[10px] text-sage hover:text-caprock transition-colors truncate">III. Cotton Gins of Texas</a>
-            </nav>
-          </div>
-          
-          <div class="hidden md:flex font-mono text-[10px] uppercase tracking-wider text-caprock items-center gap-2 mt-2">
-            <span class="animate-pulse">●</span> Scroll and drag to navigate
-          </div>
-          <div class="hidden md:flex font-mono text-[10px] uppercase tracking-wider text-caprock items-center gap-2">
-            <span class="animate-pulse">●</span> Click to open
-          </div>
+          )}
 
-          <div 
-            id="mobile-instructions" 
-            class="hidden md:hidden font-mono text-[9px] uppercase tracking-wider text-sage/80 items-center gap-2 border-t border-haze/30 pt-3 mt-1"
-          >
-            <span class="animate-pulse">●</span> Pinch and drag to explore. Click to open.
-          </div>
+          <nav class="flex flex-col gap-1.5 mt-4 border-t border-haze/40 pt-4 pb-2">
+            <span class="font-mono text-[9px] uppercase tracking-widest text-iron/40 mb-1">
+              Series Registry
+            </span>
+            {registry.map((s) =>
+              !s.built ? (
+                <span
+                  class="font-mono text-[10px] text-iron/30 truncate cursor-default"
+                  title="In preparation"
+                >
+                  {s.number}. {s.title} <span class="text-iron/25">— in preparation</span>
+                </span>
+              ) : s.slug === gallery.slug ? (
+                <span
+                  aria-current="page"
+                  class="font-mono text-[10px] text-caprock truncate flex items-center gap-1.5"
+                >
+                  <span aria-hidden="true">▸</span>{s.number}. {s.title}
+                </span>
+              ) : (
+                <a
+                  href={`/photography/${s.slug}`}
+                  class="font-mono text-[10px] text-sage hover:text-caprock transition-colors truncate"
+                >
+                  {s.number}. {s.title}
+                </a>
+              ),
+            )}
+          </nav>
         </div>
 
-        <div class="pointer-events-auto shrink-0">
-          <a 
-            href="/photography" 
-            class="font-mono text-[9px] md:text-[10px] lowercase tracking-wide bg-caprock/80 backdrop-blur-xs px-3 py-1.5 md:px-4 md:py-2 border border-haze rounded-sm text-canvas hover:text-caprock hover:bg-canvas transition-colors shadow-xs block"
+        <!-- board controls + legend -->
+        <div class="flex items-center gap-3 mt-2 pt-2 border-t border-haze/40">
+          <button
+            id="btn-fit"
+            type="button"
+            class="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors focus:outline-none"
+            title="Frame every plate (0)"
           >
-            &larr; close<span class="hidden sm:inline"> album</span>
-          </a>
+            fit board
+          </button>
+          <span class="hidden md:inline font-mono text-[10px] uppercase tracking-wider text-caprock">
+            drag to move · ⌘/ctrl + scroll to zoom · click to open
+          </span>
+        </div>
+
+        <div
+          id="mobile-instructions"
+          class="hidden md:hidden font-mono text-[9px] uppercase tracking-wider text-sage/80 items-center gap-2 border-t border-haze/30 pt-3 mt-1"
+        >
+          <span class="animate-pulse" aria-hidden="true">●</span> Pinch and drag to explore. Tap to open.
         </div>
       </div>
 
-      <!-- THE MOUNT DESK SURFACE -->
-      <div 
-        id="light-table" 
-        class="absolute w-[3200px] h-[2200px] bg-topo-canvas pointer-events-auto origin-top-left will-change-transform"
-        data-center-x={gallery.centerX}
-        data-center-y={gallery.centerY}
-      >
-        
-        <!-- Spatial Artifacts: The Photo Prints -->
-        {gallery.plates.map((plate, index) => (
-          <div 
-            class={`absolute ${plate.coordsClass} flex flex-col group pointer-events-auto cursor-pointer`}
-            data-lightbox-trigger
-            data-index={index}
-            data-src={plate.src}
-            data-title={plate.title}
-            data-specs={plate.specs}
-            data-coords={plate.coordinates}
-            data-caption={plate.caption || "No archival notes registered for this station log entry."}
-            data-plate={`Plate ${String(index + 1).padStart(2, '0')}`}
-          >
-            <div class="border border-iron/10 p-3 bg-dust/35 shadow-md rounded-sm overflow-hidden transition-all duration-500 group-hover:shadow-xl group-hover:border-caprock/30">
-              <div class="overflow-hidden bg-iron/5 pointer-events-none">
-                <img src={plate.src} alt={plate.title} loading="lazy" decoding="async" class="w-full h-auto object-cover opacity-95 group-hover:opacity-100 transition-all duration-700" draggable="false" />
-              </div>
-            </div>
-            <div class="w-full flex justify-between items-baseline text-[10px] font-mono text-sage uppercase tracking-wider mt-2 px-1">
-              <span class="font-semibold text-iron/70">Plate {String(index + 1).padStart(2, '0')}</span>
-              <span>{plate.coordinates}</span>
-            </div>
+      <div class="pointer-events-auto shrink-0">
+        <a
+          href="/photography"
+          class="font-mono text-[9px] md:text-[10px] lowercase tracking-wide bg-caprock/80 backdrop-blur-xs px-3 py-1.5 md:px-4 md:py-2 border border-haze rounded-sm text-canvas hover:text-caprock hover:bg-canvas transition-colors shadow-xs block"
+        >
+          &larr; close<span class="hidden sm:inline"> album</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- ── the mount desk ─────────────────────────────────────── -->
+    <div
+      id="light-table"
+      class="absolute bg-topo-canvas pointer-events-auto origin-top-left will-change-transform"
+      style={`width:${BOARD_W}px; height:${BOARD_H}px;`}
+      data-center-x={gallery.centerX}
+      data-center-y={gallery.centerY}
+      data-board-w={BOARD_W}
+      data-board-h={BOARD_H}
+      data-min-x={bounds.minX}
+      data-min-y={bounds.minY}
+      data-max-x={bounds.maxX}
+      data-max-y={bounds.maxY}
+    >
+      {plates.map((plate) => (
+        <button
+          type="button"
+          class="plate absolute flex flex-col group text-left cursor-pointer focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-caprock"
+          style={`left:${plate.x}px; top:${plate.y}px; width:${plate.w}px;`}
+          data-lightbox-trigger
+          data-index={plate.index}
+          aria-label={`Open ${plate.plate}, ${plate.title}`}
+        >
+          <span class="block border border-iron/10 p-3 bg-dust/35 shadow-md rounded-sm overflow-hidden transition-all duration-500 group-hover:shadow-xl group-hover:border-caprock/30">
+            <span class="block overflow-hidden bg-iron/5">
+              <img
+                src={plate.img.board}
+                srcset={plate.img.boardSrcset}
+                width={plate.img.width}
+                height={plate.img.height}
+                alt=""
+                loading={EAGER.has(plate.index) ? 'eager' : 'lazy'}
+                fetchpriority={EAGER.has(plate.index) ? 'high' : 'auto'}
+                decoding="async"
+                draggable="false"
+                class="w-full h-auto object-cover opacity-95 group-hover:opacity-100 transition-opacity duration-700"
+              />
+            </span>
+          </span>
+          <span class="w-full flex justify-between items-baseline text-[10px] font-mono text-sage uppercase tracking-wider mt-2 px-1">
+            <span class="font-semibold text-iron/70">{plate.plate}</span>
+            <span>{plate.coordinates}</span>
+          </span>
+        </button>
+      ))}
+    </div>
+  </main>
+
+  <!-- ── viewing station ──────────────────────────────────────────
+       Outside <main> so the board can be made inert while it's open. -->
+  <div
+    id="lightbox-modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="lightbox-plate-title"
+    class="fixed inset-0 z-[100] h-[100dvh] bg-canvas/98 backdrop-blur-md opacity-0 flex-col justify-between p-4 md:p-8 transition-opacity duration-300 select-none"
+  >
+    <!-- toolbar -->
+    <div class="w-full max-w-7xl mx-auto flex justify-between items-center shrink-0">
+      <div class="font-mono text-[10px] uppercase tracking-widest text-iron/50 flex items-center gap-3 md:gap-6">
+        <span id="lightbox-progress"></span>
+
+        <div class="flex items-center gap-1.5 border-l border-haze/60 pl-3 md:pl-6">
+          <button id="btn-zoom-out" type="button" class="hover:text-caprock transition-colors p-1 md:p-1.5 rounded-sm hover:bg-iron/5 focus:outline-none" aria-label="Zoom out" title="Zoom out (−)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+          <button id="btn-zoom-reset" type="button" class="hover:text-caprock transition-colors p-1 md:p-1.5 rounded-sm hover:bg-iron/5 focus:outline-none" aria-label="Reset zoom" title="Reset zoom (0)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+          </button>
+          <button id="btn-zoom-in" type="button" class="hover:text-caprock transition-colors p-1 md:p-1.5 rounded-sm hover:bg-iron/5 focus:outline-none" aria-label="Zoom in" title="Zoom in (+)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 md:gap-4">
+        <button id="btn-fullscreen" type="button" class="font-mono text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors p-2 focus:outline-none flex items-center gap-1.5" aria-label="Toggle fullscreen">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
+          <span class="hidden md:inline">fullscreen</span>
+        </button>
+
+        <button id="close-lightbox" type="button" class="font-mono text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors p-2 focus:outline-none">
+          esc // close view
+        </button>
+      </div>
+    </div>
+
+    <!-- the print -->
+    <div
+      id="lightbox-stage"
+      class="w-full max-w-5xl mx-auto flex-1 min-h-0 flex items-center justify-center overflow-hidden my-4 relative touch-none"
+    >
+      <button id="nav-prev" type="button" class="absolute left-0 md:-left-12 z-50 text-iron/30 hover:text-caprock transition-colors p-4 focus:outline-none hidden md:block" aria-label="Previous plate">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+      </button>
+
+      <img
+        id="lightbox-img"
+        src=""
+        alt=""
+        class="max-w-full max-h-full object-contain shadow-md border border-haze p-2 bg-canvas cursor-zoom-in relative z-40"
+        decoding="async"
+        draggable="false"
+      />
+
+      <button id="nav-next" type="button" class="absolute right-0 md:-right-12 z-50 text-iron/30 hover:text-caprock transition-colors p-4 focus:outline-none hidden md:block" aria-label="Next plate">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+      </button>
+    </div>
+
+    <!-- metadata + strip -->
+    <div class="w-full max-w-5xl mx-auto border-t border-haze/40 pt-4 pb-2 md:pb-4 shrink-0">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start font-mono text-[11px] uppercase tracking-wider text-sage">
+        <div class="col-span-12 md:col-span-5 flex flex-col gap-1">
+          <span id="lightbox-plate-title" class="font-semibold text-iron"></span>
+          <div class="flex gap-4 text-iron/40 text-[10px] lowercase tracking-normal mt-0.5">
+            <span id="lightbox-specs"></span>
+            <span id="lightbox-coords"></span>
           </div>
+        </div>
+        <div
+          id="lightbox-notes"
+          class="col-span-12 md:col-span-7 border-t border-dashed border-haze/40 pt-3 md:pt-0 md:border-t-0 font-serif normal-case tracking-normal text-xs text-iron/70 italic leading-relaxed max-h-[12dvh] overflow-y-auto pr-2 scrollbar-none select-text touch-pan-y"
+        >
+          <p id="lightbox-caption" class="cursor-text"></p>
+        </div>
+      </div>
+
+      <div id="thumbnail-strip" class="w-full flex gap-2 overflow-x-auto scrollbar-none mt-4 md:mt-6 pt-2 pb-1 snap-x touch-pan-x">
+        {plates.map((plate) => (
+          <button
+            type="button"
+            class="thumbnail-btn shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-xs opacity-40 hover:opacity-100 transition-all border border-transparent focus:outline-none snap-center"
+            data-index={plate.index}
+            aria-label={`Jump to ${plate.plate}`}
+          >
+            <img src={plate.img.thumb} class="w-full h-full object-cover rounded-xs pointer-events-none" alt="" width="64" height="64" loading="lazy" decoding="async" />
+          </button>
         ))}
-
       </div>
+    </div>
+  </div>
 
-      <!-- Lightbox Layer Frame -->
-      <div 
-        id="lightbox-modal" 
-        class="fixed inset-0 z-[100] h-[100dvh] bg-canvas/98 backdrop-blur-md hidden opacity-0 flex flex-col justify-between p-4 md:p-8 transition-opacity duration-300 select-none touch-auto"
-      >
-        <!-- Top Toolbar (Locks to Top) -->
-        <div class="w-full max-w-7xl mx-auto flex justify-between items-center shrink-0">
-          
-          <!-- Toolbar (Progress + Explicit Zoom Controls) -->
-          <div class="font-mono text-[10px] uppercase tracking-widest text-iron/50 flex items-center gap-3 md:gap-6">
-            <span id="lightbox-progress"></span>
-            
-            <div class="flex items-center gap-1.5 border-l border-haze/60 pl-3 md:pl-6">
-              <button id="btn-zoom-out" class="hover:text-caprock transition-colors p-1 md:p-1.5 rounded-sm hover:bg-iron/5 focus:outline-none" aria-label="Zoom Out" title="Zoom Out">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              </button>
-              <button id="btn-zoom-reset" class="hover:text-caprock transition-colors p-1 md:p-1.5 rounded-sm hover:bg-iron/5 focus:outline-none" aria-label="Reset Zoom" title="Reset Zoom">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
-              </button>
-              <button id="btn-zoom-in" class="hover:text-caprock transition-colors p-1 md:p-1.5 rounded-sm hover:bg-iron/5 focus:outline-none" aria-label="Zoom In" title="Zoom In">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-              </button>
-            </div>
-          </div>
-          
-          <!-- Right Controls (Fullscreen + Close) -->
-          <div class="flex items-center gap-2 md:gap-4">
-            <button id="btn-fullscreen" class="font-mono text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors p-2 focus:outline-none flex items-center gap-1.5">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
-              <span class="hidden md:inline">fullscreen</span>
-            </button>
-            
-            <button id="close-lightbox" class="font-mono text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors p-2 z-50 focus:outline-none">
-              esc // close view
-            </button>
-          </div>
-        </div>
-
-        <!-- Dynamic Middle Image Container (Grows/Shrinks safely without pushing text off screen) -->
-        <div class="w-full max-w-5xl mx-auto flex-1 min-h-0 flex items-center justify-center overflow-hidden my-4 relative">
-          <button id="nav-prev" class="absolute left-0 md:-left-12 z-50 text-iron/30 hover:text-caprock transition-colors p-4 focus:outline-none hidden md:block">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
-          </button>
-          
-          <img 
-            id="lightbox-img" 
-            src="" 
-            alt="" 
-            class="max-w-full max-h-full object-contain shadow-md border border-haze p-2 bg-canvas transition-transform duration-200 ease-out cursor-zoom-in relative z-40" 
-            style="image-rendering: high-quality;"
-            decoding="async"
-          />
-
-          <button id="nav-next" class="absolute right-0 md:-right-12 z-50 text-iron/30 hover:text-caprock transition-colors p-4 focus:outline-none hidden md:block">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>
-          </button>
-        </div>
-
-        <!-- Bottom Metadata & Thumbnails (Locks to Bottom) -->
-        <div class="w-full max-w-5xl mx-auto border-t border-haze/40 pt-4 pb-2 md:pb-4 shrink-0 pb-safe">
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start font-mono text-[11px] uppercase tracking-wider text-sage">
-            <div class="col-span-12 md:col-span-5 flex flex-col gap-1">
-              <span id="lightbox-plate-title" class="font-semibold text-iron"></span>
-              <div class="flex gap-4 text-iron/40 text-[10px] lowercase tracking-normal mt-0.5">
-                <span id="lightbox-specs"></span>
-                <span id="lightbox-coords"></span>
-              </div>
-            </div>
-            <div class="col-span-12 md:col-span-7 border-t border-dashed border-haze/40 pt-3 md:pt-0 md:border-t-0 font-serif normal-case tracking-normal text-xs text-iron/70 italic leading-relaxed max-h-[12dvh] overflow-y-auto pr-2 scrollbar-none select-text touch-pan-y">
-              <p id="lightbox-caption" class="cursor-text"></p>
-            </div>
-          </div>
-          
-          <div id="thumbnail-strip" class="w-full flex gap-2 overflow-x-auto scrollbar-none mt-4 md:mt-6 pt-2 pb-1 snap-x touch-pan-x">
-            {gallery.plates.map((plate, index) => (
-              <button 
-                class="thumbnail-btn shrink-0 w-12 h-12 md:w-16 md:h-16 rounded-xs opacity-40 hover:opacity-100 transition-all border border-transparent focus:outline-none snap-center"
-                data-index={index}
-                aria-label={`Jump to Plate ${index + 1}`}
-              >
-                <img src={plate.src} class="w-full h-full object-cover rounded-xs pointer-events-none" alt={`Thumbnail ${index + 1}`} loading="lazy" />
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-    </main>
+  <!-- plate records, read by the lightbox -->
+  <script type="application/json" id="plate-data" is:inline set:html={JSON.stringify(
+    plates.map((p) => ({
+      full: p.img.full,
+      detail: p.img.detail,
+      title: p.title,
+      specs: p.specs,
+      coords: p.coordinates,
+      caption: p.caption,
+      plate: p.plate,
+    })),
+  ).replace(/</g, '\\u003c')}></script>
 </Layout>
 
 <script>
-  const viewport = document.getElementById('workspace-viewport');
-  const table = document.getElementById('light-table');
-  const modal = document.getElementById('lightbox-modal');
-  const modalImg = document.getElementById('lightbox-img') as HTMLImageElement;
-  const modalTitle = document.getElementById('lightbox-plate-title');
-  const modalSpecs = document.getElementById('lightbox-specs');
-  const modalCoords = document.getElementById('lightbox-coords');
-  const modalCaption = document.getElementById('lightbox-caption');
-  const progressText = document.getElementById('lightbox-progress');
-  const closeBtn = document.getElementById('close-lightbox');
-  const triggers = document.querySelectorAll('[data-lightbox-trigger]');
-  
-  // Navigation & Toolbar Elements
-  const thumbnails = document.querySelectorAll('.thumbnail-btn');
-  const navPrev = document.getElementById('nav-prev');
-  const navNext = document.getElementById('nav-next');
-  const btnZoomIn = document.getElementById('btn-zoom-in');
-  const btnZoomOut = document.getElementById('btn-zoom-out');
-  const btnZoomReset = document.getElementById('btn-zoom-reset');
-  const btnFullscreen = document.getElementById('btn-fullscreen');
+  type PlateRecord = {
+    full: string;
+    detail: string;
+    title: string;
+    specs: string;
+    coords: string;
+    caption: string;
+    plate: string;
+  };
 
-  // HUD Layout Items
-  const hudContainer = document.getElementById('fixed-hud-container');
-  const hudToggle = document.getElementById('hud-toggle');
-  const hudCollapsible = document.getElementById('hud-collapsible');
-  const mobileInstructions = document.getElementById('mobile-instructions');
-  const toggleText = document.getElementById('toggle-text');
-  const toggleIcon = document.getElementById('toggle-icon');
+  function initLightTable() {
+    const viewport = document.getElementById('workspace-viewport');
+    const table = document.getElementById('light-table');
+    const modal = document.getElementById('lightbox-modal');
+    const modalImg = document.getElementById('lightbox-img') as HTMLImageElement | null;
+    const stage = document.getElementById('lightbox-stage');
+    const dataEl = document.getElementById('plate-data');
+    if (!viewport || !table || !modal || !modalImg || !stage || !dataEl) return;
 
-  if (viewport && table && modal && modalImg) {
-    // 1. Core State Variables
-    let isDown = false;
-    let startX = 0, startY = 0;
-    let isDragging = false;
-    let isExpanded = false;
-    
-    // Lightbox State
-    let currentPlateIndex = 0;
-    const totalPlates = triggers.length;
-    let lightboxScale = 1; // Replaces binary boolean with strict numeric scale
-    
-    // Dynamically retrieve unique album coordinates
-    const centerX = Number(table.dataset.centerX) || 1150;
-    const centerY = Number(table.dataset.centerY) || 520;
-    
-    // Dynamic initialization
-    let scale = window.innerWidth >= 768 ? 0.65 : 0.45;
-    let panX = (window.innerWidth / 2) - (centerX * scale);
-    let panY = (window.innerHeight / 2) - (centerY * scale);
+    // idempotent: survives a second call from astro:page-load
+    if (viewport.dataset.tableReady === 'true') return;
+    viewport.dataset.tableReady = 'true';
 
-    let initialTouchDist = 0;
-    let initialTouchScale = 0;
-    let initialPinchCenterX = 0;
-    let initialPinchCenterY = 0;
+    const PLATES: PlateRecord[] = JSON.parse(dataEl.textContent || '[]');
+    const total = PLATES.length;
+    if (!total) return;
 
-    // Boundary clamping logic
-    const constrainPan = () => {
-      const scaledWidth = 3200 * scale;
-      const scaledHeight = 2200 * scale;
-      
-      const minX = window.innerWidth / 2 - scaledWidth;
-      const maxX = window.innerWidth / 2;
-      const minY = window.innerHeight / 2 - scaledHeight;
-      const maxY = window.innerHeight / 2;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi);
 
-      panX = Math.min(Math.max(panX, minX), maxX);
-      panY = Math.min(Math.max(panY, minY), maxY);
+    /* ══ THE BOARD ═════════════════════════════════════════════ */
+
+    const MIN_SCALE = 0.2;
+    const MAX_SCALE = 1.6;
+    const EDGE_PAD = 160; // board units of slack around the plates
+
+    const bMinX = Number(table.dataset.minX) - EDGE_PAD;
+    const bMinY = Number(table.dataset.minY) - EDGE_PAD;
+    const bMaxX = Number(table.dataset.maxX) + EDGE_PAD;
+    const bMaxY = Number(table.dataset.maxY) + EDGE_PAD;
+    const centerX = Number(table.dataset.centerX) || 1600;
+    const centerY = Number(table.dataset.centerY) || 1100;
+
+    let scale = 0.65;
+    let panX = 0;
+    let panY = 0;
+    let frame = 0;
+
+    /* Clamp against the plates, not the empty sheet — you can never
+       drag the work off screen and lose your place. */
+    const clampPan = () => {
+      const vw = viewport.clientWidth;
+      const vh = viewport.clientHeight;
+      const cw = (bMaxX - bMinX) * scale;
+      const ch = (bMaxY - bMinY) * scale;
+
+      panX = cw <= vw
+        ? (vw - cw) / 2 - bMinX * scale
+        : clamp(panX, vw - bMaxX * scale, -bMinX * scale);
+
+      panY = ch <= vh
+        ? (vh - ch) / 2 - bMinY * scale
+        : clamp(panY, vh - bMaxY * scale, -bMinY * scale);
     };
 
-    const updateTransform = () => {
-      constrainPan();
-      table.style.transform = `translate(${panX}px, ${panY}px) scale(${scale})`;
-    };
-
-    updateTransform();
-
-    const collapseHUD = () => {
-      isExpanded = false;
-      if (hudCollapsible) hudCollapsible.classList.add('hidden');
-      if (mobileInstructions) mobileInstructions.classList.add('hidden');
-      if (toggleText) toggleText.innerText = 'info';
-      if (toggleIcon) toggleIcon.style.transform = 'rotate(0deg)';
-      if (hudToggle) hudToggle.setAttribute('aria-expanded', 'false');
-    };
-
-    if (hudToggle && hudCollapsible && mobileInstructions) {
-      hudToggle.addEventListener('click', (e) => {
-        e.stopPropagation();
-        isExpanded = !isExpanded;
-        hudToggle.setAttribute('aria-expanded', isExpanded.toString());
-
-        if (isExpanded) {
-          hudCollapsible.classList.remove('hidden');
-          mobileInstructions.classList.remove('hidden');
-          if (toggleText) toggleText.innerText = 'close';
-          if (toggleIcon) toggleIcon.style.transform = 'rotate(45deg)';
-        } else {
-          collapseHUD();
-        }
+    const commit = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        clampPan();
+        table.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
       });
-    }
+    };
 
-    // DESKTOP: Precision Zoom Wheel Tracking for Mapping Desk
-    viewport.addEventListener('wheel', (e) => {
-      if (!modal.classList.contains('hidden')) return;
-
-      e.preventDefault();
-      
-      const zoomFactor = 0.08;
-      const targetScale = e.deltaY < 0 ? scale + zoomFactor : scale - zoomFactor;
-      
-      const minScale = 0.25; 
-      const maxScale = 1.5;  
-      const newScale = Math.min(Math.max(targetScale, minScale), maxScale);
-
+    const zoomAt = (clientX: number, clientY: number, factor: number) => {
       const rect = viewport.getBoundingClientRect();
-      const mouseX = e.clientX - rect.left;
-      const mouseY = e.clientY - rect.top;
-
-      const baseXSpatial = (mouseX - panX) / scale;
-      const baseYSpatial = (mouseY - panY) / scale;
-
-      scale = newScale;
-      panX = mouseX - baseXSpatial * scale;
-      panY = mouseY - baseYSpatial * scale;
-
-      updateTransform();
-    }, { passive: false });
-
-    // UNIFIED DRAG SYSTEM
-    const startDrag = (clientX: number, clientY: number) => {
-      isDown = true;
-      isDragging = false;
-      viewport.classList.replace('cursor-grab', 'cursor-grabbing');
-      startX = clientX - panX;
-      startY = clientY - panY;
-      collapseHUD();
+      const px = clientX - rect.left;
+      const py = clientY - rect.top;
+      const next = clamp(scale * factor, MIN_SCALE, MAX_SCALE);
+      const k = next / scale;
+      panX = px - (px - panX) * k;
+      panY = py - (py - panY) * k;
+      scale = next;
+      commit();
     };
 
-    const moveDrag = (clientX: number, clientY: number) => {
-      if (!isDown) return;
-      isDragging = true;
-      panX = clientX - startX;
-      panY = clientY - startY;
-      updateTransform();
+    const fitBoard = () => {
+      const vw = viewport.clientWidth;
+      const vh = viewport.clientHeight;
+      const pad = vw < 768 ? 20 : 64;
+      const cw = bMaxX - bMinX;
+      const ch = bMaxY - bMinY;
+      scale = clamp(Math.min((vw - pad * 2) / cw, (vh - pad * 2) / ch), MIN_SCALE, 1);
+      panX = (vw - cw * scale) / 2 - bMinX * scale;
+      panY = (vh - ch * scale) / 2 - bMinY * scale;
+      commit();
     };
 
-    const endDrag = () => {
-      isDown = false;
-      viewport.classList.replace('cursor-grabbing', 'cursor-grab');
+    const centerOn = (x: number, y: number, s: number) => {
+      scale = clamp(s, MIN_SCALE, MAX_SCALE);
+      panX = viewport.clientWidth / 2 - x * scale;
+      panY = viewport.clientHeight / 2 - y * scale;
+      commit();
     };
 
-    viewport.addEventListener('mousedown', (e) => {
-      if (!modal.classList.contains('hidden')) return;
-      if ((e.target as HTMLElement).closest('#fixed-hud-container')) return;
-      startDrag(e.clientX, e.clientY);
+    // Desktop opens on the composed view; mobile opens framed, because
+    // 0.45 scale on a phone shows about a quarter of the sheet.
+    const isNarrow = window.matchMedia('(max-width: 767px)').matches;
+    if (isNarrow) fitBoard();
+    else centerOn(centerX, centerY, 0.65);
+
+    let resizeTimer = 0;
+    const onResize = () => {
+      window.clearTimeout(resizeTimer);
+      resizeTimer = window.setTimeout(commit, 120);
+    };
+    window.addEventListener('resize', onResize);
+
+    /* ── HUD ──────────────────────────────────────────────────── */
+
+    const hud = document.getElementById('hud-overlay');
+    const hudToggle = document.getElementById('hud-toggle');
+    const hudCollapsible = document.getElementById('hud-collapsible');
+    const mobileInstructions = document.getElementById('mobile-instructions');
+    const toggleText = document.getElementById('toggle-text');
+    const toggleIcon = document.getElementById('toggle-icon');
+
+    const setHud = (open: boolean) => {
+      hud?.setAttribute('data-expanded', String(open));
+      hudToggle?.setAttribute('aria-expanded', String(open));
+      hudCollapsible?.classList.toggle('hidden', !open);
+      // needs `flex`, not the default block, or the pulse dot won't align
+      mobileInstructions?.classList.toggle('hidden', !open);
+      mobileInstructions?.classList.toggle('flex', open);
+      if (toggleText) toggleText.textContent = open ? 'close' : 'info';
+      if (toggleIcon) toggleIcon.style.transform = open ? 'rotate(45deg)' : 'rotate(0deg)';
+    };
+
+    hudToggle?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      setHud(hud?.getAttribute('data-expanded') !== 'true');
     });
-    
-    viewport.addEventListener('mousemove', (e) => moveDrag(e.clientX, e.clientY));
-    window.addEventListener('mouseup', endDrag);
 
-    // MOBILE TOUCH ENGINE
-    viewport.addEventListener('touchstart', (e) => {
-      if (!modal.classList.contains('hidden')) return;
+    const collapseHud = () => {
+      if (isNarrow && hud?.getAttribute('data-expanded') === 'true') setHud(false);
+    };
 
-      if (e.touches.length === 2) {
-        isDown = false; 
-        initialTouchDist = Math.hypot(
-          e.touches[0].clientX - e.touches[1].clientX,
-          e.touches[0].clientY - e.touches[1].clientY
-        );
-        initialTouchScale = scale;
-        
-        initialPinchCenterX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
-        initialPinchCenterY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    document.getElementById('btn-fit')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fitBoard();
+    });
+
+    /* ── wheel: pan by default, zoom on ctrl/cmd or a notched wheel ── */
+
+    viewport.addEventListener(
+      'wheel',
+      (e) => {
+        if (isOpen()) return;
+        e.preventDefault();
+
+        // A trackpad pinch arrives as ctrlKey+wheel. A mouse wheel
+        // reports in lines/pages rather than pixels; treat that as zoom
+        // since a mouse has no second axis to pan with.
+        const wantsZoom = e.ctrlKey || e.metaKey || e.deltaMode !== 0;
+
+        if (wantsZoom) {
+          zoomAt(e.clientX, e.clientY, Math.exp(-e.deltaY * (e.deltaMode !== 0 ? 0.08 : 0.01)));
+        } else {
+          panX -= e.deltaX;
+          panY -= e.deltaY;
+          commit();
+        }
+      },
+      { passive: false },
+    );
+
+    /* ── pointer drag + pinch (one path for mouse, touch, pen) ──
+       No setPointerCapture: it retargets the click and breaks the
+       plate buttons, same bug as the footer cards. */
+
+    const active = new Map<number, { x: number; y: number }>();
+    let dragging = false;
+    let dragOriginX = 0;
+    let dragOriginY = 0;
+    let downX = 0;
+    let downY = 0;
+    let moved = false;
+    let pinchDist = 0;
+    let pinchScale = 1;
+
+    const midpoint = () => {
+      const pts = [...active.values()];
+      return {
+        x: (pts[0].x + pts[1].x) / 2,
+        y: (pts[0].y + pts[1].y) / 2,
+      };
+    };
+    const spread = () => {
+      const pts = [...active.values()];
+      return Math.hypot(pts[0].x - pts[1].x, pts[0].y - pts[1].y);
+    };
+
+    const beginDrag = (x: number, y: number) => {
+      dragging = true;
+      dragOriginX = x - panX;
+      dragOriginY = y - panY;
+      downX = x;
+      downY = y;
+    };
+
+    viewport.addEventListener('pointerdown', (e) => {
+      if (isOpen()) return;
+      if ((e.target as HTMLElement).closest('#fixed-hud-container')) return;
+
+      active.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      moved = false;
+
+      if (active.size === 1) {
+        beginDrag(e.clientX, e.clientY);
+        collapseHud();
+      } else if (active.size === 2) {
+        dragging = false;
+        pinchDist = spread();
+        pinchScale = scale;
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!active.has(e.pointerId)) return;
+      active.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (active.size >= 2 && pinchDist > 0) {
+        const mid = midpoint();
+        const next = clamp((spread() / pinchDist) * pinchScale, MIN_SCALE, MAX_SCALE);
+        const rect = viewport.getBoundingClientRect();
+        const px = mid.x - rect.left;
+        const py = mid.y - rect.top;
+        const k = next / scale;
+        panX = px - (px - panX) * k;
+        panY = py - (py - panY) * k;
+        scale = next;
+        moved = true;
+        commit();
         return;
       }
-      
-      if ((e.target as HTMLElement).closest('#fixed-hud-container')) return;
-      if (e.touches.length === 1) {
-        startDrag(e.touches[0].clientX, e.touches[0].clientY);
-      }
-    }, { passive: true });
 
-    viewport.addEventListener('touchmove', (e) => {
-      if (!modal.classList.contains('hidden')) return;
-
-      if (e.touches.length === 1 && isDown) {
-        moveDrag(e.touches[0].clientX, e.touches[0].clientY);
-      } else if (e.touches.length === 2 && initialTouchDist > 0) {
-        e.preventDefault(); 
-        const currentDist = Math.hypot(
-          e.touches[0].clientX - e.touches[1].clientX,
-          e.touches[0].clientY - e.touches[1].clientY
-        );
-        
-        const targetTouchScale = (currentDist / initialTouchDist) * initialTouchScale;
-        const newScale = Math.min(Math.max(targetTouchScale, 0.25), 1.5);
-
-        const baseXSpatial = (initialPinchCenterX - panX) / scale;
-        const baseYSpatial = (initialPinchCenterY - panY) / scale;
-
-        scale = newScale;
-        panX = initialPinchCenterX - baseXSpatial * scale;
-        panY = initialPinchCenterY - baseYSpatial * scale;
-
-        updateTransform();
-      }
-    }, { passive: false });
-
-    viewport.addEventListener('touchend', (e) => {
-      if (e.touches.length === 0) {
-        endDrag();
-        initialTouchDist = 0;
-      }
+      if (!dragging) return;
+      // a click that wobbles a few pixels is still a click
+      if (Math.hypot(e.clientX - downX, e.clientY - downY) > 6) moved = true;
+      panX = e.clientX - dragOriginX;
+      panY = e.clientY - dragOriginY;
+      commit();
     });
 
-    // --- NEW: CENTRALIZED LIGHTBOX SCALAR ZOOM ENGINE ---
-    
-    const applyLightboxTransform = () => {
-      modalImg.style.transform = `scale(${lightboxScale})`;
-      if (lightboxScale === 1) {
-        modalImg.style.cursor = 'zoom-in';
-        modalImg.style.transformOrigin = 'center center';
-      } else {
-        modalImg.style.cursor = 'grab';
+    const releasePointer = (e: PointerEvent) => {
+      if (!active.has(e.pointerId)) return;
+      active.delete(e.pointerId);
+
+      if (active.size === 1) {
+        // came off a pinch — keep panning with the remaining finger
+        const [p] = [...active.values()];
+        pinchDist = 0;
+        beginDrag(p.x, p.y);
+      } else if (active.size === 0) {
+        dragging = false;
+        pinchDist = 0;
+        // let the click through, then re-arm
+        window.setTimeout(() => { moved = false; }, 0);
       }
     };
+    window.addEventListener('pointerup', releasePointer);
+    window.addEventListener('pointercancel', releasePointer);
 
-    const resetLightboxZoom = () => {
-      lightboxScale = 1;
-      applyLightboxTransform();
-    };
-
-    const adjustLightboxZoom = (delta: number) => {
-      lightboxScale = Math.min(Math.max(lightboxScale + delta, 1), 4);
-      applyLightboxTransform();
-    };
-
-    // Bind explicit UI Toolbar Controls
-    btnZoomIn?.addEventListener('click', (e) => { e.stopPropagation(); adjustLightboxZoom(0.5); });
-    btnZoomOut?.addEventListener('click', (e) => { e.stopPropagation(); adjustLightboxZoom(-0.5); });
-    btnZoomReset?.addEventListener('click', (e) => { e.stopPropagation(); resetLightboxZoom(); });
-
-    // Enable precision scroll wheel zooming inside the Lightbox
-    modalImg.parentElement?.addEventListener('wheel', (e) => {
-      if (modal.classList.contains('hidden')) return;
-      e.preventDefault();
-      
-      const zoomVelocity = 0.15;
-      if (e.deltaY < 0) {
-        lightboxScale = Math.min(lightboxScale + zoomVelocity, 4);
-      } else {
-        lightboxScale = Math.max(lightboxScale - zoomVelocity, 1);
-      }
-      
-      // Keep focal point centered dynamically as user wheels over the image
-      if (lightboxScale > 1) {
-        const container = modalImg.parentElement;
-        if (container) {
-          const rect = container.getBoundingClientRect();
-          const x = ((e.clientX - rect.left) / rect.width) * 100;
-          const y = ((e.clientY - rect.top) / rect.height) * 100;
-          modalImg.style.transformOrigin = `${Math.min(Math.max(x, 0), 100)}% ${Math.min(Math.max(y, 0), 100)}%`;
-        }
-      }
-      applyLightboxTransform();
-    }, { passive: false });
-
-    // Native Fullscreen API Integration
-    btnFullscreen?.addEventListener('click', (e) => {
-      e.stopPropagation();
-      if (!document.fullscreenElement) {
-        modal.requestFullscreen().catch((err) => console.log(`Error attempting to enable fullscreen: ${err.message}`));
-      } else {
-        document.exitFullscreen();
-      }
+    // double-click on bare canvas reframes
+    viewport.addEventListener('dblclick', (e) => {
+      if ((e.target as HTMLElement).closest('.plate, #fixed-hud-container')) return;
+      fitBoard();
     });
 
-    const updateThumbnails = (activeIndex: number) => {
-      thumbnails.forEach((thumb, i) => {
-        if (i === activeIndex) {
-          thumb.classList.add('opacity-100', 'border-caprock');
-          thumb.classList.remove('opacity-40', 'border-transparent');
-          thumb.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        } else {
-          thumb.classList.remove('opacity-100', 'border-caprock');
-          thumb.classList.add('opacity-40', 'border-transparent');
-        }
+    // first-visit nudge on touch: the surface should announce that it moves
+    if (isNarrow && !reduceMotion) {
+      window.setTimeout(() => {
+        if (moved || isOpen()) return;
+        const startX = panX;
+        const t0 = performance.now();
+        const drift = (t: number) => {
+          const p = Math.min((t - t0) / 1400, 1);
+          panX = startX + Math.sin(p * Math.PI) * -90;
+          commit();
+          if (p < 1 && !moved) requestAnimationFrame(drift);
+          else { panX = startX; commit(); }
+        };
+        requestAnimationFrame(drift);
+      }, 900);
+    }
+
+    /* ══ THE VIEWING STATION ═══════════════════════════════════ */
+
+    const triggers = Array.from(table.querySelectorAll<HTMLButtonElement>('[data-lightbox-trigger]'));
+    const thumbnails = Array.from(document.querySelectorAll<HTMLButtonElement>('.thumbnail-btn'));
+    const titleEl = document.getElementById('lightbox-plate-title');
+    const specsEl = document.getElementById('lightbox-specs');
+    const coordsEl = document.getElementById('lightbox-coords');
+    const captionEl = document.getElementById('lightbox-caption');
+    const notesEl = document.getElementById('lightbox-notes');
+    const progressEl = document.getElementById('lightbox-progress');
+
+    function isOpen() {
+      return modal!.hasAttribute('data-open');
+    }
+
+    let current = 0;
+    let lastFocus: HTMLElement | null = null;
+
+    let lbScale = 1;
+    let lbX = 0;
+    let lbY = 0;
+    let baseW = 0;
+    let baseH = 0;
+    let insetX = 0;   // the mat: padding + border, which shouldn't grow with zoom
+    let insetY = 0;
+    let baked = false;
+    let detailWanted = false;
+    let settleTimer = 0;
+
+    /* Transform-scaling an image tells the compositor to stretch a bitmap
+       it already rasterized at 1x — that's the blur. So transform is used
+       only WHILE a gesture is in flight, and once it settles the zoom is
+       written to the element's real width/height, which the browser
+       rasterizes from the full decoded image. */
+    const unbake = () => {
+      if (!baked) return;
+      baked = false;
+      modalImg.style.width = '';
+      modalImg.style.height = '';
+      modalImg.style.maxWidth = '';
+      modalImg.style.maxHeight = '';
+      modalImg.style.flexShrink = '';
+    };
+
+    const measure = () => {
+      unbake();
+      const prevTransform = modalImg.style.transform;
+      const prevTransition = modalImg.style.transition;
+      modalImg.style.transition = 'none';
+      modalImg.style.transform = 'none';
+      const r = modalImg.getBoundingClientRect();
+      baseW = r.width;
+      baseH = r.height;
+      const cs = getComputedStyle(modalImg);
+      insetX =
+        parseFloat(cs.paddingLeft) + parseFloat(cs.paddingRight) +
+        parseFloat(cs.borderLeftWidth) + parseFloat(cs.borderRightWidth);
+      insetY =
+        parseFloat(cs.paddingTop) + parseFloat(cs.paddingBottom) +
+        parseFloat(cs.borderTopWidth) + parseFloat(cs.borderBottomWidth);
+      modalImg.style.transform = prevTransform;
+      modalImg.style.transition = prevTransition;
+    };
+
+    // printed size at the current zoom, whichever mode we're in
+    const visualW = () => (baked ? (baseW - insetX) * lbScale + insetX : baseW * lbScale);
+    const visualH = () => (baked ? (baseH - insetY) * lbScale + insetY : baseH * lbScale);
+
+    /* translate-based panning, clamped to the print's own edges —
+       the image follows the pointer 1:1 instead of swimming under it */
+    const clampLb = () => {
+      const rect = stage.getBoundingClientRect();
+      const overflowX = Math.max(0, (visualW() - rect.width) / 2);
+      const overflowY = Math.max(0, (visualH() - rect.height) / 2);
+      lbX = clamp(lbX, -overflowX, overflowX);
+      lbY = clamp(lbY, -overflowY, overflowY);
+    };
+
+    /* hand the layer back to the main thread and re-render at full res */
+    const bake = () => {
+      modalImg.classList.remove('is-zooming');
+      modalImg.style.transition = 'opacity 200ms ease';
+
+      if (lbScale === 1) {
+        unbake();
+        modalImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0)`;
+        return;
+      }
+
+      baked = true;
+      modalImg.style.maxWidth = 'none';
+      modalImg.style.maxHeight = 'none';
+      modalImg.style.flexShrink = '0';
+      modalImg.style.width = `${(baseW - insetX) * lbScale + insetX}px`;
+      modalImg.style.height = `${(baseH - insetY) * lbScale + insetY}px`;
+      clampLb();
+      modalImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0)`;
+    };
+
+    const scheduleBake = () => {
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(bake, 150);
+    };
+
+    const applyLb = (animate = false) => {
+      unbake();
+      clampLb();
+      // will-change only for the duration of the gesture — leaving it on
+      // pins the layer at whatever scale it was last rasterized
+      modalImg.classList.add('is-zooming');
+      modalImg.style.transition = animate
+        ? 'transform 220ms cubic-bezier(0.25, 1, 0.5, 1), opacity 200ms ease'
+        : 'transform 0s, opacity 200ms ease';
+      modalImg.style.transform = `translate3d(${lbX}px, ${lbY}px, 0) scale(${lbScale})`;
+      modalImg.style.cursor = lbScale > 1 ? 'grab' : 'zoom-in';
+      scheduleBake();
+    };
+
+    const resetLb = (animate = false) => {
+      lbScale = 1;
+      lbX = 0;
+      lbY = 0;
+      applyLb(animate);
+    };
+
+    /* past ~1.5x the station copy runs out of pixels — fetch the big one
+       once, in the background, and swap it in when it has decoded */
+    const requestDetail = () => {
+      if (detailWanted) return;
+      const rec = PLATES[current];
+      if (!rec.detail || rec.detail === rec.full) return;
+      detailWanted = true;
+      const pre = new Image();
+      pre.decoding = 'async';
+      pre.onload = () => {
+        if (PLATES[current] !== rec || !isOpen()) return;
+        modalImg.src = rec.detail;
+      };
+      pre.src = rec.detail;
+    };
+
+    /* zoom about a point in stage coordinates, keeping it fixed */
+    const zoomLbAt = (clientX: number, clientY: number, next: number, animate = false) => {
+      const rect = stage.getBoundingClientRect();
+      const cx = rect.left + rect.width / 2;
+      const cy = rect.top + rect.height / 2;
+      const target = clamp(next, 1, 4);
+      const ux = (clientX - cx - lbX) / lbScale;
+      const uy = (clientY - cy - lbY) / lbScale;
+      lbX = clientX - cx - ux * target;
+      lbY = clientY - cy - uy * target;
+      lbScale = target;
+      if (lbScale === 1) { lbX = 0; lbY = 0; }
+      if (lbScale > 1.5) requestDetail();
+      applyLb(animate);
+    };
+
+    const stepZoom = (delta: number) => {
+      const rect = stage.getBoundingClientRect();
+      zoomLbAt(rect.left + rect.width / 2, rect.top + rect.height / 2, lbScale + delta, true);
+    };
+
+    const preload = (i: number) => {
+      const rec = PLATES[(i + total) % total];
+      if (rec) { const im = new Image(); im.src = rec.full; }
+    };
+
+    const setThumb = (i: number) => {
+      thumbnails.forEach((t, n) => {
+        const on = n === i;
+        t.classList.toggle('opacity-100', on);
+        t.classList.toggle('border-caprock', on);
+        t.classList.toggle('opacity-40', !on);
+        t.classList.toggle('border-transparent', !on);
+        if (on) t.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'nearest', inline: 'center' });
       });
     };
 
     const loadPlate = (index: number) => {
-      if (index < 0) index = totalPlates - 1;
-      if (index >= totalPlates) index = 0;
-      
-      currentPlateIndex = index;
-      const el = triggers[index] as HTMLElement;
-      
-      resetLightboxZoom();
+      current = (index + total) % total;
+      const rec = PLATES[current];
+      detailWanted = false;
+      resetLb();
 
-      modalImg.src = el.dataset.src || '';
-      modalImg.alt = el.dataset.title || '';
-      
-      if (modalTitle) modalTitle.innerHTML = `<span class="text-iron/40">${el.dataset.plate}</span> &bull; ${el.dataset.title}`;
-      if (modalSpecs) modalSpecs.innerText = el.dataset.specs || '';
-      if (modalCoords) modalCoords.innerText = el.dataset.coords || '';
-      if (modalCaption) modalCaption.innerText = el.dataset.caption || '';
-      
-      if (progressText) progressText.innerText = `Plate ${index + 1} of ${totalPlates}`;
+      modalImg.classList.add('is-loading');
+      modalImg.src = rec.full;
+      modalImg.alt = rec.title;
 
-      updateThumbnails(index);
+      if (titleEl) {
+        titleEl.textContent = '';
+        const tag = document.createElement('span');
+        tag.className = 'text-iron/40';
+        tag.textContent = rec.plate;
+        titleEl.append(tag, document.createTextNode(` \u2022 ${rec.title}`));
+      }
+      if (specsEl) specsEl.textContent = rec.specs;
+      if (coordsEl) coordsEl.textContent = rec.coords;
+      if (captionEl) captionEl.textContent = rec.caption;
+      // an empty field shouldn't announce itself
+      notesEl?.classList.toggle('hidden', !rec.caption);
+      if (progressEl) progressEl.textContent = `Plate ${current + 1} of ${total}`;
+
+      setThumb(current);
+      preload(current + 1);
+      preload(current - 1);
+    };
+
+    modalImg.addEventListener('load', () => {
+      modalImg.classList.remove('is-loading');
+      measure();
+      applyLb();
+    });
+
+    const openLightbox = (index: number, from: HTMLElement | null) => {
+      lastFocus = from;
+      modal.setAttribute('data-open', '');
+      viewport.setAttribute('inert', '');
+      requestAnimationFrame(() => requestAnimationFrame(() => modal.classList.remove('opacity-0')));
+      loadPlate(index);
+      (document.getElementById('close-lightbox') as HTMLElement | null)?.focus();
+    };
+
+    const closeLightbox = () => {
+      modal.classList.add('opacity-0');
+      viewport.removeAttribute('inert');
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      window.setTimeout(() => {
+        modal.removeAttribute('data-open');
+        resetLb();
+        lastFocus?.focus();
+        lastFocus = null;
+      }, 300);
     };
 
     triggers.forEach((trigger, index) => {
       trigger.addEventListener('click', () => {
-        if (isDragging) return;
-        modal.classList.remove('hidden');
-        setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        loadPlate(index);
+        if (moved) return; // it was a drag, not a click
+        openLightbox(index, trigger);
       });
     });
 
     thumbnails.forEach((thumb) => {
       thumb.addEventListener('click', (e) => {
-        e.stopPropagation(); 
-        const targetIndex = parseInt((thumb as HTMLElement).dataset.index || '0', 10);
-        loadPlate(targetIndex);
+        e.stopPropagation();
+        loadPlate(Number(thumb.dataset.index || 0));
       });
     });
 
-    navPrev?.addEventListener('click', (e) => { e.stopPropagation(); loadPlate(currentPlateIndex - 1); });
-    navNext?.addEventListener('click', (e) => { e.stopPropagation(); loadPlate(currentPlateIndex + 1); });
+    document.getElementById('nav-prev')?.addEventListener('click', (e) => { e.stopPropagation(); loadPlate(current - 1); });
+    document.getElementById('nav-next')?.addEventListener('click', (e) => { e.stopPropagation(); loadPlate(current + 1); });
+    document.getElementById('btn-zoom-in')?.addEventListener('click', (e) => { e.stopPropagation(); stepZoom(0.5); });
+    document.getElementById('btn-zoom-out')?.addEventListener('click', (e) => { e.stopPropagation(); stepZoom(-0.5); });
+    document.getElementById('btn-zoom-reset')?.addEventListener('click', (e) => { e.stopPropagation(); resetLb(true); });
+    document.getElementById('close-lightbox')?.addEventListener('click', closeLightbox);
 
-    const closeLightbox = () => {
-      modal.classList.add('opacity-0');
-      setTimeout(() => {
-        modal.classList.add('hidden');
-        resetLightboxZoom(); 
-        if (document.fullscreenElement) document.exitFullscreen(); // Exit fullscreen on modal close
-      }, 300);
-    };
+    document.getElementById('btn-fullscreen')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (!document.fullscreenElement) modal.requestFullscreen().catch(() => {});
+      else document.exitFullscreen().catch(() => {});
+    });
 
+    // click the backdrop to close
     modal.addEventListener('click', (e) => {
-      const target = e.target as HTMLElement;
-      if (
-        target.closest('#lightbox-caption') || 
-        target === modalImg || 
-        target.closest('#thumbnail-strip') ||
-        target.closest('button')
-      ) return;
+      const t = e.target as HTMLElement;
+      if (t.closest('button, #lightbox-img, #lightbox-notes, #thumbnail-strip')) return;
       closeLightbox();
     });
-    
-    closeBtn?.addEventListener('click', closeLightbox);
 
-    // --- ACCESSIBILITY & KEYBOARD SYSTEM ---
-    window.addEventListener('keydown', (e) => { 
-      if (!modal.classList.contains('hidden')) {
-        if (e.key === 'Escape') closeLightbox();
-        if (e.key === 'ArrowRight') loadPlate(currentPlateIndex + 1);
-        if (e.key === 'ArrowLeft') loadPlate(currentPlateIndex - 1);
-        if (e.key === '=' || e.key === '+') adjustLightboxZoom(0.5); // Keyboard shortcut for Zoom In
-        if (e.key === '-') adjustLightboxZoom(-0.5); // Keyboard shortcut for Zoom Out
+    /* wheel zoom in the station, without the transition fighting it */
+    stage.addEventListener(
+      'wheel',
+      (e) => {
+        if (!isOpen()) return;
+        e.preventDefault();
+        zoomLbAt(e.clientX, e.clientY, lbScale * Math.exp(-e.deltaY * 0.0018));
+      },
+      { passive: false },
+    );
+
+    /* pointer: drag to pan when zoomed, swipe to advance when not */
+    const lbPointers = new Map<number, { x: number; y: number }>();
+    let lbDrag = false;
+    let lbStartX = 0;
+    let lbStartY = 0;
+    let lbOriginX = 0;
+    let lbOriginY = 0;
+    let lbMoved = false;
+    let lbPinch = 0;
+    let lbPinchScale = 1;
+
+    stage.addEventListener('pointerdown', (e) => {
+      if ((e.target as HTMLElement).closest('button')) return;
+      lbPointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+      lbMoved = false;
+
+      if (lbPointers.size === 1) {
+        lbDrag = true;
+        lbStartX = e.clientX;
+        lbStartY = e.clientY;
+        lbOriginX = lbX;
+        lbOriginY = lbY;
+      } else if (lbPointers.size === 2) {
+        lbDrag = false;
+        const p = [...lbPointers.values()];
+        lbPinch = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
+        lbPinchScale = lbScale;
+      }
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!isOpen() || !lbPointers.has(e.pointerId)) return;
+      lbPointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+
+      if (lbPointers.size >= 2 && lbPinch > 0) {
+        const p = [...lbPointers.values()];
+        const d = Math.hypot(p[0].x - p[1].x, p[0].y - p[1].y);
+        const mx = (p[0].x + p[1].x) / 2;
+        const my = (p[0].y + p[1].y) / 2;
+        zoomLbAt(mx, my, (d / lbPinch) * lbPinchScale);
+        lbMoved = true;
         return;
       }
 
-      const step = 40; 
-      let triggered = false;
+      if (!lbDrag) return;
+      const dx = e.clientX - lbStartX;
+      const dy = e.clientY - lbStartY;
+      if (Math.hypot(dx, dy) > 6) lbMoved = true;
 
-      if (e.key === 'ArrowUp' || e.key === 'w')    { panY += step; triggered = true; }
-      if (e.key === 'ArrowDown' || e.key === 's')  { panY -= step; triggered = true; }
-      if (e.key === 'ArrowLeft' || e.key === 'a')  { panX += step; triggered = true; }
-      if (e.key === 'ArrowRight' || e.key === 'd') { panX -= step; triggered = true; }
-
-      if (triggered) {
-        e.preventDefault();
-        collapseHUD();
-        updateTransform();
-      }
-    });
-    
-    // Quick Click Zoom Toggle
-    modalImg.addEventListener('click', (e) => {
-      if (lightboxScale === 1) {
-        lightboxScale = 2.5;
-        const rect = modalImg.getBoundingClientRect();
-        const x = ((e.clientX - rect.left) / rect.width) * 100;
-        const y = ((e.clientY - rect.top) / rect.height) * 100;
-        modalImg.style.transformOrigin = `${x}% ${y}%`;
+      if (lbScale > 1) {
+        lbX = lbOriginX + dx;
+        lbY = lbOriginY + dy;
+        applyLb();
       } else {
-        lightboxScale = 1;
+        // rubber-band the whole print with the finger, ready to advance
+        modalImg.style.transition = 'none';
+        modalImg.style.transform = `translate3d(${dx * 0.55}px, 0, 0) scale(1)`;
       }
-      applyLightboxTransform();
     });
 
-    const panZoomedImage = (clientX: number, clientY: number) => {
-      if (lightboxScale === 1) return;
-      const container = modalImg.parentElement;
-      if (!container) return;
-      
-      const rect = container.getBoundingClientRect();
-      const x = ((clientX - rect.left) / rect.width) * 100;
-      const y = ((clientY - rect.top) / rect.height) * 100;
-      
-      const clampedX = Math.min(Math.max(x, 0), 100);
-      const clampedY = Math.min(Math.max(y, 0), 100);
-      
-      modalImg.style.transformOrigin = `${clampedX}% ${clampedY}%`;
+    const lbRelease = (e: PointerEvent) => {
+      if (!lbPointers.has(e.pointerId)) return;
+      const dx = e.clientX - lbStartX;
+      lbPointers.delete(e.pointerId);
+
+      if (lbPointers.size === 1) {
+        const [p] = [...lbPointers.values()];
+        lbPinch = 0;
+        lbDrag = true;
+        lbStartX = p.x;
+        lbStartY = p.y;
+        lbOriginX = lbX;
+        lbOriginY = lbY;
+        return;
+      }
+      if (lbPointers.size > 0) return;
+
+      lbDrag = false;
+      lbPinch = 0;
+
+      if (lbScale === 1 && lbMoved) {
+        if (Math.abs(dx) > 60) loadPlate(dx < 0 ? current + 1 : current - 1);
+        else applyLb(true); // spring back
+      }
+      window.setTimeout(() => { lbMoved = false; }, 0);
     };
+    window.addEventListener('pointerup', lbRelease);
+    window.addEventListener('pointercancel', lbRelease);
 
-    modalImg.parentElement?.addEventListener('mousemove', (e) => {
-      panZoomedImage(e.clientX, e.clientY);
+    // click / tap toggles a 2.5x inspection zoom on the point you touched
+    modalImg.addEventListener('click', (e) => {
+      if (lbMoved) return;
+      if (lbScale === 1) zoomLbAt(e.clientX, e.clientY, 2.5, true);
+      else resetLb(true);
     });
 
-    modalImg.parentElement?.addEventListener('touchmove', (e) => {
-      if (e.touches.length === 1 && lightboxScale > 1) {
-        e.preventDefault(); 
-        panZoomedImage(e.touches[0].clientX, e.touches[0].clientY);
+    window.addEventListener('resize', () => {
+      if (!isOpen()) return;
+      measure();
+      applyLb();
+    });
+
+    /* ── keyboard ─────────────────────────────────────────────── */
+
+    const onKey = (e: KeyboardEvent) => {
+      if (isOpen()) {
+        if (e.key === 'Escape') { closeLightbox(); return; }
+        if (e.key === 'ArrowRight') { loadPlate(current + 1); return; }
+        if (e.key === 'ArrowLeft') { loadPlate(current - 1); return; }
+        if (e.key === '+' || e.key === '=') { stepZoom(0.5); return; }
+        if (e.key === '-' || e.key === '_') { stepZoom(-0.5); return; }
+        if (e.key === '0') { resetLb(true); return; }
+
+        if (e.key === 'Tab') {
+          const focusable = modal.querySelectorAll<HTMLElement>(
+            'button:not([disabled]), a[href], [tabindex]:not([tabindex="-1"])',
+          );
+          if (!focusable.length) return;
+          const first = focusable[0];
+          const last = focusable[focusable.length - 1];
+          if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+          else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+        return;
       }
-    }, { passive: false });
+
+      if ((e.target as HTMLElement)?.tagName === 'INPUT') return;
+
+      const step = e.shiftKey ? 240 : 80;
+      let hit = true;
+      switch (e.key) {
+        case 'ArrowUp': case 'w': panY += step; break;
+        case 'ArrowDown': case 's': panY -= step; break;
+        case 'ArrowLeft': case 'a': panX += step; break;
+        case 'ArrowRight': case 'd': panX -= step; break;
+        case '0': fitBoard(); break;
+        case '+': case '=': zoomAt(innerWidth / 2, innerHeight / 2, 1.25); break;
+        case '-': case '_': zoomAt(innerWidth / 2, innerHeight / 2, 0.8); break;
+        default: hit = false;
+      }
+      if (hit) { e.preventDefault(); collapseHud(); commit(); }
+    };
+    window.addEventListener('keydown', onKey);
   }
+
+  initLightTable();
+  document.addEventListener('astro:page-load', initLightTable);
 </script>
 
 <style is:global>
   .scrollbar-none::-webkit-scrollbar { display: none; }
   .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
 
+  /* one display authority — `hidden` and `flex` on the same element
+     is a coin flip on which utility wins */
+  #lightbox-modal { display: none; }
+  #lightbox-modal[data-open] { display: flex; }
+
+  #lightbox-img {
+    transform-origin: center center;
+    transition: opacity 200ms ease;
+  }
+  /* only while a zoom/pan gesture is in flight — a permanent will-change
+     pins the layer to the scale it was last rasterized at, which is the
+     blur you see when scroll-zooming */
+  #lightbox-img.is-zooming { will-change: transform; }
+  #lightbox-img.is-loading { opacity: 0; }
+
+  /* the notebook widens when it's opened on a phone */
+  #hud-overlay { max-width: 70vw; }
+  #hud-overlay[data-expanded='true'] { max-width: calc(100vw - 2rem); }
+  @media (min-width: 768px) {
+    #hud-overlay,
+    #hud-overlay[data-expanded='true'] { max-width: 24rem; }
+  }
+
   .bg-topo-canvas {
     background-color: #FBFBF9;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Cpath d='M0 250 C 200 210, 250 420, 450 370 C 650 320, 600 580, 800 550 M0 450 C 150 480, 350 280, 550 320 C 750 360, 700 680, 800 700 M0 650 C 180 600, 280 720, 450 620 C 620 520, 680 780, 800 720 M0 50 C 100 80, 200 20, 350 120 C 500 220, 650 100, 800 180' fill='none' stroke='%23E6E4DF' stroke-width='1.2' stroke-opacity='0.62'/%3E%3C/svg%3E");
     background-size: 1800px 1800px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #lightbox-img,
+    #light-table { transition: none !important; }
   }
 </style>

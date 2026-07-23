@@ -1,114 +1,739 @@
 ---
-// src/pages/index.astro
+/**
+ * src/pages/index.astro — "The Brand Book"
+ *
+ * The home page as a county brand book: five registered entries on a
+ * dark tooled-leather ground, marked with the 7 Lazy A iron.
+ * Above 920px it is a hard one-screen page — no scrolling, ever.
+ * Below that it stacks and scrolls.
+ *
+ * ── LAYOUT ────────────────────────────────────────────────────────
+ *
+ *   ┌───────────────┬───────────────────────────┐
+ *   │   STATEMENT   │      PLATE (photograph)   │  rows 1–5
+ *   │   1/6         │      6/13                 │
+ *   ├───────────────┼───────────────┬───────────┤
+ *   │   PUBLISHED   │  CURRENT WORK │  STATION  │  rows 6–8
+ *   │   1/6         │  6/10         │  10/13    │
+ *   └───────────────┴───────────────┴───────────┘
+ *
+ * ── FITTING TO 16:9 ───────────────────────────────────────────────
+ *
+ * .book is a HARD height: calc(100svh - var(--head-h)), so the page can
+ * never grow past one screen. Everything that takes vertical space is
+ * sized with min(Xvw, Yvh) instead of vw alone — on a short, wide
+ * viewport (16:9) the vh term wins and the type steps down on its own.
+ * Two things must be right:
+ *
+ *   1. --head-h MUST match the Horizon header's real height. Measure it
+ *      in devtools at both breakpoints and set the two values below.
+ *      Too small and the page will overflow; too large and you get a
+ *      band of dead leather at the bottom.
+ *   2. --fit-floor is the shortest viewport this is allowed to squeeze
+ *      into. Below it the page scrolls rather than clipping content.
+ *
+ * ── SETUP ─────────────────────────────────────────────────────────
+ *
+ * FONTS. Fraunces (display) + IBM Plex Mono (data). Add to RootLayout's
+ * <head>, or leave --bb-display / --bb-mono pointing at your theme
+ * fonts — both fall back cleanly.
+ *
+ *   <link rel="preconnect" href="https://fonts.googleapis.com">
+ *   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+ *   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=IBM+Plex+Mono:wght@300;400;500&display=swap">
+ *
+ * FULL BLEED. If RootLayout wraps pages in a max-width container,
+ * uncomment the break-out lines in .book.
+ *
+ * THE FOOTER. This page ends dark — see FOOTER PAIRING at the bottom.
+ */
 import RootLayout from '../layouts/RootLayout.astro';
-
-// 1. Import the Image component and your landscape asset
 import { Image } from 'astro:assets';
 import montana2022 from '../assets/montana2022/137.jpg';
+
+interface Entry {
+  /** matches the data-mark on the tile and its chip in the index */
+  key: string;
+  /** what the entry is — used as the chip label */
+  field: string;
+}
+
+// The register. Order here is the order of the chips at the foot.
+const ENTRIES: Entry[] = [
+  { key: 'a', field: 'Statement' },
+  { key: 'b', field: 'Photography' },
+  { key: 'c', field: 'Current Project' },
+  { key: 'd', field: 'Scholarly Works' },
+  { key: 'e', field: 'Colophon' },
+];
+
+const SERIES = [
+  { n: 'I',   title: 'American Escarpments',        href: '/photography/escarpments/' },
+  { n: 'II',  title: 'Water on the Llano Estacado', href: '/photography/water_on_the_llano_estacado/' },
+  { n: 'III', title: 'Cotton Gins of Texas',        href: '/photography/cotton_gins/' },
+];
+
+const photographyIndex = '/photography';
+const publicationsIndex = '/publications';
+const email = 'mailto:austinlallison@gmail.com';
+const orcid = 'https://orcid.org/0000-0001-6787-9636';
 ---
 
 <RootLayout title="Home | Austin Allison">
-  
-  <!-- Outer Grid Container -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[minmax(180px,_auto)]">
-    
-    <!-- Block 1: The Narrative Intro (Spans 2 columns on desktop) -->
-    <div class="md:col-span-2 bg-canvas border border-haze rounded-md p-8 flex flex-col justify-between space-y-6 bg-sage/10">
-      <div class="space-y-4">
-        <span class="text-xs font-mono tracking-widest uppercase text-sage font-medium block">
-          Cataloging and Metadata Librarian · Historian · Photographer
+
+  <div class="book">
+    <div class="grain" aria-hidden="true"></div>
+    <div class="tooling" aria-hidden="true"></div>
+
+    <!-- The iron, defined once and reused. -->
+    <svg class="iron-defs" width="0" height="0" aria-hidden="true" focusable="false">
+      <defs>
+        <symbol id="iron-7la" viewBox="0 0 66 32">
+          <g fill="none" stroke="currentColor" stroke-width="2.2"
+             stroke-linecap="round" stroke-linejoin="round">
+            <!-- the 7 -->
+            <path d="M4 5 H28 L12 28" />
+            <!-- the lazy A: apex right, open ends left, crossbar detached -->
+            <path d="M34 4 L62 16 L34 28" />
+            <path d="M44.5 10 V22" />
+          </g>
+        </symbol>
+      </defs>
+    </svg>
+
+    <!-- ── running head ────────────────────────────────────── -->
+    <div class="book-head">
+      <span class="m m-sm">Brand Book · Austin Allison · Seven Lazy A</span>
+      <span class="rule" aria-hidden="true"></span>
+      <span class="m m-sm co">Recorded · 2026</span>
+    </div>
+
+    <!-- ── the page ────────────────────────────────────────── -->
+    <div class="page-frame">
+      <div class="page">
+
+        <!-- Statement -->
+        <section class="entry e-statement" data-mark="a">
+          <div class="mark">
+            <svg class="iron" width="46" height="22" aria-hidden="true"><use href="#iron-7la" /></svg>
+            <span class="m rec">Statement of Purpose</span>
+          </div>
+
+          <h1>
+            Cataloging, Preserving, and Capturing the
+            <span class="hot"> History of the American West</span>
+          </h1>
+          <p class="sub">
+            Specializing in structural metadata schemas, digital preservation, and the physical cataloging of regionally important items. This workspace highlights my academic work alongside my photographic studies of regional landscapes of Texas and the American West.
+          </p>
+          <a class="link" href="/cv">Curriculum vitae <span class="a" aria-hidden="true">&rarr;</span></a>
+          <p class="m roles">Librarian · Historian · Photographer</p>
+        </section>
+
+        <!-- Photography — the plate -->
+        <section class="entry e-plate" data-mark="b">
+         <div class="plate-img">
+            <Image
+              src={montana2022}
+              alt="Hoodoo formations at Little Jerusalem, Toole County, Montana"
+              loading="eager"
+            />
+          </div>
+          <div class="plate-scrim" aria-hidden="true"></div>
+          <div class="plate-overlay">
+            <div class="plate-head">
+              <div class="mark">
+                <svg class="iron" width="46" height="22" aria-hidden="true"><use href="#iron-7la" /></svg>
+                <span class="m rec">Photography · Series I - III</span>
+              </div>
+            </div>
+
+            <div class="plate-body">
+              <div class="plate-caption-row">
+                <p class="m plate-caption">Plate 1.05 · Little Jerusalem · Toole County, Montana</p>
+                <a class="link link--quiet" href={photographyIndex}>
+                  Photo Galleries <span class="a" aria-hidden="true">&rarr;</span>
+                </a>
+              </div>
+              <div class="series">
+                {SERIES.map((s) => (
+                  <a href={s.href}>
+                    <span class="m r">{s.n}</span>
+                    <span class="t">{s.title}</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Current Project -->
+        <section class="entry e-work" data-mark="c">
+          <div class="mark">
+            <svg class="iron" width="46" height="22" aria-hidden="true"><use href="#iron-7la" /></svg>
+            <span class="m rec">Current Project</span>
+          </div>
+          <h2>Open-source optical character recognition for West Texas newspapers</h2>
+          <p>The design and implementation of an open-source optical character recognition (OCR) software for digital newspapers in West Texas.</p>
+          <a class="link" href="/projects/ocr_project/">The project <span class="a" aria-hidden="true">&rarr;</span></a>
+        </section>
+
+        <!-- Scholarly Works -->
+        <section class="entry e-pub" data-mark="d">
+          <div class="mark">
+            <svg class="iron" width="46" height="22" aria-hidden="true"><use href="#iron-7la" /></svg>
+            <span class="m rec">Scholarly Works</span>
+          </div>
+          <h2>'Opportunity Knocking': The Vaughan Land Company and Early Bailey County Development</h2>
+          <p class="m cite">Panhandle-Plains Historical Review · 2025</p>
+          <div class="link-row">
+            <a class="link" href="/publications/opportunity_knocking">
+              Read the full text <span class="a" aria-hidden="true">&rarr;</span>
+            </a>
+            <a class="link link--quiet" href={publicationsIndex}>
+              All publications <span class="a" aria-hidden="true">&rarr;</span>
+            </a>
+          </div>
+        </section>
+      <!-- Colophon -->
+        <section class="entry e-station" data-mark="e">
+          <div class="mark">
+            <svg class="iron" width="46" height="22" aria-hidden="true"><use href="#iron-7la" /></svg>
+            <span class="m rec">Colophon</span>
+          </div>
+          <p class="coords">Information</p>
+          <p class="m elev">The Seven Lazy A iconography is a nod to my family's brand and history in the region. </p>
+          <div class="contact">
+            <a href={email} target="_blank" rel="noopener"><span>Email</span><span aria-hidden="true">&rarr;</span></a>
+            <a href={orcid} target="_blank" rel="noopener"><span>ORCID ID</span><span aria-hidden="true">&rarr;</span></a>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+    <!-- ── index of entries ────────────────────────────────── -->
+    <div class="index-marks">
+      <div class="marks">
+        <span class="register-mark" aria-hidden="true">
+          <svg class="iron" width="34" height="17"><use href="#iron-7la" /></svg>
         </span>
-        <h2 class="font-serif text-3xl md:text-4xl font-medium tracking-tight text-caprock leading-tight">
-          Cataloging, Preserving, and Capturing the History of the American West
-        </h2>
-        <p class="text-sm md:text-base text-iron/80 leading-relaxed max-w-2xl">
-          Specializing in structural metadata schemas, digital preservation, and the physical cataloging of regionally important items. This workspace highlights my academic work alongside my photographic studies of regional landscapes of Texas and the American West.
-        </p>
-      </div>
-      <div class="pt-2">
-        <a href="/cv" class="text-xs font-mono lowercase tracking-wider text-iron hover:underline inline-flex items-center gap-1">
-          explore full cv &rarr;
-        </a>
-      </div>
-    </div>
-
-    <!-- Block 2: Featured Visual Anchor (Now fully armed with an optimized image) -->
-    <div class="bg-iron border border-haze rounded-md overflow-hidden flex flex-col justify-end p-6 min-h-[350px] md:min-h-full group relative">
-      
-      <!-- The Background Image Layer (z-0) -->
-      <Image 
-        src={montana2022} 
-        alt="Eroded red clay and rugged canyon formations of West Texas" 
-        class="absolute inset-0 w-full h-full object-cover opacity-75 group-hover:opacity-90 group-hover:scale-[1.03] transition-all duration-700 ease-out z-0"
-      />
-      
-      <!-- Linear Gradient Mask to keep text perfectly legible (z-10) -->
-      <div class="absolute inset-0 bg-gradient-to-t from-iron/90 via-iron/20 to-transparent z-10"></div>
-      
-      <!-- The Editorial Text Content (z-20) -->
-      <div class="z-20">
-        <span class="text-[10px] font-mono tracking-widest uppercase text-canvas/70 block">
-          Featured Photograph
-        </span>
-        <h2 class="font-serif text-md font-medium tracking-tight mt-1 text-haze">
-          Toole County, Montana - Little Jerusalem
-        </h2>
-        <a href="/photography" class="text-[11px] font-mono lowercase tracking-wide text-canvas/90 hover:text-caprock transition-colors duration-300 underline mt-2 block">
-          view gallery
-        </a>
+        {ENTRIES.map((e) => (
+          <span class="mk" data-mark={e.key}>
+            <i class="tick" aria-hidden="true"></i>
+            <span class="m m-sm">{e.field}</span>
+          </span>
+        ))}
       </div>
 
-    </div>
-
-    <!-- Block 3: Quick Metric / Statement Box (1 Column) -->
-<div 
-  class="relative overflow-hidden rounded-md p-8 flex flex-col justify-between bg-cover bg-center text-caprock border border-dust/50"
-  style="background-image: linear-gradient(rgba(255, 255, 255, 0.25), rgba(255, 255, 255, 0.95)), url('/images/test2.jpg');"
->
-  <span class="text-[16px] font-mono tracking-widest uppercase text-iron/90 z-10 animate-bounce">
-    Current Work
-  </span>
-  <div class="my-auto py-4 z-10">
-    <p class="font-serif text-xl italic tracking-tight text-canvas/85 bg-iron/80">
-      "Using open source optical character recognition software to enhance newspaper digitization efforts in West Texas."
-    </p>
-  </div>
-  <span class="text-[14px] font-mono text-caprock/90 lowercase z-10">
-    <a href="/projects/ocr_project/">See more</a>
-  </span>
-</div>
-
-    <div class="md:col-span-2 bg-caprock/10 border border-haze rounded-md p-8 flex flex-col md:flex-row gap-6 justify-between group hover:border-iron transition-colors duration-300">
-  
-  <div class="w-full md:w-1/3 shrink-0 aspect-[4/3] md:aspect-auto overflow-hidden bg-haze rounded-md">
-    <img 
-      src="/images/vaughan_land_company.jpg" 
-      alt="Vaughan Land Company development archival photo" 
-      class="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-500"
-    />
-  </div>
-
-  <div class="flex flex-col justify-between flex-1 space-y-4 md:space-y-0">
-    <div class="space-y-3">
-      <span class="text-xs font-mono tracking-widest uppercase text-iron/40">
-        Featured Publication
-      </span>
-      <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors duration-300">
-        'Opportunity Knocking': The Vaughan Land Company and Early Bailey County Development.
-      </h3>
-      <p class="text-xs font-mono text-iron/60">
-        Panhandle-Plains Historical Review &bull; 2025.
-      </p>
-    </div>
-    <div class="pt-4">
-      <a href="/publications/opportunity_knocking" class="text-xs font-mono lowercase tracking-wider text-iron/80 hover:text-iron underline">
-        read full text
-      </a>
+      
     </div>
   </div>
 
-</div>
-
-  </div>
-  
 </RootLayout>
+
+<style>
+  .book {
+    /* ══ FIT ══════════════════════════════════════════════════
+       Set --head-h to the Horizon header's REAL height at each
+       breakpoint. --fit-floor is the shortest viewport we squeeze
+       into before allowing the page to scroll instead of clip. */
+    --head-h: 96px;
+    --fit-floor: 540px;
+
+    /* the hide */
+    --hide: #55322a;
+    --hide-2: #2E231D;
+    --hide-3: #1A1310;
+
+    /* panels */
+    --indigo: #2A3550;
+    --oxblood: #5C2A26;
+
+    /* metal & stone */
+    --silver: #C9C6BD;
+    --silver-2: #8E8B83;
+    --turq: #3F9E96;
+    --turq-hi: #5FC4BA;
+    --brass: var(--color-brass, #C1AD8A);
+    --ember: #D9913F;
+
+    --ink: #F0EAE0;
+    --ink-2: rgba(240, 234, 224, 0.72);
+    --ink-3: rgba(240, 234, 224, 0.46);
+    --hair: rgba(240, 234, 224, 0.14);
+    --hair-2: rgba(240, 234, 224, 0.28);
+
+    --bb-display: theme('fontFamily.serif', Georgia, serif);
+    --bb-mono: theme('fontFamily.mono', ui-monospace, Menlo, monospace);
+
+    /* every vertical measure keys off min(vw, vh) so a short 16:9
+       viewport steps the whole page down instead of overflowing */
+    --pad: clamp(0.7rem, min(1.9vw, 2.1vh), 1.5rem);
+    --gap: clamp(6px, 0.95vh, 9px);
+
+    /* ── FULL-BLEED BREAK-OUT ──
+       Uncomment if RootLayout wraps pages in a max-width container.
+         width: 100vw;
+         margin-left: calc(50% - 50vw);
+    */
+
+    position: relative;
+    height: calc(100svh - var(--head-h));
+    min-height: var(--fit-floor);
+    display: flex;
+    flex-direction: column;
+    padding:
+      clamp(0.5rem, min(1.5vw, 1.4vh), 1.1rem)
+      clamp(0.9rem, 2.4vw, 2rem)
+      clamp(0.45rem, min(1.2vw, 1.1vh), 0.9rem);
+    color: var(--ink);
+    font-family: var(--bb-mono);
+    font-weight: 300;
+    background:
+      radial-gradient(120% 90% at 50% 0%, rgba(217, 145, 63, 0.10), transparent 62%),
+      linear-gradient(to bottom, var(--hide-2) 0%, var(--hide) 55%, var(--hide-3) 100%);
+    overflow: hidden;
+    isolation: isolate;
+  }
+  @media (min-width: 768px) {
+    .book { --head-h: 116px; }
+  }
+
+  .iron-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
+
+  .grain {
+    position: absolute; inset: 0; pointer-events: none;
+    opacity: 0.5; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='3'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23g)'/%3E%3C/svg%3E");
+  }
+  .tooling {
+    position: absolute; inset: 0; pointer-events: none; opacity: 0.055;
+    background-image:
+      repeating-linear-gradient(45deg, var(--ink) 0 1px, transparent 1px 14px),
+      repeating-linear-gradient(-45deg, var(--ink) 0 1px, transparent 1px 14px);
+  }
+
+  .m {
+    font-family: var(--bb-mono);
+    font-size: 9.5px; letter-spacing: 0.2em;
+    text-transform: uppercase; line-height: 1; font-weight: 400;
+  }
+  .m-sm { font-size: 8px; letter-spacing: 0.22em; }
+
+  /* ── running head ──────────────────────────────────────── */
+  .book-head {
+    position: relative; display: flex; align-items: center;
+    gap: 0.9rem; color: var(--ink-3);
+    padding-bottom: clamp(0.35rem, 0.75vh, 0.65rem);
+    flex: none;
+  }
+  .book-head .rule {
+    flex: 1; height: 3px;
+    border-top: 1px solid var(--hair);
+    border-bottom: 1px solid var(--hair);
+  }
+  .book-head .co { color: var(--brass); }
+
+  /* ── the page ──────────────────────────────────────────── */
+  .page-frame { position: relative; flex: 1; min-height: 0; padding: 7px; }
+  .page-frame::before {
+    content: ''; position: absolute; inset: 0;
+    border: 1px solid var(--hair); pointer-events: none;
+  }
+  .page-frame::after {
+    content: ''; position: absolute; inset: 5px;
+    border: 1px solid var(--hair); opacity: 0.5; pointer-events: none;
+  }
+  .page {
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-template-rows: repeat(8, 1fr);
+    gap: var(--gap);
+  }
+
+  /* ── a registered entry ────────────────────────────────── */
+  .entry {
+    position: relative; overflow: hidden;
+    min-width: 0; min-height: 0;
+    padding: var(--pad);
+    display: flex; flex-direction: column;
+    background: linear-gradient(160deg, rgba(240, 234, 224, 0.045), rgba(240, 234, 224, 0.012));
+    border: 1px solid var(--hair);
+    border-radius: 2px;
+    transition:
+      border-color 0.45s cubic-bezier(0.25, 1, 0.5, 1),
+      background-color 0.45s,
+      transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .entry::after {
+    content: ''; position: absolute; inset: 5px;
+    border: 1px solid var(--hair); opacity: 0.45;
+    pointer-events: none; border-radius: 1px;
+    transition: opacity 0.45s, border-color 0.45s;
+  }
+  .entry > * { position: relative; z-index: 2; }
+
+  .entry:hover,
+  .entry:focus-within,
+  .entry.lit {
+    border-color: var(--hair-2);
+    transform: translateY(-1px);
+    background: linear-gradient(160deg, rgba(240, 234, 224, 0.075), rgba(240, 234, 224, 0.02));
+  }
+  .entry:hover::after,
+  .entry:focus-within::after,
+  .entry.lit::after { opacity: 0.8; border-color: var(--ember); }
+
+  /* the iron heats when the entry is called */
+  .mark { display: flex; align-items: center; gap: 0.6rem; align-self: flex-start; color: var(--brass); flex: none; }
+  .mark .iron { flex: none; color: var(--brass); transition: color 0.4s, filter 0.4s; }
+  .mark .rec { color: var(--ink-3); transition: color 0.4s; }
+  .entry:hover .mark .iron,
+  .entry:focus-within .mark .iron,
+  .entry.lit .mark .iron {
+    color: var(--ember);
+    filter: drop-shadow(0 0 7px rgba(217, 145, 63, 0.5));
+  }
+  .entry:hover .mark .rec,
+  .entry:focus-within .mark .rec,
+  .entry.lit .mark .rec { color: var(--ink-2); }
+
+  /* ── links ─────────────────────────────────────────────── */
+  .link {
+    display: inline-flex; align-items: baseline; gap: 0.5rem;
+    font-family: var(--bb-mono); font-size: 9.5px;
+    letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--ink);
+    border-bottom: 1px solid var(--hair-2); padding-bottom: 0.3rem;
+    text-decoration: none; white-space: nowrap;
+    transition: color 0.25s, border-color 0.25s;
+  }
+  .link:hover, .link:focus-visible { color: var(--ember); border-color: var(--ember); }
+  .link .a { transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1); }
+  .link:hover .a { transform: translateX(3px); }
+
+  /* secondary — the index link next to a featured one */
+  .link--quiet { color: var(--ink-3); border-bottom-color: var(--hair); }
+  .link--quiet:hover, .link--quiet:focus-visible { color: var(--ember); border-color: var(--ember); }
+
+  /* a standalone .link inside a column still hugs the left */
+  .entry > .link { align-self: flex-start; }
+
+  .link-row {
+    display: flex; flex-wrap: wrap; align-items: baseline;
+    gap: 0.45rem clamp(0.9rem, 2vw, 1.6rem);
+  }
+
+  :where(.book) :focus-visible { outline: 2px solid var(--turq); outline-offset: 3px; }
+
+  /* ══ GRID PLACEMENT — all five in one place, nothing overrides ══ */
+  .e-statement { grid-column: 1 / 6;   grid-row: 1 / 6; }
+  .e-plate     { grid-column: 6 / 13;  grid-row: 1 / 6; }
+  .e-pub       { grid-column: 1 / 6;   grid-row: 6 / 9; }
+  .e-work      { grid-column: 6 / 10;  grid-row: 6 / 9; }
+  .e-station   { grid-column: 10 / 13; grid-row: 6 / 9; }
+
+  /* ── statement ─────────────────────────────────────────── */
+  .e-statement {
+    justify-content: center;
+    background:
+      radial-gradient(90% 110% at 12% 0%, rgba(63, 158, 150, 0.12), transparent 60%),
+      linear-gradient(160deg, rgba(240, 234, 224, 0.05), rgba(240, 234, 224, 0.012));
+  }
+  .e-statement h1 {
+    font-family: var(--bb-display); font-weight: 500;
+    font-size: clamp(1.3rem, min(2.6vw, 4.6vh), 2.35rem);
+    line-height: 1.04; letter-spacing: -0.02em;
+    margin: clamp(0.6rem, 1.6vh, 1.1rem) 0 clamp(0.45rem, 1.1vh, 0.7rem);
+    max-width: 19ch;
+    font-variation-settings: 'opsz' 144;
+  }
+  .e-statement h1 .hot {
+    color: var(--ember);
+    text-shadow: 0 0 22px rgba(217, 145, 63, 0.35);
+  }
+  .e-statement .sub {
+    font-family: var(--bb-sans); font-style: italic; font-weight: 400;
+    letter-spacing: 0;
+    font-size: clamp(10.5px, min(1.05vw, 1.75vh), 13.5px);
+    line-height: 1.5; color: var(--ink-2);
+    max-width: 46ch; margin: 0 0 clamp(0.7rem, 1.9vh, 1.3rem);
+  }
+  .e-statement .roles { color: var(--ink-3); margin: clamp(0.6rem, 1.6vh, 1.1rem) 0 0; }
+
+  /* ── the plate (photograph) ────────────────────────────── */
+  .e-plate {
+    padding: 0;
+    overflow: hidden;
+    --plate-focus: 50% 42%;
+    /* NUCLEAR OPTION: CSS Grid Stacking */
+    display: grid;
+  }
+  
+  /* This puts the image, scrim, and text in the exact same grid cell so they stack like pancakes */
+  .e-plate > * {
+    grid-area: 1 / 1;
+  }
+
+  .plate-img { z-index: 1; }
+  .plate-img :global(img) {
+    width: 100%; height: 100%;
+    object-fit: cover;
+    object-position: var(--plate-focus);
+    filter: saturate(0.9) contrast(1.04);
+    transition: transform 1.1s cubic-bezier(0.25, 1, 0.5, 1), filter 0.8s;
+  }
+  .e-plate:hover .plate-img :global(img),
+  .e-plate.lit .plate-img :global(img) {
+    transform: scale(1.045);
+    filter: saturate(1.02) contrast(1.06);
+  }
+
+  .plate-scrim {
+    z-index: 2; pointer-events: none;
+    background: linear-gradient(
+      to top,
+      rgba(26, 19, 16, 0.94) 0%,
+      rgba(26, 19, 16, 0.58) 30%,
+      rgba(26, 19, 16, 0.06) 62%,
+      rgba(26, 19, 16, 0.34) 100%
+    );
+  }
+
+  .plate-overlay {
+    z-index: 3;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: var(--pad);
+    box-sizing: border-box;
+    /* If your screen gets too short, this lets you scroll the text inside the image! */
+    overflow-y: auto; 
+    pointer-events: auto; 
+  }
+
+  .plate-overlay a { pointer-events: auto; }
+  .plate-head, .plate-body { padding: 0; margin: 0; }
+  
+  .plate-body { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 0.75rem; 
+  }
+
+  /* caption left, index link right — one row */
+  .plate-caption-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 1rem; flex-wrap: wrap;
+  }
+  .plate-caption { color: var(--brass); margin: 0; }
+
+  /* the three series, horizontal — gives the photograph its height back */
+  .series {
+    border-top: 1px solid var(--hair-2);
+    padding-top: clamp(0.45rem, 1.1vh, 0.7rem);
+    display: flex; flex-direction: row; flex-wrap: wrap;
+    gap: 0.4rem clamp(1rem, 2.5vw, 2.25rem);
+  }
+  .series a {
+    display: flex; align-items: baseline; gap: 0.5rem;
+    color: var(--ink-2); text-decoration: none; transition: color 0.2s;
+  }
+  .series a:hover, .series a:focus-visible { color: var(--ember); }
+  .series .r { color: var(--brass); flex: none; }
+  .series .t {
+    font-family: var(--bb-display);
+    font-size: clamp(11.5px, min(1.05vw, 1.8vh), 14px);
+  }
+
+  /* ── current project ───────────────────────────────────── */
+  .e-work {
+    background: linear-gradient(160deg, rgba(42, 53, 80, 0.55), rgba(42, 53, 80, 0.18));
+  }
+  .e-work h2 {
+    font-family: var(--bb-display); font-weight: 500;
+    font-size: clamp(0.95rem, min(1.45vw, 2.5vh), 1.25rem);
+    line-height: 1.14;
+    margin: clamp(0.5rem, 1.3vh, 0.85rem) 0 clamp(0.3rem, 0.8vh, 0.5rem);
+    letter-spacing: -0.01em;
+  }
+  .e-work p {
+    font-size: clamp(9.5px, min(0.85vw, 1.5vh), 10.5px);
+    line-height: 1.55; color: var(--ink-2);
+    margin: 0 0 auto; padding-bottom: clamp(0.55rem, 1.4vh, 0.9rem);
+  }
+
+  /* ── scholarly works ───────────────────────────────────── */
+  .e-pub {
+    background: linear-gradient(160deg, rgba(92, 42, 38, 0.5), rgba(92, 42, 38, 0.16));
+  }
+  .e-pub h2 {
+    font-family: var(--bb-display); font-weight: 500;
+    font-size: clamp(0.95rem, min(1.4vw, 2.4vh), 1.22rem);
+    line-height: 1.2;
+    margin: clamp(0.5rem, 1.3vh, 0.85rem) 0 clamp(0.3rem, 0.8vh, 0.5rem);
+    max-width: 42ch; letter-spacing: -0.01em;
+  }
+  .e-pub .cite { color: var(--ink-3); margin: 0 0 auto; padding-bottom: clamp(0.55rem, 1.4vh, 0.9rem); }
+
+  /* ── station ───────────────────────────────────────────── */
+  .e-station .coords {
+    font-family: var(--bb-display);
+    font-size: clamp(0.95rem, min(1.35vw, 2.3vh), 1.18rem); line-height: 1.3;
+    margin: clamp(0.5rem, 1.3vh, 0.85rem) 0 0.3rem;
+  }
+  .e-station .elev { color: var(--ink-3); margin: 0; }
+  .e-station .contact {
+    display: flex; flex-direction: column;
+    gap: clamp(0.3rem, 0.9vh, 0.5rem); margin-top: auto;
+  }
+  .e-station .contact a {
+    display: flex; justify-content: space-between;
+    border-bottom: 1px solid var(--hair);
+    padding-bottom: clamp(0.28rem, 0.8vh, 0.45rem);
+    font-size: 9.5px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--ink-2); text-decoration: none;
+    transition: color 0.25s, border-color 0.25s;
+  }
+  .e-station .contact a:hover,
+  .e-station .contact a:focus-visible { color: var(--ember); border-color: var(--ember); }
+
+  /* ── index of entries ──────────────────────────────────── */
+  .index-marks {
+    position: relative; display: flex; align-items: center;
+    justify-content: space-between; gap: clamp(1rem, 3vw, 2.5rem);
+    padding-top: clamp(0.5rem, 1.1vh, 0.9rem);
+    flex-wrap: wrap; flex: none;
+  }
+  .marks { display: flex; align-items: center; gap: clamp(0.7rem, 1.8vw, 1.5rem); flex-wrap: wrap; }
+  .register-mark {
+    display: inline-flex; color: var(--brass);
+    padding-right: 0.5rem;
+    border-right: 1px solid var(--hair);
+  }
+  .mk {
+    display: flex; align-items: center; gap: 0.5rem;
+    color: var(--ink-3); transition: color 0.35s; cursor: default;
+  }
+  .mk .tick {
+    width: 7px; height: 1px; background: var(--silver-2); flex: none;
+    transition: background-color 0.35s, width 0.35s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+  .mk.on { color: var(--ink); }
+  .mk.on .tick { background: var(--ember); width: 14px; }
+
+  .conchos { display: flex; gap: 0.45rem; align-items: center; }
+  .conchos i {
+    width: 9px; height: 9px; border-radius: 999px;
+    border: 1px solid var(--silver-2);
+    background: radial-gradient(circle at 35% 30%, var(--silver), var(--hide));
+  }
+  .conchos i:nth-child(2) {
+    background: radial-gradient(circle at 35% 30%, var(--ember), #1F5B56);
+    border-color: var(--ember);
+  }
+
+  /* ── very short viewports: shed the two optional strips ──
+     Below this the one-screen fit stops being worth the squeeze. */
+  @media (min-width: 921px) and (max-height: 620px) {
+    .book-head, .index-marks { display: none; }
+  }
+
+  /* ── responsive: stack and scroll ──────────────────────── */
+@media (max-width: 920px) {
+    .book { height: auto; min-height: 0; }
+    .page { grid-template-columns: 1fr; grid-template-rows: none; }
+    .entry {
+      grid-column: 1 / -1 !important;
+      grid-row: auto !important;
+      min-height: 200px;
+    }
+    .e-plate { min-height: 450px; aspect-ratio: auto; }
+    .marks { gap: 0.6rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .book *, .book *::before, .book *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>
+
+<script>
+  // The page and its index are linked, both directions.
+  // Guarded + re-bound on astro:page-load so it survives View Transitions.
+  function initBrandBook() {
+    const book = document.querySelector<HTMLElement>('.book');
+    if (!book || book.dataset.brandBookReady === 'true') return;
+    book.dataset.brandBookReady = 'true';
+
+    const entries = book.querySelectorAll<HTMLElement>('.entry[data-mark]');
+    const marks = book.querySelectorAll<HTMLElement>('.mk[data-mark]');
+
+    const lightChip = (key: string, on: boolean) => {
+      marks.forEach((m) => {
+        if (m.dataset.mark === key) m.classList.toggle('on', on);
+      });
+    };
+
+    entries.forEach((entry) => {
+      const key = entry.dataset.mark ?? '';
+      entry.addEventListener('mouseenter', () => lightChip(key, true));
+      entry.addEventListener('mouseleave', () => lightChip(key, false));
+      // keyboard parity: tabbing into an entry calls its iron too
+      entry.addEventListener('focusin', () => lightChip(key, true));
+      entry.addEventListener('focusout', () => lightChip(key, false));
+    });
+
+    marks.forEach((chip) => {
+      const key = chip.dataset.mark ?? '';
+      chip.addEventListener('mouseenter', () => {
+        entries.forEach((e) => {
+          if (e.dataset.mark === key) e.classList.add('lit');
+        });
+        chip.classList.add('on');
+      });
+      chip.addEventListener('mouseleave', () => {
+        entries.forEach((e) => e.classList.remove('lit'));
+        chip.classList.remove('on');
+      });
+    });
+  }
+
+  initBrandBook();
+  document.addEventListener('astro:page-load', initBrandBook);
+</script>
+
+<!--
+  ══ FOOTER PAIRING ═══════════════════════════════════════════════════
+  This page ends on --hide-3 (#1A1310). CaprockFooter lets the page
+  background show through as its sky, so without these edits the
+  escarpment reads as a photographic negative: a pale plateau against a
+  dark sky. Add to CaprockFooter.astro's <style>:
+
+    .scarp-wrap { background: #1A1310; }   /* was inherited */
+
+    .rock { fill: var(--color-dockum); }   /* was --color-llano */
+
+    .section {
+      background: linear-gradient(to bottom,
+        var(--color-dockum) 0%,
+        var(--color-redbed) 24%,
+        var(--color-caprock-accent) 44%,
+        var(--color-dockum) 70%,
+        var(--color-basement) 100%);
+    }
+
+    .mark--plateau, .mark--basin { color: rgba(232,225,209,.42); }
+
+  Plus the `compact` prop discussed: on `/` the lede stratum (name,
+  roles, tagline) is redundant with the statement tile — pass
+  compact={Astro.url.pathname === '/'} and skip that stratum.
+
+  Optional, to carry the turquoise across the seam:
+    .col a::after { background: #3F9E96; }
+  ═════════════════════════════════════════════════════════════════════
+-->

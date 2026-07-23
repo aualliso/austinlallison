@@ -38,8 +38,8 @@ const navItems = [
 // x 640–800 — the open gap between the landmark and the nav — so terrain
 // never rises under the mile-marker ticks.
 const SILHOUETTES: Record<string, string> = {
-  home:         "M0 19 H340 L400 18.6 L470 18.8 L560 18.3 L640 18.9 L664 18.5 L682 9.8 L696 9.3 L744 9.5 L758 10 L776 18.4 L800 19 L900 18.5 L1010 19 H1440",
-  cv:           "M0 19 H340 L400 18.9 L470 19 L560 18.8 L640 19 L664 18.9 L682 19 L696 18.85 L744 19 L758 18.9 L776 19 L800 18.9 L900 19 L1010 19 H1440",
+  home:         "M0 19 H340 L400 18.8 L470 18.6 L560 18.9 L640 18.7 L664 13.2 L682 12.9 L696 13.1 L744 8.9 L758 8.6 L776 8.9 L800 18.6 L900 18.8 L1010 19 H1440",
+  cv:           "M0 19 H340 L400 18.7 L470 18.9 L560 18.6 L640 18.8 L664 9.2 L682 9.0 L696 9.4 L744 12.8 L758 15.6 L776 17.8 L800 18.7 L900 18.9 L1010 19 H1440",
   publications: "M0 19 H340 L400 18.8 L470 18.6 L560 18.9 L640 18.7 L664 13.2 L682 12.9 L696 13.1 L744 8.9 L758 8.6 L776 8.9 L800 18.6 L900 18.8 L1010 19 H1440",
   photography:  "M0 19 H340 L400 18.7 L470 18.9 L560 18.6 L640 18.8 L664 9.2 L682 9.0 L696 9.4 L744 12.8 L758 15.6 L776 17.8 L800 18.7 L900 18.9 L1010 19 H1440",
 };
@@ -382,7 +382,7 @@ const groundPath = `${silhouette} V22 H0 Z`;
   }
 
   #windmill {
-    left: 40%; /* left of the sun (centered at 50%) */
+    left: 35%; /* left of the sun (centered at 50%) */
     bottom: 3px; /* the line sits 3px up inside the horizon svg */
     color: color-mix(in oklch, var(--color-dust, #B3A38F) 68%, var(--color-iron, #1A1919));
     opacity: 0.45;
@@ -769,4 +769,7 @@ const groundPath = `${silhouette} V22 H0 Z`;
     }
     #sun-wrap { display: none; }
   }
+  @media (min-width: 768px) {
+  #windmill { width: 28px; height: 43px; }
+}
 </style>
