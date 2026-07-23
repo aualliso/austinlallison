@@ -87,7 +87,7 @@ export async function getStaticPaths() {
           title: 'Little Jerusalem Hoodoos \u00B7 Toole County, Montana',
           coordinates: '48.968683\u00B0 N, 111.982261\u00B0 W',
           specs: '12mm \u00B7 \u0192/8 \u00B7 1/320s',
-          x: 680, y: 120, w: 560,
+          x: 820, y: 280, w: 400,
           caption: '',
         },
         {
@@ -95,23 +95,23 @@ export async function getStaticPaths() {
           title: 'Blooming Stratification \u00B7 Garza County, Texas',
           coordinates: '33.090300\u00B0 N, 101.500369\u00B0 W',
           specs: '14mm \u00B7 \u0192/8 \u00B7 1/320s',
-          x: 290, y: 680, w: 450,
+          x: 1670, y: 300, w: 450,
           caption: '',
         },
         {
           file: 'escarpments/escarpment3.jpg',
-          title: 'Palouse Canyon Basalt \u00B7 Franklin and Whitman counties, Washington',
+          title: 'Palouse Canyon Basalt',
           coordinates: '46.662612\u00B0 N, 118.227612\u00B0 W',
           specs: '14mm \u00B7 \u0192/8 \u00B7 1/100s',
-          x: 770, y: 840, w: 520,
-          caption: '',
+          x: 870, y: 900, w: 400,
+          caption: 'Franklin and Whitman counties, Washington',
         },
         {
           file: 'escarpments/escarpment4.jpg',
           title: 'The Sea of Red and Cedar \u00B7 Briscoe County, Texas',
           coordinates: '34.465959\u00B0 N, 101.098786\u00B0 W',
           specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/2000s',
-          x: 1275, y: 180, w: 500,
+          x: 1275, y: 280, w: 350,
           caption: '',
         },
         {
@@ -127,7 +127,7 @@ export async function getStaticPaths() {
           title: 'Upper Yellow House Draw Canyon \u00B7 Bailey County, Texas',
           coordinates: '33.851419\u00B0 N, 102.700752\u00B0 W',
           specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/2000s',
-          x: 1830, y: 420, w: 400,
+          x: 1750, y: 520, w: 400,
           caption: '',
         },
         {
@@ -135,15 +135,15 @@ export async function getStaticPaths() {
           title: 'Little Jerusalem with Sweetgrass Hills \u00B7 Toole County, Montana',
           coordinates: '48.966829\u00B0 N, 111.965596\u00B0 W',
           specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/200s',
-          x: 1850, y: 700, w: 540,
+          x: 1720, y: 780, w: 400,
           caption: '',
         },
         {
           file: 'escarpments/escarpment8.jpg',
-          title: 'Tule Creek \u00B7 Briscoe County, Texas',
+          title: 'Hoodoos at Little Jerusalem \u00B7 Toole County, Montana',
           coordinates: '48.966829\u00B0 N, 111.965596\u00B0 W',
           specs: '12mm \u00B7 \u0192/8 \u00B7 1/320s',
-          x: 160, y: 350, w: 500,
+          x: 600, y: 600, w: 400,
           caption: 'The Hoodoos!',
         },
         {
@@ -159,7 +159,7 @@ export async function getStaticPaths() {
           title: 'Walls of the Pecos \u00B7 Val Verde County, Texas',
           coordinates: '29.720860\u00B0 N, 101.347319\u00B0 W',
           specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/1000s',
-          x: 370, y: 1050, w: 360,
+          x: 1300, y: 1100, w: 360,
           caption: '',
         },
         {
@@ -167,7 +167,7 @@ export async function getStaticPaths() {
           title: 'Brazos Headwaters \u00B7 Garza County, Texas',
           coordinates: '33.090300\u00B0 N, 101.500369\u00B0 W',
           specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/1000s',
-          x: 850, y: 500, w: 660,
+          x: 1050, y: 550, w: 660,
           caption: '',
         },
       ],
@@ -349,7 +349,7 @@ const registry = SERIES;
         class="pointer-events-auto w-full bg-canvas/95 backdrop-blur-xs p-4 md:p-6 border border-haze rounded-sm shadow-lg transition-all duration-300 flex flex-col gap-1.5"
       >
         <div class="flex items-start justify-between gap-3">
-          <span class="font-serif text-2xl md:text-2xl tracking text-sage">
+          <span class="font-serif text-lg md:text-2xl text-sage">
             Series {gallery.number}.
           </span>
           <button
@@ -374,7 +374,7 @@ const registry = SERIES;
 
         <div id="hud-collapsible" class="hidden md:block transition-all duration-300 overflow-hidden">
           {gallery.essay && (
-            <p class="font-sans text-xs text-iron/70 leading-relaxed mt-3 mb-4">
+            <p class="font-serif text-xs text-iron/70 leading-relaxed mt-3 mb-4">
               {gallery.essay}
             </p>
           )}
@@ -556,8 +556,8 @@ const registry = SERIES;
     <!-- metadata + strip -->
     <div class="w-full max-w-5xl mx-auto border-t border-haze/40 pt-4 pb-2 md:pb-4 shrink-0">
       <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start font-mono text-[11px] uppercase tracking-wider text-sage">
-        <div class="col-span-12 md:col-span-5 flex flex-col gap-1">
-          <span id="lightbox-plate-title" class="font-semibold text-iron"></span>
+        <div class="col-span-12 md:col-span-5 flex flex-col gap-1 min-w-0">
+          <span id="lightbox-plate-title" class="font-semibold text-iron break-words"></span>
           <div class="flex gap-4 text-iron/40 text-[10px] lowercase tracking-normal mt-0.5">
             <span id="lightbox-specs"></span>
             <span id="lightbox-coords"></span>
@@ -565,9 +565,9 @@ const registry = SERIES;
         </div>
         <div
           id="lightbox-notes"
-          class="col-span-12 md:col-span-7 border-t border-dashed border-haze/40 pt-3 md:pt-0 md:border-t-0 font-serif normal-case tracking-normal text-xs text-iron/70 italic leading-relaxed max-h-[12dvh] overflow-y-auto pr-2 scrollbar-none select-text touch-pan-y"
+          class="col-span-12 md:col-span-7 border-t border-dashed border-haze/40 pt-3 md:pt-0 md:border-t-0 font-serif normal-case tracking-normal text-xs text-iron/70 leading-relaxed max-h-[12dvh] overflow-y-auto pr-2 scrollbar-none select-text touch-pan-y"
         >
-          <p id="lightbox-caption" class="cursor-text"></p>
+          <p id="lightbox-caption" class="cursor-text font-normal"></p>
         </div>
       </div>
 
@@ -591,6 +591,8 @@ const registry = SERIES;
     plates.map((p) => ({
       full: p.img.full,
       detail: p.img.detail,
+      w: p.img.width,
+      h: p.img.height,
       title: p.title,
       specs: p.specs,
       coords: p.coordinates,
@@ -604,6 +606,8 @@ const registry = SERIES;
   type PlateRecord = {
     full: string;
     detail: string;
+    w: number;
+    h: number;
     title: string;
     specs: string;
     coords: string;
@@ -1081,6 +1085,19 @@ const registry = SERIES;
       detailWanted = false;
       resetLb();
 
+      // reserve the frame's shape before the new file even starts
+      // downloading. width/height attributes (not just CSS) are what
+      // let the browser hold the intrinsic ratio pre-decode — without
+      // them the box is 0 until the file lands, then snaps to full
+      // size, and that jump is what was shifting the whole page.
+      if (rec.w && rec.h) {
+        modalImg.width = rec.w;
+        modalImg.height = rec.h;
+      } else {
+        modalImg.removeAttribute('width');
+        modalImg.removeAttribute('height');
+      }
+
       modalImg.classList.add('is-loading');
       modalImg.src = rec.full;
       modalImg.alt = rec.title;
@@ -1333,6 +1350,12 @@ const registry = SERIES;
      is a coin flip on which utility wins */
   #lightbox-modal { display: none; }
   #lightbox-modal[data-open] { display: flex; }
+
+  /* the width/height reservation above should make this unnecessary,
+     but scroll-anchoring is the browser mechanism that turns any
+     leftover layout shift into a page nudge — opt the whole dialog
+     out as a backstop */
+  #lightbox-modal { overflow-anchor: none; }
 
   #lightbox-img {
     transform-origin: center center;
