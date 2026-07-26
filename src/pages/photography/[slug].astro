@@ -103,7 +103,7 @@ export async function getStaticPaths() {
           title: 'Palouse Canyon Basalt',
           coordinates: '46.662612\u00B0 N, 118.227612\u00B0 W',
           specs: '14mm \u00B7 \u0192/8 \u00B7 1/100s',
-          x: 870, y: 900, w: 400,
+          x: 980, y: 900, w: 300,
           caption: 'Franklin and Whitman counties, Washington',
         },
         {
@@ -140,8 +140,8 @@ export async function getStaticPaths() {
         },
         {
           file: 'escarpments/escarpment8.jpg',
-          title: 'Hoodoos at Little Jerusalem \u00B7 Toole County, Montana',
-          coordinates: '48.966829\u00B0 N, 111.965596\u00B0 W',
+          title: 'Briscoe County Ledge \u00B7 Briscoe County, Texas',
+          coordinates: '34.54667\u00B0 N, 101.429921\u00B0 W',
           specs: '12mm \u00B7 \u0192/8 \u00B7 1/320s',
           x: 600, y: 600, w: 400,
           caption: 'The Hoodoos!',
@@ -170,6 +170,14 @@ export async function getStaticPaths() {
           x: 1050, y: 550, w: 660,
           caption: '',
         },
+        {
+          file: 'escarpments/escarpment12.jpg',
+          title: 'Along the Cache la Poudre \u00B7 Larimer County, Colorado',
+          coordinates: '40.681113\u00B0 N, 105.235401\u00B0 W',
+          specs: '12mm \u00B7 \u0192/4.4 \u00B7 1/320s',
+          x: 950, y: 1150, w: 300,
+          caption: '',
+        }
       ],
     },
     {
@@ -466,7 +474,7 @@ const registry = SERIES;
           data-index={plate.index}
           aria-label={`Open ${plate.plate}, ${plate.title}`}
         >
-          <span class="block border border-iron/10 p-3 bg-dust/35 shadow-md rounded-sm overflow-hidden transition-all duration-500 group-hover:shadow-xl group-hover:border-caprock/30">
+          <span class="block border border-iron/10 p-3 bg-canvas shadow-md rounded-sm overflow-hidden transition-all duration-500 group-hover:shadow-xl group-hover:border-caprock/30">
             <span class="block overflow-hidden bg-iron/5">
               <img
                 src={plate.img.board}

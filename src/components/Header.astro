@@ -109,7 +109,7 @@ const groundPath = `${silhouette} V22 H0 Z`;
 
       <!-- THE LANDMARK: signature + name + benchmark station plate -->
       <a
-        href="/"
+        href="/main"
         aria-label="Home"
         aria-current={isActive('/') ? 'page' : undefined}
         class={`landmark group flex items-end gap-3 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] rounded-sm ${isActive('/') ? 'is-active' : ''}`}
@@ -382,7 +382,7 @@ const groundPath = `${silhouette} V22 H0 Z`;
   }
 
   #windmill {
-    left: 35%; /* left of the sun (centered at 50%) */
+    left: 38%; /* left of the sun (centered at 50%) */
     bottom: 3px; /* the line sits 3px up inside the horizon svg */
     color: color-mix(in oklch, var(--color-dust, #B3A38F) 68%, var(--color-iron, #1A1919));
     opacity: 0.45;
