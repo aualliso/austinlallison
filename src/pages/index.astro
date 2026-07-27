@@ -3,8 +3,11 @@
  * scroll-mechanic.astro — terrain-following scroll camera. Standalone page:
  * no RootLayout, no CaprockFooter, no nav.
  *
- * Fully optimized version with cached layout measurements, smooth resize lock,
- * hardware acceleration, and seamless viewport height stability.
+ * v2: non-linear scroll->camera easing (slow plateau/apron, fast rim drop),
+ * continuous rAF render loop with velocity-lerped camera (smooths trackpad
+ * bursts), directional station entry drift, odometer-style elevation
+ * counter, descent-driven haze + rim-light warming, load-in fade, mobile
+ * card clipping fix, ultrawide camera clamp, backdrop-filter fallback.
  */
 const year = new Date().getFullYear();
 
@@ -47,9 +50,14 @@ const SIGNATURE_PATHS = `
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Austin Allison</title>
+<title>Austin Allison — Cataloging & Metadata Librarian, Historian, Photographer</title>
+<meta name="description" content="Portfolio of Austin Allison — cataloging and metadata librarian, historian, and photographer specializing in the history and landscapes of Texas and the American West.">
+<meta property="og:title" content="Austin Allison">
+<meta property="og:description" content="Cataloging, preserving, and capturing the history of the American West.">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<noscript><style>.traverse-sticky{ opacity:1 !important; }</style></noscript>
 <style is:global>
   @reference "tailwindcss";
 
@@ -73,7 +81,10 @@ const SIGNATURE_PATHS = `
       #C98A5F 59%, #7A4A38 72%, #3A2620 86%, #231712 100%);
     background-size: 100% 260%;
     background-position: 0% var(--sky-pos, 0%);
+    opacity: 0;
+    transition: opacity .4s ease;
   }
+  .traverse-sticky.is-ready{ opacity: 1; }
 
   .sun{
     @apply absolute z-[1] pointer-events-none rounded-full aspect-square w-[min(42vh,340px)];
@@ -101,11 +112,13 @@ const SIGNATURE_PATHS = `
     filter: blur(24px);
   }
   .haze-band--far{
-    @apply top-[38%] h-[26%] opacity-60;
+    @apply top-[38%] h-[26%];
+    opacity: var(--haze-far-op, .6);
     background: linear-gradient(180deg, rgba(200,208,220,0) 0%, rgba(196,206,220,.55) 55%, rgba(200,208,220,0) 100%);
   }
   .haze-band--near{
-    @apply top-[54%] h-[30%] opacity-45;
+    @apply top-[54%] h-[30%];
+    opacity: var(--haze-near-op, .45);
     background: linear-gradient(180deg, rgba(214,206,196,0) 0%, rgba(220,210,196,.5) 50%, rgba(214,206,196,0) 100%);
   }
 
@@ -118,10 +131,14 @@ const SIGNATURE_PATHS = `
   .marker{ @apply absolute; }
 
   .station{
-    @apply absolute opacity-0 pointer-events-none translate-y-4 w-[clamp(280px,85vw,460px)];
+    @apply absolute opacity-0 pointer-events-none w-[clamp(280px,85vw,460px)];
+    transform: translateY(16px) translateX(var(--enter-x, 0px));
     transition: opacity .5s ease, transform .5s ease;
   }
-  .station.active{ @apply opacity-100 translate-y-0 pointer-events-auto; }
+  .station.active{
+    @apply opacity-100 pointer-events-auto;
+    transform: translateY(0) translateX(0);
+  }
 
   .station-card{
     @apply relative rounded-[18px] border py-[26px] px-7;
@@ -132,6 +149,9 @@ const SIGNATURE_PATHS = `
       0 1px 0 rgba(255,252,245,.6) inset,
       0 1px 2px rgba(20,16,12,.08),
       0 18px 40px -12px rgba(20,16,12,.45);
+  }
+  @supports not (backdrop-filter: blur(1px)) {
+    .station-card{ background: color-mix(in srgb, var(--caliche) 97%, transparent); }
   }
   .station-card .plate-code{ @apply block mb-2.5 text-[11px] tracking-[.08em] [font-family:var(--mono)] [color:var(--dockum)]; }
   .station-card h2, .station-card h1{ @apply m-0 mb-3 font-medium leading-[1.12] text-[clamp(1.4rem,2.4vw,2.1rem)] [font-family:var(--serif)] [color:var(--iron)]; }
@@ -174,7 +194,8 @@ const SIGNATURE_PATHS = `
     text-shadow: 0 1px 3px rgba(20,16,12,.5);
   }
   .elev-badge{
-    @apply absolute top-1/2 z-[7] left-[9px] rounded-[3px] text-xs tracking-[.04em] px-1.5 py-2 tabular-nums;
+    @apply absolute top-1/2 z-[7] left-[9px] rounded-[3px] text-xs tracking-[.04em] px-1.5 py-2;
+    font-variant-numeric: tabular-nums;
     transform: translateY(-50%);
     background: rgba(28,20,15,.86);
     color: var(--caliche);
@@ -235,13 +256,15 @@ const SIGNATURE_PATHS = `
   @media (max-width: 768px) {
     .station {
       position: absolute;
-      left: calc((var(--cam-x, 0px) * -1) + 55vw) !important;
+      left: calc((var(--cam-x, 0px) * -1) + 50vw) !important;
       top: calc((var(--cam-y, 0px) * -1) + 28vh) !important;
-      transform: translate(-50%, -50%) translateY(16px);
+      transform: translate(-50%, -50%) translateY(16px) translateX(var(--enter-x, 0px));
       z-index: 10;
+      width: clamp(260px, 82vw, 400px);
+      max-width: calc(100vw - 32px);
     }
     .station.active {
-      transform: translate(-50%, -50%) translateY(0);
+      transform: translate(-50%, -50%) translateY(0) translateX(0);
     }
     .hud-elev { @apply w-10; }
     .elev-badge { @apply left-1; }
@@ -254,7 +277,7 @@ const SIGNATURE_PATHS = `
 
   @media (prefers-reduced-motion: reduce){
     .traverse-wrap{ @apply h-auto; }
-    .traverse-sticky{ @apply static h-auto overflow-visible; background: #E09A55; }
+    .traverse-sticky{ @apply static h-auto overflow-visible; background: #E09A55; opacity: 1; }
     .world,.sun,.sig-mark,.haze-band,.grain{ @apply hidden; }
     .hud-elev,.elev-badge,.seg-tag,.cue{ @apply hidden; }
     .stations-fallback{ @apply block; }
@@ -314,8 +337,8 @@ const SIGNATURE_PATHS = `
           </linearGradient>
 
           <linearGradient id="rimlight" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0"   stop-color="#FCE0A8" stop-opacity="0.9"/>
-            <stop offset="0.4" stop-color="#F0B267" stop-opacity="0.35"/>
+            <stop id="rimStop0" offset="0"   stop-color="#FCE0A8" stop-opacity="0.9"/>
+            <stop id="rimStop1" offset="0.4" stop-color="#F0B267" stop-opacity="0.35"/>
             <stop offset="1"   stop-color="#F0B267" stop-opacity="0"/>
           </linearGradient>
 
@@ -502,6 +525,7 @@ const SIGNATURE_PATHS = `
     const terrainSvg = document.querySelector('.terrain') as SVGSVGElement | null;
     const groundLine = document.getElementById('ground-line') as unknown as SVGPathElement | null;
     const stations = [...document.querySelectorAll<HTMLElement>('.station')];
+    const rimStop0 = document.getElementById('rimStop0') as SVGStopElement | null;
 
     if(!wrap || !stage || !world || !sun || !elev || !segName || !cue || !terrainSvg || !groundLine) return;
 
@@ -521,7 +545,9 @@ const SIGNATURE_PATHS = `
     world.style.setProperty('--world-w', `${WORLD_W}px`);
     world.style.setProperty('--world-h', `${WORLD_H}px`);
 
-    // Lookup Table (LUT)
+    // Lookup Table (LUT) — ground height by world x, sampled from the
+    // same path used for the fill/clip/caliche cap, so camera and
+    // geometry can never desync.
     const SAMPLES = 400;
     const total = groundLine.getTotalLength();
     const lut: { x: number; y: number }[] = [];
@@ -553,17 +579,57 @@ const SIGNATURE_PATHS = `
       return 'The Apron';
     }
 
-    function update(){
-      const scrollY = window.scrollY;
-      let p = maxScrollDist > 0 ? (scrollY - wrapTop) / maxScrollDist : 0;
-      p = Math.min(Math.max(p, 0), 1);
+    // Non-linear scroll -> camera-x remap. Control points are
+    // (scroll progress, world fraction): a long flat plateau, a fast
+    // short drop through the rim/face, then a long apron to the basin.
+    const REMAP: [number, number][] = [
+      [0,    0],
+      [0.45, 0.283],
+      [0.55, 0.375],
+      [1,    1],
+    ];
+    function remapProgress(p: number): number {
+      for (let i = 0; i < REMAP.length - 1; i++) {
+        const [pa, wa] = REMAP[i];
+        const [pb, wb] = REMAP[i + 1];
+        if (p >= pa && p <= pb) {
+          const t = (p - pa) / (pb - pa || 1);
+          return wa + (wb - wa) * t;
+        }
+      }
+      return p;
+    }
 
+    function hexLerp(a: string, b: string, t: number): string {
+      const pa = parseInt(a.slice(1), 16), pb = parseInt(b.slice(1), 16);
+      const ar = (pa >> 16) & 255, ag = (pa >> 8) & 255, ab = pa & 255;
+      const br = (pb >> 16) & 255, bg = (pb >> 8) & 255, bb = pb & 255;
+      const r = Math.round(ar + (br - ar) * t);
+      const g = Math.round(ag + (bg - ag) * t);
+      const bch = Math.round(ab + (bb - ab) * t);
+      return `#${((1 << 24) + (r << 16) + (g << 8) + bch).toString(16).slice(1)}`;
+    }
+
+    let targetP = 0;
+    let displayP = 0;
+    let displayFt = TOP_FT;
+    let prevCamX = 0;
+    let rafId = 0;
+    let readyMarked = false;
+
+    function computeTargetP(){
+      const scrollY = window.scrollY;
+      let raw = maxScrollDist > 0 ? (scrollY - wrapTop) / maxScrollDist : 0;
+      targetP = Math.min(Math.max(raw, 0), 1);
+    }
+
+    function render(p: number){
       const vw = window.innerWidth, vh = window.innerHeight;
-      const maxCamX = WORLD_W - vw;
-      const camX = p * maxCamX;
+      const maxCamX = Math.max(WORLD_W - vw, 0);
+      const camX = remapProgress(p) * maxCamX;
 
       const surfaceY = heightAt(camX + vw * 0.5);
-      let camY = Math.min(Math.max(surfaceY - vh * 0.62, 0), WORLD_H - vh);
+      let camY = Math.min(Math.max(surfaceY - vh * 0.62, 0), Math.max(WORLD_H - vh, 0));
 
       world!.style.setProperty('--cam-x', `${-camX}px`);
       world!.style.setProperty('--cam-y', `${-camY}px`);
@@ -571,9 +637,12 @@ const SIGNATURE_PATHS = `
       const skyP = Math.min(Math.max((camX - 1400) / (WORLD_W - 1400), 0), 1);
       stage!.style.setProperty('--sky-pos', `${skyP * 100}%`);
 
-      const ftP = Math.min(Math.max((surfaceY - TOP_Y) / (BOTTOM_Y - TOP_Y), 0), 1);
-      const ft = Math.round(TOP_FT - (TOP_FT - BOTTOM_FT) * ftP);
-      elev!.textContent = `${ft.toLocaleString()} FT`;
+      const ftTarget = Math.min(Math.max((surfaceY - TOP_Y) / (BOTTOM_Y - TOP_Y), 0), 1);
+      const targetFt = Math.round(TOP_FT - (TOP_FT - BOTTOM_FT) * ftTarget);
+      // odometer-style ease toward the target elevation rather than snapping
+      displayFt += (targetFt - displayFt) * 0.15;
+      if (Math.abs(targetFt - displayFt) < 0.5) displayFt = targetFt;
+      elev!.textContent = `${Math.round(displayFt).toLocaleString()} FT`;
 
       segName!.textContent = segmentName(camX + vw * 0.5);
       (cue as HTMLElement).style.opacity = p > 0.03 ? '0' : '.75';
@@ -583,7 +652,16 @@ const SIGNATURE_PATHS = `
       sun!.style.setProperty('--sun-x', `${66 - plateauP * 12}%`);
       sun!.style.setProperty('--sun-op', String(Math.max(1 - plateauP * 1.1, 0)));
 
+      // haze thickens and the rim-light warms as we move past the rim
+      const postRimP = Math.min(Math.max((camX - 2250) / Math.max(WORLD_W - 2250, 1), 0), 1);
+      stage!.style.setProperty('--haze-far-op', String(0.6 + postRimP * 0.2));
+      stage!.style.setProperty('--haze-near-op', String(0.45 + postRimP * 0.3));
+      if (rimStop0) rimStop0.setAttribute('stop-color', hexLerp('#FCE0A8', '#F2A65A', postRimP));
+
       if(blades) blades.setAttribute('transform', `rotate(${camX * 0.25} 20 28)`);
+
+      const dir = camX >= prevCamX ? 1 : -1;
+      prevCamX = camX;
 
       const centerWorldX = camX + vw * 0.5;
       const anchors = [450, 2210, 2730, 4530, 5330];
@@ -597,36 +675,41 @@ const SIGNATURE_PATHS = `
       if (p > 0.96) { activeIdx = anchors.length - 1; near = true; }
       else if (p < 0.02) { activeIdx = 0; near = true; }
 
-      stations.forEach((st, i) => st.classList.toggle('active', i === activeIdx && near));
+      stations.forEach((st, i) => {
+        st.style.setProperty('--enter-x', dir >= 0 ? '28px' : '-28px');
+        st.classList.toggle('active', i === activeIdx && near);
+      });
+
+      if (!readyMarked) {
+        readyMarked = true;
+        stage!.classList.add('is-ready');
+      }
     }
 
     measureLayout();
 
-    let ticking = false;
-    function onScroll(){
-      if(!ticking){
-        ticking = true;
-        requestAnimationFrame(() => {
-          ticking = false;
-          update();
-        });
-      }
+    // Continuous rAF loop (rather than a scroll-event listener) polls
+    // scrollY every frame and lerps the displayed progress toward it —
+    // this smooths bursty/erratic wheel & trackpad deltas instead of
+    // jumping straight to each event's value.
+    function loop(){
+      computeTargetP();
+      displayP += (targetP - displayP) * 0.2;
+      if (Math.abs(targetP - displayP) < 0.0005) displayP = targetP;
+      render(displayP);
+      rafId = requestAnimationFrame(loop);
     }
 
     function onResize(){
       measureLayout();
-      onScroll();
     }
 
-    window.addEventListener('scroll', onScroll, { passive: true });
     window.addEventListener('resize', onResize);
-
-    update();
-    requestAnimationFrame(() => requestAnimationFrame(update));
+    loop();
 
     cleanupTraverse = () => {
-      window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onResize);
+      cancelAnimationFrame(rafId);
     };
   }
 
