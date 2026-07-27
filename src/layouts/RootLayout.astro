@@ -2,6 +2,7 @@
 // src/layouts/RootLayout.astro
 import '../styles/global.css';
 import { Image } from 'astro:assets';
+import { ClientRouter } from 'astro:transitions';
 import signature from '../assets/signature.svg';
 import Header from '../components/Header.astro'; // IMPORT THE NEW HEADER HERE
 import Footer from '../components/Footer.astro'; // IMPORT THE NEW HEADER HERE
@@ -26,6 +27,7 @@ const pathSegments = currentPath.split('/').filter(segment => segment !== '');
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<title>{title}</title>
 		<meta name="description" content={description} />
+		<ClientRouter />
 	</head>
 	<body class="min-h-screen flex flex-col selection:bg-caprock/20 selection:text-caprock">
 		

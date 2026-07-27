@@ -21,6 +21,13 @@
 // attaches once and only where scroll-timeline is unavailable, and
 // active states + silhouettes refresh on astro:after-swap (the persisted
 // header no longer goes stale on navigation).
+//
+// Shared-element transition (2026-07-27): three elements carry
+// transition:name so a soft-navigation view transition from the lab
+// traverse page morphs directly into this header — the signature
+// watermark into the real signature, the descending page's name into
+// the landmark name, and the elevation readout into the benchmark
+// station plate.
 import { Image } from 'astro:assets';
 import signature from '../assets/signature.svg';
 
@@ -119,12 +126,13 @@ const groundPath = `${silhouette} V22 H0 Z`;
           alt="Austin Allison signature"
           class="signature-img w-auto object-contain hidden sm:block"
           loading="eager"
+          transition:name="site-signature"
         />
         <span class="flex flex-col items-start justify-end">
-          <span class="landmark-name font-serif font-medium tracking-tight whitespace-nowrap">
+          <span class="landmark-name font-serif font-medium tracking-tight whitespace-nowrap" transition:name="site-name">
             Austin Allison
           </span>
-          <span class="station-plate flex items-end gap-1.5">
+          <span class="station-plate flex items-end gap-1.5" transition:name="site-elevation">
             <svg class="station-mark" width="11" height="9" viewBox="0 0 11 9" aria-hidden="true">
               <path d="M5.5 0.8 L10.2 8.2 L0.8 8.2 Z" fill="none" stroke="currentColor" stroke-width="1" />
               <circle cx="5.5" cy="6" r="0.9" fill="currentColor" />
