@@ -76,7 +76,7 @@ const SIGNATURE_PATHS = `
   .traverse-wrap{ @apply relative h-[1000vh]; }
 
   .traverse-sticky{
-    @apply sticky top-0 overflow-hidden h-[100vh];
+    @apply sticky top-0 overflow-hidden h-[100dvh];
     background: linear-gradient(180deg,
       #5B5170 0%, #8A6473 15%, #BE7A5A 29%, #E09A55 41%, #EFBA66 50%,
       #C98A5F 59%, #7A4A38 72%, #3A2620 86%, #231712 100%);
@@ -371,8 +371,9 @@ const SIGNATURE_PATHS = `
           <clipPath id="land">
             <path d={FILL_D}/>
           </clipPath>
-          <path id="ground-line" d={GROUND_D}/>
+          
         </defs>
+        <path id="ground-line" d={GROUND_D}/>
         <path fill="url(#rock)" d={FILL_D}/>
         <g clip-path="url(#land)">
           <path fill="url(#haze)" d={FILL_D}/>
