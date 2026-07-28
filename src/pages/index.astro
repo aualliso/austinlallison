@@ -364,7 +364,7 @@ const SIGNATURE_PATHS = `
           <path fill="url(#haze)" d={FILL_D}/>
         </g>
         <path fill="none" stroke="url(#rimlight)" stroke-width="14" d={CALICHE_D} filter="url(#soften)" opacity="0.85"/>
-        <path fill="none" stroke="#db9b60" stroke-width="1" d={CALICHE_D}/>
+        <path fill="none" stroke="#db9b60" stroke-width="1=" d={CALICHE_D}/>
         <g clip-path="url(#land)">
           <path fill="none" stroke="rgba(237,230,214,0.14)" stroke-width="3" d="
             M2700,1420 C3300,1520 3900,1575 4500,1600"/>
@@ -725,7 +725,7 @@ const SIGNATURE_PATHS = `
       world!.style.setProperty('--cam-x', `${-camX}px`);
       world!.style.setProperty('--cam-y', `${-camY}px`);
 
-      const skyP = Math.min(Math.max((camX - 1700) / (WORLD_W - 1700), 0), 1);
+      const skyP = Math.min(Math.max((camX - 1700) / Math.max(maxCamX - 1700, 1), 0), 1);
       const blendedSky = skyBias + skyP * (1 - skyBias);
       stage!.style.setProperty('--sky-pos', `${blendedSky * 100}%`);
 
@@ -745,7 +745,7 @@ const SIGNATURE_PATHS = `
       sun!.style.setProperty('--sun-op', String(Math.max(1 - plateauP * 1.1, 0)));
 
       // haze thickens and the rim-light warms as we move past the rim
-      const postRimP = Math.min(Math.max((camX - 4424) / Math.max(WORLD_W - 4424, 1), 0), 1);
+      const postRimP = Math.min(Math.max((camX - 4424) / Math.max(maxCamX - 4424, 1), 0), 1);
       stage!.style.setProperty('--haze-far-op', String(0.6 + postRimP * 0.2));
       stage!.style.setProperty('--haze-near-op', String(0.45 + postRimP * 0.3));
       if (rimStop0) rimStop0.setAttribute('stop-color', hexLerp('#FCE0A8', '#F2A65A', postRimP));
