@@ -76,7 +76,7 @@ const SIGNATURE_PATHS = `
   .traverse-wrap{ @apply relative h-[1000vh]; }
 
   .traverse-sticky{
-    @apply sticky top-0 overflow-hidden h-[100dvh];
+    @apply sticky top-0 overflow-hidden h-[100vh];
     background: linear-gradient(180deg,
       #5B5170 0%, #8A6473 15%, #BE7A5A 29%, #E09A55 41%, #EFBA66 50%,
       #C98A5F 59%, #7A4A38 72%, #3A2620 86%, #231712 100%);
@@ -164,11 +164,26 @@ const SIGNATURE_PATHS = `
 
   .role-line{ @apply mt-1 font-serif text-[.8rem] uppercase [color:var(--dockum)]; }
   .intro-note{ @apply mt-5 text-[.9rem] leading-[1.5] [color:var(--iron)]; }
+
+  /* the intro's explicit fork: scroll to traverse, or skip straight
+     to /main. Both reuse .card-link's look; the traverse option is a
+     real <button> (it triggers a scroll, it doesn't navigate), so it
+     needs its default browser chrome reset — an <a> never carried
+     that baggage, which is why .card-link alone wasn't enough here. */
+  .intro-actions{ @apply flex flex-wrap items-center gap-x-6 gap-y-2 mt-5; }
+  .intro-actions .card-link{ @apply mt-0; }
+  button.card-link{
+    background: none;
+    border: none;
+    padding: 0;
+    font: inherit;
+    cursor: pointer;
+  }
   .intro-note b{ @apply whitespace-nowrap font-semibold [color:var(--dockum)]; }
   .intro-note a{ @apply no-underline [color:var(--dockum)];}
 
   .card-link{ @apply inline-flex items-center gap-1.5 mt-3.5 font-semibold text-[.82rem] tracking-[.03em] no-underline [font-family:var(--mono)] [color:var(--dockum)]; }
-  .card-link::after{ content:"\2192"; @apply inline-block transition-transform duration-300; }
+  .card-link::after{  @apply inline-block transition-transform duration-300; }
   .card-link:hover{ @apply underline; }
   .card-link:hover::after{ @apply translate-x-1 no-underline; }
   .card-links{ @apply flex flex-wrap gap-[22px] mt-3.5; }
@@ -371,9 +386,9 @@ const SIGNATURE_PATHS = `
           <clipPath id="land">
             <path d={FILL_D}/>
           </clipPath>
-          
+          <path id="ground-line" d={GROUND_D}/>
         </defs>
-        <path id="ground-line" d={GROUND_D}/>
+        
         <path fill="url(#rock)" d={FILL_D}/>
         <g clip-path="url(#land)">
           <path fill="url(#haze)" d={FILL_D}/>
@@ -381,18 +396,37 @@ const SIGNATURE_PATHS = `
         <path fill="none" stroke="url(#rimlight)" stroke-width="14" d={CALICHE_D} filter="url(#soften)" opacity="0.85"/>
         <path fill="none" stroke="#db9b60" stroke-width="1=" d={CALICHE_D}/>
         <g clip-path="url(#land)">
-          <path fill="none" stroke="rgba(237,230,214,0.14)" stroke-width="3" d="
-            M2700,1420 C3300,1520 3900,1575 4500,1600"/>
           <g stroke="rgba(0,0,0,0.1)" stroke-width="2">
             <path d="M0,1730 L5200,1780"/>
             <path d="M0,1860 L5200,1895"/>
           </g>
         </g>
       </svg>
+      <svg class="marker" style="left:320px; top:458px;" width="120" height="50" viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#1C140F">
+        <!-- Main roof, long low-pitched gable -->
+          <path d="M8,22 L60,14 L112,22 Z"/>
+        <!-- Main building body -->
+          <rect x="8" y="22" width="104" height="14"/>
+        <!-- Porch shed roof, wider than the building, overhanging the posts -->
+          <path d="M4,31 L60,28 L116,31 L116,34 L4,34 Z"/>
+        <!-- Porch + deck, solid block from roofline to ground -->
+          <rect x="4" y="34" width="112" height="8"/>
+        <!-- Chimneys: shorter one left, taller one right -->
+          <rect x="21" y="11" width="6" height="11"/>
+          <rect x="91" y="6" width="6" height="16"/>
+        </g>
+      </svg>
+      <svg class="marker" style="left:470px; top:482px;" width="30" height="18" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#1C140F"><ellipse cx="16" cy="8" rx="9" ry="4"/><rect x="4" y="6" width="5" height="5"/><rect x="9" y="11" width="1.6" height="7"/><rect x="13.5" y="11" width="1.6" height="7"/><rect x="19" y="11" width="1.6" height="7"/><rect x="23" y="11" width="1.6" height="7"/></g>
+      </svg>
+      <svg class="marker" style="left:495px; top:484px;" width="26" height="16" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#1C140F"><ellipse cx="16" cy="8" rx="9" ry="4"/><rect x="4" y="6" width="5" height="5"/><rect x="9" y="11" width="1.6" height="7"/><rect x="13.5" y="11" width="1.6" height="7"/><rect x="19" y="11" width="1.6" height="7"/><rect x="23" y="11" width="1.6" height="7"/></g>
+      </svg>
+      <svg class="marker" style="left:540px; top:485px;" width="24" height="15" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#1C140F"><ellipse cx="16" cy="8" rx="9" ry="4"/><rect x="4" y="6" width="5" height="5"/><rect x="9" y="11" width="1.6" height="7"/><rect x="13.5" y="11" width="1.6" height="7"/><rect x="19" y="11" width="1.6" height="7"/><rect x="23" y="11" width="1.6" height="7"/></g>
+      </svg>
 
-      <!-- Plateau: mesquite scrub (tableland-typical, low & scraggly)
-           clustered in groups of 3, plus the sole built landmark, the
-           windmill. Bases sit on the real ground line at that world x. -->
       <svg class="marker veg" style="left:110px; top:507px;" width="26" height="15"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:150px; top:505.5px; transform:scaleX(-1);" width="22" height="13"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:195px; top:503.5px;" width="19" height="11"><use href="#veg-mesquite"/></svg>
@@ -437,6 +471,13 @@ const SIGNATURE_PATHS = `
       <svg class="marker veg" style="left:900px; top:504.4px; transform:scaleX(-1);" width="20" height="12"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:945px; top:509.2px;" width="18" height="10"><use href="#veg-mesquite"/></svg>
 
+      <svg class="marker" style="left:1050px; top:483.8px;" width="100" height="56" viewBox="0 0 100 56" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#1C140F"><path d="M10,30 L40,11 L70,30 Z"/><rect x="14" y="30" width="52" height="24"/><rect x="78" y="18" width="14" height="36"/><ellipse cx="85" cy="18" rx="7" ry="5"/></g>
+      </svg>
+      <svg class="marker" style="left:1520px; top:542.6px;" width="30" height="18" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#1C140F"><ellipse cx="16" cy="8" rx="9" ry="4"/><rect x="4" y="6" width="5" height="5"/><rect x="9" y="11" width="1.6" height="7"/><rect x="13.5" y="11" width="1.6" height="7"/><rect x="19" y="11" width="1.6" height="7"/><rect x="23" y="11" width="1.6" height="7"/></g>
+      </svg>
+
       <svg class="marker veg" style="left:1660px; top:558.2px;" width="26" height="15"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:1700px; top:563.7px; transform:scaleX(-1);" width="22" height="13"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:1745px; top:570.4px;" width="18" height="10"><use href="#veg-mesquite"/></svg>
@@ -455,16 +496,34 @@ const SIGNATURE_PATHS = `
       <svg class="marker veg" style="left:3620px; top:1247.6px; transform:scaleX(-1);" width="13" height="17"><use href="#veg-cedar"/></svg>
       <svg class="marker veg" style="left:3680px; top:1237.3px;" width="12" height="15"><use href="#veg-cedar"/></svg>
 
-      <!-- Apron / basin approach: mesquite again, lower-plains growth,
-           plus a second windmill as the basin's built landmark. -->
+      <!-- Apron / basin approach: mesquite, lower-plains growth, plus
+           the restored house and cattle pair, and both windmills. -->
       <svg class="marker veg" style="left:4560px; top:1530.5px;" width="24" height="14"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:4615px; top:1532.5px; transform:scaleX(-1);" width="20" height="12"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:4670px; top:1534.5px;" width="17" height="10"><use href="#veg-mesquite"/></svg>
 
+      <svg class="marker" style="left:4700px; top:1524.5px; transform: rotate(6deg);" width="28" height="17" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#1C140F"><ellipse cx="16" cy="8" rx="9" ry="4"/><rect x="4" y="6" width="5" height="5"/><rect x="9" y="11" width="1.6" height="7"/><rect x="13.5" y="11" width="1.6" height="7"/><rect x="19" y="11" width="1.6" height="7"/><rect x="23" y="11" width="1.6" height="7"/></g>
+      </svg>
+      <svg class="marker" style="left:4740px; top:1524.1px; transform: rotate(6deg);" width="24" height="15" viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#1C140F"><ellipse cx="16" cy="8" rx="9" ry="4"/><rect x="4" y="6" width="5" height="5"/><rect x="9" y="11" width="1.6" height="7"/><rect x="13.5" y="11" width="1.6" height="7"/><rect x="19" y="11" width="1.6" height="7"/><rect x="23" y="11" width="1.6" height="7"/></g>
+      </svg>
+
       <svg class="marker veg" style="left:5010px; top:1520.6px;" width="22" height="13"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:5070px; top:1525px; transform:scaleX(-1);" width="19" height="11"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:5140px; top:1529.1px;" width="17" height="10"><use href="#veg-mesquite"/></svg>
-
+      <svg class="marker" style="left:4760px; top:1487.5px;" width="120" height="50" viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#1C140F">
+          <!-- Roof, now completely flush with the 88px wide walls -->
+          <path d="M16,26 L60,22 L104,26 Z"/>
+          <!-- Main building body -->
+          <rect x="16" y="26" width="88" height="24"/>
+          <!-- Three chimneys positioned along the roofline -->
+          <rect x="22" y="16" width="7" height="9"/>
+          <rect x="46" y="14" width="7" height="10"/>
+          <rect x="84" y="16" width="7" height="9"/>
+        </g>
+      </svg>
       <svg class="marker veg" style="left:5700px; top:1498.7px;" width="22" height="13"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:5750px; top:1506.2px; transform:scaleX(-1);" width="19" height="11"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:5800px; top:1508.2px;" width="16" height="9"><use href="#veg-mesquite"/></svg>
@@ -512,8 +571,14 @@ const SIGNATURE_PATHS = `
           <svg class="brand-bg" viewBox="0 0 66 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><use href="#iron-7la"></use></svg>
           <span class="plate-code"></span>
           <h1 transition:name="site-name">Austin Allison</h1>
-          <p class="role-line">Librarian · Historian · Photographer</p>
-           <p class="intro-note">Traverse begins 34.856°N, 101.587°W — Caprock Escarpment, Texas Panhandle. <a href="/main"><b>Enter&nbsp;Site</b></a></p>
+          <p class="intro-note">This scrollable cross-section is a model of the Llano Estacado near the 
+            original Charles Goodnight Ranch. You can enter the site by clicking the 
+            link below, or you can scroll to the bottom of the escarpment to see the full descent of the Llano.</p>
+          <p class="intro-note"></p>
+          <div class="intro-actions">
+            <button type="button" class="card-link" id="traverse-btn">Traverse the Escarpment&nbsp;↓</button>
+            <a class="card-link" href="/main">Enter Site Directly&nbsp;→</a>
+          </div>
         </div>
       </div>
       <div class="station" id="st1" style="left:1980px; top:436px;">
@@ -841,6 +906,20 @@ const SIGNATURE_PATHS = `
     }
 
     measureLayout();
+
+    // The intro card's "Traverse the Escarpment" button doesn't
+    // navigate anywhere — it just gets the visitor moving. A nudge of
+    // ~60% of one viewport height is enough to clear the p<0.02
+    // station-0 lock threshold above, so scroll-driven descent takes
+    // over immediately and the visitor can continue under their own
+    // wheel/trackpad from there. Programmatic scroll still fires real
+    // 'scroll' events, so the existing intro-drift-cancelling
+    // listener (below) picks it up with no extra wiring.
+    const traverseBtn = document.getElementById('traverse-btn');
+    traverseBtn?.addEventListener('click', () => {
+      const target = wrapTop + window.innerHeight * 0.6;
+      window.scrollTo({ top: target, behavior: prefersReduced ? 'auto' : 'smooth' });
+    });
 
     // Continuous rAF loop (rather than a scroll-event listener) polls
     // scrollY every frame and lerps the displayed progress toward it —

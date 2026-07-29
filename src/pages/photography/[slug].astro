@@ -60,22 +60,21 @@ import type { ImageMetadata } from 'astro';
 const BOARD_W = 3200;
 const BOARD_H = 2200;
 
-/* ── the register of series ──────────────────────────────────────
-   `built: false` keeps a series visible in the registry without
-   linking to a page that doesn't exist. Set it true when the gallery
-   below is filled in. The slug must match the href on the home page. */
-const SERIES = [
-  { slug: 'escarpments',                 number: 'I',   title: 'American Escarpments',        built: true  },
-  { slug: 'water_on_the_llano_estacado', number: 'II',  title: 'Water on the Llano Estacado', built: true  },
-  { slug: 'cotton_gins',                 number: 'III', title: 'Cotton Gins of Texas',        built: false },
-];
-
 export async function getStaticPaths() {
-  const galleries = [
+  /* getStaticPaths runs in its own isolated scope at build time — it
+     can't see consts declared elsewhere in the frontmatter, only its own
+     locals and imports. SERIES has to live in here to be the single
+     source of truth for slug/number/title; it's handed out to each page
+     via props (seriesRegistry) so the render body below can use it too. */
+  const SERIES = [
+    { slug: 'escarpments',                 number: 'I',   title: 'American Escarpments',        built: true  },
+    { slug: 'water_on_the_llano_estacado', number: 'II',  title: 'Water on the Llano Estacado', built: true  },
+    { slug: 'cotton_gins',                 number: 'III', title: 'Cotton Gins of Texas',        built: false },
+  ];
+
+  const galleryData = [
     {
       slug: 'escarpments',
-      number: 'I',
-      title: 'American Escarpments',
       region: 'Texas | Montana | Washington',
       essay:
         'From the rugged Permian red beds of the Southern Plains to the ancient volcanic chasms of the Pacific Northwest and the dramatic glacial coulees of Montana\u2019s Big Sky country, this photo set captures the breathtaking geological fractures that define the American West. These landscapes are a masterclass in geomorphology, visually documenting the diverse forces of water, wind, and ancient cataclysms that have sculpted the continent\u2019s vast interior tablelands. By showcasing the abrupt transitions where endless high prairies drop away into hidden canyons, valleys, and river floors, the collection highlights both the immense isolation and the unexpected productivity of the Western terrain. Ultimately, the images serve as a striking testament to human adaptation, where ancient natural fortresses and challenging migratory barriers have seamlessly transformed into modern landscapes of recreation and massive agricultural abundance.',
@@ -182,8 +181,6 @@ export async function getStaticPaths() {
     },
     {
       slug: 'water_on_the_llano_estacado',
-      number: 'II',
-      title: 'Water on the Llano Estacado',
       region: 'Texas | New Mexico',
       essay: '',
       centerX: 1250,
@@ -226,13 +223,43 @@ export async function getStaticPaths() {
     },
   ];
 
+  /* SERIES is the single source of truth for slug/number/title. A gallery
+     here must have a matching, built SERIES entry — otherwise a renamed
+     or typo'd slug (e.g. the old cotton_gins_of_texas / cotton_gins split)
+     would silently disagree with the registry and the home page instead
+     of failing the build. */
+  const galleries = galleryData.map((g) => {
+    const entry = SERIES.find((s) => s.slug === g.slug);
+    if (!entry) {
+      throw new Error(
+        `[photography] gallery "${g.slug}" has no matching SERIES entry — add one in [slug].astro so its number/title/registry link are defined.`,
+      );
+    }
+    if (!entry.built) {
+      throw new Error(
+        `[photography] gallery "${g.slug}" is defined here but SERIES still marks it built: false — flip it to true in [slug].astro.`,
+      );
+    }
+    return { ...g, number: entry.number, title: entry.title };
+  });
+
+  // catch the opposite mismatch: a SERIES entry marked built with no
+  // matching gallery would render a live registry link straight to a 404.
+  for (const s of SERIES) {
+    if (s.built && !galleries.some((g) => g.slug === s.slug)) {
+      throw new Error(
+        `[photography] SERIES marks "${s.slug}" as built, but no gallery is defined for it in [slug].astro.`,
+      );
+    }
+  }
+
   return galleries.map((gallery) => ({
     params: { slug: gallery.slug },
-    props: { gallery },
+    props: { gallery, seriesRegistry: SERIES },
   }));
 }
 
-const { gallery } = Astro.props;
+const { gallery, seriesRegistry } = Astro.props;
 
 /* ── image pipeline ──────────────────────────────────────────────
    Three derivatives per plate. The board version is sized for the
@@ -311,6 +338,19 @@ const EAGER = new Set(
   [...plates].sort((a, b) => a.d - b.d).slice(0, 4).map((p) => p.index),
 );
 
+/* A gallery with zero plates would otherwise reach the bounds `reduce`
+   below still seeded at Infinity/-Infinity, poisoning every pan/zoom/fit
+   calculation. The client script happens to bail out before touching
+   those values (see `if (!total) return;`), but that just means the page
+   ships as a full-screen, totally inert view — no board, no working
+   buttons, no HUD toggle, and no error telling you why. Fail the build
+   instead. */
+if (plates.length === 0) {
+  throw new Error(
+    `[photography/${gallery.slug}] has zero plates — the light table has nothing to bound, fit, or open. Add at least one plate before publishing this route.`,
+  );
+}
+
 /* content bounds, +22px for the caption row under each print */
 const CAPTION_H = 22;
 const bounds = plates.reduce(
@@ -338,7 +378,7 @@ if (import.meta.env.DEV) {
   }
 }
 
-const registry = SERIES;
+const registry = seriesRegistry;
 ---
 
 <Layout title={`${gallery.title} — Austin Allison`} hideNav={true} hideFoot={true}>
