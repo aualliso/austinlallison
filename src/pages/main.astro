@@ -69,12 +69,21 @@ const SIGNATURE_PATHS = `
 
 const SIGNATURE_GOLD_SVG = `
   <defs>
-    <linearGradient id="cover-signature-gold" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#e8cf8a" />
-      <stop offset="35%" stop-color="#c9a227" />
-      <stop offset="65%" stop-color="#8b6a1f" />
-      <stop offset="100%" stop-color="#6b4f16" />
+    <!-- Simple, mostly-solid gold with a very slight ramp -->
+    <linearGradient id="cover-signature-gold" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0%"   stop-color="#c9a227" />
+      <stop offset="50%"  stop-color="#b08d24" />
+      <stop offset="100%" stop-color="#8b6a1f" />
     </linearGradient>
+ 
+    <!-- Bevel filter: light highlight up-left + soft dark shadow down-right,
+         simulating gold foil pressed into leather -->
+    <filter id="cover-signature-emboss" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="-0.6" dy="-0.6" stdDeviation="0.5"
+                    flood-color="#fff6d8" flood-opacity="0.55" />
+      <feDropShadow dx="0.8" dy="0.8" stdDeviation="0.6"
+                    flood-color="#2a1d05" flood-opacity="0.45" />
+    </filter>
   </defs>
   ${SIGNATURE_PATHS.replace(/currentColor/g, 'url(#cover-signature-gold)')}
 `;
@@ -140,10 +149,12 @@ const SIGNATURE_GOLD_SVG = `
           <div class="rake" aria-hidden="true"></div>
           <div class="leaf-inner leaf-inner--split">
             <div class="leaf-text">
+              <h1 class="title title--sm">
+                Series I - III
+              </h1>
               <h2 class="heading heading--sm">Visual Monographs of the American West</h2>
               <p class="body">
-                Escarpments, water on the Llano Estacado, and the cotton gins of the Texas
-                Panhandle.
+                This photography series captures various landscapes of Texas and the American West.
               </p>
               <a href="/photography" class="cta">Galleries</a>
             </div>
@@ -161,6 +172,9 @@ const SIGNATURE_GOLD_SVG = `
         <!-- ── 03 — Current Work ─────────────────────────── -->
         <article class="leaf" data-leaf="2" data-code={leaves[2].code} role="tabpanel" id="leaf-2" aria-labelledby="tab-2" inert>
           <div class="leaf-inner">
+            <h1 class="title title--sm">
+                Current Work
+            </h1>
             <h2 class="heading heading--sm">Open-source optical character recognition software for newspaper digitization</h2>
             <p class="quote">
               Using open-source optical character recognition software to enhance
@@ -174,6 +188,9 @@ const SIGNATURE_GOLD_SVG = `
         <article class="leaf" data-leaf="3" data-code={leaves[3].code} role="tabpanel" id="leaf-3" aria-labelledby="tab-3" inert>
           <div class="leaf-inner leaf-inner--split">
             <div class="leaf-text">
+              <h1 class="title title--sm">
+                Featured Publication
+              </h1>
               <h2 class="heading heading--sm">
                 'Opportunity Knocking': The Vaughan Land Company and Early Bailey County
                 Development
@@ -270,7 +287,7 @@ const SIGNATURE_GOLD_SVG = `
     position: relative;
     background: var(--color-canvas, #FBFBF9);
     color: var(--color-iron, #1A1919);
-    padding: clamp(0.5rem, 4vw, 1rem) 0 clamp(1.5rem, 5vw, 2rem);
+    padding: clamp(1rem, 2vw, 1.75rem) 0 clamp(2.5rem, 5vw, 4rem);
   }
   .register::before {
     content: '';
@@ -329,6 +346,21 @@ const SIGNATURE_GOLD_SVG = `
   .reg-arrow:focus-visible {
     outline: 2px solid var(--color-caprock, #B85A38);
     outline-offset: 2px;
+  }
+
+  @keyframes arrow-pulse {
+    0%, 100% {
+      transform: scale(1);
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-caprock, #B85A38) 45%, transparent);
+    }
+    50% {
+      transform: scale(1.12);
+      box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-caprock, #B85A38) 0%, transparent);
+    }
+  }
+  .reg-arrow.is-pulsing {
+    border-color: var(--color-caprock, #B85A38);
+    animation: arrow-pulse 1s ease-in-out 3;
   }
 
   .reg-counter {
@@ -605,10 +637,17 @@ const SIGNATURE_GOLD_SVG = `
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--color-caprock, #B85A38);
+    animation: cue-breathe 2.6s ease-in-out infinite;
+  }
+  @keyframes cue-breathe {
+    0%, 100% { opacity: 0.72; }
+    50% { opacity: 1; }
   }
   .cover:hover .cover-open-cue,
   .cover:focus-visible .cover-open-cue {
     color: color-mix(in srgb, var(--color-caprock, #B85A38) 80%, var(--color-caliche, #E8E1D1));
+    animation-play-state: paused;
+    opacity: 1;
   }
   .cover:focus-visible {
     outline: 2px solid var(--color-caprock, #B85A38);
@@ -621,7 +660,7 @@ const SIGNATURE_GOLD_SVG = `
     overflow: hidden;
     perspective: 1600px;
 
-    --ledger-rule: color-mix(in srgb, var(--color-iron, #1A1919) 22%, transparent);
+    --ledger-rule: color-mix(in srgb, var(--color-iron, #1A1919) 12%, transparent);
     --ledger-accent: color-mix(in srgb, var(--color-caprock, #B85A38) 45%, transparent);
     background-image:
       repeating-linear-gradient(
@@ -774,6 +813,20 @@ const SIGNATURE_GOLD_SVG = `
   }
   .benchmark { display: block; flex-shrink: 0; }
 
+  .title {
+    font-family: theme('fontFamily.serif', Georgia, serif);
+    font-weight: 500;
+    font-size: clamp(1.6rem, 3.2vw, 2.5rem);
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    color: var(--color-sage, #5A6B5A);
+    margin: 0 0 0.85rem;
+    max-width: 42rem;
+    border-bottom: #5A6B5A 1px solid;
+  }
+
+  .title--sm { font-size: clamp(1.3rem, 2.2vw, 1.75rem); }
+
   .heading {
     font-family: theme('fontFamily.serif', Georgia, serif);
     font-weight: 500;
@@ -784,6 +837,7 @@ const SIGNATURE_GOLD_SVG = `
     margin: 0 0 0.85rem;
     max-width: 42rem;
   }
+
   .heading--sm { font-size: clamp(1.3rem, 2.2vw, 1.75rem); }
   .heading--visually-hidden {
     position: absolute;
@@ -808,6 +862,7 @@ const SIGNATURE_GOLD_SVG = `
     max-width: 38rem;
     margin: 0 0 1.35rem;
   }
+
 
   .quote {
     font-family: theme('fontFamily.serif', Georgia, serif);
@@ -838,7 +893,7 @@ const SIGNATURE_GOLD_SVG = `
     position: relative;
     padding-bottom: 2px;
     width: fit-content;
-    color: var(--color-sage, #5A6B5A);
+    color: var(--color-caprock, #5A6B5A);
   }
   .cta::after {
     content: '\2192';
@@ -868,18 +923,17 @@ const SIGNATURE_GOLD_SVG = `
     overflow: hidden;
     aspect-ratio: 4 / 3;
   }
-  .photo { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .photo { display: block; width: 100%; height: 86%; object-fit: cover; }
   .photo-caption {
     position: absolute;
     left: 0; right: 0; bottom: 0;
     margin: 0;
-    padding: 0.6rem 0.85rem;
+    padding: 0.8rem 0.95rem;
     font-family: theme('fontFamily.mono', ui-monospace, Menlo, monospace);
     font-size: 0.6875rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--color-caliche, #E8E1D1);
-    background: linear-gradient(to top, rgba(26, 25, 25, 0.65), transparent);
   }
   .photo-frame--gray .photo--gray {
     filter: grayscale(1);
@@ -914,6 +968,29 @@ const SIGNATURE_GOLD_SVG = `
     );
   }
   .leaf--rake:hover .rake { opacity: 1; }
+
+  @media (min-width: 800px) {
+  .register {
+    padding-top: 0.5rem; /* was clamp(1rem, 2vw, 1.75rem) — pulls the ledger up toward the header */
+  }
+
+  .leaves {
+    padding-bottom: 0.5rem; /* was clamp(0.75rem, 2vw, 1.25rem) */
+  }
+
+  .leaves::before,
+  .leaves::after {
+    bottom: 0.5rem; /* keep in sync with .leaves padding-bottom above */
+  }
+
+  .spine {
+    bottom: 0.5rem; /* keep in sync too, so the spine still lines up with the book's bottom edge */
+  }
+    .register-controls {
+    margin-top: 0.75rem; /* was clamp(1.5rem, 3vw, 2.25rem) — closes the gap to the controls */
+    padding-top: 0.75rem; /* was clamp(1rem, 2.5vw, 1.5rem) */
+  }
+}
 
   @media (max-width: 680px) {
     .spine { width: 1.05rem; }
@@ -967,6 +1044,8 @@ const SIGNATURE_GOLD_SVG = `
       transition: none;
     }
     .leaf.is-nudging { animation: none; }
+    .cover-open-cue { animation: none; opacity: 1; }
+    .reg-arrow.is-pulsing { animation: none; }
   }
 </style>
 
@@ -1051,17 +1130,23 @@ const SIGNATURE_GOLD_SVG = `
       current = index;
     }
 
-    prevBtn.addEventListener('click', () => goTo(current - 1));
-    nextBtn.addEventListener('click', () => goTo(current + 1));
+    function cancelArrowPulse() {
+      window.clearTimeout(arrowPulseTimer);
+      nextBtn?.classList.remove('is-pulsing');
+    }
+
+    prevBtn.addEventListener('click', () => { cancelArrowPulse(); goTo(current - 1); });
+    nextBtn.addEventListener('click', () => { cancelArrowPulse(); goTo(current + 1); });
 
     tabs.forEach((tab) => {
-      tab.addEventListener('click', () => goTo(Number(tab.dataset.index)));
+      tab.addEventListener('click', () => { cancelArrowPulse(); goTo(Number(tab.dataset.index)); });
     });
 
     tablist?.addEventListener('keydown', (event: KeyboardEvent) => {
       const key = event.key;
       if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(key)) return;
       event.preventDefault();
+      cancelArrowPulse();
       if (key === 'ArrowLeft') goTo(current - 1, true);
       else if (key === 'ArrowRight') goTo(current + 1, true);
       else if (key === 'Home') goTo(0, true);
@@ -1070,8 +1155,8 @@ const SIGNATURE_GOLD_SVG = `
 
     register.addEventListener('keydown', (event: KeyboardEvent) => {
       if (event.target && tablist?.contains(event.target as Node)) return;
-      if (event.key === 'ArrowLeft') { event.preventDefault(); goTo(current - 1); }
-      else if (event.key === 'ArrowRight') { event.preventDefault(); goTo(current + 1); }
+      if (event.key === 'ArrowLeft') { event.preventDefault(); cancelArrowPulse(); goTo(current - 1); }
+      else if (event.key === 'ArrowRight') { event.preventDefault(); cancelArrowPulse(); goTo(current + 1); }
     });
 
     let touchStartX = 0;
@@ -1085,6 +1170,7 @@ const SIGNATURE_GOLD_SVG = `
       const dx = event.changedTouches[0].clientX - touchStartX;
       const dy = event.changedTouches[0].clientY - touchStartY;
       if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+        cancelArrowPulse();
         if (dx < 0) goTo(current + 1); else goTo(current - 1);
       }
     }, { passive: true });
@@ -1123,6 +1209,25 @@ const SIGNATURE_GOLD_SVG = `
       try { sessionStorage.setItem('register-swipe-hint-seen', '1'); } catch {}
     }
 
+    let arrowPulseTimer: number | undefined;
+
+    function maybeShowArrowPulse() {
+      const isDesktop = window.matchMedia('(min-width: 800px)').matches;
+      const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!isDesktop || reduced) return;
+
+      let seen = false;
+      try { seen = sessionStorage.getItem('register-arrow-pulse-seen') === '1'; } catch {}
+      if (seen) return;
+
+      arrowPulseTimer = window.setTimeout(() => {
+        nextBtn?.classList.add('is-pulsing');
+        window.setTimeout(() => nextBtn?.classList.remove('is-pulsing'), 3000);
+      }, 2000);
+
+      try { sessionStorage.setItem('register-arrow-pulse-seen', '1'); } catch {}
+    }
+
     function initCover() {
       if (!cover) return;
       cover.addEventListener('click', () => {
@@ -1131,6 +1236,7 @@ const SIGNATURE_GOLD_SVG = `
         controls?.removeAttribute('inert');
         pages?.removeAttribute('inert');
         maybeShowSwipeHint();
+        maybeShowArrowPulse();
         const activeHeading = leafEls[current]?.querySelector<HTMLElement>('h1, h2');
         if (activeHeading) {
           if (!activeHeading.hasAttribute('tabindex')) {

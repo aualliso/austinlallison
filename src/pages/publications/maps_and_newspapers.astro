@@ -3,9 +3,9 @@
 import RootLayout from '../../layouts/RootLayout.astro';
 ---
 
-<RootLayout title="Maps and Newspapers in the Southwest Collection  | Austin Allison">
-  <div class="max-w-7xl mx-auto py-6 text-iron">
-    
+<RootLayout title="Maps and Newspapers in the Southwest Collection | Austin Allison">
+  <div class="max-w-4xl mx-auto py-6 text-iron">
+
     <!-- Breadcrumb Anchor Navigation -->
     <div class="mb-8">
       <a href="/publications" class="text-xs font-mono text-sage hover:text-caprock transition-colors lowercase tracking-wide">
@@ -13,55 +13,85 @@ import RootLayout from '../../layouts/RootLayout.astro';
       </a>
     </div>
 
-    <!-- The Split-Pane Layout Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-      
-      <!-- LEFT FLANK: Citation Details & Abstract (Spans 5 Columns) -->
-      <div class="lg:col-span-5 space-y-6">
-        <div class="space-y-2">
-          <span class="text-xs font-mono text-caprock font-semibold uppercase tracking-wider block">Peer-Reviewed Article</span>
-          <h1 class="font-serif text-2xl md:text-3xl font-medium tracking-tight text-iron leading-tight">
-            Maps and Newspapers in the Southwest Collection 
-          </h1>
-          <p class="text-xs font-mono text-iron/60 pt-1">
-            Published in <span class="italic font-sans text-iron font-medium">Archivation Exploration</span> &bull; Vol. 3, no. 2 (2018).
-          </p>
-        </div>
-
-        <hr class="border-haze" />
-
-        <div class="space-y-3">
-          <h2 class="text-xs font-mono text-sage uppercase tracking-widest font-bold">Abstract</h2>
-          <p class="text-sm text-iron/80 leading-relaxed font-sans">
-            This document highlights unique archival materials held in the Southwest Collection, emphasizing their historical significance and the specialized preservation efforts used to maintain them. 
-          </p>
-        </div>
-
-        <div class="pt-4 flex flex-wrap gap-3">
-          <a href="/documents/maps_and_newspapers.pdf" download class="px-4 py-2 bg-iron text-canvas text-xs font-mono rounded-sm hover:bg-caprock transition-colors">
-            download print-ready version
-          </a>
-        </div>
+    <!-- Masthead -->
+    <header class="space-y-6 mb-12">
+      <div class="space-y-2">
+        <span class="text-sm font-mono text-caprock font-semibold uppercase tracking-wider block">Peer-Reviewed Article</span>
+        <h1 class="font-serif text-2xl md:text-4xl font-medium tracking-tight text-iron leading-tight">
+          Maps and Newspapers in the Southwest Collection
+        </h1>
+        <p class="text-xs font-mono text-iron/60 pt-1">
+          Published in <span class="italic font-sans text-iron font-medium">Archivation Exploration</span> &bull; Vol. 3, no. 2 (2018)
+        </p>
       </div>
 
-      <!-- RIGHT FLANK: High-Fidelity Native Document View (Spans 7 Columns) -->
-      <div class="lg:col-span-7 w-full">
-        <div class="border border-haze rounded-sm p-2 bg-canvas shadow-sm">
-          <!-- Inline frame displaying the hosted file directly with top fit constraints -->
-          <iframe 
-            src="/documents/maps_and_newspapers.pdf#view=FitH" 
-            class="w-full h-[650px] rounded-xs" 
-            title="Maps and Newspapers in the Southwest Collection  PDF Viewer"
-            >
-            <p class="text-sm p-4 font-mono">Your browser does not support inline frame displays. <a href="/documents/maps_and_newspapers.pdf" class="text-caprock underline">Click here to view file directly.</a></p>
-          </iframe>
-        </div>
-        <div class="mt-2 text-center">
-          <span class="text-[10px] font-mono text-iron/40 lowercase">scroll inside panel to read full pagination or use text selection controls</span>
-        </div>
+      <hr class="border-haze" />
+
+      <div class="space-y-3 max-w-3xl">
+        <h2 class="text-xs font-mono text-sage uppercase tracking-widest font-bold">Abstract</h2>
+        <p class="text-sm text-iron/80 leading-relaxed font-sans">
+          This document highlights unique archival materials held in the Southwest Collection, emphasizing their historical significance and the specialized preservation efforts used to maintain them.
+        </p>
       </div>
 
-    </div>
+      <div class="pt-2 flex flex-wrap gap-3">
+        <a href="/documents/maps_and_newspapers.pdf" download class="px-4 py-2 bg-iron text-canvas text-xs font-mono rounded-sm hover:bg-caprock transition-colors">
+          download print-ready version
+        </a>
+      </div>
+    </header>
+
+    <!-- Article Body -->
+    <article class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6">
+
+      <section class="space-y-6">
+        <h2 class="font-serif text-xl font-semibold text-iron">Land Grant Map of Texas (1836)</h2>
+
+        <p>
+          This 1836 map of Texas shows the territory during its waning moments as part of Mexico. Most notable about this map is its illustrative representation of the various empresario grants that were organized to lure settlers to Texas from the United States. Although not entirely accurate, the map does offer a historically significant view of Texas during its most historic period. Used in conjunction with other maps in the collection, researchers can utilize this 1836 map to study how Texas was charted by cartographers as far back as the 17th century.
+        </p>
+
+        <p>
+          Our map collection is continuously expanding and has accumulated many maps that are either one-of-a-kind or exceptionally rare. The Southwest Collection contains a variety of cartographic resources that can be used by patrons to visually understand the topics that they are researching.
+        </p>
+
+        <figure class="not-prose">
+          <img src="/images/maps_and_newspapers/land_grant_map_1836.jpg" alt="Land Grant Map of Texas (1836)" class="w-full rounded-sm border border-haze shadow-sm" />
+          <figcaption class="text-xs font-mono text-iron/50 mt-2 italic">
+            Land Grant Map of Texas (1836)
+          </figcaption>
+        </figure>
+      </section>
+
+      <hr class="border-haze !my-10" />
+
+      <section class="space-y-6">
+        <h2 class="font-serif text-xl font-semibold text-iron">German-Texas Civil War Newspaper (1864)</h2>
+
+        <p>
+          During the height of the Civil War, supply lines for many Confederate states, including Texas, were cut off or greatly reduced. This 1864 issue of <em>Der Texas Democrat</em> is unique for being printed on a segment of wallpaper, undoubtedly due to the lack of a reliable source of paper. While not the only newspaper to resort to such techniques, this one offers a unique perspective on history by exemplifying the struggles people underwent during times of hardship.
+        </p>
+
+        <p>
+          Beginning with microfilm production in the 1950s, we have been at the forefront of reformatting newspapers for long-term preservation. Advanced digital preservation now allows geographically remote patrons to access digital versions of these newspapers online with the added benefit of reducing the potential for damage to the physical copies. This newspaper, along with more than 175,000 issues of other Texas and West Texas volumes, is available online through the Southwest Collection&rsquo;s digital archive.
+        </p>
+
+        <figure class="not-prose">
+          <img src="/images/maps_and_newspapers/der_texas.jpg" alt="German-Texas Civil War Newspaper (1864)" class="w-full rounded-sm border border-haze shadow-sm" />
+          <figcaption class="text-xs font-mono text-iron/50 mt-2 italic">
+            German-Texas Civil War Newspaper (1864)
+          </figcaption>
+        </figure>
+
+        <p class="text-sm font-sans italic text-iron/60 text-right">
+          Austin Allison<br />
+          Cataloging
+        </p>
+      </section>
+
+    
+
+    </article>
 
   </div>
 </RootLayout>
