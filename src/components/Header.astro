@@ -687,6 +687,18 @@ const groundPath = `${silhouette} V22 H0 Z`;
   const supportsScrollTimeline = CSS.supports('animation-timeline: scroll()');
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Belt-and-suspenders: the scroll-driven CSS below is also wrapped in
+  // @supports (animation-timeline: scroll()), but some build-time CSS
+  // minifiers (Lightning CSS among them, as of some versions) have been
+  // known to mis-handle @supports queries for this specific, newer syntax
+  // — dropping a block the browser actually supports. Since JS already
+  // has the correct answer via CSS.supports(), it also sets a plain class
+  // here so the scroll-driven rules don't depend on the CSS engine
+  // re-deriving the same answer from a query a minifier might mangle.
+  if (header && supportsScrollTimeline && !prefersReducedMotion) {
+    header.classList.add('scroll-driven');
+  }
+
   if (header && (!supportsScrollTimeline || prefersReducedMotion)) {
     let ticking = false;
     const updateHeaderState = () => {
@@ -726,6 +738,16 @@ const groundPath = `${silhouette} V22 H0 Z`;
 </script>
 
 <style is:global>
+  /* Registered so this custom property actually interpolates smoothly
+     under a scroll-timeline animation instead of snapping partway through
+     (unregistered custom properties are treated as discrete values). Only
+     needed by the sun-rays scroll-fade below. */
+  @property --sun-rays-scroll-fade {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 1;
+  }
+
   /* ======================================================================== */
   /* BASELINE — the wide-open state. Base values are DAY; the other phases    */
   /* override below. `--evening-tint` is what scrolling mixes into the sky.   */
@@ -743,6 +765,7 @@ const groundPath = `${silhouette} V22 H0 Z`;
     --cloud-opacity: 0.15; /* pre-fetch fallback; JS overwrites from real cloud cover */
     --cloud-duration: 100s;
     --cloud-dir: 1;
+    --sun-rays-scroll-fade: 1; /* only driven down by scroll on .scroll-driven; 1 = no reduction */
   }
 
   #sky-base {
@@ -844,13 +867,18 @@ const groundPath = `${silhouette} V22 H0 Z`;
      horizon — real elevation, same value that drives --sun-elev. Centered
      on the sun by resolving 50%/50% against #sun-wrap's own shrink-to-fit
      12x12 box (its position:absolute already makes it the containing
-     block for this child). */
+     block for this child). Final opacity is a PRODUCT of two independent
+     signals: --grazing-light (real sun elevation) and
+     --sun-rays-scroll-fade (scroll depth — see the scroll-driven-animations
+     section below). Without this, the rays were only wired to elevation,
+     so scrolling far enough could fade the sun disc itself out while
+     leaving the rays floating in place with nothing under them. */
   #sun-rays {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     color: #E8A85C;
-    opacity: var(--grazing-light, 0);
+    opacity: calc(var(--grazing-light, 0) * var(--sun-rays-scroll-fade, 1));
     transition: opacity 1.5s linear;
   }
 
@@ -1020,6 +1048,13 @@ const groundPath = `${silhouette} V22 H0 Z`;
     color: #C1AD8A;
   }
 
+  .station-meta {
+    font-size: 8.5px;
+    letter-spacing: 0.18em;
+    line-height: 1;
+    padding-bottom: 1px;
+    color: rgba(26, 25, 25, 0.45);
+  }
 
   /* --- Mile markers ------------------------------------------------------- */
   .marker-label {
@@ -1181,104 +1216,132 @@ const groundPath = `${silhouette} V22 H0 Z`;
 
   /* ======================================================================== */
   /* SCROLL-DRIVEN ANIMATIONS (Chrome / Edge)                                 */
+  /* Gated by .scroll-driven, a class JS adds only when CSS.supports()        */
+  /* confirms animation-timeline: scroll() really works — not by @supports    */
+  /* here, since that at-rule was found to silently drop in production       */
+  /* (Lightning CSS, via the Tailwind v4 Vite plugin, mishandling this        */
+  /* specific newer syntax during the build) even on browsers that do        */
+  /* support the feature. JS already has the right answer; this just stops   */
+  /* depending on the CSS build tool re-deriving it correctly.                */
   /* ======================================================================== */
-  @supports (animation-timeline: scroll()) {
 
-    /* Disable fallback transitions so the two systems don't fight.
-       Entrance animations and the `d` morph live on other elements/props. */
-    #horizon-header, #sky-frost, #sky-dusk, #horizon-sun, #the-horizon,
-    .signature-img, .landmark-name, .station-meta {
-      transition: none;
-    }
+  /* Disable fallback transitions so the two systems don't fight.
+     Entrance animations and the `d` morph live on other elements/props. */
+  #horizon-header.scroll-driven,
+  #horizon-header.scroll-driven #sky-frost,
+  #horizon-header.scroll-driven #sky-dusk,
+  #horizon-header.scroll-driven #horizon-sun,
+  #horizon-header.scroll-driven #sun-rays,
+  #horizon-header.scroll-driven #the-horizon,
+  #horizon-header.scroll-driven .signature-img,
+  #horizon-header.scroll-driven .landmark-name,
+  #horizon-header.scroll-driven .station-meta {
+    transition: none;
+  }
 
-    /* 1. The sky lowers */
+  /* 1. The sky lowers */
+  @keyframes lower-sky {
+    to { padding-top: 0.8rem; }
+  }
+  @media (min-width: 768px) {
     @keyframes lower-sky {
-      to { padding-top: 0.8rem; }
+      to { padding-top: 1rem; }
     }
-    @media (min-width: 768px) {
-      @keyframes lower-sky {
-        to { padding-top: 1rem; }
-      }
-    }
-    #horizon-header {
-      animation: lower-sky linear both;
-      animation-timeline: scroll(root block);
-      animation-range: 0px 120px;
-    }
+  }
+  #horizon-header.scroll-driven {
+    animation: lower-sky linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0px 120px;
+  }
 
-    /* 2. The frost settles for pinned legibility (opacity + blur only —
-       both interpolate; the sky gradient itself never animates) */
-    @keyframes frost-sky {
-      to {
-        opacity: 1;
-        backdrop-filter: blur(10px);
-      }
+  /* 2. The frost settles for pinned legibility (opacity + blur only —
+     both interpolate; the sky gradient itself never animates) */
+  @keyframes frost-sky {
+    to {
+      opacity: 1;
+      backdrop-filter: blur(10px);
     }
-    #sky-frost {
-      animation: frost-sky linear both;
-      animation-timeline: scroll(root block);
-      animation-range: 0px 120px;
-    }
+  }
+  #horizon-header.scroll-driven #sky-frost {
+    animation: frost-sky linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0px 120px;
+  }
 
-    /* 3. Evening rises slowly — a full-page-depth effect, not a threshold */
-    @keyframes dusk-rise {
-      to { opacity: 1; }
-    }
-    #sky-dusk {
-      animation: dusk-rise linear both;
-      animation-timeline: scroll(root block);
-      animation-range: 0px 600px;
-    }
+  /* 3. Evening rises slowly — a full-page-depth effect, not a threshold */
+  @keyframes dusk-rise {
+    to { opacity: 1; }
+  }
+  #horizon-header.scroll-driven #sky-dusk {
+    animation: dusk-rise linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0px 600px;
+  }
 
-    /* 4. The sun sets (from wherever the hour placed it) */
-    @keyframes sun-set {
-      70%  { opacity: 0.9; }
-      100% { transform: translateY(500%); opacity: 0; }
-    }
-    #horizon-sun {
-      animation: sun-set linear both;
-      animation-timeline: scroll(root block);
-      animation-range: 0px 400px;
-    }
+  /* 4. The sun sets (from wherever the hour placed it) */
+  @keyframes sun-set {
+    70%  { opacity: 0.9; }
+    100% { transform: translateY(500%); opacity: 0; }
+  }
+  #horizon-header.scroll-driven #horizon-sun {
+    animation: sun-set linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0px 400px;
+  }
 
-    /* 5. The horizon deepens against the evening (composes with the
-       phase baseline — night starts darker and still deepens to iron) */
-    @keyframes deepen-horizon {
-      to { color: var(--color-iron, #1A1919); }
-    }
-    #the-horizon {
-      animation: deepen-horizon linear both;
-      animation-timeline: scroll(root block);
-      animation-range: 0px 300px;
-    }
+  /* 4b. The grazing-light rays fade out on the SAME range as the sun disc
+     above, so they never outlive it. This animates a registered custom
+     property (not opacity directly), which #sun-rays' own opacity then
+     multiplies against --grazing-light — composing "is the sun actually
+     low right now" with "has scroll carried it below the horizon" rather
+     than letting either one alone decide visibility. */
+  @keyframes sun-rays-fade {
+    to { --sun-rays-scroll-fade: 0; }
+  }
+  #horizon-header.scroll-driven #sun-rays {
+    animation: sun-rays-fade linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0px 400px;
+  }
 
-    /* 6. The landmark recedes slightly, feet still on the line */
-    @keyframes recede-signature {
-      to { transform: scale(0.8); }
-    }
-    .signature-img {
-      animation: recede-signature linear both;
-      animation-timeline: scroll(root block);
-      animation-range: 0px 120px;
-    }
-    @keyframes recede-name {
-      to { transform: scale(0.88); }
-    }
-    .landmark-name {
-      animation: recede-name linear both;
-      animation-timeline: scroll(root block);
-      animation-range: 0px 120px;
-    }
+  /* 5. The horizon deepens against the evening (composes with the
+     phase baseline — night starts darker and still deepens to iron) */
+  @keyframes deepen-horizon {
+    to { color: var(--color-iron, #1A1919); }
+  }
+  #horizon-header.scroll-driven #the-horizon {
+    animation: deepen-horizon linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0px 300px;
+  }
 
-    /* 7. The elevation plate text fades; the benchmark stays */
-    @keyframes fade-meta {
-      to { opacity: 0; }
-    }
-    .station-meta {
-      animation: fade-meta linear both;
-      animation-timeline: scroll(root block);
-      animation-range: 0px 100px;
-    }
+  /* 6. The landmark recedes slightly, feet still on the line */
+  @keyframes recede-signature {
+    to { transform: scale(0.8); }
+  }
+  #horizon-header.scroll-driven .signature-img {
+    animation: recede-signature linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0px 120px;
+  }
+  @keyframes recede-name {
+    to { transform: scale(0.88); }
+  }
+  #horizon-header.scroll-driven .landmark-name {
+    animation: recede-name linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0px 120px;
+  }
+
+  /* 7. Dead selector — .station-meta no longer exists in the markup (the
+     elevation/place text was removed from the plate), kept harmless. */
+  @keyframes fade-meta {
+    to { opacity: 0; }
+  }
+  #horizon-header.scroll-driven .station-meta {
+    animation: fade-meta linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0px 100px;
   }
 
   /* ======================================================================== */
