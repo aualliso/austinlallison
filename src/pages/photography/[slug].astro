@@ -52,6 +52,11 @@
  * x/y are the top-left corner on the 3200x2200 sheet, w is the printed
  * width. Height comes from the real image. In dev, overlapping plates
  * are reported in the terminal at build time.
+ *
+ * Add `printLink: '<checkout URL>'` to a plate to enable its "Order a
+ * Print" button (see PRINTS & LICENSING above). Omit it, or leave it
+ * empty, and the plate still gets the licensing-inquiry link (as long
+ * as the gallery is `sellable`) but no print button.
  */
 import Layout from '../../layouts/RootLayout.astro';
 import { getImage } from 'astro:assets';
@@ -59,6 +64,18 @@ import type { ImageMetadata } from 'astro';
 
 const BOARD_W = 3200;
 const BOARD_H = 2200;
+
+/* ── PRINTS & LICENSING ────────────────────────────────────────────
+ * Per-gallery `sellable` (default true) gates the "Order a Print" and
+ * "Inquire about Licensing" controls in the lightbox — set false on a
+ * gallery to hide both, e.g. for a newly-built series before pricing
+ * is sorted out. Per-plate `printLink` is a fulfillment checkout URL
+ * (a Stripe Payment Link tied to a Prodigi print product works well —
+ * white-label, no per-plate backend needed). A plate with no
+ * printLink simply hides the Order a Print button and shows only the
+ * licensing link, so plates can go live before every print SKU exists.
+ */
+const LICENSE_EMAIL = 'hello@austinlallison.com';
 
 export async function getStaticPaths() {
   /* getStaticPaths runs in its own isolated scope at build time — it
@@ -75,6 +92,7 @@ export async function getStaticPaths() {
   const galleryData = [
     {
       slug: 'escarpments',
+      sellable: true,
       region: 'Texas | Montana | Washington',
       essay:
         'From the rugged Permian red beds of the Southern Plains to the ancient volcanic chasms of the Pacific Northwest and the dramatic glacial coulees of Montana\u2019s Big Sky country, this photo set captures the breathtaking geological fractures that define the American West. These landscapes are a masterclass in geomorphology, visually documenting the diverse forces of water, wind, and ancient cataclysms that have sculpted the continent\u2019s vast interior tablelands. By showcasing the abrupt transitions where endless high prairies drop away into hidden canyons, valleys, and river floors, the collection highlights both the immense isolation and the unexpected productivity of the Western terrain. Ultimately, the images serve as a striking testament to human adaptation, where ancient natural fortresses and challenging migratory barriers have seamlessly transformed into modern landscapes of recreation and massive agricultural abundance.',
@@ -83,11 +101,12 @@ export async function getStaticPaths() {
       plates: [
         {
           file: 'escarpments/escarpment1.jpg',
-          title: 'Little Jerusalem Hoodoos \u00B7 Toole County, Montana',
+          title: 'Buckley Coulee \u00B7 Toole County, Montana',
           coordinates: '48.968683\u00B0 N, 111.982261\u00B0 W',
           specs: '12mm \u00B7 \u0192/8 \u00B7 1/320s',
           x: 820, y: 280, w: 400,
-          caption: '',
+          caption: 'Overlooking Buckley Coulee near Sunburst and Sweet Grass, Montana. This dramatic 200-foot drop reveals incredible rugged rock formations. A small piece of "Little Jerusalem" and its hoodoos can be seen in the foreground.',
+          printLink: '', // TODO: paste this plate's Stripe Payment Link (Prodigi print product) once set up
         },
         {
           file: 'escarpments/escarpment2.jpg',
@@ -95,7 +114,7 @@ export async function getStaticPaths() {
           coordinates: '33.090300\u00B0 N, 101.500369\u00B0 W',
           specs: '14mm \u00B7 \u0192/8 \u00B7 1/320s',
           x: 1670, y: 300, w: 450,
-          caption: '',
+          caption: 'Terra cotta soil, pale caliche cliffs, bright yellow wildflowers, and deep green mesquite. Watching the high plains of the Llano Estacado drop off into the Double Mountain Fork Brazos River basin in Garza County.',
         },
         {
           file: 'escarpments/escarpment3.jpg',
@@ -103,7 +122,7 @@ export async function getStaticPaths() {
           coordinates: '46.662612\u00B0 N, 118.227612\u00B0 W',
           specs: '14mm \u00B7 \u0192/8 \u00B7 1/100s',
           x: 980, y: 900, w: 300,
-          caption: 'Franklin and Whitman counties, Washington',
+          caption: 'Looking down into the canyon near Palouse Falls, Washington. The dark, tiered basalt cliffs drop nearly 200 feet into the gorge, where the river winds through steep talus slopes, pale sagebrush, and golden summer grasses. A striking reminder of the power of the ancient Missoula Floods that shaped the Pacific Northwest landscape.',
         },
         {
           file: 'escarpments/escarpment4.jpg',
@@ -111,7 +130,7 @@ export async function getStaticPaths() {
           coordinates: '34.465959\u00B0 N, 101.098786\u00B0 W',
           specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/2000s',
           x: 1275, y: 280, w: 350,
-          caption: '',
+          caption: 'An aerial look over the North Prong Little Red River country in Briscoe County, Texas. The vivid red clay and sandstone canyon walls contrast against a sea of vibrant green juniper and mesquite, showing off the wild, rugged beauty carved along the edge of the Caprock.',
         },
         {
           file: 'escarpments/escarpment5.jpg',
@@ -119,7 +138,7 @@ export async function getStaticPaths() {
           coordinates: '48.968683\u00B0 N, 111.982261\u00B0 W',
           specs: '12mm \u00B7 \u0192/3.5 \u00B7 1/1250s',
           x: 1310, y: 870, w: 340,
-          caption: '',
+          caption: 'A closer look at the remarkable rock spires and caprock formations lining Buckley Coulee near Sunburst, Montana. Sculpted over centuries by wind and water, these sandstone hoodoos stand guard right where the flat prairie plunges down into the valley floor.',
         },
         {
           file: 'escarpments/escarpment6.jpg',
@@ -127,7 +146,7 @@ export async function getStaticPaths() {
           coordinates: '33.851419\u00B0 N, 102.700752\u00B0 W',
           specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/2000s',
           x: 1750, y: 520, w: 400,
-          caption: '',
+          caption: 'An aerial perspective of the Upper Yellow House Draw in Bailey County, Texas. Unlike the near-verticle cliffs further east, this escarpment shows a gentler break in the Llano Estacado, a shallow valley carved into the tableland where caliche ledges, winter native grasses, and a quiet stock pond break up the endless, flat horizon.',
         },
         {
           file: 'escarpments/escarpment7.jpg',
@@ -135,7 +154,7 @@ export async function getStaticPaths() {
           coordinates: '48.966829\u00B0 N, 111.965596\u00B0 W',
           specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/200s',
           x: 1720, y: 780, w: 400,
-          caption: '',
+          caption: 'An aerial view along the coulee rim near Sweetgrass, Montana as evening sets in. The rugged sandstone escarpment and golden wheat fields drop away into the coulee floor, framed perfectly by the distant, rising peaks of the Sweet Grass Hills glowing under a soft twilight sky.',
         },
         {
           file: 'escarpments/escarpment8.jpg',
@@ -143,15 +162,15 @@ export async function getStaticPaths() {
           coordinates: '34.54667\u00B0 N, 101.429921\u00B0 W',
           specs: '12mm \u00B7 \u0192/8 \u00B7 1/320s',
           x: 600, y: 600, w: 400,
-          caption: 'The Hoodoos!',
+          caption: 'A ground-level perspective from the floor of Tule Canyon in Briscoe County, Texas. The reddish waters of Tule Creek weave through golden grasses, framed by towering, multi-layered cliffs of white gypsum, red mudstone, and rugged caprock bluffs under a bright Panhandle sky.',
         },
         {
           file: 'escarpments/escarpment9.jpg',
-          title: 'Beige Chasm \u00B7 Garza County, Texas',
-          coordinates: '33.090300\u00B0 N, 101.500369\u00B0 W',
-          specs: '14mm \u00B7 \u0192/8 \u00B7 1/320s',
-          x: 1700, y: 1050, w: 600,
-          caption: '',
+          title: 'White Over Yellowhouse Canyon \u00B7 Lubbock County, Texas',
+          coordinates: '33.494000\u00B0 N, 101.635000\u00B0 W',
+          specs: '12mm \u00B7 \u0192/2.2 \u00B7 1/4000s',
+          x: 1700, y: 1050, w: 400,
+          caption: 'An aerial look over Yellowhouse Canyon near Lubbock after a West Texas snowfall. The dark, meandering waters of the North Fork Double Mountain Fork River curl through a blanket of white, highlighting the rugged mesa bluffs and dormant mesquite brush.',
         },
         {
           file: 'escarpments/escarpment10.jpg',
@@ -159,15 +178,15 @@ export async function getStaticPaths() {
           coordinates: '29.720860\u00B0 N, 101.347319\u00B0 W',
           specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/1000s',
           x: 1300, y: 1100, w: 360,
-          caption: '',
+          caption: 'Vertical limestone cliffs, olive-green waters, and endless desert tableland. Looking down the sheer escarpments of the Pecos River canyon in Val Verde County.',
         },
         {
           file: 'escarpments/escarpment11.jpg',
-          title: 'Brazos Headwaters \u00B7 Garza County, Texas',
+          title: 'Brazos Palisades \u00B7 Garza County, Texas',
           coordinates: '33.090300\u00B0 N, 101.500369\u00B0 W',
           specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/1000s',
           x: 1050, y: 550, w: 660,
-          caption: '',
+          caption: 'A panoramic look across the badlands of Garza County, Texas. In the foreground, deeply eroded red clay mounds and pale caliche tell the story of thousands of years of runoff, while the flat, unbroken rim of the Caprock Escarpment stands tall along the distant horizon.',
         },
         {
           file: 'escarpments/escarpment12.jpg',
@@ -175,12 +194,30 @@ export async function getStaticPaths() {
           coordinates: '40.681113\u00B0 N, 105.235401\u00B0 W',
           specs: '12mm \u00B7 \u0192/4.4 \u00B7 1/320s',
           x: 950, y: 1150, w: 300,
-          caption: '',
+          caption: 'Rooted in the cracks of ancient, tilted granite, a lone pine stands tall over the rugged foothills of the Cache la Poudre Canyon.',
+          printLink: ''
+        },
+        {
+          file: 'escarpments/escarpment13.jpg',
+          title: 'Lakeside Autumn \u00B7 Bailey County, Texas',
+          coordinates: '33.957391\u00B0 N, 102.753125\u00B0 W', 
+          specs: '20mm \u00B7 \u0192/5.6 \u00B7 1/60s',
+          x: 2170, y: 650, w: 300,
+          caption: 'Some shallower escarpments drop into intermittent lakes. This view shows the autumn sun rising over the Muleshoe Wildlife Refuge. The summer view can be seen in Plate 14,',
+        },
+        {
+          file: 'escarpments/escarpment14.jpg',
+          title: 'Lakeside Summer \u00B7 Bailey County, Texas',
+          coordinates: '33.957391\u00B0 N, 102.753125\u00B0 W', 
+          specs: '20mm \u00B7 \u0192/5.6 \u00B7 1/60s',
+          x: 2140, y: 880, w: 300,
+          caption: 'As with Plate 13, this view shows the shallow descent into an intermittent lake at the Muleshoe Wildlife Refuge.',
         }
       ],
     },
     {
       slug: 'water_on_the_llano_estacado',
+      sellable: true,
       region: 'Texas | New Mexico',
       essay: '',
       centerX: 1250,
@@ -330,7 +367,16 @@ const plates = await Promise.all(
     const h = Math.round((img.height / img.width) * p.w);
     // distance from the composed opening view — the nearest few load eagerly
     const d = Math.hypot(p.x + p.w / 2 - gallery.centerX, p.y + h / 2 - gallery.centerY);
-    return { ...p, img, h, d, index: i, plate: `Plate ${String(i + 1).padStart(2, '0')}` };
+    return {
+      ...p,
+      img,
+      h,
+      d,
+      index: i,
+      plate: `Plate ${String(i + 1).padStart(2, '0')}`,
+      printLink: p.printLink || '',
+      sellable: gallery.sellable !== false,
+    };
   }),
 );
 
@@ -546,6 +592,7 @@ const registry = seriesRegistry;
     role="dialog"
     aria-modal="true"
     aria-labelledby="lightbox-plate-title"
+    data-license-email={LICENSE_EMAIL}
     class="fixed inset-0 z-[100] h-[100dvh] bg-canvas/98 backdrop-blur-md opacity-0 flex-col justify-between p-4 md:p-8 transition-opacity duration-300 select-none"
   >
     <!-- toolbar -->
@@ -603,19 +650,38 @@ const registry = seriesRegistry;
 
     <!-- metadata + strip -->
     <div class="w-full max-w-5xl mx-auto border-t border-haze/40 pt-4 pb-2 md:pb-4 shrink-0">
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start font-mono text-[11px] uppercase tracking-wider text-sage">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-4 md:gap-8 items-start font-mono text-[11px] uppercase tracking-wider">
         <div class="col-span-12 md:col-span-5 flex flex-col gap-1 min-w-0">
           <span id="lightbox-plate-title" class="font-semibold text-iron break-words"></span>
           <div class="flex gap-4 text-iron/40 text-[10px] lowercase tracking-normal mt-0.5">
             <span id="lightbox-specs"></span>
             <span id="lightbox-coords"></span>
           </div>
+
+          <div id="lightbox-actions" class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 pt-2 border-t border-haze/30">
+            <a
+              id="lightbox-order-print"
+              href="#"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hidden font-mono text-[9px] uppercase tracking-widest text-caprock hover:text-iron transition-colors"
+            >
+              Order a print &rarr;
+            </a>
+            <a
+              id="lightbox-license"
+              href="#"
+              class="hidden font-mono text-[9px] uppercase tracking-widest text-sage hover:text-caprock transition-colors"
+            >
+              Inquire about licensing
+            </a>
+          </div>
         </div>
         <div
           id="lightbox-notes"
           class="col-span-12 md:col-span-7 border-t border-dashed border-haze/40 pt-3 md:pt-0 md:border-t-0 font-serif normal-case tracking-normal text-xs text-iron/70 leading-relaxed max-h-[12dvh] overflow-y-auto pr-2 scrollbar-none select-text touch-pan-y"
         >
-          <p id="lightbox-caption" class="cursor-text font-normal"></p>
+          <p id="lightbox-caption" class="cursor-text font-mono"></p>
         </div>
       </div>
 
@@ -646,6 +712,8 @@ const registry = seriesRegistry;
       coords: p.coordinates,
       caption: p.caption,
       plate: p.plate,
+      printLink: p.printLink,
+      sellable: p.sellable,
     })),
   ).replace(/</g, '\\u003c')}></script>
 </Layout>
@@ -661,6 +729,8 @@ const registry = seriesRegistry;
     coords: string;
     caption: string;
     plate: string;
+    printLink: string;
+    sellable: boolean;
   };
 
   function initLightTable() {
@@ -959,6 +1029,9 @@ const registry = seriesRegistry;
     const captionEl = document.getElementById('lightbox-caption');
     const notesEl = document.getElementById('lightbox-notes');
     const progressEl = document.getElementById('lightbox-progress');
+    const orderPrintEl = document.getElementById('lightbox-order-print') as HTMLAnchorElement | null;
+    const licenseEl = document.getElementById('lightbox-license') as HTMLAnchorElement | null;
+    const licenseEmail = modal.dataset.licenseEmail || '';
 
     function isOpen() {
       return modal!.hasAttribute('data-open');
@@ -1163,6 +1236,21 @@ const registry = seriesRegistry;
       // an empty field shouldn't announce itself
       notesEl?.classList.toggle('hidden', !rec.caption);
       if (progressEl) progressEl.textContent = `Plate ${current + 1} of ${total}`;
+
+      // print/licensing controls — gated per-gallery by `sellable`, and
+      // the print button additionally needs a real checkout link per plate
+      const canOrderPrint = rec.sellable && !!rec.printLink;
+      if (orderPrintEl) {
+        orderPrintEl.classList.toggle('hidden', !canOrderPrint);
+        orderPrintEl.href = canOrderPrint ? rec.printLink : '#';
+      }
+      if (licenseEl) {
+        licenseEl.classList.toggle('hidden', !rec.sellable || !licenseEmail);
+        if (rec.sellable && licenseEmail) {
+          const subject = encodeURIComponent(`Licensing inquiry \u2014 ${rec.plate}: ${rec.title}`);
+          licenseEl.href = `mailto:${licenseEmail}?subject=${subject}`;
+        }
+      }
 
       setThumb(current);
       preload(current + 1);
