@@ -77,15 +77,28 @@ const SIGNATURE_PATHS = `
 
   .traverse-sticky{
     @apply sticky top-0 overflow-hidden h-[100vh];
-    background: linear-gradient(180deg,
-      #5B5170 0%, #8A6473 15%, #BE7A5A 29%, #E09A55 41%, #EFBA66 50%,
-      #C98A5F 59%, #7A4A38 72%, #3A2620 86%, #231712 100%);
-    background-size: 100% 260%;
-    background-position: 0% var(--sky-pos, 0%);
+    background: #5B5170;
     opacity: 0;
     transition: opacity .4s ease;
   }
   .traverse-sticky.is-ready{ opacity: 1; }
+
+  /* Sky layer: pulled out of .traverse-sticky's own background so the
+     scroll-driven "time of day" shift is a composited transform:translateY
+     instead of an animated background-position (a paint on every frame —
+     cheap for Chromium's compositor, expensive on iOS Safari, especially
+     stacked under position:sticky). Sized 260% tall to match the old
+     background-size:260%; JS drives --sky-shift in px, computed the same
+     way background-position 0%->100% would have been. */
+  .sky-layer{
+    @apply absolute inset-x-0 top-0 z-0 pointer-events-none;
+    height: 260%;
+    will-change: transform;
+    transform: translateY(var(--sky-shift, 0px));
+    background: linear-gradient(180deg,
+      #5B5170 0%, #8A6473 15%, #BE7A5A 29%, #E09A55 41%, #EFBA66 50%,
+      #C98A5F 59%, #7A4A38 72%, #3A2620 86%, #231712 100%);
+  }
 
   .sun{
     @apply absolute z-[1] pointer-events-none rounded-full aspect-square w-[min(42vh,340px)];
@@ -131,6 +144,20 @@ const SIGNATURE_PATHS = `
 
   .marker{ @apply absolute; }
 
+  .wind-blades{
+    /* rotate around the SVG-space pivot the markup used to pass to
+       setAttribute('transform','rotate(deg,20,28)') — transform-box:view-box
+       keeps transform-origin in the same user-unit coordinate space as
+       that attribute did, so the visual pivot is unchanged. Driving this
+       via a CSS custom property + CSS transform (instead of mutating the
+       transform attribute every rAF frame) puts the rotation on the
+       compositor thread instead of forcing SVG layout each frame. */
+    transform-box: view-box;
+    transform-origin: 20px 28px;
+    transform: rotate(var(--turn, 0deg));
+    will-change: transform;
+  }
+
   .station{
     @apply absolute opacity-0 pointer-events-none w-[clamp(280px,85vw,460px)];
     transform: translateY(16px) translateX(var(--enter-x, 0px));
@@ -165,11 +192,6 @@ const SIGNATURE_PATHS = `
   .role-line{ @apply mt-1 font-serif text-[.8rem] uppercase [color:var(--dockum)]; }
   .intro-note{ @apply mt-5 text-[.9rem] leading-[1.5] [color:var(--iron)]; }
 
-  /* the intro's explicit fork: scroll to traverse, or skip straight
-     to /main. Both reuse .card-link's look; the traverse option is a
-     real <button> (it triggers a scroll, it doesn't navigate), so it
-     needs its default browser chrome reset — an <a> never carried
-     that baggage, which is why .card-link alone wasn't enough here. */
   .intro-actions{ @apply flex flex-wrap items-center gap-x-6 gap-y-2 mt-5; }
   .intro-actions .card-link{ @apply mt-0; }
   button.card-link{
@@ -302,7 +324,7 @@ const SIGNATURE_PATHS = `
   @media (prefers-reduced-motion: reduce){
     .traverse-wrap{ @apply h-auto; }
     .traverse-sticky{ @apply static h-auto overflow-visible; background: #E09A55; opacity: 1; }
-    .world,.sun,.sig-mark,.haze-band,.grain{ @apply hidden; }
+    .world,.sun,.sig-mark,.haze-band,.grain,.sky-layer{ @apply hidden; }
     .hud-elev,.elev-badge,.seg-tag,.cue{ @apply hidden; }
     .stations-fallback{ @apply block; }
   }
@@ -321,9 +343,6 @@ const SIGNATURE_PATHS = `
       </g>
     </symbol>
 
-    <!-- Vegetation silhouettes — reused via <use> across the rim/face
-         (redberry/scrub cedar clumps, upright & columnar) and the
-         plateau/apron (mesquite, wider & scraggly, lower-growing). -->
     <symbol id="veg-cedar" viewBox="0 0 26 34">
       <path fill="#1C140F" d="M13,1 C17,6 19,11 16.5,13.5 C20,17 21,23 16.5,25.5 C19.5,28.5 18,32 13,32 C8,32 6.5,28.5 9.5,25.5 C5,23 6,17 9.5,13.5 C7,11 9,6 13,1 Z"/>
       <rect x="11.5" y="32" width="3" height="2" fill="#1C140F"/>
@@ -338,6 +357,7 @@ const SIGNATURE_PATHS = `
 <div class="traverse-wrap" id="traverse">
   <div class="traverse-sticky" id="stage">
 
+    <div class="sky-layer" id="sky-layer" aria-hidden="true"></div>
     <div class="sun" id="sun"></div>
 
     <div class="haze-band haze-band--far" aria-hidden="true"></div>
@@ -404,15 +424,10 @@ const SIGNATURE_PATHS = `
       </svg>
       <svg class="marker" style="left:320px; top:458px;" width="120" height="50" viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg">
         <g fill="#1C140F">
-        <!-- Main roof, long low-pitched gable -->
           <path d="M8,22 L60,14 L112,22 Z"/>
-        <!-- Main building body -->
           <rect x="8" y="22" width="104" height="14"/>
-        <!-- Porch shed roof, wider than the building, overhanging the posts -->
           <path d="M4,31 L60,28 L116,31 L116,34 L4,34 Z"/>
-        <!-- Porch + deck, solid block from roofline to ground -->
           <rect x="4" y="34" width="112" height="8"/>
-        <!-- Chimneys: shorter one left, taller one right -->
           <rect x="21" y="11" width="6" height="11"/>
           <rect x="91" y="6" width="6" height="16"/>
         </g>
@@ -432,7 +447,6 @@ const SIGNATURE_PATHS = `
       <svg class="marker veg" style="left:195px; top:503.5px;" width="19" height="11"><use href="#veg-mesquite"/></svg>
 
       <svg class="marker" style="left:770px; top:434.9px;" width="40" height="76" viewBox="0 0 40 76" xmlns="http://www.w3.org/2000/svg">
-        <!-- Tower: tapered four-legged lattice with X-bracing -->
         <g fill="none" stroke="#1C140F" stroke-width="1.4">
           <path d="M20,30 L17.91,42 L15.83,54 L13.74,66 L12,76" />
           <path d="M20,30 L22.09,42 L24.17,54 L26.26,66 L28,76" />
@@ -482,8 +496,6 @@ const SIGNATURE_PATHS = `
       <svg class="marker veg" style="left:1700px; top:563.7px; transform:scaleX(-1);" width="22" height="13"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:1745px; top:570.4px;" width="18" height="10"><use href="#veg-mesquite"/></svg>
 
-      <!-- Rim/Face: scrub cedar (juniper), upright & columnar, clustered
-           along the break — the vegetation real caprock draws collect. -->
       <svg class="marker veg" style="left:2200px; top:671px;" width="16" height="22"><use href="#veg-cedar"/></svg>
       <svg class="marker veg" style="left:2245px; top:722.9px; transform:scaleX(-1);" width="14" height="19"><use href="#veg-cedar"/></svg>
       <svg class="marker veg" style="left:2285px; top:762.1px;" width="12" height="16"><use href="#veg-cedar"/></svg>
@@ -496,8 +508,6 @@ const SIGNATURE_PATHS = `
       <svg class="marker veg" style="left:3620px; top:1247.6px; transform:scaleX(-1);" width="13" height="17"><use href="#veg-cedar"/></svg>
       <svg class="marker veg" style="left:3680px; top:1237.3px;" width="12" height="15"><use href="#veg-cedar"/></svg>
 
-      <!-- Apron / basin approach: mesquite, lower-plains growth, plus
-           the restored house and cattle pair, and both windmills. -->
       <svg class="marker veg" style="left:4560px; top:1530.5px;" width="24" height="14"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:4615px; top:1532.5px; transform:scaleX(-1);" width="20" height="12"><use href="#veg-mesquite"/></svg>
       <svg class="marker veg" style="left:4670px; top:1534.5px;" width="17" height="10"><use href="#veg-mesquite"/></svg>
@@ -514,11 +524,8 @@ const SIGNATURE_PATHS = `
       <svg class="marker veg" style="left:5140px; top:1529.1px;" width="17" height="10"><use href="#veg-mesquite"/></svg>
       <svg class="marker" style="left:4760px; top:1487.5px;" width="120" height="50" viewBox="0 0 120 50" xmlns="http://www.w3.org/2000/svg">
         <g fill="#1C140F">
-          <!-- Roof, now completely flush with the 88px wide walls -->
           <path d="M16,26 L60,22 L104,26 Z"/>
-          <!-- Main building body -->
           <rect x="16" y="26" width="88" height="24"/>
-          <!-- Three chimneys positioned along the roofline -->
           <rect x="22" y="16" width="7" height="9"/>
           <rect x="46" y="14" width="7" height="10"/>
           <rect x="84" y="16" width="7" height="9"/>
@@ -565,7 +572,6 @@ const SIGNATURE_PATHS = `
         </g>
       </svg>
 
-      <!-- Content Stations -->
       <div class="station" id="st0" style="left:220px; top:150px;">
         <div class="station-card brand-card">
           <svg class="brand-bg" viewBox="0 0 66 32" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><use href="#iron-7la"></use></svg>
@@ -684,6 +690,7 @@ const SIGNATURE_PATHS = `
     const wrap = document.getElementById('traverse');
     const stage = document.getElementById('stage');
     const world = document.getElementById('world');
+    const skyLayer = document.getElementById('sky-layer');
     const sun = document.getElementById('sun');
     const elev = document.getElementById('elev');
     const segName = document.getElementById('seg-name');
@@ -694,9 +701,8 @@ const SIGNATURE_PATHS = `
     const stations = [...document.querySelectorAll<HTMLElement>('.station')];
     const rimStop0 = document.getElementById('rimStop0') as SVGStopElement | null;
 
-    if(!wrap || !stage || !world || !sun || !elev || !segName || !cue || !terrainSvg || !groundLine) return;
+    if(!wrap || !stage || !world || !skyLayer || !sun || !elev || !segName || !cue || !terrainSvg || !groundLine) return;
 
-    // Cache Layout Metrics to Prevent Layout Thrashing
     let wrapTop = 0;
     let maxScrollDist = 0;
 
@@ -712,9 +718,6 @@ const SIGNATURE_PATHS = `
     world.style.setProperty('--world-w', `${WORLD_W}px`);
     world.style.setProperty('--world-h', `${WORLD_H}px`);
 
-    // Lookup Table (LUT) — ground height by world x, sampled from the
-    // same path used for the fill/clip/caliche cap, so camera and
-    // geometry can never desync.
     const SAMPLES = 400;
     const total = groundLine.getTotalLength();
     const lut: { x: number; y: number }[] = [];
@@ -724,7 +727,7 @@ const SIGNATURE_PATHS = `
     }
     const TOP_Y = lut[0].y;
     const BOTTOM_Y = lut[lut.length - 1].y;
-    const TOP_FT = 3330, BOTTOM_FT = 2700; // real min/max from the transect
+    const TOP_FT = 3330, BOTTOM_FT = 2700;
 
     function heightAt(x: number): number {
       if (x <= lut[0].x) return lut[0].y;
@@ -746,14 +749,6 @@ const SIGNATURE_PATHS = `
       return 'The Apron';
     }
 
-    // Non-linear scroll -> camera-x remap, re-derived from the real
-    // transect: the rim/face runs from world x 2000 to 4424 (33.3% to
-    // 73.7% of the transect, a real 630 ft drop over ~2400 world units).
-    // Compressing that 40% of world distance into a small scroll window
-    // (0.42-0.58) — versus 33% of scroll for the plateau and 42% for the
-    // apron — keeps the "long approach, fast real drop, long descent"
-    // pacing even though the real face is proportionally wider than the
-    // hand-drawn version was.
     const REMAP: [number, number][] = [
       [0,    0],
       [0.42, 0.333],
@@ -782,10 +777,6 @@ const SIGNATURE_PATHS = `
       return `#${((1 << 24) + (r << 16) + (g << 8) + bch).toString(16).slice(1)}`;
     }
 
-    // Local time-of-day nudges the starting sky tone — a subtle bias
-    // applied only near the top of the scroll, so the descent still
-    // always resolves to full night at the basin regardless of when
-    // the page loads. Computed once at init, not per frame.
     function timeOfDayBias(): number {
       const now = new Date();
       let h = now.getHours() + now.getMinutes() / 60;
@@ -812,14 +803,6 @@ const SIGNATURE_PATHS = `
     let rafId = 0;
     let readyMarked = false;
 
-    // Establishing drift: on load, before the visitor has scrolled, the
-    // camera eases forward a small amount across the plateau so the page
-    // is already alive rather than frozen waiting for input. It is an
-    // OFFSET added to displayP, not a write to it, so the scroll position
-    // is never faked — and it decays smoothly to zero on first
-    // interaction, so control transfers without a jump. Amplitude is kept
-    // below the 0.02/0.03 thresholds used by the cue and the st0 station
-    // lock, so neither flickers during the drift.
     const INTRO_AMP = 0.018;
     const INTRO_MS = 6000;
     const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -852,13 +835,19 @@ const SIGNATURE_PATHS = `
       world!.style.setProperty('--cam-x', `${-camX}px`);
       world!.style.setProperty('--cam-y', `${-camY}px`);
 
+      // Sky "time of day" shift: previously animated background-position
+      // on .traverse-sticky directly (a paint every frame — expensive on
+      // iOS Safari especially under position:sticky). Now expressed as a
+      // translateY on the dedicated .sky-layer element (260% tall, same
+      // as the old background-size), so it's a composited transform.
+      // Math mirrors what background-position 0%->100% would have done:
+      // offset range is -(imageHeight - containerHeight) = -1.6 * vh.
       const skyP = Math.min(Math.max((camX - 1700) / Math.max(maxCamX - 1700, 1), 0), 1);
       const blendedSky = skyBias + skyP * (1 - skyBias);
-      stage!.style.setProperty('--sky-pos', `${blendedSky * 100}%`);
+      skyLayer!.style.setProperty('--sky-shift', `${-blendedSky * vh * 1.6}px`);
 
       const ftTarget = Math.min(Math.max((surfaceY - TOP_Y) / (BOTTOM_Y - TOP_Y), 0), 1);
       const targetFt = Math.round(TOP_FT - (TOP_FT - BOTTOM_FT) * ftTarget);
-      // odometer-style ease toward the target elevation rather than snapping
       displayFt += (targetFt - displayFt) * 0.15;
       if (Math.abs(targetFt - displayFt) < 0.5) displayFt = targetFt;
       elev!.textContent = `${Math.round(displayFt).toLocaleString()} FT`;
@@ -871,13 +860,21 @@ const SIGNATURE_PATHS = `
       sun!.style.setProperty('--sun-x', `${66 - plateauP * 12}%`);
       sun!.style.setProperty('--sun-op', String(Math.max(1 - plateauP * 1.1, 0)));
 
-      // haze thickens and the rim-light warms as we move past the rim
       const postRimP = Math.min(Math.max((camX - 4424) / Math.max(maxCamX - 4424, 1), 0), 1);
       stage!.style.setProperty('--haze-far-op', String(0.6 + postRimP * 0.2));
       stage!.style.setProperty('--haze-near-op', String(0.45 + postRimP * 0.3));
       if (rimStop0) rimStop0.setAttribute('stop-color', hexLerp('#FCE0A8', '#F2A65A', postRimP));
 
-      bladeGroups.forEach(b => b.setAttribute('transform', `rotate(${camX * 0.25} 20 28)`));
+      // Windmill blade spin: previously bladeGroups.forEach(b =>
+      // b.setAttribute('transform', `rotate(${camX*0.25} 20 28)`)) — an
+      // SVG attribute write every rAF frame forces WebKit to redo SVG
+      // layout for that element. Setting a CSS custom property instead
+      // (consumed by the .wind-blades rule's `transform: rotate(var(--turn))`,
+      // with transform-box:view-box / transform-origin:20px 28px matching
+      // the old rotate(deg,20,28) pivot exactly) puts this on the
+      // compositor thread instead.
+      const turnDeg = camX * 0.25;
+      bladeGroups.forEach(b => b.style.setProperty('--turn', `${turnDeg}deg`));
 
       const dir = camX >= prevCamX ? 1 : -1;
       prevCamX = camX;
@@ -907,31 +904,17 @@ const SIGNATURE_PATHS = `
 
     measureLayout();
 
-    // The intro card's "Traverse the Escarpment" button doesn't
-    // navigate anywhere — it just gets the visitor moving. A nudge of
-    // ~60% of one viewport height is enough to clear the p<0.02
-    // station-0 lock threshold above, so scroll-driven descent takes
-    // over immediately and the visitor can continue under their own
-    // wheel/trackpad from there. Programmatic scroll still fires real
-    // 'scroll' events, so the existing intro-drift-cancelling
-    // listener (below) picks it up with no extra wiring.
     const traverseBtn = document.getElementById('traverse-btn');
     traverseBtn?.addEventListener('click', () => {
       const target = wrapTop + window.innerHeight * 0.6;
       window.scrollTo({ top: target, behavior: prefersReduced ? 'auto' : 'smooth' });
     });
 
-    // Continuous rAF loop (rather than a scroll-event listener) polls
-    // scrollY every frame and lerps the displayed progress toward it —
-    // this smooths bursty/erratic wheel & trackpad deltas instead of
-    // jumping straight to each event's value.
     function loop(){
       computeTargetP();
       displayP += (targetP - displayP) * 0.2;
       if (Math.abs(targetP - displayP) < 0.0005) displayP = targetP;
 
-      // Intro drift: ease out to INTRO_AMP while untouched, then decay
-      // back to zero once the visitor takes over.
       if (introActive) {
         if (!introStart) introStart = performance.now();
         const t = Math.min((performance.now() - introStart) / INTRO_MS, 1);

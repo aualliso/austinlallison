@@ -21,19 +21,52 @@
 //      every width; frozen under prefers-reduced-motion.
 //   4. REAL WEATHER — one fetch (re-checked at most every 30 minutes) now
 //      drives the windmill's speed, the dust haze thickness along the
-//      line, and a small set of soft drifting clouds — their density from
-//      real cloud cover, their drift speed from real wind speed, and their
-//      drift direction from real wind direction. A calm, clear day shows
-//      almost none of this; a windy, overcast one shows all of it.
+//      line, AND (2026-08-02) the intensity of the grazing-light effect
+//      below — real crepuscular rays need particulates to scatter
+//      visibly, so a dusty/windy dawn now looks more dramatic than a
+//      clear/calm one, driven by the same wind fetch. A calm day shows
+//      almost none of the haze; a windy one shows more of it. (Clouds
+//      were tried here too — a set of soft drifting shapes keyed to real
+//      cloud cover/wind — but they read as the weakest, most decorative
+//      layer on the header and were cut in review; the fetch no longer
+//      requests cloud cover at all.)
 //   5. THE NIGHT SKY — the moon renders its real current phase (waxing/
 //      waning crescent via a masked second disc) AND only appears when a
 //      real moonrise/moonset calculation says it's actually above the
-//      horizon — some nights it's just the small fixed star field, same
-//      as the real sky would look. Neither the moon nor the stars twinkle;
-//      the sky changes state, it doesn't animate for its own sake.
-//   6. GRAZING LIGHT — a handful of thin rays around the sun, visible only
-//      in the last stretch of its arc near the horizon (driven by the same
-//      real elevation value as everything else), gone once it climbs.
+//      horizon — some nights it's just a genuinely real star field, same
+//      as the real sky would look. (Reworked 2026-08-02: the old fixed
+//      20-dot scatter — same every night, no relation to real astronomy —
+//      is now ~26 real bright stars, each with real RA/Dec, positioned by
+//      actual altitude/azimuth for Lubbock at the current moment, same
+//      class of math as the moon above. Magnitude drives size/brightness
+//      — compressed range, since real stars are point sources and
+//      brightness mostly reads as glow, not disc size — and atmospheric
+//      extinction dims stars low near the horizon, same physics as the
+//      grazing-light color shift. Orion's Belt and the Big Dipper are in
+//      the catalog as real stars, not a special-cased overlay — when
+//      they're actually up and well-placed, an attentive repeat visitor
+//      might notice the shape, same spirit as the crane marker below; no
+//      extra code path needed for that. Rendered as small circular divs
+//      with a fixed pixel diameter rather than SVG circles in a stretched
+//      viewBox, so they stay round regardless of the header's actual
+//      proportions on a given viewport.) Neither the moon nor the stars
+//      twinkle; the sky changes state, it doesn't animate for its own
+//      sake.
+//   6. GRAZING LIGHT (reworked 2026-08-02) — no longer a symmetric
+//      8-line starburst. Real low-angle light scatters mostly
+//      horizontally (more atmosphere in the sightline), so this is now: a
+//      soft horizontally-stretched bloom behind the sun, a thin
+//      horizon-hugging color streak at the sun's height, a handful of
+//      uneven mostly-horizontal rays, a faint rim-light catching the
+//      ridge silhouette, and a warm tint bleeding into the dust haze —
+//      all driven by the same real elevation value as before, all tinted
+//      by one continuous amber-to-gold color computed from that same
+//      elevation (deep amber right at the horizon, fading to neutral
+//      gold by the top of the dawn/dusk window). The sun disc itself now
+//      also visibly flattens and darkens near the horizon (atmospheric
+//      refraction compressing a low sun), relaxing back to a normal
+//      circle as it climbs. Intensity is additionally scaled by the real
+//      wind-driven haze strength from #4 above.
 //   7. A SEASONAL MARKER — a small sandhill-crane flock silhouette appears
 //      only during the real fall migration window through the Llano
 //      Estacado (mid-Oct-mid-Dec). Static, not animated; a detail for a
@@ -118,103 +151,59 @@ const groundPath = `${silhouette} V22 H0 Z`;
     <div id="sky-dusk" class="absolute inset-0 -z-10 pointer-events-none"></div>
     <!-- SKY: dust haze hugging the line -->
     <div id="horizon-haze" class="absolute bottom-0 left-0 w-full h-8 -z-10 pointer-events-none"></div>
+    <!-- SKY: warm tint bled into the haze band during grazing light —
+         separate overlay rather than recoloring the haze gradient
+         directly, so the haze's own wind-driven opacity/height logic
+         stays untouched. -->
+    <div id="haze-warm-overlay" aria-hidden="true" class="absolute bottom-0 left-0 w-full pointer-events-none"></div>
     <!-- SKY: film grain -->
     <div id="sky-grain" class="absolute inset-0 -z-10 pointer-events-none"></div>
 
-    <!-- SKY: real drifting clouds — density from real cloud cover, drift
-         speed from real wind speed, drift direction from real wind
-         direction (all fetched alongside the windmill's wind data). Each
-         "lane" draws its cloud motif twice, 1440px apart, and animates by
-         exactly one tile-width so the loop is seamless. -->
-    <svg
-      id="sky-clouds"
-      aria-hidden="true"
-      class="absolute inset-0 w-full h-full -z-10 pointer-events-none"
-      viewBox="0 0 1440 60"
-      preserveAspectRatio="none"
-    >
-      <defs>
-        <filter id="cloud-blur" x="-60%" y="-60%" width="220%" height="220%">
-          <feGaussianBlur stdDeviation="2.6" />
-        </filter>
-        <g id="cloud-motif">
-          <ellipse cx="0" cy="0" rx="22" ry="9" />
-          <ellipse cx="-14" cy="3" rx="14" ry="7" />
-          <ellipse cx="16" cy="2" rx="16" ry="7.5" />
-          <ellipse cx="4" cy="-5" rx="12" ry="6" />
-        </g>
-      </defs>
-      <g class="cloud-lane" style="--cloud-delay:0s">
-        <use href="#cloud-motif" class="cloud-shape" filter="url(#cloud-blur)" transform="translate(140,10) scale(1)" />
-        <use href="#cloud-motif" class="cloud-shape" filter="url(#cloud-blur)" transform="translate(1580,10) scale(1)" />
-      </g>
-      <g class="cloud-lane" style="--cloud-delay:-22s">
-        <use href="#cloud-motif" class="cloud-shape" filter="url(#cloud-blur)" transform="translate(560,22) scale(0.75)" />
-        <use href="#cloud-motif" class="cloud-shape" filter="url(#cloud-blur)" transform="translate(2000,22) scale(0.75)" />
-      </g>
-      <g class="cloud-lane" style="--cloud-delay:-51s">
-        <use href="#cloud-motif" class="cloud-shape" filter="url(#cloud-blur)" transform="translate(980,6) scale(1.15)" />
-        <use href="#cloud-motif" class="cloud-shape" filter="url(#cloud-blur)" transform="translate(2420,6) scale(1.15)" />
-      </g>
-      <g class="cloud-lane" style="--cloud-delay:-77s">
-        <use href="#cloud-motif" class="cloud-shape" filter="url(#cloud-blur)" transform="translate(260,28) scale(0.9)" />
-        <use href="#cloud-motif" class="cloud-shape" filter="url(#cloud-blur)" transform="translate(1700,28) scale(0.9)" />
-      </g>
-    </svg>
+    <!-- GRAZING LIGHT: a faint glow catching the ridge silhouette from
+         behind — sits low, near the ground, so it reads as light raking
+         the terrain rather than a light floating in open sky. -->
+    <div id="horizon-rim-light" aria-hidden="true" class="absolute pointer-events-none"></div>
+    <!-- GRAZING LIGHT: a thin horizon-hugging color streak at the sun's
+         current height — real low-angle light washes sideways across the
+         whole sky at that height, not just around the sun disc itself. -->
+    <div id="sun-streak" aria-hidden="true" class="absolute pointer-events-none"></div>
 
     <!-- THE SUN (dawn / day / dusk) -->
     <div id="sun-wrap" aria-hidden="true" class="absolute pointer-events-none">
-      <div id="horizon-sun"></div>
-      <!-- Grazing light: a handful of thin rays, only visible when the sun
-           sits low near the horizon (real elevation, same value driving
-           --sun-elev) — fades out well before the sun climbs toward noon. -->
-      <svg id="sun-rays" aria-hidden="true" class="absolute pointer-events-none" width="96" height="96" viewBox="-48 -48 96 96">
-        <g stroke="currentColor" stroke-width="1.1" stroke-linecap="round">
-          <line x1="7"  y1="0"  x2="44" y2="0"   opacity="0.55" />
-          <line x1="5"  y1="5"  x2="31" y2="31"  opacity="0.4"  />
-          <line x1="0"  y1="7"  x2="0"  y2="44"  opacity="0.5"  />
-          <line x1="-5" y1="5"  x2="-31" y2="31" opacity="0.4"  />
-          <line x1="-7" y1="0"  x2="-44" y2="0"  opacity="0.55" />
-          <line x1="-5" y1="-5" x2="-31" y2="-31" opacity="0.3" />
-          <line x1="0"  y1="-7" x2="0"  y2="-44" opacity="0.3"  />
-          <line x1="5"  y1="-5" x2="31" y2="-31" opacity="0.3"  />
+      <!-- Grazing light: a soft horizontally-stretched atmospheric bloom
+           behind the sun — real scatter at a low angle is diffuse, not a
+           set of crisp lines. -->
+      <div id="sun-bloom"></div>
+      <!-- Grazing light: a handful of uneven, mostly-horizontal rays —
+           down from a symmetric 8-line starburst, since a low sun's
+           visible rays fan out sideways along a flat horizon far more
+           than straight up/down. Only visible when the sun sits low near
+           the horizon (real elevation, same value driving --sun-elev) —
+           fades out well before the sun climbs toward noon. -->
+      <svg id="sun-rays" aria-hidden="true" class="absolute pointer-events-none" width="96" height="54" viewBox="-48 -27 96 54">
+        <g stroke="currentColor" stroke-linecap="round">
+          <line x1="6"  y1="-0.5" x2="45"  y2="-3"  stroke-width="1"   opacity="0.55" />
+          <line x1="-6" y1="0.5"  x2="-43" y2="3"   stroke-width="0.9" opacity="0.45" />
+          <line x1="5"  y1="-2"   x2="26"  y2="-11" stroke-width="0.8" opacity="0.3"  />
+          <line x1="-5" y1="1.5"  x2="-21" y2="10"  stroke-width="0.8" opacity="0.26" />
+          <line x1="4"  y1="-1.5" x2="14"  y2="-15" stroke-width="0.6" opacity="0.18" />
+          <line x1="-4" y1="1"    x2="-12" y2="13"  stroke-width="0.6" opacity="0.15" />
         </g>
       </svg>
+      <div id="horizon-sun"></div>
     </div>
 
     <!-- THE NIGHT SKY: moon (real current phase, shown only when real
          moonrise/moonset math says it's actually above the horizon) + a
-         small fixed star field -->
+         real bright-star catalog (2026-08-02 rework — see applyStars()
+         below). Empty on purpose: populated as small circular divs by JS,
+         since real stars need real altitude/azimuth per star, and a
+         fixed-shape SVG scaled to fit whatever width/height the header
+         happens to be at could distort circles into ellipses; plain
+         divs with a fixed pixel diameter stay round regardless. -->
     <div id="night-sky" aria-hidden="true" class="absolute inset-0 pointer-events-none">
       <div id="horizon-moon"></div>
-      <svg
-        id="night-stars"
-        class="absolute inset-0 w-full h-full pointer-events-none"
-        viewBox="0 0 1440 60"
-        preserveAspectRatio="none"
-      >
-        <!-- fixed, hand-placed — a scattering, not a simulation. no twinkle. -->
-        <circle cx="62"   cy="10" r="1"   />
-        <circle cx="118"  cy="22" r="0.7" />
-        <circle cx="176"  cy="8"  r="0.8" />
-        <circle cx="233"  cy="30" r="1.1" />
-        <circle cx="289"  cy="15" r="0.6" />
-        <circle cx="348"  cy="26" r="0.9" />
-        <circle cx="410"  cy="9"  r="0.7" />
-        <circle cx="470"  cy="19" r="1"   />
-        <circle cx="522"  cy="33" r="0.6" />
-        <circle cx="590"  cy="12" r="0.8" />
-        <circle cx="905"  cy="14" r="0.8" />
-        <circle cx="958"  cy="27" r="0.6" />
-        <circle cx="1014" cy="9"  r="1"   />
-        <circle cx="1071" cy="21" r="0.7" />
-        <circle cx="1129" cy="34" r="0.9" />
-        <circle cx="1188" cy="11" r="0.7" />
-        <circle cx="1246" cy="24" r="1.1" />
-        <circle cx="1302" cy="7"  r="0.6" />
-        <circle cx="1358" cy="18" r="0.8" />
-        <circle cx="1408" cy="29" r="0.7" />
-      </svg>
+      <div id="night-stars" class="absolute inset-0 w-full h-full pointer-events-none"></div>
     </div>
 
     <!-- A SEASONAL MARKER — sandhill cranes, fall migration only.
@@ -458,6 +447,22 @@ const groundPath = `${silhouette} V22 H0 Z`;
     return 0;
   }
 
+  /* ---- grazing-light color ------------------------------------------------
+     Real low-angle sunlight reddens the lower the sun sits — more
+     atmosphere in the sightline scatters out more blue, leaving red/orange.
+     Interpolates from a deep amber-red right at the horizon to a neutral
+     gold (the same tone the sun disc already uses in full daylight) by the
+     point elevation reaches ~16%, where grazing intensity itself has
+     already faded to zero. Purely a function of elevation — deliberately
+     NOT tied to wind/haze, unlike the intensity multiplier below. */
+  function grazingColorRGB(elevation: number): string {
+    const t = Math.max(0, Math.min(1, elevation / 16));
+    const from = [201, 98, 46];   // #C9622E — deep amber-red, right at the horizon
+    const to = [232, 168, 92];    // #E8A85C — neutral gold, matches the daytime sun tone
+    const mixed = from.map((c, i) => Math.round(c + (to[i] - c) * t));
+    return `rgb(${mixed[0]}, ${mixed[1]}, ${mixed[2]})`;
+  }
+
   const applyPhase = () => {
     if (!header) return;
     const now = new Date();
@@ -467,9 +472,13 @@ const groundPath = `${silhouette} V22 H0 Z`;
     header.style.setProperty('--sun-elev', `${mapped.toFixed(1)}%`);
     // Grazing light: 1 right at the horizon, fading to 0 by ~16% elevation —
     // roughly the last stretch of the sun's arc before/after it's up, which
-    // is when real low-angle light actually looks like this.
+    // is when real low-angle light actually looks like this. This raw value
+    // also drives the sun disc's flatten/darken (below) and feeds into
+    // --grazing-effective (see base CSS), which additionally scales by the
+    // real wind-driven haze strength applyWeather() sets independently.
     const grazing = phase === 'night' ? 0 : Math.max(0, 1 - mapped / 16);
     header.style.setProperty('--grazing-light', grazing.toFixed(2));
+    header.style.setProperty('--grazing-color', grazingColorRGB(mapped));
   };
 
   /* ---- moon phase + real moonrise/moonset --------------------------------
@@ -535,22 +544,117 @@ const groundPath = `${silhouette} V22 H0 Z`;
     if (moonEl) moonEl.style.display = isMoonUp(now) ? '' : 'none';
   };
 
-  /* ---- real weather: wind (windmill + haze) and clouds -------------------
+  /* ---- real stars (2026-08-02 rework) -------------------------------------
+     Replaces the old fixed 20-dot scatter with ~26 real bright stars (real
+     right ascension/declination), positioned by actual altitude/azimuth for
+     Lubbock at the current moment — same class of math as the moon above,
+     just extended with an azimuth calculation the moon didn't need. Stars
+     below the horizon simply aren't drawn. Magnitude drives size/brightness
+     (compressed range — real stars are point sources; brightness reads
+     mostly as glow, not disc size) and atmospheric extinction dims stars
+     sitting low near the horizon, same physics as the grazing-light color
+     shift. Rendered as plain circular divs with a fixed pixel diameter
+     rather than SVG circles in a stretched viewBox — that guarantees they
+     stay round regardless of the header's actual width/height at any given
+     viewport, rather than depending on the viewBox happening to match the
+     container's proportions. Static positions, no twinkle — same
+     philosophy as the rest of the night sky: it changes state, it doesn't
+     animate for its own sake. */
+  const STAR_CATALOG: Array<[number, number, number]> = [
+    // [RA hours, Dec degrees, magnitude]
+    [6.752, -16.716, -1.46],  // Sirius
+    [6.399, -52.696, -0.74],  // Canopus
+    [14.261, 19.182, -0.05],  // Arcturus
+    [18.616, 38.784, 0.03],   // Vega
+    [5.278, 45.998, 0.08],    // Capella
+    [5.242, -8.202, 0.13],    // Rigel
+    [7.655, 5.225, 0.34],     // Procyon
+    [5.919, 7.407, 0.50],     // Betelgeuse
+    [19.846, 8.868, 0.77],    // Altair
+    [4.599, 16.509, 0.85],    // Aldebaran
+    [16.490, -26.432, 1.09],  // Antares
+    [13.420, -11.161, 1.04],  // Spica
+    [7.755, 28.026, 1.14],    // Pollux
+    [22.961, -29.622, 1.16],  // Fomalhaut
+    [20.690, 45.280, 1.25],   // Deneb
+    [10.139, 11.967, 1.36],   // Regulus
+    [5.679, -1.943, 1.74],    // Alnitak (Orion's Belt)
+    [5.603, -1.202, 1.69],    // Alnilam (Orion's Belt)
+    [5.533, -0.299, 2.23],    // Mintaka (Orion's Belt)
+    [11.062, 61.751, 1.79],   // Dubhe (Big Dipper)
+    [11.031, 56.382, 2.37],   // Merak (Big Dipper)
+    [11.897, 53.695, 2.44],   // Phecda (Big Dipper)
+    [12.257, 57.033, 3.31],   // Megrez (Big Dipper)
+    [12.900, 55.960, 1.77],   // Alioth (Big Dipper)
+    [13.399, 54.925, 2.23],   // Mizar (Big Dipper)
+    [13.792, 49.313, 1.86],   // Alkaid (Big Dipper)
+  ];
+
+  function starAltAz(date: Date, lat: number, lon: number, raHours: number, decDeg: number) {
+    const rad = Math.PI / 180;
+    const dayMs = 86400000, J1970 = 2440588, J2000 = 2451545;
+    const d = (date.valueOf() / dayMs - 0.5 + J1970) - J2000;
+    const raRad = raHours * 15 * rad;
+    const decRad = decDeg * rad;
+    const lw = rad * (-lon), phi = rad * lat;
+    const siderealTime = rad * (280.16 + 360.9856235 * d) - lw;
+    const H = siderealTime - raRad;
+    const altitude = Math.asin(Math.sin(phi) * Math.sin(decRad) + Math.cos(phi) * Math.cos(decRad) * Math.cos(H));
+    const azimuth = Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(phi) - Math.tan(decRad) * Math.cos(phi));
+    // azimuth above is south-based, west-positive (standard convention) —
+    // convert to a compass sweep (0..360) mapped across the strip's width.
+    const azCompassDeg = ((azimuth / rad) + 180 + 360) % 360;
+    return { altitudeDeg: altitude / rad, azimuthDeg: azCompassDeg };
+  }
+
+  const applyStars = () => {
+    const container = document.getElementById('night-stars') as HTMLElement | null;
+    if (!container) return;
+    const now = new Date();
+    container.innerHTML = '';
+    for (const [raHours, decDeg, mag] of STAR_CATALOG) {
+      const { altitudeDeg, azimuthDeg } = starAltAz(now, SITE_LAT, SITE_LON, raHours, decDeg);
+      if (altitudeDeg <= 0) continue; // below the horizon — not drawn
+
+      const leftPct = (azimuthDeg / 360) * 100;
+      const cappedAlt = Math.min(altitudeDeg, 60);
+      const topPct = 8 + (1 - cappedAlt / 60) * 55; // keep clear of the ground band
+
+      const extinction = 0.35 + 0.65 * Math.min(1, altitudeDeg / 20);
+      // Compressed magnitude range: real stars are point sources; brightness
+      // shows mostly as glow, not disc size.
+      const size = Math.max(1, Math.min(2.2, 1.9 - mag * 0.16));
+      const opacity = Math.max(0.35, Math.min(1, (1.05 - mag * 0.1) * extinction));
+      const glow = Math.max(1, size * 1.8);
+
+      const div = document.createElement('div');
+      div.className = 'star-point';
+      div.style.left = `${leftPct.toFixed(2)}%`;
+      div.style.top = `${topPct.toFixed(2)}%`;
+      div.style.width = `${size.toFixed(2)}px`;
+      div.style.height = `${size.toFixed(2)}px`;
+      div.style.opacity = opacity.toFixed(2);
+      div.style.boxShadow = `0 0 ${glow.toFixed(1)}px rgba(255,255,255,0.55)`;
+      container.appendChild(div);
+    }
+  };
+
+  /* ---- real weather: wind (windmill + haze) ------------------------------
      Re-fetched at most once every 30 minutes (cached in sessionStorage with
      a timestamp) so a page reload doesn't re-request it, but a long-lived
      tab still catches real changes in conditions rather than being locked
      to whatever it was on first load. Any failure — offline, blocked,
-     slow — falls back to a calm, mostly-clear-day baseline silently.
-     One fetch now drives four things: windmill rotor speed, dust haze
-     thickness, cloud density/opacity, and cloud drift speed + direction —
-     all from the same current conditions at Lubbock. */
+     slow — falls back to a calm, moderate-wind baseline silently.
+     One fetch drives two things: windmill rotor speed and dust haze
+     thickness — both from the current wind speed at Lubbock. (Cloud
+     cover and wind direction were also being fetched here to drive a
+     drifting-cloud layer; that layer was cut after review, so those two
+     fields are no longer requested at all.) */
   const WEATHER_TTL_MS = 30 * 60_000;
 
   async function applyWeather() {
     const svg = document.getElementById('windmill') as HTMLElement | null;
     let mph: number | null = null;
-    let dirDeg: number | null = null;
-    let cloudPct: number | null = null;
     try {
       const cachedRaw = sessionStorage.getItem('horizon-weather');
       const cached = cachedRaw ? JSON.parse(cachedRaw) : null;
@@ -559,26 +663,20 @@ const groundPath = `${silhouette} V22 H0 Z`;
 
       if (isFresh) {
         mph = cached.mph;
-        dirDeg = typeof cached.dir === 'number' ? cached.dir : null;
-        cloudPct = typeof cached.cloud === 'number' ? cached.cloud : null;
       } else {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 4000);
         const res = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${SITE_LAT}&longitude=${SITE_LON}&current=wind_speed_10m,wind_direction_10m,cloud_cover&wind_speed_unit=mph`,
+          `https://api.open-meteo.com/v1/forecast?latitude=${SITE_LAT}&longitude=${SITE_LON}&current=wind_speed_10m&wind_speed_unit=mph`,
           { signal: controller.signal }
         );
         clearTimeout(timeout);
         if (res.ok) {
           const data = await res.json();
           const v = data?.current?.wind_speed_10m;
-          const dir = data?.current?.wind_direction_10m;
-          const cloud = data?.current?.cloud_cover;
           if (typeof v === 'number') mph = v;
-          if (typeof dir === 'number') dirDeg = dir;
-          if (typeof cloud === 'number') cloudPct = cloud;
           if (mph != null) {
-            sessionStorage.setItem('horizon-weather', JSON.stringify({ mph, dir: dirDeg, cloud: cloudPct, ts: Date.now() }));
+            sessionStorage.setItem('horizon-weather', JSON.stringify({ mph, ts: Date.now() }));
           }
         }
       }
@@ -597,23 +695,6 @@ const groundPath = `${silhouette} V22 H0 Z`;
       // modest ~0.23, matching the 10mph assumption above.
       const hazeStrength = Math.min(1, Math.max(0, (clamped - 4) / 26));
       header.style.setProperty('--haze-strength', hazeStrength.toFixed(2));
-
-      // Clouds drift in the direction the wind is blowing TOWARD (data
-      // gives the direction it's blowing FROM). Projected onto our flat
-      // side-view line as a simple left/right sign — real meteorology
-      // reduced to a 2D header, not a literal compass.
-      let cloudDir = 1;
-      if (dirDeg != null) {
-        const towardRad = ((dirDeg + 180) % 360) * (Math.PI / 180);
-        cloudDir = Math.sin(towardRad) >= 0 ? 1 : -1;
-      }
-      header.style.setProperty('--cloud-dir', String(cloudDir));
-
-      const cloudDuration = Math.min(160, Math.max(40, 200 - clamped * 4));
-      header.style.setProperty('--cloud-duration', `${cloudDuration.toFixed(0)}s`);
-
-      const cloudFrac = cloudPct == null ? 0.25 : Math.min(1, Math.max(0, cloudPct / 100));
-      header.style.setProperty('--cloud-opacity', (cloudFrac * 0.6).toFixed(2));
     }
   }
 
@@ -719,17 +800,20 @@ const groundPath = `${silhouette} V22 H0 Z`;
   /* ---- lifecycle -------------------------------------------------------- */
   applyPhase();
   applyMoon();
+  applyStars();
   applySeasonalMarker();
   setHorizon();
   refreshActive();
   applyWeather();
   setInterval(applyPhase, 60_000); // long-lived tabs cross phase/elevation boundaries
   setInterval(applyMoon, 15 * 60_000); // fine enough to catch a real moonrise/moonset crossing
+  setInterval(applyStars, 15 * 60_000); // stars drift slowly enough that this cadence is plenty
   setInterval(applyWeather, WEATHER_TTL_MS); // matches the cache TTL — a long visit sees real changes
 
   document.addEventListener('astro:after-swap', () => {
     applyPhase();
     applyMoon();
+    applyStars();
     applySeasonalMarker();
     setHorizon();
     refreshActive();
@@ -762,9 +846,13 @@ const groundPath = `${silhouette} V22 H0 Z`;
     --moon-shadow-x: 0%;
     --haze-strength: 0.23; /* pre-fetch fallback; JS overwrites from real wind */
     --grazing-light: 0; /* pre-hydration fallback; JS overwrites from real sun elevation */
-    --cloud-opacity: 0.15; /* pre-fetch fallback; JS overwrites from real cloud cover */
-    --cloud-duration: 100s;
-    --cloud-dir: 1;
+    --grazing-color: #E8A85C; /* pre-hydration fallback; JS overwrites per elevation */
+    /* Real crepuscular rays need particulates to scatter visibly — a dusty,
+       windy dawn should look more dramatic than a clear, calm one. Reuses
+       --haze-strength (already set from real wind by applyWeather()) as a
+       multiplier on the raw elevation-driven --grazing-light, so bloom/
+       streak/rays/rim-light are never a static "on near horizon" effect. */
+    --grazing-effective: calc(var(--grazing-light, 0) * (0.35 + var(--haze-strength, 0.23) * 0.65));
     --sun-rays-scroll-fade: 1; /* only driven down by scroll on .scroll-driven; 1 = no reduction */
   }
 
@@ -813,37 +901,78 @@ const groundPath = `${silhouette} V22 H0 Z`;
     mix-blend-mode: multiply;
   }
 
-  /* Real drifting clouds: density from real cloud cover, drift speed from
-     real wind speed, drift direction from real wind direction. Each lane
-     draws its motif twice, one tile-width (1440px) apart, and animates by
-     exactly that width so the loop repeats seamlessly. */
-  #sky-clouds {
-    opacity: var(--cloud-opacity, 0.15);
-    transition: opacity 2s ease;
+  /* Grazing light: warms the haze band during dawn/dusk, layered above
+     the haze's own independent wind-driven opacity/height. Opacity is the
+     product of --grazing-effective (elevation × haze-strength) and the
+     scroll fade, same signals every other grazing-light element below
+     uses, so this never lags or leads the rest of the effect. */
+  #haze-warm-overlay {
+    height: calc(1.6rem + var(--haze-strength, 0.23) * 1.8rem); /* matches #horizon-haze's own height calc */
+    background: linear-gradient(to top, var(--grazing-color, #E8A85C) 0%, transparent 80%);
+    opacity: calc(var(--grazing-effective, 0) * var(--sun-rays-scroll-fade, 1) * 0.45);
+    transition: opacity 1.5s linear, height 1.2s ease-out;
   }
-  .cloud-lane {
-    animation: cloud-drift var(--cloud-duration, 100s) linear infinite;
-    animation-delay: var(--cloud-delay, 0s);
+
+  /* Grazing light: a faint blurred glow sitting just above the ground
+     silhouette, centered under the sun — reads as light catching the top
+     of the ridge rather than a light floating loose in the sky, since the
+     ground fill above/around it stays opaque where the terrain actually
+     rises. */
+  #horizon-rim-light {
+    left: 50%;
+    bottom: 2px;
+    width: 130px;
+    height: 12px;
+    transform: translateX(-50%);
+    border-radius: 9999px;
+    background: radial-gradient(ellipse at center, var(--grazing-color, #E8A85C) 0%, transparent 75%);
+    filter: blur(4px);
+    opacity: calc(var(--grazing-effective, 0) * var(--sun-rays-scroll-fade, 1) * 0.6);
+    transition: opacity 1.5s linear;
   }
-  @keyframes cloud-drift {
-    from { transform: translateX(0); }
-    to   { transform: translateX(calc(-1440px * var(--cloud-dir, 1))); }
-  }
-  .cloud-shape {
-    fill: color-mix(in oklch, var(--color-canvas, #FBFBF9) 55%, white);
-  }
-  #horizon-header[data-phase="dawn"] .cloud-shape,
-  #horizon-header[data-phase="dusk"] .cloud-shape {
-    fill: color-mix(in oklch, var(--color-canvas, #FBFBF9) 55%, var(--evening-tint));
-  }
-  #horizon-header[data-phase="night"] .cloud-shape {
-    fill: color-mix(in oklch, var(--color-canvas, #FBFBF9) 60%, #33415C);
+
+  /* Grazing light: a thin horizon-hugging color wash at the sun's current
+     height — real low-angle light washes sideways across the whole sky at
+     that height, not just in a halo around the sun disc. Tracks --sun-elev
+     with a small fixed offset toward the sun's vertical center. */
+  #sun-streak {
+    left: 0;
+    width: 100%;
+    height: 3px;
+    bottom: calc(var(--sun-elev, 30%) + 5px);
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      var(--grazing-color, #E8A85C) 42%,
+      var(--grazing-color, #E8A85C) 58%,
+      transparent 100%
+    );
+    opacity: calc(var(--grazing-effective, 0) * var(--sun-rays-scroll-fade, 1) * 0.5);
+    transition: bottom 1s linear, opacity 1.5s linear;
   }
 
   #sun-wrap {
     left: calc(50% - 6px); /* 6px = half the sun's 12px width */
     bottom: var(--sun-elev);
     transition: bottom 1s linear; /* smooths the once-a-minute elevation step */
+  }
+
+  /* Grazing light: a soft horizontally-stretched atmospheric bloom behind
+     the sun — real scatter at a low angle is diffuse, not a set of crisp
+     lines, and stretches sideways far more than up/down through a flat
+     landscape's sightline. */
+  #sun-bloom {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 46px;
+    height: 18px;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, var(--grazing-color, #E8A85C) 0%, transparent 72%);
+    filter: blur(6px);
+    opacity: calc(var(--grazing-effective, 0) * var(--sun-rays-scroll-fade, 1) * 0.85);
+    transition: opacity 1.5s linear;
   }
 
   #horizon-sun {
@@ -859,26 +988,29 @@ const groundPath = `${silhouette} V22 H0 Z`;
       0 0 0 3px color-mix(in oklch, #D9913F 10%, transparent),
       0 0 16px 5px color-mix(in oklch, #D9913F 22%, transparent),
       0 0 34px 12px color-mix(in oklch, #D9913F 8%, transparent);
-    transform: translateY(0);
+    transform-origin: center;
     opacity: 0.9;
+    position: relative;
+    z-index: 1; /* sits above #sun-bloom, which shares this stacking context */
+    transition: transform 0.6s ease-out, filter 0.6s ease-out;
   }
 
   /* Grazing light: thin rays, only visible when the sun sits low near the
      horizon — real elevation, same value that drives --sun-elev. Centered
      on the sun by resolving 50%/50% against #sun-wrap's own shrink-to-fit
      12x12 box (its position:absolute already makes it the containing
-     block for this child). Final opacity is a PRODUCT of two independent
-     signals: --grazing-light (real sun elevation) and
-     --sun-rays-scroll-fade (scroll depth — see the scroll-driven-animations
-     section below). Without this, the rays were only wired to elevation,
-     so scrolling far enough could fade the sun disc itself out while
-     leaving the rays floating in place with nothing under them. */
+     block for this child). Final opacity is a PRODUCT of --grazing-effective
+     (elevation × real haze strength — see the base custom properties above)
+     and --sun-rays-scroll-fade (scroll depth — see the scroll-driven-
+     animations section below). Without the scroll term, scrolling far
+     enough could fade the sun disc itself out while leaving the rays
+     floating in place with nothing under them. */
   #sun-rays {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    color: #E8A85C;
-    opacity: calc(var(--grazing-light, 0) * var(--sun-rays-scroll-fade, 1));
+    color: var(--grazing-color, #E8A85C);
+    opacity: calc(var(--grazing-effective, 0) * var(--sun-rays-scroll-fade, 1));
     transition: opacity 1.5s linear;
   }
 
@@ -914,8 +1046,22 @@ const groundPath = `${silhouette} V22 H0 Z`;
   }
 
   #night-stars {
-    color: #E7ECF2;
-    opacity: 0.75;
+    position: relative;
+  }
+
+  /* Real bright-star catalog rendering: fixed-pixel circular divs, not SVG
+     circles in a stretched viewBox — this stays round no matter what
+     aspect ratio the header ends up at on a given viewport. Size/opacity
+     are set per-star in applyStars() from real magnitude + atmospheric
+     extinction; the soft white glow (not a dark halo) is what gives each
+     point contrast against the header's actual night sky, which stays a
+     fairly pale, barely-tinted color rather than true darkness. */
+  .star-point {
+    position: absolute;
+    border-radius: 9999px;
+    background: #FFFFFF;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
   }
 
   #crane-flock {
@@ -980,8 +1126,19 @@ const groundPath = `${silhouette} V22 H0 Z`;
       color-mix(in oklch, var(--color-canvas, #FBFBF9) 82%, #D9917A) 100%
     );
   }
+  /* Grazing-light disc flatten/darken: real atmospheric refraction visibly
+     compresses and dims a sun sitting right at the horizon — the familiar
+     "squashed" look — relaxing back to a normal circle by the top of the
+     dawn/dusk window. Driven by the same raw --grazing-light value (1 at
+     the horizon, 0 by ~16% elevation) as the rest of the grazing-light
+     system, deliberately NOT scaled by haze strength like bloom/streak/
+     rays/rim-light are — this is a property of the sun's own geometry
+     through the atmosphere, not of how much dust is in the air. */
   #horizon-header[data-phase="dawn"] #horizon-sun {
-    filter: hue-rotate(-12deg) saturate(1.1);
+    filter: hue-rotate(-12deg)
+      saturate(calc(1.1 + var(--grazing-light, 0) * 0.15))
+      brightness(calc(1 - var(--grazing-light, 0) * 0.28));
+    transform: scaleY(calc(1 - var(--grazing-light, 0) * 0.45));
   }
 
   #horizon-header[data-phase="dusk"] {
@@ -996,7 +1153,10 @@ const groundPath = `${silhouette} V22 H0 Z`;
     );
   }
   #horizon-header[data-phase="dusk"] #horizon-sun {
-    filter: hue-rotate(8deg) saturate(1.25);
+    filter: hue-rotate(8deg)
+      saturate(calc(1.25 + var(--grazing-light, 0) * 0.15))
+      brightness(calc(1 - var(--grazing-light, 0) * 0.28));
+    transform: scaleY(calc(1 - var(--grazing-light, 0) * 0.45));
   }
 
   #horizon-header[data-phase="night"] {
@@ -1352,8 +1512,8 @@ const groundPath = `${silhouette} V22 H0 Z`;
   /* ======================================================================== */
   @media (prefers-reduced-motion: reduce) {
     #horizon-header, #sky-base, #sky-frost, #sky-dusk, #sun-wrap, #horizon-sun,
-    #sun-rays, #sky-clouds, .cloud-lane, .cloud-shape,
-    #night-sky, #horizon-moon, #windmill, #windmill-rotor, #crane-flock,
+    #sun-rays, #sun-bloom, #sun-streak, #horizon-rim-light, #haze-warm-overlay,
+    #night-sky, #horizon-moon, .star-point, #windmill, #windmill-rotor, #crane-flock,
     #horizon-haze, #the-horizon, .horizon-path, .horizon-ground, .distant-ridge,
     .signature-img, .landmark-name, .landmark, .station-plate, .station-meta,
     .marker, .marker-label, .marker-tick {
