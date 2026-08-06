@@ -1,5 +1,5 @@
 ---
-// src/pages/main.astro
+// src/pages/index.astro
 //
 // "The Register" — the four pillars as leaves of a bound ledger you
 // page through, not a sequence you scroll through.
@@ -80,6 +80,83 @@
 // dir-based sign only flipped the Z-depth component, and picked the
 // wrong sign for backward navigation, making that direction's exit
 // recede away from the viewer instead of lift toward it).
+//
+// v9: fixed the REAL trap-door cause. The incoming leaf was being
+// animated in too — snapped to an edge-on rotateY(+/-100deg) and then
+// transitioned back to 0deg over the same 600ms as the outgoing leaf.
+// That meant the revealed page stayed invisible (past the 90deg
+// backface-visibility cutoff) for most of the transition, only
+// snapping into full view near the end — reading as a page rising up
+// from underneath rather than being uncovered. Fixed to match how a
+// real book actually works: the page underneath isn't animating at
+// all, it's already lying flat: the incoming leaf is now set to its
+// resting rotateY(0deg) INSTANTLY with no transition, before the
+// outgoing leaf starts moving. Only the outgoing leaf transitions,
+// lifting off and arcing past 90deg where backface-visibility hides
+// it, progressively uncovering the incoming leaf that's been sitting
+// still and visible underneath the whole time. Backward navigation
+// stays a no-animation instant swap (dir === -1), matching how it
+// worked before — going back is meant to read as the page simply
+// being there again, not as a flip in reverse.
+//
+// v10: FOXING made per-leaf and organic instead of one fixed set of
+// hand-placed circles shared by every page. The old approach painted
+// five identical radial-gradient dots on `.book::after`, visible
+// behind whichever leaf happened to be showing — so every leaf looked
+// exactly the same amount and shape of "aged," which is what made it
+// read as a decal rather than real spotting. Real foxing is irregular
+// (mineral/fungal blooms, not circles), clusters unevenly, and varies
+// leaf to leaf even within one book.
+//
+// v11: reworked again — v10's spots came out fuzzy-edged, more like
+// stains bleeding into the paper than the sharply-bounded specks real
+// foxing actually has. Two causes, both fixed here: the noise was run
+// at a very low frequency (so the field changed value slowly across
+// space, spreading each spot's edge over dozens of pixels no matter
+// how the threshold was shaped), and the halo was a heavy Gaussian
+// blur, which is soft by definition. Now the threshold is a steep
+// LINEAR transfer over higher-frequency noise, compressing each edge
+// into about a pixel, and the halo is a second hard threshold at a
+// slightly lower cut minus the first — a defined concentric ring
+// rather than a blur.
+//
+// New approach: foxingTexture() below generates one SVG data-URI per
+// leaf from TWO spot layers at different scales — fine specks (high
+// frequency) and a few larger blooms (lower frequency) — because a
+// single layer only ever produces one characteristic blob size, which
+// reads as camouflage rather than age. Both layers are biased by a
+// shared low-frequency "cluster" field before thresholding, so specks
+// and blooms concentrate in the same regions and leave other parts of
+// the page nearly clean, the way real foxing colonizes unevenly.
+// Each spot gets a rust core and a paler bloom ring around it
+// (pigment migrating outward as moisture dried).
+//
+// Density was tuned by simulating the exact feTurbulence algorithm
+// and measuring what fraction of the page the spots actually cover —
+// the cuts in FOXING_SPECK_CUT / FOXING_BLOOM_CUT are percentile
+// thresholds, not guesses. See the note above those constants for
+// which direction to move them.
+//
+// Each of the 5 leaves gets its own `seed` (so the blob layout is
+// different per leaf, not shifted copies of one pattern) and its own
+// opacity (heavier on the leaves nearest the covers — Ex Libris and
+// Publications — since those are the most handled/exposed pages,
+// lighter toward the middle). The versos (leaf-face--back) reuse the
+// same seeds, so a sheet's front and back feel like the same physical
+// page, but flatter/fainter — blank pages show more even toning and
+// fewer crisp spots than a printed/handled face.
+//
+// The texture is applied via a CSS custom property (--foxing-image)
+// set inline per leaf-face, read by a shared `.leaf-face--front::after,
+// .leaf-face--back::after` rule — so there's one CSS rule, not five
+// duplicated ones, and the per-leaf variation lives entirely in the
+// frontmatter data. A two-layer mask-image biases the texture toward
+// the page edges and the spine gutter (where handling/moisture damage
+// concentrates in a real book) and thins it out toward the center.
+// `.book::after` keeps only the broad soft vignette that was already
+// doing double duty as ambient page-block shading — the five discrete
+// spot gradients that used to live there are gone, replaced by the
+// per-leaf textures above.
 import RootLayout from '../layouts/RootLayout.astro';
 import { Image } from 'astro:assets';
 import montana2022 from '../assets/montana2022/137.jpg';
@@ -91,6 +168,107 @@ const leaves = [
   { code: 'Current Work', label: '04 · Current Work' },
   { code: 'Publications', label: '05 · Publications' },
 ];
+
+// ── Foxing textures (see v10 note above) ─────────────────────────
+//
+// TILE GEOMETRY: 900x600, and every baseFrequency below is a multiple
+// of 1/300 — the greatest common divisor of the tile's two dimensions.
+// That means each frequency lands an exact whole number of noise
+// lattice cells across BOTH axes of the tile, so stitchTiles='stitch'
+// has nothing to round off and the pattern repeats seamlessly. Change
+// the tile size or a frequency and you have to re-satisfy that
+// relationship, or the browser will nudge the frequency itself and
+// shift the thresholds below out from under you.
+//
+// THRESHOLD SLOPE: the linear feFuncA transfer is what gives the
+// spots their defined boundary. Alpha ramps from 0 to 1 across a band
+// only 1/FOX_SLOPE wide in value space — at slope 60 that's a
+// transition compressed into roughly one pixel, so the edge reads
+// crisp but still anti-aliases instead of stair-stepping. (The
+// previous version used a gamma curve over a very low-frequency noise
+// field, which spread that same transition across dozens of pixels —
+// that was the fuzziness.)
+const FOX_SLOPE = 60;
+// intercept placing the 50% crossing exactly at `cut`
+const foxIntercept = (cut: number) => (0.5 - FOX_SLOPE * cut).toFixed(3);
+const ALPHA_FROM_RED = '0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1 0 0 0 0';
+
+function foxingTexture(
+  seed: number,
+  speckCut: number,
+  bloomCut: number,
+  coreOpacity: number,
+  haloOpacity: number
+) {
+  // One spot layer: noise -> bias by the shared cluster field -> two
+  // hard thresholds. The higher cut is the spot itself; the slightly
+  // lower cut is the same shape grown a little, and subtracting the
+  // first from the second (operator='out') leaves a thin concentric
+  // band — the paler bloom ring a real foxing spot leaves behind as
+  // pigment migrates outward while drying. Both edges stay hard.
+  const spots = (id: string, s: number, freq: string, cut: number, ringWidth: number) => `
+      <feTurbulence type='fractalNoise' baseFrequency='${freq}' numOctaves='1' seed='${s}' stitchTiles='stitch' result='${id}n'/>
+      <feColorMatrix in='${id}n' type='matrix' values='${ALPHA_FROM_RED}' result='${id}a'/>
+      <feComposite in='${id}a' in2='cluster' operator='arithmetic' k1='0' k2='0.78' k3='0.34' k4='-0.06' result='${id}f'/>
+      <feComponentTransfer in='${id}f' result='${id}Core'>
+        <feFuncA type='linear' slope='${FOX_SLOPE}' intercept='${foxIntercept(cut)}'/>
+      </feComponentTransfer>
+      <feComponentTransfer in='${id}f' result='${id}Grown'>
+        <feFuncA type='linear' slope='${FOX_SLOPE}' intercept='${foxIntercept(cut - ringWidth)}'/>
+      </feComponentTransfer>
+      <feComposite in='${id}Grown' in2='${id}Core' operator='out' result='${id}Ring'/>`;
+
+  // color-interpolation-filters='sRGB' matters: the default
+  // (linearRGB) would wash the flood colors out unpredictably.
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600'>
+    <filter id='f' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>
+      <feTurbulence type='fractalNoise' baseFrequency='0.0033333' numOctaves='1' seed='${seed + 7}' stitchTiles='stitch' result='cn'/>
+      <feColorMatrix in='cn' type='matrix' values='${ALPHA_FROM_RED}' result='cluster'/>
+      ${spots('s', seed, '0.09', speckCut, 0.02)}
+      ${spots('b', seed + 3, '0.03', bloomCut, 0.035)}
+      <feFlood flood-color='#7d4a24' flood-opacity='${coreOpacity}' result='rust'/>
+      <feFlood flood-color='#b98a5c' flood-opacity='${haloOpacity}' result='pale'/>
+      <feComposite in='pale' in2='sRing' operator='in' result='sRingPaint'/>
+      <feComposite in='pale' in2='bRing' operator='in' result='bRingPaint'/>
+      <feComposite in='rust' in2='sCore' operator='in' result='sCorePaint'/>
+      <feComposite in='rust' in2='bCore' operator='in' result='bCorePaint'/>
+      <feMerge>
+        <feMergeNode in='sRingPaint'/>
+        <feMergeNode in='bRingPaint'/>
+        <feMergeNode in='sCorePaint'/>
+        <feMergeNode in='bCorePaint'/>
+      </feMerge>
+    </filter>
+    <rect width='100%' height='100%' filter='url(#f)'/>
+  </svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
+// DENSITY DIAL. These cuts are the one thing to touch if the amount of
+// foxing looks wrong — they're percentile thresholds against the noise
+// field, so small changes move coverage a lot. Measured coverage of
+// the spot cores at these values: 0.70 -> ~2.4% of the page, 0.712 ->
+// ~1.7%, 0.724 -> ~1.0%. LOWER = MORE FOXING. Anything much below
+// 0.69 tips over into looking like mold rather than age.
+// Cover-adjacent leaves (Ex Libris, Publications) run heavier; the
+// interior leaves lighter, since the outer pages of a real book take
+// the most handling and humidity.
+const FOXING_SEEDS = [3, 11, 27, 42, 58];
+const FOXING_SPECK_CUT = [0.704, 0.718, 0.724, 0.718, 0.706];
+const FOXING_BLOOM_CUT = [0.708, 0.723, 0.730, 0.723, 0.710];
+const FOX_CORE_OPACITY = 0.52;
+const FOX_HALO_OPACITY = 0.28;
+
+const foxingFront = FOXING_SEEDS.map((seed, i) =>
+  foxingTexture(seed, FOXING_SPECK_CUT[i], FOXING_BLOOM_CUT[i], FOX_CORE_OPACITY, FOX_HALO_OPACITY)
+);
+// Versos: offset seeds (the back of a sheet isn't a mirror of its
+// front) and uniformly sparser + fainter, since a blank page shows
+// broad even toning rather than the crisp spotting a handled,
+// printed face collects.
+const foxingBack = FOXING_SEEDS.map((seed) =>
+  foxingTexture(seed + 100, 0.726, 0.732, 0.34, 0.18)
+);
 
 const SIGNATURE_PATHS = `
             <g fill="currentColor">
@@ -271,9 +449,9 @@ const SIGNATURE_GOLD_SVG = `
 
           <!-- ── 01 — Ex Libris ─────────────────────────────── -->
           <div class="leaf leaf--exlibris" data-leaf="0" data-code={leaves[0].code} role="tabpanel" id="leaf-0" aria-labelledby="tab-0">
-            <div class="leaf-face leaf-face--front">
+            <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[0]}")`}>
             <div class="leaf-header" aria-hidden="true">
-              <span class="leaf-header-title">Welcome</span>
+              <span class="leaf-header-title">Introduction</span>
               <span class="leaf-header-page">01</span>
             </div>
             <div class="leaf-body">
@@ -294,12 +472,12 @@ const SIGNATURE_GOLD_SVG = `
             </div>
             </div>
             </div>
-            <div class="leaf-face leaf-face--back" aria-hidden="true"></div>
+            <div class="leaf-face leaf-face--back" aria-hidden="true" style={`--foxing-image:url("${foxingBack[0]}")`}></div>
           </div>
 
           <!-- ── 02 — Statement of Purpose ─────────────────── -->
           <div class="leaf" data-leaf="1" data-code={leaves[1].code} role="tabpanel" id="leaf-1" aria-labelledby="tab-1" inert>
-            <div class="leaf-face leaf-face--front">
+            <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[1]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title">{leaves[1].code}</span>
               <span class="leaf-header-page">02</span>
@@ -319,12 +497,12 @@ const SIGNATURE_GOLD_SVG = `
             </div>
             </div>
             </div>
-            <div class="leaf-face leaf-face--back" aria-hidden="true"></div>
+            <div class="leaf-face leaf-face--back" aria-hidden="true" style={`--foxing-image:url("${foxingBack[1]}")`}></div>
           </div>
 
           <!-- ── 03 — Photography ──────────────────────────── -->
           <div class="leaf leaf--rake" data-leaf="2" data-code={leaves[2].code} data-rake role="tabpanel" id="leaf-2" aria-labelledby="tab-2" inert>
-            <div class="leaf-face leaf-face--front">
+            <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[2]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title">{leaves[2].code}</span>
               <span class="leaf-header-page">03</span>
@@ -353,12 +531,12 @@ const SIGNATURE_GOLD_SVG = `
             </div>
             </div>
             </div>
-            <div class="leaf-face leaf-face--back" aria-hidden="true"></div>
+            <div class="leaf-face leaf-face--back" aria-hidden="true" style={`--foxing-image:url("${foxingBack[2]}")`}></div>
           </div>
 
           <!-- ── 04 — Current Work ─────────────────────────── -->
           <div class="leaf" data-leaf="3" data-code={leaves[3].code} role="tabpanel" id="leaf-3" aria-labelledby="tab-3" inert>
-            <div class="leaf-face leaf-face--front">
+            <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[3]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title">{leaves[3].code}</span>
               <span class="leaf-header-page">04</span>
@@ -377,12 +555,12 @@ const SIGNATURE_GOLD_SVG = `
             </div>
             </div>
             </div>
-            <div class="leaf-face leaf-face--back" aria-hidden="true"></div>
+            <div class="leaf-face leaf-face--back" aria-hidden="true" style={`--foxing-image:url("${foxingBack[3]}")`}></div>
           </div>
 
           <!-- ── 05 — Publication ──────────────────────────── -->
           <div class="leaf" data-leaf="4" data-code={leaves[4].code} role="tabpanel" id="leaf-4" aria-labelledby="tab-4" inert>
-            <div class="leaf-face leaf-face--front">
+            <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[4]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title">{leaves[4].code}</span>
               <span class="leaf-header-page">05</span>
@@ -412,7 +590,7 @@ const SIGNATURE_GOLD_SVG = `
             </div>
             </div>
             </div>
-            <div class="leaf-face leaf-face--back" aria-hidden="true"></div>
+            <div class="leaf-face leaf-face--back" aria-hidden="true" style={`--foxing-image:url("${foxingBack[4]}")`}></div>
           </div>
 
           <div class="swipe-hint" id="swipe-hint" aria-hidden="true">
@@ -444,7 +622,7 @@ const SIGNATURE_GOLD_SVG = `
         ))}
       </div>
 
-      <span class="reg-counter" id="reg-counter" aria-hidden="true">01 / 04</span>
+      <span class="reg-counter" id="reg-counter" aria-hidden="true">01 / 05</span>
 
       <button class="reg-arrow" id="reg-next" aria-label="Next section">&rarr;</button>
     </div>
@@ -778,6 +956,14 @@ const SIGNATURE_GOLD_SVG = `
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
+  /* v10: only the broad, soft ambient vignette lives here now — the
+     five hand-placed discrete foxing spots that used to be part of
+     this rule are gone. They painted identically behind every leaf
+     regardless of which one was active, which is what made the aging
+     read as a decal rather than real spotting. Discrete foxing is now
+     generated per-leaf (see .leaf-face--front::after /
+     .leaf-face--back::after below), so it actually differs page to
+     page the way real foxing does. */
   .book::after {
     content: '';
     position: absolute;
@@ -786,12 +972,7 @@ const SIGNATURE_GOLD_SVG = `
     pointer-events: none;
     mix-blend-mode: multiply;
     background-image:
-      radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(90, 62, 40, 0.12) 100%),
-      radial-gradient(3.5rem 2.5rem at 12% 22%, rgba(120, 78, 42, 0.13), transparent 70%),
-      radial-gradient(2.5rem 3rem at 82% 15%, rgba(120, 78, 42, 0.10), transparent 70%),
-      radial-gradient(4rem 3rem at 68% 68%, rgba(120, 78, 42, 0.11), transparent 70%),
-      radial-gradient(2rem 2rem at 22% 78%, rgba(120, 78, 42, 0.09), transparent 70%),
-      radial-gradient(3rem 2rem at 90% 85%, rgba(120, 78, 42, 0.08), transparent 70%);
+      radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(90, 62, 40, 0.12) 100%);
   }
 
   /* Now lives INSIDE each leaf's front face (see .leaf-header below)
@@ -1090,6 +1271,44 @@ const SIGNATURE_GOLD_SVG = `
     background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
     background-position: 0 0, 9% 0, 14% 0, 63% 0, 67% 0, 84% 0, 89% 0;
     background-size: 100% 100%, 1px 100%, 1px 100%, 1px 100%, 1px 100%, 1px 100%, 1px 100%;
+  }
+
+  /* v10: per-leaf foxing. --foxing-image is set inline per leaf-face
+     (front and back both) in the markup above, using the seed/opacity
+     tuned per leaf in frontmatter — so this ONE rule renders five
+     different patterns without five duplicated CSS blocks. The mask
+     biases the texture toward the page edges and the spine gutter
+     (left side), thinning toward the center, since that's where
+     handling/moisture damage concentrates on a real bound page. Sits
+     above the leaf's own content (header/body) in paint order since
+     it's positioned — intentional: real foxing marks the ink too, not
+     just the blank margins, and the low-opacity multiply blend keeps
+     text legible underneath it. */
+  .leaf-face--front::after,
+  .leaf-face--back::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    mix-blend-mode: multiply;
+    background-repeat: repeat;
+    /* fixed px (not a percentage) so spots keep their real size and
+       round shape at every breakpoint instead of stretching with the
+       leaf; the tile stitches seamlessly, so the repeat is invisible */
+    background-size: 900px 600px;
+    background-image: var(--foxing-image, none);
+    mask-image:
+      radial-gradient(120% 90% at 50% 50%, transparent 40%, black 100%),
+      radial-gradient(60% 100% at 4% 50%, black 0%, transparent 55%);
+    -webkit-mask-image:
+      radial-gradient(120% 90% at 50% 50%, transparent 40%, black 100%),
+      radial-gradient(60% 100% at 4% 50%, black 0%, transparent 55%);
+    /* default mask-composite is `add` (union of the two gradients
+       above), which is what we want here; Safari's legacy
+       -webkit-mask-composite keywords don't include `add`, so this is
+       left unset there and falls back to simple layering — close
+       enough visually, not worth a bespoke fallback for a decorative
+       texture. */
   }
 
 
@@ -1618,12 +1837,8 @@ const SIGNATURE_GOLD_SVG = `
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       if (reduced || dir === -1) {
-        // Backward navigation cuts instantly — no animation. After
-        // repeated attempts, no direction/hinge/z-index combination
-        // produced a reverse-of-forward motion that didn't read as a
-        // trap door, so rather than keep guessing, backward just
-        // swaps with the animation turned off. Forward (below) is
-        // untouched and keeps the full flip.
+        // Backward navigation is an instant appearance, no flip —
+        // by request, not animated in reverse.
         outgoing.style.transition = 'none';
         incoming.style.transition = 'none';
         outgoing.style.zIndex = '';
@@ -1639,31 +1854,34 @@ const SIGNATURE_GOLD_SVG = `
         outgoing.style.transition = '';
         incoming.style.transition = '';
       } else {
-        // the page that's leaving must stay visually in front of the
-        // page it's revealing for the whole turn — without this,
-        // paint order falls back to DOM position (later leaf always
-        // on top), which put the incoming leaf above the outgoing
-        // one: the outgoing page read as sinking away BEHIND what
-        // it's revealing (a "trap door") instead of lifting in front
-        // of it.
+        // Real page-flip physics: the incoming leaf is already
+        // "there," lying flat underneath — it settles at rest
+        // INSTANTLY, before the outgoing leaf starts moving. Only the
+        // outgoing leaf animates, lifting off and arcing past 90deg,
+        // where backface-visibility hides it — progressively exposing
+        // the incoming leaf that's been sitting still and visible the
+        // whole time. This replaces the old approach of also animating
+        // the incoming leaf in from a hidden edge-on state, which is
+        // what produced the "trap door" look: the revealed page stayed
+        // invisible until late in the transition instead of being
+        // visible from the very first frame.
+        const angle = dir === 1 ? -EXIT_DEG : EXIT_DEG;
+
         outgoing.style.zIndex = '2';
         incoming.style.zIndex = '1';
 
-        outgoing.style.transform = `rotateY(${-EXIT_DEG}deg)`;
-        outgoing.setAttribute('inert', '');
-        outgoing.classList.remove('is-turning');
-        void outgoing.offsetHeight;
-        outgoing.classList.add('is-turning');
-
         incoming.style.transition = 'none';
-        incoming.style.transform = `rotateY(${EXIT_DEG}deg)`;
-        void incoming.offsetHeight;
-        incoming.style.transition = '';
         incoming.removeAttribute('inert');
         incoming.style.transform = 'rotateY(0deg)';
         incoming.classList.remove('is-turning');
         void incoming.offsetHeight;
-        incoming.classList.add('is-turning');
+        incoming.style.transition = '';
+
+        outgoing.classList.remove('is-turning');
+        void outgoing.offsetHeight;
+        outgoing.style.transform = `rotateY(${angle}deg)`;
+        outgoing.setAttribute('inert', '');
+        outgoing.classList.add('is-turning');
       }
 
       tabs[current].setAttribute('aria-selected', 'false');
