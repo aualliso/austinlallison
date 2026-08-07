@@ -63,6 +63,8 @@
 //      twinkle; the sky changes state, it doesn't animate for its own
 //      sake. NOTE: the moon is still pinned at a fixed left/bottom — it
 //      is the one sky object whose POSITION isn't real. See note 8.
+//      (Superseded twice over: the moon was placed in note 13, and the
+//      stars' own invented vertical band went in note 14.)
 //   6. GRAZING LIGHT (reworked 2026-08-02, sun-color blend added 2026-08-05)
 //      — no longer a symmetric 8-line starburst. Real low-angle light
 //      scatters mostly horizontally (more atmosphere in the sightline), so
@@ -100,10 +102,12 @@
 //      were more astronomically honest than the largest foreground one.
 //      solarPosition() returns the sun's true compass bearing using the same
 //      atan2 hour-angle form starAltAz() uses, projected to screen x with
-//      the SAME 0-360deg-across-the-full-width mapping applyStars() uses.
-//      Matching the existing projection matters more than picking a "better"
-//      one: two different projections in one sky would read worse than
-//      either alone. At 33.58N that yields rise 60.8deg -> 16.9% / noon
+//      the SAME mapping applyStars() uses. Matching the existing projection
+//      matters more than picking a "better" one: two different projections
+//      in one sky would read worse than either alone. (That principle held
+//      for one pass and then quietly broke when the sky window arrived; it
+//      is restored properly in note 15.)
+//      At 33.58N that yields rise 60.8deg -> 16.9% / noon
 //      180deg -> 50% / set 299.2deg -> 83.1% at the summer solstice, and
 //      117.9 -> 32.7% / 180 -> 50% / 242.1 -> 67.3% at the winter one — so
 //      solar noon stays dead centre (the midday composition is unchanged)
@@ -252,6 +256,92 @@
 //      knowing that — it all read as decoration. It also settles an ambiguity
 //      that had gone undocumented, that the sky is LUBBOCK's and not the
 //      viewer's.
+//
+//  14. THE STAR FIELD JOINS THE SKY (2026-08-07). Four fixes; the first is
+//      visible immediately and the last changes the composition.
+//
+//      THE DAWN MOON. A leftover selector from the deleted phase-opacity
+//      rules left `#horizon-header[data-phase="dawn"] #horizon-moon` sharing
+//      the `::after` mask's declaration block. At (2,1,0) it outranked the
+//      moon's own rule, so through every dawn the moon took `inset: 0`,
+//      `background: var(--sky-horizon)` and the mask's `translateX` — a flat
+//      sky-coloured 11px disc pinned to the top-left corner, its box-shadow
+//      glow still attached, its gradient and its rotation gone. It read as
+//      "the moon has set," which is exactly why it survived several passes.
+//      One comma deleted.
+//
+//      THE PRE-PAINT FLASH. The is:inline script sets data-phase, but since
+//      the dark-sky pass the phase supplies only the sky's HUE — --night
+//      supplies the darkness. So the script had quietly stopped doing the one
+//      job it exists for: a midnight visitor got a pale canvas sky with dark
+//      ink until the module landed. It now writes --night and --ink-flip too,
+//      using the same smoothstep and the same 0.625 flip point as the module.
+//      Retune the two together.
+//
+//      EXTINCTION. Was `0.35 + 0.65 * min(1, alt/20)` — linear in altitude
+//      with a hard floor, so a star sitting ON the horizon still rendered at
+//      a third brightness. That floor is why the field needed an invented
+//      vertical band to keep it off the land in the first place. Now
+//      exponential in airmass, 10^(-0.4*k*(X-1)), with k rising as dust does,
+//      so the low sky empties out on its own and a blowing night eats the low
+//      stars first — off the same aerosol loading that drives the haze, the
+//      aureole and the reddening.
+//
+//      AND THE STARS ARE PLACED LIKE EVERYTHING ELSE. They were on a
+//      top-anchored band of their own, `8 + (1 - alt/60) * 55`, which put a
+//      star at 2deg altitude around 61% down from the top — floating in open
+//      sky while the moon at 2deg rested on the ridge. They now go through
+//      refraction, elevationPercent() and --horizon-lift, the same three the
+//      sun and the moon do, and are bottom-anchored with the same +3px
+//      centring correction.
+//
+//      CONSEQUENCE WORTH KNOWING, because it is a composition change and not
+//      just a correctness one: the celestial dome from 0-80deg lives in the
+//      bottom SKY_SPAN_PCT (46%) of the header, which is the same vertical
+//      band the name and the nav occupy. The sun avoids them horizontally via
+//      the sky window; the stars cover the full compass and therefore cannot.
+//      So the field now sits ACROSS the type rather than above it. Two things
+//      keep that from being a mess — #night-sky precedes the content in DOM
+//      order, so the type and the land paint in front, and extinction now
+//      empties the lowest few degrees on its own — but if it reads as noise,
+//      SKY_SPAN_PCT is the dial, and a star-only ceiling below the shared one
+//      is the fallback (at the cost of the single curve this pass bought).
+//      Two catalog stars, Vega and Pollux, transit above PEAK_ALTITUDE_DEG
+//      and will sit pinned at the top of the span around culmination:
+//      accepted deliberately, since one curve shared by every body beats a
+//      second curve that agrees with nothing.
+//
+//  15. ONE PROJECTION (2026-08-07). The sun and moon mapped 55-305deg into
+//      the measured sky window while the stars mapped the full compass across
+//      the full width — two skies disagreeing about where east is. That was
+//      defensible only while the two were never on screen together, which is
+//      what the old comment argued; the moon stopped being night-only in note
+//      13, so they are, all night, every night.
+//
+//      azimuthToPercent() is now piecewise and shared by every body. The
+//      southern arc 55-305deg maps into the measured window exactly as
+//      before — so the sun and the moon are unchanged to the pixel and solar
+//      noon is still 50% — and the remaining 110deg of northern sky is spread
+//      across the two margins, with 0deg and 360deg meeting at the header's
+//      edges. That is where due north belongs: the viewer faces south, so the
+//      wrap point is directly behind them.
+//
+//      Continuous and monotonic. The cost is that the horizontal scale
+//      changes at 55deg and at 305deg, so a wide constellation straddling one
+//      of those bearings is slightly kinked. The Big Dipper is the only thing
+//      in this catalog wide enough to show it, and it will sometimes sit
+//      right on the northwestern seam. The alternatives were worse: dropping
+//      the window puts a summer sunrise back out in a wide screen's margin,
+//      and a smooth power curve moves the sun, which has been tuned across
+//      eleven passes.
+//
+//      Two smaller consequences. The moon's rise/set extremes reach about
+//      54.8deg here, marginally outside the window — it used to clamp there
+//      and now travels a fraction of a percent into the left margin, which is
+//      more correct. And the northern segments are only as wide as the
+//      margins the layout leaves, so on a narrow viewport with almost no
+//      margin the northern sky compresses hard; nothing the sun or moon ever
+//      touches is affected.
 //
 // The benchmark plate under the name no longer carries a place/elevation
 // label — decided it was redundant with the footer's own elevation rail
@@ -478,7 +568,10 @@ const isDev = import.meta.env.DEV;
          since real stars need real altitude/azimuth per star, and a
          fixed-shape SVG scaled to fit whatever width/height the header
          happens to be at could distort circles into ellipses; plain
-         divs with a fixed pixel diameter stay round regardless. -->
+         divs with a fixed pixel diameter stay round regardless.
+         Precedes the content row in DOM order, which is load-bearing now
+         that the stars share the sun's vertical band: the name, the nav
+         and the land all paint in front of the field. -->
     <div id="night-sky" aria-hidden="true" class="absolute inset-0 pointer-events-none">
       <div id="horizon-moon"></div>
       <div id="night-stars" class="absolute inset-0 w-full h-full pointer-events-none"></div>
@@ -652,19 +745,22 @@ const isDev = import.meta.env.DEV;
     </svg>
   </header>
 
-  <!-- Set the phase before first paint so a night visitor never sees a
-       daytime flash. Uses the same real-sunrise/sunset math as the module
-       script below (kept minimal here — this copy just needs the phase
-       name, not the elevation curve or the azimuth, before first paint).
-       Runs once; the module script takes over and refines/animates from
-       there. The sun's horizontal position deliberately isn't computed
-       here: like --sun-elev, it falls back to a CSS default and is
+  <!-- Set the phase AND the sky's darkness before first paint so a night
+       visitor never sees a daytime flash. Uses the same real-sunrise/sunset
+       math as the module script below (kept minimal here — this copy just
+       needs the altitude, not the elevation curve or the azimuth, before
+       first paint). Runs once; the module script takes over and refines/
+       animates from there. The sun's horizontal position deliberately isn't
+       computed here: like --sun-elev, it falls back to a CSS default and is
        overwritten by the module script, whose write lands well inside
        #sun-wrap's own 1.1s entrance-fade delay — so the correction
        happens while the sun is still invisible.
        2026-08-04: now uses a circular (wraparound-safe) window check —
        see the top-of-file comment for why the old >=/< comparisons broke
-       dusk for negative (western) longitudes. -->
+       dusk for negative (western) longitudes.
+       2026-08-07: also writes --night and --ink-flip. Since the dark-sky
+       pass, data-phase supplies only the sky's HUE, so setting it alone had
+       stopped preventing the very flash this script exists for. See note 14. -->
   <script is:inline>
     (function () {
       var LAT = 33.5779, LON = -101.8552;
@@ -704,7 +800,20 @@ const isDev = import.meta.env.DEV;
       if (s.alt > 6) p = 'day';
       else if (s.alt < -6) p = 'night';
       else p = s.morning ? 'dawn' : 'dusk';
-      if (el) el.setAttribute('data-phase', p);
+      if (el) {
+        el.setAttribute('data-phase', p);
+        /* The phase supplies only the HUE now — --night is what actually
+           darkens the sky, and --ink-flip is what keeps the type legible
+           against it. Without these two the pre-paint script left a
+           midnight visitor on a pale canvas sky with dark ink until the
+           module landed, which is precisely the flash it was written to
+           prevent. Same smoothstep as nightness() and the same 0.625 as
+           INK_FLIP_AT in the module script — retune the pair together. */
+        var t = Math.max(0, Math.min(1, (3 - s.alt) / 13));
+        var night = t * t * (3 - 2 * t);
+        el.style.setProperty('--night', night.toFixed(3));
+        el.style.setProperty('--ink-flip', night >= 0.625 ? '1' : '0');
+      }
     })();
   </script>
 </div>
@@ -837,7 +946,11 @@ const isDev = import.meta.env.DEV;
      instead of snapping at the civil-twilight boundary. Full daylight above
      +3deg, full night by -10deg, smoothstep between — which puts --night at
      0.77 by the time stars first appear at -6deg, so they emerge into a sky
-     dark enough to hold them (white against it: 8.4:1, up from 1.31:1). */
+     dark enough to hold them (white against it: 8.4:1, up from 1.31:1).
+
+     DUPLICATED, deliberately, in the is:inline pre-paint script above: that
+     copy can't import from here, and without it a night visitor gets a pale
+     sky for the first frame. If this curve is retuned, retune that one. */
   function nightness(altitudeDeg: number): number {
     const t = Math.max(0, Math.min(1, (3 - altitudeDeg) / 13));
     return t * t * (3 - 2 * t);
@@ -855,7 +968,7 @@ const isDev = import.meta.env.DEV;
      flip, 3.94:1 immediately after. That 3.94 is the worst contrast the nav
      reaches anywhere in the entire cycle — better than the 3.82:1 it manages
      today in broad daylight, so this raises the floor rather than trading it
-     away for a darker sky. */
+     away for a darker sky. (Also hardcoded as 0.625 in the pre-paint script.) */
   const INK_FLIP_AT = 0.625;
 
   /* Latest --night, so applyStars() can give each star its own emergence
@@ -871,6 +984,11 @@ const isDev = import.meta.env.DEV;
   /* Altitude (degrees) -> --sun-elev (percent of header height), with 0deg
      mapping to exactly 0% so the CSS can pin that to the horizon line.
 
+     Shared by the sun, the moon and (as of 2026-08-07) every star, so it is
+     the one vertical curve in this header. See note 14 for what that cost:
+     the whole dome from 0-80deg lives in the bottom SKY_SPAN_PCT of the
+     header, which is also where the name and the nav are.
+
      THE REFERENCE ALTITUDE. The first version normalised against 90deg,
      which was simply wrong: 90deg is the sun directly overhead, and that
      only ever happens between the tropics. At 33.58N the sun tops out at
@@ -881,7 +999,9 @@ const isDev = import.meta.env.DEV;
      latitude (90 - |lat| + axial tilt), so summer-solstice noon now lands
      exactly at the top of the span and everything below is measured against
      a reachable maximum. Clamped at 90 so the formula stays sane if SITE_LAT
-     is ever moved into the tropics.
+     is ever moved into the tropics. Note that two catalog stars (Vega,
+     Pollux) genuinely transit ABOVE this ceiling and clamp to the top of the
+     span for a while around culmination — accepted, see note 14.
 
      THE CURVE. SKY_CURVE < 1 expands the low-altitude end, where everything
      interesting happens (the set itself, the grazing light, the horizon
@@ -976,8 +1096,8 @@ const isDev = import.meta.env.DEV;
     return points[points.length - 1][1];
   }
 
-  /* How far above the flat baseline the skyline sits at the sun's position,
-     in pixels — 0 where the land is flat, several px at the crest of a mesa.
+  /* How far above the flat baseline the skyline sits at a given x, in pixels
+     — 0 where the land is flat, several px at the crest of a mesa.
 
      Samples BOTH profiles and takes whichever is higher (the smaller y), since
      the sun has to clear whatever is actually in front of it. Sampling only
@@ -985,9 +1105,14 @@ const isDev = import.meta.env.DEV;
      and the far plane rises above it, the sun came to rest at the near
      baseline — a point the far land already covered — so it "set" behind
      something it should still have been above. Seeded with the baseline so
-     the lift can never go negative and drop the sun below the flat line. */
-  function horizonLiftPx(sunAzPct: number): number {
-    const x = (sunAzPct / 100) * HORIZON_VIEWBOX_W;
+     the lift can never go negative and drop the sun below the flat line.
+
+     Called for the sun, the moon and every visible star now. That is up to
+     ~28 calls per tick, each two querySelector + one small regex parse; at a
+     60s cadence for the two bodies and 15min for the field it stays far below
+     anything worth caching against the risk of a stale `d` after a swap. */
+  function horizonLiftPx(azPct: number): number {
+    const x = (azPct / 100) * HORIZON_VIEWBOX_W;
     let y = HORIZON_BASELINE_Y;
     for (const sel of ['.horizon-path', '.far-plane']) {
       const d = document.querySelector(sel)?.getAttribute('d');
@@ -1016,7 +1141,8 @@ const isDev = import.meta.env.DEV;
      Used for POSITION and visibility, not for phase: civil twilight is
      defined on the sun's geometric centre, so phaseFromAltitude() keeps
      taking the raw value. Worth roughly 2px of lift and about three minutes
-     of timing at this latitude. */
+     of timing at this latitude. Applied to the stars too as of 2026-08-07 —
+     the atmosphere doesn't make an exception for them. */
   function refractionDeg(altitudeDeg: number): number {
     const h = Math.max(altitudeDeg, -1); // the formula blows up below the horizon
     return (1 / Math.tan(((h + 7.31 / (h + 4.4)) * Math.PI) / 180)) / 60;
@@ -1085,14 +1211,7 @@ const isDev = import.meta.env.DEV;
      (solar noon) still lands exactly at the window's centre, so the midday
      composition is unchanged for a third time running.
 
-     This is the one place the sun and the star field now differ: applyStars()
-     still maps the full compass across the full width. I'd argued against
-     splitting them — but the two are mutually exclusive by phase, since the
-     sun is hidden at night and the stars only exist at night, so they are
-     never on screen together to disagree. Stars also genuinely DO bear north,
-     and squeezing them into this window would compress a real signal to fix
-     a collision they don't have (they're 1-2px dots in the upper band). */
-  /* Widened from 60-300 to 55-305 so the MOON fits the same mapping. The
+     Widened from 60-300 to 55-305 so the MOON fits the same mapping. The
      moon's declination reaches +/-28.7deg against the sun's +/-23.4deg, so it
      rises and sets a few degrees further north — about 55deg at this
      latitude. One shared mapping matters more than a tight fit: two bodies
@@ -1102,11 +1221,62 @@ const isDev = import.meta.env.DEV;
   const SUN_AZ_MIN_DEG = 55;
   const SUN_AZ_MAX_DEG = 305;
 
+  /* ---- ONE PROJECTION FOR THE WHOLE SKY (2026-08-07) ---------------------
+     Piecewise, and now shared by the sun, the moon, the anti-solar Belt of
+     Venus AND the star field. It used to be just the middle branch, with
+     azimuths outside the window clamped to its edges — while applyStars()
+     ran its own `azimuthDeg / 360 * 100` across the full width. The comment
+     defending that split argued the two were never on screen together, which
+     was true of the SUN and the stars and stopped being true of the moon the
+     moment the moon lost its night-only gate (note 13). All night, every
+     night, two objects were disagreeing about where east is.
+
+       az in [55, 305]  -> the measured window, exactly as before
+       az in [0, 55]    -> the left margin, with due north at x = 0
+       az in [305, 360] -> the right margin, with due north at x = 100
+
+     Continuous and monotonic at both joins, and the middle branch is
+     arithmetically identical to what it replaced — so the sun and the moon
+     do not move by a pixel and solar noon is still dead centre at 50%.
+
+     WHY NORTH SITS AT THE EDGES: the viewer of this header faces SOUTH (the
+     sun rises on the left and sets on the right, and the windmill's yaw is
+     built on the same assumption). The wrap point of a facing-south panorama
+     is directly behind the viewer, which is due north — so 0deg and 360deg
+     meeting at the two edges is the correct seam, not an arbitrary one.
+
+     THE COST: the horizontal scale changes at 55deg and 305deg, since 55deg
+     of compass is compressed into each margin while 250deg is stretched
+     across the window. A constellation straddling one of those bearings gets
+     a kink. The Big Dipper is the only figure in this catalog wide enough for
+     it to show, and it will sometimes sit right on the northwestern seam.
+     Judged the cheapest of three bad options: dropping the window puts a
+     summer sunrise back out in a wide screen's empty margin, and a smooth
+     power curve spreads the distortion into the sun's own travel, which has
+     been tuned across eleven passes and shouldn't move to fix the stars.
+
+     DEGENERATE LAYOUTS: on a very narrow viewport measureSkyWindow() can
+     leave almost no margin, in which case the northern sky compresses hard
+     and a few far-north stars pile up near an edge. Nothing the sun or the
+     moon can reach is affected — they never leave the middle branch — and
+     the joins stay continuous regardless, so this is a cosmetic squeeze on
+     the least important objects at the least common width. */
   function azimuthToPercent(azimuthDeg: number) {
-    const t = Math.max(0, Math.min(1,
-      (azimuthDeg - SUN_AZ_MIN_DEG) / (SUN_AZ_MAX_DEG - SUN_AZ_MIN_DEG)
-    ));
-    return skyLeftPct + t * (skyRightPct - skyLeftPct);
+    const az = ((azimuthDeg % 360) + 360) % 360;
+
+    if (az >= SUN_AZ_MIN_DEG && az <= SUN_AZ_MAX_DEG) {
+      const t = (az - SUN_AZ_MIN_DEG) / (SUN_AZ_MAX_DEG - SUN_AZ_MIN_DEG);
+      return skyLeftPct + t * (skyRightPct - skyLeftPct);
+    }
+
+    if (az < SUN_AZ_MIN_DEG) {
+      // due north at the left edge, out to the window's left edge at 55deg
+      return (az / SUN_AZ_MIN_DEG) * skyLeftPct;
+    }
+
+    // the window's right edge at 305deg, out to due north at the right edge
+    const t = (az - SUN_AZ_MAX_DEG) / (360 - SUN_AZ_MAX_DEG);
+    return skyRightPct + t * (100 - skyRightPct);
   }
 
   /* ---- grazing-light colour + intensity ---------------------------------
@@ -1230,7 +1400,9 @@ const isDev = import.meta.env.DEV;
      The anti-solar point is simply the sun's azimuth + 180, and its ALTITUDE
      is the negative of the sun's — so as the sun sinks, the shadow rises at
      the same rate, which is the whole visual. Both go through the same sky
-     window and the same elevation curve as everything else.
+     window and the same elevation curve as everything else. (The anti-solar
+     bearing always lands inside the window's own 55-305deg branch whenever
+     the sun does, so the piecewise projection never sends it into a margin.)
 
      Timing: nothing while the sun is up, full through the sweet spot around
      2-4deg below, gone by 8deg when the shadow has climbed out of the frame
@@ -1385,6 +1557,10 @@ const isDev = import.meta.env.DEV;
     }
     moonEl.style.display = '';
 
+    /* The moon's own rise/set extremes reach about 54.8deg here — marginally
+       outside the 55-305deg window branch. Before the projection went
+       piecewise it clamped there; now it travels a fraction of a percent into
+       the left margin, which is simply more correct. */
     const mAzPct = azimuthToPercent(m.azimuthDeg);
     const mElevPct = elevationPercent(mAlt);
     header.style.setProperty('--moon-az', `${mAzPct.toFixed(2)}%`);
@@ -1438,10 +1614,11 @@ const isDev = import.meta.env.DEV;
      philosophy as the rest of the night sky: it changes state, it doesn't
      animate for its own sake.
 
-     The `azimuthDeg / 360 * 100` projection below is the one the sun now
-     shares (see solarAzimuthDeg and applyPhase). If you ever change it,
-     change it in both places or the two objects will disagree about where
-     the compass points. */
+     2026-08-07: the field is no longer placed by rules of its own. It shares
+     azimuthToPercent(), elevationPercent(), horizonLiftPx() and
+     apparentAltitude() with the sun and the moon — one projection, one
+     vertical curve, one refraction, one local skyline. See notes 14 and 15
+     for what that cost and why it was still the right trade. */
   /* [RA hours, Dec degrees, visual magnitude, B-V colour index]
      B-V added 2026-08-05. Every star had been rendering pure #FFFFFF, which
      is the one thing stars visibly are not: Betelgeuse and Antares are
@@ -1523,10 +1700,48 @@ const isDev = import.meta.env.DEV;
     const altitude = Math.asin(Math.sin(phi) * Math.sin(decRad) + Math.cos(phi) * Math.cos(decRad) * Math.cos(H));
     const azimuth = Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(phi) - Math.tan(decRad) * Math.cos(phi));
     // azimuth above is south-based, west-positive (standard convention) —
-    // convert to a compass sweep (0..360) mapped across the strip's width.
+    // converted to a compass sweep (0..360) and then handed to the shared
+    // piecewise projection, exactly as the sun's and the moon's are.
     const azCompassDeg = ((azimuth / rad) + 180 + 360) % 360;
     return { altitudeDeg: altitude / rad, azimuthDeg: azCompassDeg };
   }
+
+  /* ---- atmospheric extinction (2026-08-07) -------------------------------
+     Was `0.35 + 0.65 * min(1, alt/20)`: linear in altitude, with a hard floor
+     of 0.35. That floor is the reason the star field needed a vertical band
+     of its own — a star sitting ON the horizon still rendered at a third
+     brightness, so placing the field honestly would have filled the low sky
+     with dots piling up against the land and the nav. Fix the extinction and
+     the reason for the invented band disappears, which is what let notes 14
+     and 15 happen at all.
+
+     Real extinction is exponential in AIRMASS, not linear in altitude:
+     X ~ 1/sin(alt), each airmass costing k magnitudes, so brightness scales
+     as 10^(-0.4*k*X). Normalised against the zenith (X-1) so the high sky
+     looks about as it does now and all the work happens low down. In clean
+     air that holds ~0.84 at 20deg, 0.38 at 5deg and 0.08 at 2deg.
+
+     k rises with aerosol loading, so a blowing night eats the low stars
+     first — the same --haze-strength that drives the dust band, the aureole's
+     radius and the reddening of the sunset. Reads hazeStrength live rather
+     than taking it as an argument, the same way grazingColorRGB() does.
+
+     The 1deg floor on the airmass calculation is a guard, not a physical
+     claim: below it the formula runs away, and anything down there is
+     extinguished past the cull threshold in applyStars() regardless. */
+  const EXTINCTION_K_CLEAR = 0.20;  // magnitudes per airmass, clean air
+  const EXTINCTION_K_DUST = 0.35;   // added at full --haze-strength
+
+  function extinctionFactor(altitudeDeg: number): number {
+    const airmass = 1 / Math.sin(Math.max(altitudeDeg, 1) * (Math.PI / 180));
+    const k = EXTINCTION_K_CLEAR + hazeStrength * EXTINCTION_K_DUST;
+    return Math.pow(10, -0.4 * k * (airmass - 1));
+  }
+
+  /* Below this a star contributes nothing but a subpixel smudge over the
+     type. Cheaper to skip it than to paint it: on a dusty night this culls
+     most of the low field outright. */
+  const STAR_MIN_OPACITY = 0.02;
 
   const applyStars = () => {
     const container = document.getElementById('night-stars') as HTMLElement | null;
@@ -1535,17 +1750,35 @@ const isDev = import.meta.env.DEV;
     container.innerHTML = '';
     for (const [raHours, decDeg, mag, bv] of STAR_CATALOG) {
       const { altitudeDeg, azimuthDeg } = starAltAz(now, SITE_LAT, SITE_LON, raHours, decDeg);
-      if (altitudeDeg <= 0) continue; // below the horizon — not drawn
 
-      const leftPct = (azimuthDeg / 360) * 100;
-      const cappedAlt = Math.min(altitudeDeg, 60);
-      const topPct = 8 + (1 - cappedAlt / 60) * 55; // keep clear of the ground band
+      /* Refracted like everything else in this sky — the atmosphere lifts a
+         star at the horizon by the same ~34 arcminutes it lifts the sun, and
+         a star is visible for a few minutes after it has geometrically set
+         for the same reason the sun is. */
+      const appAlt = apparentAltitude(altitudeDeg);
+      if (appAlt <= 0) continue; // below the horizon — not drawn
 
-      const extinction = 0.35 + 0.65 * Math.min(1, altitudeDeg / 20);
+      /* THE SHARED PROJECTION. Horizontal through the same piecewise
+         azimuthToPercent() the sun and moon use (note 15); vertical through
+         the same elevationPercent() + --horizon-lift, bottom-anchored with
+         the same +3px centring correction #sun-wrap uses for its 12px disc.
+
+         What this replaces: `left = az / 360 * 100` and a top-anchored
+         `top = 8 + (1 - min(alt,60)/60) * 55`, an invented band that put a
+         star at 2deg altitude around 61% down from the top — floating in open
+         sky while the moon at 2deg rested on the ridge. The lift means a star
+         now sets behind the mesa it is actually behind, and the ground fill
+         (which paints later) occludes it on the way down. */
+      const leftPct = azimuthToPercent(azimuthDeg);
+      const elevPct = elevationPercent(appAlt);
+      const liftPx = horizonLiftPx(leftPct);
+
+      const extinction = extinctionFactor(appAlt);
       // Compressed magnitude range: real stars are point sources; brightness
       // shows mostly as glow, not disc size.
       const size = Math.max(1, Math.min(2.2, 1.9 - mag * 0.16));
-      const opacity = Math.max(0.35, Math.min(1, (1.05 - mag * 0.1) * extinction));
+      const opacity = Math.max(0, Math.min(1, (1.05 - mag * 0.1) * extinction));
+      if (opacity < STAR_MIN_OPACITY) continue;
       const glow = Math.max(1, size * 1.8);
 
       /* Bright stars come out before faint ones — Sirius while the sky is
@@ -1560,7 +1793,7 @@ const isDev = import.meta.env.DEV;
       div.className = 'star-point';
       div.style.background = `rgb(${cr}, ${cg}, ${cb})`;
       div.style.left = `${leftPct.toFixed(2)}%`;
-      div.style.top = `${topPct.toFixed(2)}%`;
+      div.style.bottom = `calc(${elevPct.toFixed(2)}% + 3px + ${liftPx.toFixed(2)}px)`;
       div.style.width = `${size.toFixed(2)}px`;
       div.style.height = `${size.toFixed(2)}px`;
       div.style.setProperty('--star-base', opacity.toFixed(3));
@@ -1579,8 +1812,9 @@ const isDev = import.meta.env.DEV;
      One fetch drives two things: windmill rotor speed and dust haze
      thickness — both from the current wind speed at Lubbock. (Cloud
      cover and wind direction were also being fetched here to drive a
-     drifting-cloud layer; that layer was cut after review, so those two
-     fields are no longer requested at all.) */
+     drifting-cloud layer; that layer was cut after review, so cloud cover
+     is no longer requested at all. Wind direction came back with the
+     windmill's yaw.) */
   const WEATHER_TTL_MS = 30 * 60_000;
 
   /* ---- dust emission (2026-08-05, ninth pass) ----------------------------
@@ -1613,8 +1847,9 @@ const isDev = import.meta.env.DEV;
   }
 
   /* Live copy of the same value, so grazingColorRGB() can redden the light
-     with it. Kept in JS rather than read back off the custom property
-     because the colour is computed, not composited. */
+     with it and extinctionFactor() can dim the low stars with it. Kept in JS
+     rather than read back off the custom property because both are computed,
+     not composited. */
   let hazeStrength = 0;
 
   /* Meteorological convention: the direction the wind is coming FROM. Restored
@@ -1693,10 +1928,11 @@ const isDev = import.meta.env.DEV;
       hazeStrength = dustFromWind(clamped);
       header.style.setProperty('--haze-strength', hazeStrength.toFixed(3));
       applyStationReadout();
-      // The dust also reddens the light, and --grazing-color is computed from
-      // hazeStrength — so the colour has to be recomputed once real wind
-      // arrives. applyPhase() is cheap and idempotent.
+      // The dust also reddens the light and dims the low stars, and both are
+      // computed from hazeStrength — so both have to be recomputed once real
+      // wind arrives. Each is cheap and idempotent.
       applyPhase();
+      applyStars();
     }
   }
 
@@ -1840,8 +2076,8 @@ const isDev = import.meta.env.DEV;
   }
 
   /* ---- lifecycle -------------------------------------------------------- */
-  setHorizon();       // must precede applyPhase — it consumes .horizon-path's `d`
-  measureSkyWindow(); // must precede applyPhase — it consumes skyLeftPct/skyRightPct
+  setHorizon();       // must precede applyPhase AND applyStars — both consume .horizon-path's `d`
+  measureSkyWindow(); // must precede both — they consume skyLeftPct/skyRightPct
   applyPhase();
   applyMoon();
   applyStars();
@@ -1861,7 +2097,9 @@ const isDev = import.meta.env.DEV;
      layout can actually change: on resize, and once web fonts have swapped in
      (they change the rendered width of the name and the nav labels, and the
      first measurement can land before that). Deliberately NOT on scroll —
-     see the note on measureSkyWindow about why offsets, not rects. */
+     see the note on measureSkyWindow about why offsets, not rects.
+     applyStars() comes along now: the field is placed through the same window,
+     so a resize moves the stars as well as the sun. */
   let skyWindowQueued = false;
   window.addEventListener('resize', () => {
     if (skyWindowQueued) return;
@@ -1870,16 +2108,18 @@ const isDev = import.meta.env.DEV;
       skyWindowQueued = false;
       measureSkyWindow();
       applyPhase();
+      applyStars();
     });
   }, { passive: true });
 
   document.fonts?.ready.then(() => {
     measureSkyWindow();
     applyPhase();
+    applyStars();
   });
 
   document.addEventListener('astro:after-swap', () => {
-    setHorizon();       // the new route's silhouette, before applyPhase samples it
+    setHorizon();       // the new route's silhouette, before applyPhase/applyStars sample it
     measureSkyWindow(); // nav width changes with the active route's marker
     applyPhase();
     applyMoon();
@@ -1940,7 +2180,9 @@ const isDev = import.meta.env.DEV;
     --haze-tint: color-mix(in oklch, var(--color-caliche, #E8E1D1) 74%, var(--color-dust, #B3A38F));
     /* --night (0 day, 1 deep night) and --ink-flip (0/1) are written every
        60s from real solar altitude — see nightness() and INK_FLIP_AT. The
-       values here are pre-hydration fallbacks only. */
+       values here are pre-hydration fallbacks only, and as of 2026-08-07 the
+       is:inline pre-paint script overwrites both before first paint, so they
+       are reached only if that script never runs at all. */
     --night: 0;
     --ink-flip: 0;
 
@@ -2334,7 +2576,8 @@ const isDev = import.meta.env.DEV;
   /* The container is always live now — a real moon is up in the daytime sky
      about half the month, and the up/down answer was already being computed
      and then thrown away for two-thirds of the day. Only the STARS are
-     night-only. */
+     night-only, and they gate themselves through --night rather than through
+     this rule (see .star-point). */
   #night-sky { display: block; }
 
   /* PLACED FOR REAL as of 2026-08-05: same sky window, same elevation curve,
@@ -2366,13 +2609,20 @@ const isDev = import.meta.env.DEV;
       0 0 24px 9px rgba(195, 205, 218, 0.14);
     overflow: hidden; /* the masking disc below is clipped to this circle */
   }
-  #horizon-header[data-phase="dawn"] #horizon-moon,
 
   /* The real phase: a second disc, same size, offset horizontally by
      --moon-shadow-x and colored to match the surrounding night sky, so it
      reads as shadow eating into (or retreating from) the lit disc. Waxing
      moves the mask off to one side as the month progresses; waning the
-     other. Static — the shift only ever happens on an hourly re-check. */
+     other. Static — the shift only ever happens on an hourly re-check.
+
+     2026-08-07: a dangling `#horizon-header[data-phase="dawn"] #horizon-moon,`
+     used to sit at the head of this selector list — a leftover from the
+     phase-scoped opacity rules deleted in the dark-sky pass. At (2,1,0) it
+     outranked #horizon-moon's own rule, so through every dawn the moon took
+     `inset: 0`, this flat `background`, and this `transform` in place of its
+     rotation: a sky-coloured disc pinned to the top-left corner with its glow
+     still attached. It read as "the moon has set." See note 14. */
   #horizon-moon::after {
     content: "";
     position: absolute;
@@ -2393,10 +2643,17 @@ const isDev = import.meta.env.DEV;
      circles in a stretched viewBox — this stays round no matter what
      aspect ratio the header ends up at on a given viewport. Size/opacity
      are set per-star in applyStars() from real magnitude + atmospheric
-     extinction; the soft white glow (not a dark halo) is what gives each
-     point contrast against the header's actual night sky, which stays a
-     fairly pale, barely-tinted color rather than true darkness. */
-  /* Final opacity is the star's own brightness times its emergence against
+     extinction; the soft glow (not a dark halo) is what gives each point
+     contrast against the header's night sky.
+
+     BOTTOM-ANCHORED as of 2026-08-07, so translate(-50%, 50%) rather than
+     (-50%, -50%): the field now shares the sun's elevation curve and the
+     local terrain lift, and both are measured up from the horizon line. That
+     also puts the field across the same vertical band as the name and the
+     nav — which is survivable only because #night-sky precedes the content
+     row in DOM order, so the type paints in front. See note 14.
+
+     Final opacity is the star's own brightness times its emergence against
      --night — so Sirius is out while the sky is still blue and Megrez waits
      for it to go properly dark, instead of the whole field switching on at
      the civil-twilight boundary. --star-base and --star-th are written per
@@ -2410,7 +2667,7 @@ const isDev = import.meta.env.DEV;
     position: absolute;
     border-radius: 9999px;
     background: #FFFFFF;
-    transform: translate(-50%, -50%);
+    transform: translate(-50%, 50%);
     pointer-events: none;
   }
 
@@ -2493,8 +2750,6 @@ const isDev = import.meta.env.DEV;
     transition: color 0.6s linear;
   }
 
-  /* Distant ridge — a heavy fade toward canvas so it recedes; drawn first
-     (behind the real ground) and never affected by route changes. */
   /* THE FAR GROUND PLANE — the land between here and the horizon, drawn
      first so the route's own silhouette sits in front of it. Replaced the
      distant ridge; see the long note above FAR_PLANES in the frontmatter for
