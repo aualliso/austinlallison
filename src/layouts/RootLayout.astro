@@ -8,15 +8,19 @@ import Header from '../components/Header.astro'; // IMPORT THE NEW HEADER HERE
 import Footer from '../components/Footer.astro'; // IMPORT THE NEW HEADER HERE
 
 interface Props {
-	title: string;
-	description?: string;
+  title: string;
+  description?: string;
+  image?: string;
+  hideNav?: boolean;
+  hideFoot?: boolean;
 }
 
-const { title, hideNav = false, hideFoot = false, description = "Academic Librarian & Photographer Portfolio" } = Astro.props;
-// Get the current path (e.g., "/projects/ocr-pipeline")
-const currentPath = Astro.url.pathname;
-// Split into array and remove empty strings
-const pathSegments = currentPath.split('/').filter(segment => segment !== '');
+const { title, description, image, prose, hideNav = false, hideFoot = false } = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
+
+
+
 ---
 
 <!DOCTYPE html>
@@ -26,7 +30,17 @@ const pathSegments = currentPath.split('/').filter(segment => segment !== '');
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<title>{title}</title>
-		<meta name="description" content={description} />
+		<link rel="canonical" href={canonical} />
+{description && <meta name="description" content={description} />}
+
+<meta property="og:type" content="website" />
+<meta property="og:title" content={title} />
+<meta property="og:url" content={canonical} />
+{description && <meta property="og:description" content={description} />}
+{image && <meta property="og:image" content={image} />}
+
+<meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+{image && <meta name="twitter:image" content={image} />}
 		<ClientRouter />
 	</head>
 	<body class="min-h-screen flex flex-col selection:bg-caprock/20 selection:text-caprock">
@@ -36,7 +50,7 @@ const pathSegments = currentPath.split('/').filter(segment => segment !== '');
 <!-- The main page content container -->
 	<main class="flex-grow w-full max-w-7xl mx-auto px-6 py-12">
 
-  		<div class="prose prose-neutral max-w-none font-sans">
+  		<div class={prose ? "prose prose-neutral max-w-none font-sans" : "max-w-none font-sans"}>
     	<slot />
   		</div>
 		</main>

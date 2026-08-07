@@ -1,0 +1,157 @@
+---
+/**
+ * src/pages/photography/plates.astro — "The Plate Index"
+ *
+ * Back matter for the light table. A ruled list of every plate in
+ * every built series, with a real link per photograph. No client
+ * script at all: this page's whole job is to be fast, crawlable, and
+ * linkable in the places the mount desk can't be.
+ *
+ * Row order is your plate sequence, which is a curatorial decision and
+ * shouldn't be resorted underneath you. If you want a second axis
+ * later, pre-render it as /photography/plates/by-place rather than
+ * adding a sort script — two static orders beat one interactive one.
+ *
+ * ── UNTITLED PLATES ───────────────────────────────────────────────
+ *
+ * Plates with an empty title render as a dim "in preparation" row and
+ * are excluded from the counts. That's honest — a shelf list should
+ * show gaps — but it also advertises them. To hide them instead:
+ *
+ *   const rows = gallery.plates.filter((p) => !p.draft);
+ */
+import Layout from '../../layouts/RootLayout.astro';
+import { getGalleries, SERIES, PHOTOGRAPHER } from '../../data/photography';
+
+const galleries = await getGalleries();
+
+/** distinct states named in a gallery's plates, in first-seen order */
+const statesOf = (places: string[]) => {
+  const seen: string[] = [];
+  for (const place of places) {
+    const state = place.split(',').pop()?.trim();
+    if (state && !seen.includes(state)) seen.push(state);
+  }
+  return seen;
+};
+
+const totalPlates = galleries.reduce(
+  (n, g) => n + g.plates.filter((p) => !p.draft).length,
+  0,
+);
+---
+
+<Layout title={`Plate Index — ${PHOTOGRAPHER}`}>
+  <main class="bg-canvas text-iron min-h-screen px-5 md:px-8 py-16 md:py-24">
+    <div class="max-w-3xl mx-auto">
+
+      <header class="border-b border-haze pb-6 mb-10">
+        <p class="font-mono text-[10px] uppercase tracking-widest text-sage mb-3">
+          Photography
+        </p>
+        <h1 class="font-serif text-3xl md:text-4xl font-light tracking-tight text-caprock">
+          Plate Index
+        </h1>
+        <p class="font-serif text-sm text-iron/70 leading-relaxed mt-4 max-w-xl">
+          Every photograph in the collection, listed in plate order with its
+          location and exposure. Each entry opens the full record. The
+          galleries themselves are laid out on the light table.
+        </p>
+        <p class="font-mono text-[10px] uppercase tracking-widest text-iron/40 mt-4">
+          {totalPlates} plates &middot; {galleries.length} series in print
+        </p>
+      </header>
+
+      {galleries.map((gallery) => (
+        <section id={gallery.slug} class="mb-16 scroll-mt-8">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-iron/25 pb-2 mb-1">
+            <h2 class="font-serif text-xl md:text-2xl font-light tracking-tight text-caprock">
+              <span class="text-sage">Series {gallery.number}.</span>
+              {' '}{gallery.title}
+            </h2>
+            <a
+              href={`/photography/${gallery.slug}`}
+              class="font-mono text-[10px] uppercase tracking-widest text-sage hover:text-caprock transition-colors shrink-0"
+            >
+              Light table &rarr;
+            </a>
+          </div>
+
+          <p class="font-mono text-[10px] uppercase tracking-widest text-iron/40 mb-4">
+            {gallery.plates.filter((p) => !p.draft).length} plates
+            {statesOf(gallery.plates.filter((p) => !p.draft).map((p) => p.place)).length > 0 && (
+              <span> &middot; {statesOf(gallery.plates.filter((p) => !p.draft).map((p) => p.place)).join(' \u00B7 ')}</span>
+            )}
+          </p>
+
+          <ol class="list-none">
+            {gallery.plates.map((plate) =>
+              plate.draft ? (
+                <li class="flex gap-4 items-center py-3 border-b border-haze/60 opacity-40">
+                  <span class="font-mono text-[10px] text-iron/50 w-6 shrink-0">{plate.no}</span>
+                  <span class="w-[88px] h-[59px] bg-iron/5 border border-dashed border-haze rounded-xs shrink-0"></span>
+                  <span class="min-w-0">
+                    <span class="block font-serif text-[15px] text-iron/60">Untitled</span>
+                    <span class="block font-mono text-[10px] uppercase tracking-wider text-iron/40 mt-1">
+                      Not yet catalogued
+                    </span>
+                  </span>
+                </li>
+              ) : (
+                <li>
+                  <a
+                    href={plate.href}
+                    class="group flex gap-4 items-start py-3 border-b border-haze/60 hover:bg-iron/[0.03] transition-colors focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-caprock"
+                  >
+                    <span class="font-mono text-[10px] text-iron/50 w-6 shrink-0 pt-1">{plate.no}</span>
+
+                    <img
+                      src={plate.img.index}
+                      alt=""
+                      width="88"
+                      height="59"
+                      loading="lazy"
+                      decoding="async"
+                      class="w-[88px] h-[59px] object-cover bg-iron/5 border border-haze rounded-xs shrink-0"
+                    />
+
+                    <span class="min-w-0 flex-1">
+                      <span class="block font-serif text-[15px] text-caprock group-hover:text-iron transition-colors">
+                        {plate.title}
+                      </span>
+                      <span class="block font-mono text-[10px] uppercase tracking-wider text-sage mt-1">
+                        {plate.place}
+                      </span>
+                      <span class="block font-mono text-[10px] text-iron/40 mt-1 truncate">
+                        {plate.coordinates} &middot; {plate.specs}
+                      </span>
+                    </span>
+
+                    <span
+                      aria-hidden="true"
+                      class="font-mono text-[11px] text-iron/25 group-hover:text-caprock transition-colors pt-1 shrink-0"
+                    >&rsaquo;</span>
+                  </a>
+                </li>
+              ),
+            )}
+          </ol>
+        </section>
+      ))}
+
+      {SERIES.some((s) => !s.built) && (
+        <section class="border-t border-haze pt-6">
+          <p class="font-mono text-[10px] uppercase tracking-widest text-iron/40 mb-3">
+            In preparation
+          </p>
+          {SERIES.filter((s) => !s.built).map((s) => (
+            <p class="font-mono text-[11px] text-iron/40">
+              {s.number}. {s.title}
+            </p>
+          ))}
+        </section>
+      )}
+
+    </div>
+  </main>
+</Layout>

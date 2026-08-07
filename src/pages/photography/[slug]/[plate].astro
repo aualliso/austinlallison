@@ -1,0 +1,230 @@
+---
+/**
+ * src/pages/photography/[slug]/[plate].astro — "The Plate Record"
+ *
+ * One photograph, one URL: /photography/escarpments/04. This is the
+ * page a licensing prospect lands on, the page a link preview reads,
+ * and the page a search engine indexes. The light table stays the way
+ * in; this is the way to point at a single frame.
+ *
+ * Untitled plates get no page — see `draft` in src/data/photography.ts.
+ *
+ * ── LAYOUT PROPS ──────────────────────────────────────────────────
+ *
+ * This passes `description` and `image` to RootLayout for the meta and
+ * Open Graph tags. If RootLayout doesn't take them yet, add to its
+ * frontmatter:
+ *
+ *   const { title, description, image, hideNav, hideFoot } = Astro.props;
+ *
+ * and inside <head>:
+ *
+ *   {description && <meta name="description" content={description} />}
+ *   <meta property="og:title" content={title} />
+ *   {description && <meta property="og:description" content={description} />}
+ *   {image && <meta property="og:image" content={image} />}
+ *   <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
+ *   <link rel="canonical" href={Astro.url.href} />
+ *
+ * Extra props are ignored until then — nothing breaks, the previews are
+ * just plain.
+ */
+import Layout from '../../../layouts/RootLayout.astro';
+import {
+  getGalleries,
+  getGallery,
+  LICENSE_EMAIL,
+  PHOTOGRAPHER,
+} from '../../../data/photography';
+
+export async function getStaticPaths() {
+  const galleries = await getGalleries();
+  return galleries.flatMap((g) =>
+    g.plates
+      .filter((p) => !p.draft)
+      .map((p) => ({
+        params: { slug: g.slug, plate: p.no },
+        props: { index: p.index },
+      })),
+  );
+}
+
+const { slug } = Astro.params;
+const { index } = Astro.props;
+const gallery = await getGallery(slug!);
+const plate = gallery.plates[index];
+
+const prev = gallery.plates[(index - 1 + gallery.plates.length) % gallery.plates.length];
+const next = gallery.plates[(index + 1) % gallery.plates.length];
+
+const abs = (path: string) => (Astro.site ? new URL(path, Astro.site).href : path);
+
+const description =
+  plate.caption ||
+  `${plate.title} — ${plate.place}. ${plate.plate} of ${gallery.title}, photographed by ${PHOTOGRAPHER}.`;
+
+const canOrderPrint = plate.sellable && !!plate.printLink;
+const licenseHref = `mailto:${LICENSE_EMAIL}?subject=${encodeURIComponent(
+  `Licensing inquiry \u2014 ${plate.plate}: ${plate.title}`,
+)}`;
+
+/* schema.org ImageObject — the coordinates you already survey for every
+   plate are exactly what contentLocation wants, so the record says
+   where the photograph was made in a form a machine can read. */
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'ImageObject',
+  name: plate.title,
+  caption: plate.caption || undefined,
+  description,
+  contentUrl: abs(plate.img.full),
+  thumbnailUrl: abs(plate.img.index),
+  width: plate.img.width,
+  height: plate.img.height,
+  creator: { '@type': 'Person', name: PHOTOGRAPHER },
+  copyrightHolder: { '@type': 'Person', name: PHOTOGRAPHER },
+  isPartOf: {
+    '@type': 'CreativeWorkSeries',
+    name: gallery.title,
+    position: gallery.number,
+  },
+  position: index + 1,
+  contentLocation: {
+    '@type': 'Place',
+    name: plate.place,
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: plate.lat,
+      longitude: plate.lng,
+    },
+  },
+  acquireLicensePage: plate.sellable ? abs(plate.href) : undefined,
+};
+---
+
+<Layout
+  title={`${plate.title} — ${PHOTOGRAPHER}`}
+  description={description}
+  image={abs(plate.img.full)}
+>
+  <main class="bg-canvas text-iron min-h-screen px-5 md:px-8 py-12 md:py-20">
+    <div class="max-w-4xl mx-auto">
+
+      <nav class="flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[10px] uppercase tracking-widest text-iron/40 mb-8">
+        <a href="/photography" class="hover:text-caprock transition-colors">Photography</a>
+        <span aria-hidden="true">/</span>
+        <a href={`/photography/plates#${gallery.slug}`} class="hover:text-caprock transition-colors">
+          Plate index
+        </a>
+        <span aria-hidden="true">/</span>
+        <span class="text-sage">Series {gallery.number}</span>
+        <span aria-hidden="true">/</span>
+        <span class="text-caprock">{plate.plate}</span>
+      </nav>
+
+      <figure class="mb-8">
+        <img
+          src={plate.img.full}
+          alt={`${plate.title} — ${plate.place}`}
+          width={plate.img.width}
+          height={plate.img.height}
+          decoding="async"
+          fetchpriority="high"
+          class="w-full h-auto border border-haze p-2 md:p-3 bg-canvas shadow-md"
+        />
+        <figcaption class="sr-only">{plate.title}, {plate.place}</figcaption>
+      </figure>
+
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-10 items-start border-t border-iron/25 pt-6">
+
+        <div class="md:col-span-7">
+          <p class="font-mono text-[10px] uppercase tracking-widest text-iron/40 mb-2">
+            {plate.plate} &middot; Series {gallery.number}, {gallery.title}
+          </p>
+          <h1 class="font-serif text-2xl md:text-3xl font-light tracking-tight text-caprock leading-tight">
+            {plate.title}
+          </h1>
+          <p class="font-mono text-[11px] uppercase tracking-widest text-sage mt-2">
+            {plate.place}
+          </p>
+
+          {plate.caption && (
+            <p class="font-serif text-sm text-iron/75 leading-relaxed mt-5">
+              {plate.caption}
+            </p>
+          )}
+        </div>
+
+        <aside class="md:col-span-5 md:border-l md:border-haze md:pl-8">
+          <dl class="font-mono text-[10px] uppercase tracking-wider">
+            <dt class="text-iron/40">Exposure</dt>
+            <dd class="text-iron/80 mt-1 mb-4 normal-case tracking-normal">{plate.specs}</dd>
+
+            <dt class="text-iron/40">Coordinates</dt>
+            <dd class="mt-1 mb-4 normal-case tracking-normal">
+              <a
+                href={plate.mapUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-sage hover:text-caprock transition-colors"
+              >{plate.coordinates}</a>
+            </dd>
+          </dl>
+
+          <div class="flex flex-col gap-2 border-t border-haze pt-4">
+            <a
+              href={`/photography/${gallery.slug}?plate=${plate.no}`}
+              class="font-mono text-[10px] uppercase tracking-widest text-iron/60 hover:text-caprock transition-colors"
+            >
+              View on the light table &rarr;
+            </a>
+
+            {canOrderPrint && (
+              <a
+                href={plate.printLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="font-mono text-[10px] uppercase tracking-widest text-caprock hover:text-iron transition-colors"
+              >
+                Order a print &rarr;
+              </a>
+            )}
+
+            {plate.sellable && (
+              <a
+                href={licenseHref}
+                class="font-mono text-[10px] uppercase tracking-widest text-sage hover:text-caprock transition-colors"
+              >
+                Inquire about licensing
+              </a>
+            )}
+          </div>
+        </aside>
+      </div>
+
+      <nav class="flex justify-between items-stretch gap-4 border-t border-haze mt-12 pt-6 font-mono text-[10px] uppercase tracking-widest">
+        <a
+          href={prev.href || `/photography/${gallery.slug}`}
+          class="group flex-1 min-w-0 text-iron/50 hover:text-caprock transition-colors"
+        >
+          <span class="block text-iron/30 mb-1">&larr; {prev.plate}</span>
+          <span class="block truncate normal-case tracking-normal font-serif text-sm">
+            {prev.title || 'In preparation'}
+          </span>
+        </a>
+        <a
+          href={next.href || `/photography/${gallery.slug}`}
+          class="group flex-1 min-w-0 text-right text-iron/50 hover:text-caprock transition-colors"
+        >
+          <span class="block text-iron/30 mb-1">{next.plate} &rarr;</span>
+          <span class="block truncate normal-case tracking-normal font-serif text-sm">
+            {next.title || 'In preparation'}
+          </span>
+        </a>
+      </nav>
+
+    </div>
+  </main>
+
+  <script type="application/ld+json" is:inline set:html={JSON.stringify(jsonLd).replace(/</g, '\\u003c')}></script>
+</Layout>

@@ -3,15 +3,15 @@
 import RootLayout from '../layouts/RootLayout.astro';
 ---
 
-<RootLayout title="Curriculum vitae | Austin Allison">
-  <div class="max-w-4xl mx-auto py-6 font-sans text-iron">
-    
+<RootLayout title="Curriculum vitae | Austin Allison" prose={false}>
+  <div class="max-w-4xl mx-auto px-4 md:px-0 py-6 font-sans text-iron">
+
     <!-- PDF-Style Contact Header -->
-    <div class="pb-0 mb-5 text-center md:text-left flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+    <div class="pb-2 mb-3 text-center md:text-left flex flex-col md:flex-row md:justify-between md:items-end gap-2 md:gap-4">
       <div>
         <h1 class="font-serif text-3xl font-medium tracking-tight text-iron">Austin Allison</h1>
-        <p class="text-md font-serif italic text-sage mt-1">Assistant Librarian &bull; Cataloging and Metadata Librarian</p>
-        <p class="text-md text-iron/80 -mt-5.5">Southwest Collection/Special Collections Library | Texas Tech University</p>
+        <p class="text-md font-serif italic text-sage mt-1">Cataloging and Metadata Librarian</p>
+        <p class="text-md text-iron/80 mt-1">Southwest Collection/Special Collections Library | Texas Tech University</p>
       </div>
       <div class="text-sm font-mono text-iron/70 md:text-right space-y-1">
         <p>austin.allison@ttu.edu &bull; 806-834-3655</p>
@@ -19,20 +19,20 @@ import RootLayout from '../layouts/RootLayout.astro';
       </div>
     </div>
 
-    <div class="space-y-0">
+    <div class="space-y-2.5">
 
       <!-- SECTION: EDUCATION -->
-      <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-0 mb-0">Education</h2>
       <section>
-        <div class="space-y-0 text-md">
-          <div class="flex justify-between items-baseline">
+        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Education</h2>
+        <div class="space-y-2 text-md">
+          <div class="flex flex-col md:flex-row md:justify-between md:items-baseline gap-0.5">
             <div>
               <span class="font-semibold">University of North Texas</span>
               <p class="text-iron/80 italic">Master of Science | Major: Library Science</p>
             </div>
             <span class="text-s font-mono text-iron/60 whitespace-nowrap">May 2016</span>
           </div>
-          <div class="flex justify-between items-baseline">
+          <div class="flex flex-col md:flex-row md:justify-between md:items-baseline gap-0.5">
             <div>
               <span class="font-semibold">Texas Tech University</span>
               <p class="text-iron/80 italic">Bachelor of Arts | Major: History | Minor: Classics</p>
@@ -44,50 +44,49 @@ import RootLayout from '../layouts/RootLayout.astro';
 
       <!-- SECTION: POSITIONS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-0">Academic and Professional Positions</h2>
-        <div class="space-y-0 text-sm">
-          <div class="text-lg text-sage uppercase font-semibold mb-0">Texas Tech University | Southwest Collection/Special Collections Library</div>
-          
-          <div class="space-y-0-mt-8">
-            <div class="flex justify-between items-baseline -mt-8">
-              <h3 class="font-semibold text-base text-iron">Assistant Librarian | Bibliographic Services | Tenure-Track</h3>
-              <span class="text-s font-mono text-iron/60 whitespace-nowrap">June 2021 - Present</span>
-            </div>
-            <p class="text-iron/80 leading-tight pl-10 pr-20 -mt-4">Manage and supervise cataloging, metadata, and digitization projects for bibliographic services department. Supervise two exempt unit managers who oversee staffed units within the SWC/SCL, including conservation, reception, and bibliographic services. Work with internal and external stakeholders to ensure proper and ongoing access to physical and digital resources available.</p>
-          </div>
+        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Academic and Professional Positions</h2>
+        <div class="text-sm">
+          <div class="text-lg text-sage uppercase font-semibold mb-1.5">Texas Tech University | Southwest Collection/Special Collections Library</div>
 
-          <div class="space-y-0 -mt-12">
-            <div class="flex justify-between items-baseline">
-              <h3 class="font-semibold text-base text-iron">Unit Manager | Bibliographic Services</h3>
-              <span class="text-s font-mono text-iron/60 whitespace-nowrap">August 2014 - June 2021</span>
+          <div class="space-y-3">
+            <div>
+              <div class="flex flex-col md:flex-row md:justify-between md:items-baseline">
+                <h3 class="font-semibold text-base text-iron">Assistant Librarian | Bibliographic Services | Tenure-Track</h3>
+                <span class="text-s font-mono text-iron/60 whitespace-nowrap">June 2021 - Present</span>
+              </div>
+              <p class="text-iron/80 leading-snug pl-0 md:pl-6 mt-0.5">Manage and supervise cataloging, metadata, and digitization projects for bibliographic services department. Supervise two exempt unit managers who oversee staffed units within the SWC/SCL, including conservation, reception, and bibliographic services. Work with internal and external stakeholders to ensure proper and ongoing access to physical and digital resources available.</p>
             </div>
-            <p class="text-iron/80 leading-relaxed pl-10 pr-20 -mt-4">Managed cataloging and digitization projects for SWC/SCL bibliographic services department. Supervision of one non-exempt staff member.</p>
-          </div>
-
-          <div class="space-y-0 -mt-12">
-            <div class="flex justify-between items-baseline">
-              <h3 class="font-semibold text-base text-iron">Specialist IV | Bibliographic Services</h3>
-              <span class="text-s font-mono text-iron/60 whitespace-nowrap">November 2013 - July 2014</span>
+            <div>
+              <div class="flex flex-col md:flex-row md:justify-between md:items-baseline">
+                <h3 class="font-semibold text-base text-iron">Unit Manager | Bibliographic Services</h3>
+                <span class="text-s font-mono text-iron/60 whitespace-nowrap">August 2014 - June 2021</span>
+              </div>
+              <p class="text-iron/80 leading-snug pl-0 md:pl-6 mt-0.5">Managed cataloging and digitization projects for SWC/SCL bibliographic services department. Supervision of one non-exempt staff member.</p>
             </div>
-            <p class="text-iron/80 leading-relaxed pl-10 pr-20 -mt-4">Cataloged incoming items for SWC/SCL bibliographic services department. Performed specialized duties to create bibliographic records for online access.</p>
-          </div>
-
-          <div class="space-y-0 -mt-12">
-            <div class="flex justify-between items-baseline">
-              <h3 class="font-semibold text-base text-iron">Part-Time Reference Assistant | Reference</h3>
-              <span class="text-s font-mono text-iron/60 whitespace-nowrap">June 2010 - October 2013</span>
+            <div>
+              <div class="flex flex-col md:flex-row md:justify-between md:items-baseline">
+                <h3 class="font-semibold text-base text-iron">Specialist IV | Bibliographic Services</h3>
+                <span class="text-s font-mono text-iron/60 whitespace-nowrap">November 2013 - July 2014</span>
+              </div>
+              <p class="text-iron/80 leading-snug pl-0 md:pl-6 mt-0.5">Cataloged incoming items for SWC/SCL bibliographic services department. Performed specialized duties to create bibliographic records for online access.</p>
             </div>
-            <p class="text-iron/80 leading-relaxed pl-10 pr-20 -mt-4">Assisted reference staff with duties to serve incoming students and researchers.</p>
+            <div>
+              <div class="flex flex-col md:flex-row md:justify-between md:items-baseline">
+                <h3 class="font-semibold text-base text-iron">Part-Time Reference Assistant | Reference</h3>
+                <span class="text-s font-mono text-iron/60 whitespace-nowrap">June 2010 - October 2013</span>
+              </div>
+              <p class="text-iron/80 leading-snug pl-0 md:pl-6 mt-0.5">Assisted reference staff with duties to serve incoming students and researchers.</p>
+            </div>
           </div>
         </div>
       </section>
 
       <!-- SECTION: GRANTS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Scholarship/Research</h2> 
-        <h2 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-4 -mt-4">Contracts, Grants and Sponsored Research</h2>
-        <div class="overflow-x-auto">
-          <table class="w-full text-left text-sm border-collapse">
+        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Scholarship/Research</h2>
+        <h3 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-3">Contracts, Grants and Sponsored Research</h3>
+        <div class="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+          <table class="w-full min-w-[560px] text-left text-sm border-collapse">
             <thead>
               <tr class="border-b border-iron text-xs font-mono text-iron/60 uppercase">
                 <th class="py-2 pr-4">Year</th>
@@ -98,34 +97,34 @@ import RootLayout from '../layouts/RootLayout.astro';
             </thead>
             <tbody class="divide-y divide-haze/60 text-xs md:text-sm">
               <tr>
-                <td class="py-3 pr-4 font-mono vertical-top">2026</td>
-                <td class="py-3 px-4">
+                <td class="py-2 pr-4 font-mono align-top">2026</td>
+                <td class="py-2 px-4">
                   <span class="font-semibold">Helen Jones Foundation</span> | Principal Investigator
                   <p class="text-xs text-iron/70 mt-1">Grant awarded to replace an aging microfilm scanner at the SWC/SCL to support newspaper digitization program.</p>
                 </td>
-                <td class="py-3 px-4 text-right font-mono font-semibold text-caprock">**$72,000**</td>
-                <td class="py-3 pl-4 text-right"><span class="px-2 py-0.5 bg-sage/10 text-sage rounded-sm font-medium">Awarded</span></td>
+                <td class="py-2 px-4 text-right font-mono font-semibold text-caprock">$72,000</td>
+                <td class="py-2 pl-4 text-right"><span class="px-2 py-0.5 bg-sage/10 text-sage rounded-sm font-medium">Awarded</span></td>
               </tr>
               <tr>
-                <td class="py-3 pr-4 font-mono vertical-top">2020</td>
-                <td class="py-3 px-4">
+                <td class="py-2 pr-4 font-mono align-top">2020</td>
+                <td class="py-2 px-4">
                   <span class="font-semibold">Helen Jones Foundation</span> | Principal Investigator
                   <p class="text-xs text-iron/70 mt-1">Grant awarded to replace aging flatbed scanners at the SWC/SCL.</p>
                 </td>
-                <td class="py-3 px-4 text-right font-mono font-semibold text-caprock">**$24,400**</td>
-                <td class="py-3 pl-4 text-right"><span class="px-2 py-0.5 bg-sage/10 text-sage rounded-sm font-medium">Awarded</span></td>
+                <td class="py-2 px-4 text-right font-mono font-semibold text-caprock">$24,400</td>
+                <td class="py-2 pl-4 text-right"><span class="px-2 py-0.5 bg-sage/10 text-sage rounded-sm font-medium">Awarded</span></td>
               </tr>
               <tr>
-                <td class="py-3 pr-4 font-mono text-iron/40">2018</td>
-                <td class="py-3 px-4 text-iron/50">National Endowment for the Humanities, National Digital Newspaper Program</td>
-                <td class="py-3 px-4 text-right font-mono text-iron/40">&mdash;</td>
-                <td class="py-3 pl-4 text-right text-xs text-iron/40">Not awarded</td>
+                <td class="py-2 pr-4 font-mono text-iron/40 align-top">2018</td>
+                <td class="py-2 px-4 text-iron/50">National Endowment for the Humanities, National Digital Newspaper Program</td>
+                <td class="py-2 px-4 text-right font-mono text-iron/40">&mdash;</td>
+                <td class="py-2 pl-4 text-right text-xs text-iron/40">Not awarded</td>
               </tr>
               <tr>
-                <td class="py-3 pr-4 font-mono text-iron/40">2017</td>
-                <td class="py-3 px-4 text-iron/50">National Endowment for the Humanities, National Digital Newspaper Program</td>
-                <td class="py-3 px-4 text-right font-mono text-iron/40">&mdash;</td>
-                <td class="py-3 pl-4 text-right text-xs text-iron/40">Not awarded</td>
+                <td class="py-2 pr-4 font-mono text-iron/40 align-top">2017</td>
+                <td class="py-2 px-4 text-iron/50">National Endowment for the Humanities, National Digital Newspaper Program</td>
+                <td class="py-2 px-4 text-right font-mono text-iron/40">&mdash;</td>
+                <td class="py-2 pl-4 text-right text-xs text-iron/40">Not awarded</td>
               </tr>
             </tbody>
           </table>
@@ -134,11 +133,11 @@ import RootLayout from '../layouts/RootLayout.astro';
 
       <!-- SECTION: INTELLECTUAL CONTRIBUTIONS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-0 mb-0">Intellectual Contributions</h2>
-        
-        <div class="space-y-0 text-sm">
+        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Intellectual Contributions</h2>
+
+        <div class="space-y-4 text-sm">
           <div>
-            <h2 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-4">Journal Articles</h2>
+            <h3 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-3">Journal Articles</h3>
             <ul class="space-y-3 list-none pl-0">
               <li class="pl-4 border-l-2 border-haze">Allison, Austin. "The Digitization of Edwards Plateau Newspapers." <span class="italic">Edwards Plateau Historian</span>. Under Review (Submitted October 2025)</li>
               <li class="pl-4 border-l-2 border-caprock">Allison, Austin. <a href="/publications/opportunity_knocking" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">"'Opportunity Knocking': The Vaughan Land Company and Early Bailey County Development."</a> <span class="italic">Panhandle-Plains Historical Review</span> 96 (2025), 40-65.</li>
@@ -152,12 +151,12 @@ import RootLayout from '../layouts/RootLayout.astro';
           </div>
 
           <div>
-            <h2 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-4 border-b border-sage">Book, Chapter in Scholarly Book</h2>
+            <h3 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-4 border-b border-sage">Book, Chapter in Scholarly Book</h3>
             <p class="pl-4 border-l-2 border-caprock">Allison, Austin. <a href="/publications/tahoka_lake" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">"Tahoka Lake"</a> in <span class="italic">Caprock Chronicles: More Tales of the Llano Estacado</span>, edited by John T. (Jack) Becker and David J Murrah, 55-56. Charleston, South Carolina: The History Press, 2021.</p>
           </div>
 
           <div>
-            <h2 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-4 border-b border-sage">Magazines / Trade Publications</h2>
+            <h3 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-4 border-b border-sage">Magazines / Trade Publications</h3>
             <ul class="space-y-2 list-disc list-inside text-iron/90 pl-2">
               <li>Allison, Austin. "<a href="/publications/lipscomb_county_courthouse" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">Lipscomb County Courthouse: A Prairie Landmark with Enduring Presence</a>" <span class="italic">Authentic Texas</span>, Issue 33, Summer 2025.</li>
               <li>Allison, Austin. "<a href="/publications/albert_pike" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">Albert Pike and His Journey to Ransom Canyon</a>" <span class="italic">Lubbock Avalanche-Journal</span>, November 29, 2024.</li>
@@ -170,7 +169,7 @@ import RootLayout from '../layouts/RootLayout.astro';
           </div>
 
           <div>
-            <h2 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-4 border-b border-sage">Edited and Compiled Works</h2>
+            <h3 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-4 border-b border-sage">Edited and Compiled Works</h3>
             <p class="text-iron/90 pl-2">&bull; Compiler of "Publications in West Texas History" for the <span class="italic">West Texas Historical Review</span>, West Texas Historical Association, 2014, 2016-2026.</p>
           </div>
         </div>
@@ -178,8 +177,8 @@ import RootLayout from '../layouts/RootLayout.astro';
 
       <!-- SECTION: PRESENTATIONS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Presentations</h2>
-        <div class="space-y-4 text-sm max-h-[500px] overflow-y-auto pr-2 border border-haze/40 p-4 bg-haze/10 rounded-sm">
+        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Presentations</h2>
+        <div class="space-y-2.5 text-sm max-h-[500px] overflow-y-auto pr-2 border border-haze/40 p-4 bg-haze/10 rounded-sm">
           <div>
             <span class="text-xs font-mono text-iron/50 font-semibold block">April 10, 2026</span>
             <p class="text-iron/90">Allison, Austin. "Early maps of Lubbock and Lubbock County at the Southwest Collection." <span class="italic">West Texas Historical Association 2026 annual meeting</span>. Lubbock, Texas.</p>
@@ -269,16 +268,16 @@ import RootLayout from '../layouts/RootLayout.astro';
 
       <!-- SECTION: PERFORMANCE & EXHIBITS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Artistic and Professional Performances and Exhibits</h2>
-        <div class="space-y-4 text-sm">
-          <div class="flex justify-between items-baseline gap-4">
+        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Artistic and Professional Performances and Exhibits</h2>
+        <div class="space-y-2 text-sm">
+          <div class="flex flex-col md:flex-row md:justify-between md:items-baseline gap-1 md:gap-4">
             <div>
               <span class="font-semibold">Digital Newspapers Permanent Exhibit</span> &mdash; <span class="italic text-iron/80">Globe Room Rotunda</span>
               <p class="text-xs text-iron/70 mt-1">Exhibit curated to showcase award after SWC/SCL received "Award of Excellence in Preserving History" from the Texas Historical Commission in April 2024.</p>
             </div>
             <span class="text-xs font-mono text-iron/60 whitespace-nowrap">May 2024 - Present</span>
           </div>
-          <div class="flex justify-between items-baseline gap-4">
+          <div class="flex flex-col md:flex-row md:justify-between md:items-baseline gap-1 md:gap-4">
             <div>
               <span class="font-semibold">Black and Brown in Print</span> &mdash; <span class="italic text-iron/80">East Rotunda Rotating Exhibit Case</span>
             </div>
@@ -289,9 +288,9 @@ import RootLayout from '../layouts/RootLayout.astro';
 
       <!-- SECTION: METRICS (CATALOGING & DIGITIZATION) -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Cataloging and Metadata Projects</h2>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
-          
+        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Cataloging and Metadata Projects</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+
           <!-- Column A: Map Digitization Growth Metrics -->
           <div class="space-y-3">
             <h3 class="text-xs font-mono text-sage uppercase tracking-wider font-semibold border-b border-haze/40 pb-1">Map Digitization Project (DSpace Growth)</h3>
@@ -333,7 +332,7 @@ import RootLayout from '../layouts/RootLayout.astro';
 
       <!-- SECTION: SERVICE -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Professional Service</h2>
+        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Professional Service</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
           <div>
             <h3 class="text-xs font-mono text-sage uppercase tracking-wider font-semibold mb-2">Department / School</h3>
@@ -369,7 +368,7 @@ import RootLayout from '../layouts/RootLayout.astro';
 
       <!-- SECTION: HONORS & AWARDS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Fellowships, Scholarships, and Awards</h2>
+        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Fellowships, Scholarships, and Awards</h2>
         <div class="text-sm border-l-2 border-caprock pl-4 py-1">
           <span class="text-xs font-mono text-caprock font-semibold block">April 4, 2024</span>
           <strong class="text-iron">Award of Excellence in Preserving History | Texas Historical Commission</strong>
@@ -379,8 +378,8 @@ import RootLayout from '../layouts/RootLayout.astro';
 
       <!-- SECTION: MEDIA CONTRIBUTIONS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-4">Media Contributions</h2>
-        <div class="space-y-4 text-sm">
+        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Media Contributions</h2>
+        <div class="space-y-2 text-sm">
           <div>
             <span class="text-xs font-mono text-iron/50 block">July 31, 2025</span>
             <span class="font-semibold">KLBK News Segment: "On this day in 1891: Lubbock gets its first newspaper"</span>
@@ -400,10 +399,9 @@ import RootLayout from '../layouts/RootLayout.astro';
 
 <style>
   /* Retain print layout safety constraints in line with PDF formats */
-  .vertical-top { vertical-align: top; }
   @media print {
     header, footer { display: none !important; }
-    .max-w-4xl { max-w: 100% !important; padding: 0 !important; }
+    .max-w-4xl { max-width: 100% !important; padding: 0 !important; }
     body { background-color: #ffffff !important; color: #000000 !important; }
   }
 </style>

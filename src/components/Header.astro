@@ -582,7 +582,6 @@ const isDev = import.meta.env.DEV;
             Austin Allison
           </span>
           <span class="station-plate flex items-end gap-1.5" transition:name="site-elevation">
-            
             <!-- Live station readout: Lubbock's local time and current wind.
                  The one place this header says out loud that any of it is
                  real, and the one place it says whose sky you're looking at.
@@ -623,8 +622,10 @@ const isDev = import.meta.env.DEV;
     >
       <defs>
         <linearGradient id="horizon-ground-fill" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="var(--color-iron, #1A1919)" stop-opacity="0.88" />
-          <stop offset="100%" stop-color="var(--color-dust, #B3A38F)" stop-opacity="0.5" />
+          <stop offset="0%"
+          stop-color="color-mix(in oklab, var(--color-iron, #1A1919) 88%, var(--sky-horizon))" />
+          <stop offset="100%"
+          stop-color="color-mix(in oklab, var(--color-dust, #B3A38F) 50%, var(--sky-horizon))" />
         </linearGradient>
       </defs>
       <!-- Far ground plane: the land between here and the horizon. Drawn
@@ -821,6 +822,45 @@ const isDev = import.meta.env.DEV;
      about 50 minutes to cross, close enough to the 70-minute window it
      replaces that the dawn/dusk colour states last about as long as before. */
   const CIVIL_TWILIGHT_DEG = 6;
+
+  /* ---- how dark the sky is (2026-08-06) ----------------------------------
+     The stars were invisible, and no tuning of the stars could have fixed it:
+     the night sky was canvas mixed 79-93% with #33415C — a LIGHT grey-blue
+     around rgb(223,225,227). A pure white point on that is 1.31:1, and the
+     B-V colours added the pass before actually spent what little headroom
+     there was, landing Vega at 1.05:1. You cannot render a bright point on a
+     background already three quarters of the way to white. The sky itself had
+     to get dark.
+
+     Driven continuously off real solar altitude rather than switched on the
+     phase attribute, so it eases through the dawn and dusk already built
+     instead of snapping at the civil-twilight boundary. Full daylight above
+     +3deg, full night by -10deg, smoothstep between — which puts --night at
+     0.77 by the time stars first appear at -6deg, so they emerge into a sky
+     dark enough to hold them (white against it: 8.4:1, up from 1.31:1). */
+  function nightness(altitudeDeg: number): number {
+    const t = Math.max(0, Math.min(1, (3 - altitudeDeg) / 13));
+    return t * t * (3 - 2 * t);
+  }
+
+  /* The ink has to flip from dark to light as the sky crosses under it, and
+     this is deliberately a STEP rather than a fade. Crossfading the text
+     colour looks like the smooth choice and is the broken one: it drags the
+     type through mid-grey at exactly the moment the sky is also mid-grey,
+     bottoming out near 1.0:1 no matter where the fade is centred or how wide
+     it is. Stepping skips the mid-grey entirely.
+
+     0.625 is where dark-on-sky and light-on-sky come out equally legible,
+     solved against the real luminance ramp: 3.89:1 immediately before the
+     flip, 3.94:1 immediately after. That 3.94 is the worst contrast the nav
+     reaches anywhere in the entire cycle — better than the 3.82:1 it manages
+     today in broad daylight, so this raises the floor rather than trading it
+     away for a darker sky. */
+  const INK_FLIP_AT = 0.625;
+
+  /* Latest --night, so applyStars() can give each star its own emergence
+     threshold instead of the whole field appearing at once. */
+  let nightValue = 0;
 
   function phaseFromAltitude(altitudeDeg: number, isMorning: boolean) {
     if (altitudeDeg > CIVIL_TWILIGHT_DEG) return 'day';
@@ -1212,6 +1252,14 @@ const isDev = import.meta.env.DEV;
     const phase = phaseFromAltitude(altitudeDeg, isMorning);
     if (header.dataset.phase !== phase) header.dataset.phase = phase;
 
+    /* How dark the sky is, and which way the type has to read against it.
+       Both continuous in the sun's real altitude, so day -> dusk -> night is
+       one unbroken ramp rather than three states. --ink-flip is the one
+       deliberate exception: see INK_FLIP_AT. */
+    nightValue = nightness(altitudeDeg);
+    header.style.setProperty('--night', nightValue.toFixed(3));
+    header.style.setProperty('--ink-flip', nightValue >= INK_FLIP_AT ? '1' : '0');
+
     // Vertical: real APPARENT altitude — geometric plus refraction, so the
     // disc touches the line at the moment you'd actually see it touch down.
     // 0deg == the horizon line (the CSS subtracts a 3px correction so 0%
@@ -1500,6 +1548,13 @@ const isDev = import.meta.env.DEV;
       const opacity = Math.max(0.35, Math.min(1, (1.05 - mag * 0.1) * extinction));
       const glow = Math.max(1, size * 1.8);
 
+      /* Bright stars come out before faint ones — Sirius while the sky is
+         still blue, Megrez only once it's properly dark. Each star carries
+         its own --star-th and the CSS resolves final opacity against --night,
+         so the field emerges in real magnitude order and keeps easing between
+         the 15-minute repositioning ticks instead of stepping with them. */
+      const threshold = Math.max(0.30, Math.min(0.92, 0.30 + ((mag + 1.5) / 6) * 0.55));
+
       const [cr, cg, cb] = starColor(bv, mag);
       const div = document.createElement('div');
       div.className = 'star-point';
@@ -1508,7 +1563,8 @@ const isDev = import.meta.env.DEV;
       div.style.top = `${topPct.toFixed(2)}%`;
       div.style.width = `${size.toFixed(2)}px`;
       div.style.height = `${size.toFixed(2)}px`;
-      div.style.opacity = opacity.toFixed(2);
+      div.style.setProperty('--star-base', opacity.toFixed(3));
+      div.style.setProperty('--star-th', threshold.toFixed(3));
       div.style.boxShadow = `0 0 ${glow.toFixed(1)}px rgba(${cr}, ${cg}, ${cb}, 0.55)`;
       container.appendChild(div);
     }
@@ -1882,11 +1938,48 @@ const isDev = import.meta.env.DEV;
     /* Milky, faintly tan — dust brightens the distance rather than shading
        it, so this leans on caliche with just enough dust for the colour. */
     --haze-tint: color-mix(in oklch, var(--color-caliche, #E8E1D1) 74%, var(--color-dust, #B3A38F));
-    /* The sky's colour AT the horizon line. Declared once here and overridden
-       per phase below, so #sky-base's bottom stop and the far ground plane's
-       fill can't drift apart — which is exactly how the ridge that preceded
-       the plane ended up punching a pale band through the dawn/dusk glow. */
-    --sky-horizon: color-mix(in oklab, var(--color-canvas, #FBFBF9) 84%, #7F98A6);
+    /* --night (0 day, 1 deep night) and --ink-flip (0/1) are written every
+       60s from real solar altitude — see nightness() and INK_FLIP_AT. The
+       values here are pre-hydration fallbacks only. */
+    --night: 0;
+    --ink-flip: 0;
+
+    /* The phase supplies only the HUE at the line; --night supplies the
+       darkness. Splitting them is what lets the sky ease continuously from
+       day through dusk to night while the tint still shifts rose at dawn and
+       gold at dusk. Overridden per phase below. */
+    --sky-tint: #7F98A6;
+
+    /* The sky at the zenith and at the horizon line, both ramping on --night.
+       #sky-base is now ONE gradient built from these two, instead of four
+       phase-specific gradients that snapped between each other. */
+    --sky-top: color-mix(
+      in oklab,
+      var(--color-canvas, #FBFBF9) calc((1 - var(--night, 0)) * 100%),
+      #131C2C
+    );
+    --sky-horizon: color-mix(
+      in oklab,
+      color-mix(in oklab, var(--color-canvas, #FBFBF9) 84%, var(--sky-tint))
+        calc((1 - var(--night, 0)) * 100%),
+      #26324A
+    );
+
+    /* Type. --ink steps dark->light at INK_FLIP_AT; --ink-muted is the softer
+       weight the nav labels and ticks use, and it strengthens toward full ink
+       as the sky darkens, because that's exactly where the margin is
+       thinnest. Between them the nav's worst contrast anywhere in the cycle
+       is 3.94:1, against 3.82:1 for what ships today at noon. */
+    --ink: color-mix(
+      in oklab,
+      var(--color-iron, #1A1919) calc((1 - var(--ink-flip, 0)) * 100%),
+      #EAF0F7
+    );
+    --ink-muted: color-mix(
+      in oklab,
+      var(--ink) calc((0.75 + 0.25 * min(1, var(--night, 0) / 0.625)) * 100%),
+      var(--sky-horizon)
+    );
     /* Distant land is mostly the airlight in front of it with a little ground
        showing through — so it's built FROM the sky colour rather than from
        canvas, and follows the sky into dawn, dusk and night for free. Dust
@@ -1916,18 +2009,24 @@ const isDev = import.meta.env.DEV;
     --sun-rays-scroll-fade: 1; /* only driven down by scroll on .scroll-driven; 1 = no reduction */
   }
 
+  /* ONE gradient for every hour of the day now. The four phase-specific
+     copies this replaces each hard-swapped their whole background at the
+     civil-twilight boundary; the ramp lives in --sky-top / --sky-horizon
+     instead, so the sky darkens continuously through the dusk that was
+     already being computed. */
   #sky-base {
-    /* Near-white overhead settling into a perceptible cool band at the line */
     background: linear-gradient(
       to bottom,
-      var(--color-canvas, #FBFBF9) 0%,
-      var(--color-canvas, #FBFBF9) 45%,
+      var(--sky-top) 0%,
+      color-mix(in oklab, var(--sky-top) 60%, var(--sky-horizon)) 58%,
       var(--sky-horizon) 100%
     );
   }
 
   #sky-frost {
-    background: color-mix(in oklch, var(--color-canvas, #FBFBF9) 82%, transparent);
+    /* Follows --sky-top: a near-white frost over a night sky would have lit
+       the whole header back up the moment you scrolled. */
+    background: color-mix(in oklab, var(--sky-top) 82%, transparent);
     backdrop-filter: blur(0px);
     opacity: 0;
   }
@@ -2098,6 +2197,7 @@ const isDev = import.meta.env.DEV;
      step is a fraction of a percent of the header's width, so the motion
      reads as continuous drift rather than a visible hop. */
   #sun-wrap {
+    isolation: isolate;   /* keeps #horizon-sun's z-index:1 local */
     left: calc(var(--sun-az, 50%) - 6px);
     /* The -3px is what makes 0% mean "on the horizon". The line sits 3px up
        inside the 22px horizon SVG, and `bottom` positions this box's bottom
@@ -2236,8 +2336,6 @@ const isDev = import.meta.env.DEV;
      and then thrown away for two-thirds of the day. Only the STARS are
      night-only. */
   #night-sky { display: block; }
-  #night-stars { display: none; }
-  #horizon-header[data-phase="night"] #night-stars { display: block; }
 
   /* PLACED FOR REAL as of 2026-08-05: same sky window, same elevation curve,
      same terrain lift as the sun, so it rises and sets where it actually
@@ -2256,7 +2354,7 @@ const isDev = import.meta.env.DEV;
     left: calc(var(--moon-az, 61%) - 5.5px);
     bottom: calc(var(--moon-elev, 30%) - 2.5px + var(--moon-lift, 0px));
     transform: rotate(var(--moon-tilt, 0deg));
-    opacity: 0.34;
+    opacity: calc(0.3 + var(--night, 0) * 0.62);
     transition: left 1.5s linear, bottom 1.5s linear, transform 1.5s linear,
                 opacity 1.5s linear;
     width: 11px;
@@ -2269,8 +2367,6 @@ const isDev = import.meta.env.DEV;
     overflow: hidden; /* the masking disc below is clipped to this circle */
   }
   #horizon-header[data-phase="dawn"] #horizon-moon,
-  #horizon-header[data-phase="dusk"] #horizon-moon { opacity: 0.6; }
-  #horizon-header[data-phase="night"] #horizon-moon { opacity: 0.9; }
 
   /* The real phase: a second disc, same size, offset horizontally by
      --moon-shadow-x and colored to match the surrounding night sky, so it
@@ -2300,7 +2396,17 @@ const isDev = import.meta.env.DEV;
      extinction; the soft white glow (not a dark halo) is what gives each
      point contrast against the header's actual night sky, which stays a
      fairly pale, barely-tinted color rather than true darkness. */
+  /* Final opacity is the star's own brightness times its emergence against
+     --night — so Sirius is out while the sky is still blue and Megrez waits
+     for it to go properly dark, instead of the whole field switching on at
+     the civil-twilight boundary. --star-base and --star-th are written per
+     star in applyStars(). */
   .star-point {
+    opacity: calc(
+      var(--star-base, 0) *
+      clamp(0, (var(--night, 0) - var(--star-th, 0.5)) / (1 - var(--star-th, 0.5)), 1)
+    );
+    transition: opacity 1.5s linear;
     position: absolute;
     border-radius: 9999px;
     background: #FFFFFF;
@@ -2348,7 +2454,7 @@ const isDev = import.meta.env.DEV;
        down to 0.16 and visibly softened when it's blowing 36. The blur is
        small on purpose — enough to lose the 1px strokes' edges, not enough
        to smear the silhouette. */
-    opacity: calc(0.55 - var(--haze-strength, 0.08) * 0.39);
+    opacity: calc((0.55 + var(--night, 0) * 0.12) - var(--haze-strength, 0.08) * 0.39);
     filter: blur(calc(var(--haze-strength, 0.08) * 1.2px));
     transition: opacity 1.2s ease-out, filter 1.2s ease-out;
   }
@@ -2375,7 +2481,16 @@ const isDev = import.meta.env.DEV;
   }
 
   #the-horizon {
-    color: color-mix(in oklch, var(--color-dust, #B3A38F) 85%, var(--color-iron, #1A1919));
+    /* Ramps with --night instead of switching at the phase boundary. The
+       night end is now LIGHTER than the day end, because the sky beneath it
+       has gone dark — the line has to stay visible against it. */
+    color: color-mix(
+      in oklab,
+      color-mix(in oklch, var(--color-dust, #B3A38F) 85%, var(--color-iron, #1A1919))
+        calc((1 - var(--night, 0)) * 100%),
+      #8E9AAE
+    );
+    transition: color 0.6s linear;
   }
 
   /* Distant ridge — a heavy fade toward canvas so it recedes; drawn first
@@ -2428,55 +2543,28 @@ const isDev = import.meta.env.DEV;
   /* ======================================================================== */
   #horizon-header[data-phase="dawn"] {
     --evening-tint: #C97E5C; /* scrolling at dawn warms toward rose-gold */
-    --sky-horizon: color-mix(in oklab, var(--color-canvas, #FBFBF9) 82%, #D9917A);
-  }
-  #horizon-header[data-phase="dawn"] #sky-base {
-    background: linear-gradient(
-      to bottom,
-      var(--color-canvas, #FBFBF9) 0%,
-      var(--color-canvas, #FBFBF9) 40%,
-      var(--sky-horizon) 100%
-    );
+    --sky-tint: #D9917A;
   }
 
   #horizon-header[data-phase="dusk"] {
     --evening-tint: #6B5B7A; /* scrolling at dusk cools toward violet night */
-    --sky-horizon: color-mix(in oklab, var(--color-canvas, #FBFBF9) 80%, #C98F4E);
-  }
-  #horizon-header[data-phase="dusk"] #sky-base {
-    background: linear-gradient(
-      to bottom,
-      var(--color-canvas, #FBFBF9) 0%,
-      var(--color-canvas, #FBFBF9) 38%,
-      var(--sky-horizon) 100%
-    );
+    --sky-tint: #C98F4E;
   }
 
   #horizon-header[data-phase="night"] {
     --evening-tint: #33415C; /* scrolling at night only deepens the dark */
-    --sky-horizon: color-mix(in oklab, var(--color-canvas, #FBFBF9) 79%, #33415C);
-  }
-  #horizon-header[data-phase="night"] #sky-base {
-    background: linear-gradient(
-      to bottom,
-      color-mix(in oklch, var(--color-canvas, #FBFBF9) 93%, #33415C) 0%,
-      color-mix(in oklch, var(--color-canvas, #FBFBF9) 90%, #33415C) 45%,
-      var(--sky-horizon) 100%
-    );
+    --sky-tint: #33415C;
   }
   #horizon-header[data-phase="night"] #sun-wrap { display: none; }
 
-  #horizon-header[data-phase="night"] #the-horizon {
-    color: color-mix(in oklch, var(--color-dust, #B3A38F) 48%, var(--color-iron, #1A1919));
-  }
-  #horizon-header[data-phase="night"] #windmill {
-    /* silhouettes read darker against a dimmed sky — but still recede in
-       dust, just from a higher baseline */
-    opacity: calc(0.62 - var(--haze-strength, 0.08) * 0.34);
-  }
 
   /* --- The landmark ------------------------------------------------------ */
+  /* The signature is a fixed dark-ink asset, so it has to invert rather than
+     recolour. Tied to --ink-flip (the step) rather than --night (the ramp),
+     for the same reason the type is: a half-inverted mark is mid-grey, which
+     is the one value guaranteed to vanish into a mid-grey twilight sky. */
   .signature-img {
+    filter: invert(var(--ink-flip, 0));
     height: 2rem;
     transform-origin: left bottom;
     margin-bottom: 1px; /* feet on the ground */
@@ -2484,7 +2572,8 @@ const isDev = import.meta.env.DEV;
 
   .landmark-name {
     font-size: 1.05rem;
-    color: rgba(26, 25, 25, 0.9);
+    color: var(--ink);
+    transition: color 0.6s linear;
     line-height: 1;
     padding-bottom: 0.45rem;
     transform-origin: left bottom;
@@ -2492,11 +2581,11 @@ const isDev = import.meta.env.DEV;
 
   .landmark.is-active .landmark-name,
   .landmark:hover .landmark-name {
-    color: var(--color-iron, #1A1919);
+    color: var(--ink);
   }
 
   .station-mark {
-    color: color-mix(in oklch, var(--color-iron, #1A1919) 60%, var(--color-dust, #B3A38F));
+    color: var(--ink-muted);
     display: block;
   }
   .landmark.is-active .station-mark,
@@ -2514,26 +2603,27 @@ const isDev = import.meta.env.DEV;
     font-size: 8.5px;
     letter-spacing: 0.14em;
     line-height: 1;
-    padding-bottom: 2px;
+    padding-bottom: 0.25rem;
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
-    color: rgba(26, 25, 25, 0.65);
+    color: var(--ink-muted);
+    transition: color 0.6s linear;
   }
 
   /* --- Mile markers ------------------------------------------------------- */
   .marker-label {
     font-size: 11px;
-    color: rgba(26, 25, 25, 0.55);
+    color: var(--ink-muted);
     padding-bottom: 0.35rem;
     transform: translateY(0);
-    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), color 0.25s ease;
+    transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), color 0.6s linear;
   }
 
   .marker-tick {
     width: 1.5px;
     height: 9px;
-    background-color: color-mix(in oklch, var(--color-iron, #1A1919) 55%, var(--color-dust, #B3A38F));
-    transition: height 0.25s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.25s ease;
+    background-color: var(--ink-muted);
+    transition: height 0.25s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.6s linear;
   }
 
   /* Active page: a benchmark station, same mark as the name */
@@ -2541,7 +2631,7 @@ const isDev = import.meta.env.DEV;
   .marker.is-active .marker-tick { display: none; }
   .marker.is-active .marker-station { display: block; }
   .marker.is-active .marker-label {
-    color: var(--color-iron, #1A1919);
+    color: var(--ink);
   }
 
   /* Heat shimmer — the label rises and resolves */
@@ -2553,7 +2643,7 @@ const isDev = import.meta.env.DEV;
 
   .marker:hover .marker-label,
   .marker:focus-visible .marker-label {
-    color: var(--color-iron, #1A1919);
+    color: var(--ink);
     transform: translateY(-3px);
     animation: heat-shimmer 0.35s ease-out both;
   }
