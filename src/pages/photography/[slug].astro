@@ -21,6 +21,10 @@
  *     navigation left a full set of keydown/pointer/resize handlers
  *     alive, closed over the detached previous page.
  *  4. The HUD registry gains a link to the plate index.
+ *  5. The "plate record" link moved out of the lightbox toolbar and
+ *     into the actions row beside the print and licensing links, so
+ *     it's reachable on a phone. The toolbar is already full at 380px.
+ *     The actions row hides itself when it has nothing in it.
  *
  * Everything else — the pointer model, the clamped pan, fit-to-board,
  * the bake/unbake zoom, the focus trap — is unchanged.
@@ -47,7 +51,7 @@ const { plates, bounds, eager } = gallery;
 const registry = SERIES;
 ---
 
-<Layout title={`${gallery.title} — Austin Allison`} hideNav={true} hideFoot={true}>
+<Layout title={`${gallery.title} — Austin Allison`} hideFoot={true}>
   <main
     id="workspace-viewport"
     class="w-full h-[100dvh] overflow-hidden bg-canvas text-iron select-none cursor-grab active:cursor-grabbing relative touch-none"
@@ -124,7 +128,7 @@ const registry = SERIES;
 
             <a
               href={`/photography/plates#${gallery.slug}`}
-              class="font-mono text-[9px] uppercase tracking-widest text-iron/40 hover:text-caprock transition-colors mt-2 pt-2 border-t border-haze/30"
+              class="font-serif text-[12px] uppercase tracking-widest text-caprock hover:text-caprock transition-colors mt-2 pt-2 border-t border-haze/30"
             >
               Plate index &rarr;
             </a>
@@ -242,14 +246,6 @@ const registry = SERIES;
       </div>
 
       <div class="flex items-center gap-2 md:gap-4">
-        <a
-          id="lightbox-record"
-          href="#"
-          class="font-mono text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors p-2 focus:outline-none hidden md:inline"
-        >
-          plate record &rarr;
-        </a>
-
         <button id="btn-fullscreen" type="button" class="font-mono text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors p-2 focus:outline-none flex items-center gap-1.5" aria-label="Toggle fullscreen">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path></svg>
           <span class="hidden md:inline">fullscreen</span>
@@ -295,6 +291,13 @@ const registry = SERIES;
           </div>
 
           <div id="lightbox-actions" class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 pt-2 border-t border-haze/30">
+            <a
+              id="lightbox-record"
+              href="#"
+              class="font-mono text-[9px] uppercase tracking-widest text-iron/60 hover:text-caprock transition-colors"
+            >
+              Plate record &rarr;
+            </a>
             <a
               id="lightbox-order-print"
               href="#"
@@ -681,6 +684,7 @@ const registry = SERIES;
     const orderPrintEl = document.getElementById('lightbox-order-print') as HTMLAnchorElement | null;
     const licenseEl = document.getElementById('lightbox-license') as HTMLAnchorElement | null;
     const recordEl = document.getElementById('lightbox-record') as HTMLAnchorElement | null;
+    const actionsEl = document.getElementById('lightbox-actions');
     const licenseEmail = modal.dataset.licenseEmail || '';
 
     function isOpen() {
@@ -897,8 +901,7 @@ const registry = SERIES;
       // an empty field shouldn't announce itself
       notesEl?.classList.toggle('hidden', !rec.caption);
       if (progressEl) progressEl.textContent = `Plate ${current + 1} of ${total}`;
-      // an untitled plate has no record page — inline style, because
-      // toggling `hidden` loses to the element's own md:inline utility
+      // an untitled plate has no record page
       if (recordEl) {
         recordEl.style.display = rec.href ? '' : 'none';
         recordEl.href = rec.href || '#';
@@ -918,6 +921,11 @@ const registry = SERIES;
           licenseEl.href = `mailto:${licenseEmail}?subject=${subject}`;
         }
       }
+      // nothing to offer? don't leave a bordered empty row behind
+      actionsEl?.classList.toggle(
+        'hidden',
+        !rec.href && !canOrderPrint && !(rec.sellable && licenseEmail),
+      );
 
       setThumb(current);
       syncUrl(rec.no);
