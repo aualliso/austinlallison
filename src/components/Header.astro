@@ -343,6 +343,56 @@
 //      margin the northern sky compresses hard; nothing the sun or moon ever
 //      touches is affected.
 //
+//  16. THE WINDMILL LOOKS AT ITSELF (2026-08-09). Every system in this header
+//      had been checked against the thing it names except the one object
+//      standing on the line, which was still drawn from memory.
+//
+//      THE TAIL WAS FORESHORTENED BACKWARDS, and this is the real bug rather
+//      than a drawing complaint. #windmill-tail was a CHILD of
+//      #windmill-head, so it inherited the rotor's |cos psi|. But the rotor
+//      disc's normal points into the wind while the vane's plane CONTAINS
+//      the wind - the two foreshorten as |cos psi| and |sin psi|,
+//      complementary, never together. The vane was therefore at full length
+//      under a due-south wind, the exact case where it points straight away
+//      from the viewer and should be a hairline. --head-flip's sign was
+//      inverted on top of that: facing south, east is on the LEFT, so an
+//      easterly turns the wheel left and trails the vane RIGHT, and the old
+//      test sent it left. Both survived because there was no ?debugWindDir -
+//      the yaw was the one real-data-driven element in this header that
+//      could not be driven by hand. There is one now.
+//
+//      THE WHEEL WAS A PINWHEEL. Eight spokes through a single centre point
+//      is a compass rose. An Aermotor wheel is an ANNULUS: outer rim, inner
+//      hub ring, and short pitched sails spanning between them, none of them
+//      pointing at the centre. That band is the entire silhouette - it is
+//      what separates a windmill from a wagon wheel at distance. Twelve
+//      sails at 26deg of lead, not eighteen, because the rim spacing at 22px
+//      is already about 2.1 units.
+//
+//      THE WHEEL ALSO SAT INSIDE THE TOWER. Hub at y=8, radius 5.2, tower
+//      top at y=9 - so the lower half of the wheel hung four units below the
+//      top girt, in front of nothing. Hub moves to y=6, tower top to y=10.5,
+//      and the wheel clears. transform-origin follows it to 11px 6px in
+//      three places, which is the one thing here that breaks the yaw
+//      silently if it's missed.
+//
+//      Plus a tail boom and a vane sized like a real one (about half the
+//      wheel's diameter), X-bracing across four panels instead of two ladder
+//      rungs, a gearbox, a pump rod, and a stroke-weight hierarchy in place
+//      of a flat 1px.
+//
+//      STILL STYLIZED, deliberately: the wheel is ~37% of the tower's height
+//      against a real ~24%, because a proportional wheel at this size is six
+//      pixels of grey. The ceiling on further detail is the render size (22px
+//      / 28px), not the drawing - it's vector, so those two numbers are the
+//      dial if the lattice ever wants to be legible.
+//
+//      NOT DONE, and the obvious next one: FURLING. Past roughly 35mph an
+//      Aermotor swings its vane parallel to the wheel and turns edge-on to
+//      the wind, and stops - that's how it survives a Llano spring. Right now
+//      high wind just spins it faster, which is the one thing a real mill
+//      won't do. DUST_SATURATION_MPH is already 36.
+
 // The benchmark plate under the name no longer carries a place/elevation
 // label — decided it was redundant with the footer's own elevation rail
 // and cut it; the small survey mark stays as the landmark's identity.
@@ -619,36 +669,120 @@ const isDev = import.meta.env.DEV;
       </g>
     </svg>
 
-    <!-- THE WINDMILL — one object in the middle distance, feet on the line.
+    <!-- THE WINDMILL - one object in the middle distance, feet on the line.
          Painted AFTER #sun-wrap in DOM order, which is what lets the sun
-         pass behind it now that the sun actually travels horizontally. -->
+         pass behind it now that the sun actually travels horizontally.
+
+         REDRAWN 2026-08-09. What the old drawing claimed that wasn't true,
+         worst first:
+
+         THE WHEEL WAS A PINWHEEL. Eight spokes running through a single
+         centre point is a compass rose. An Aermotor's wheel is an ANNULUS -
+         an outer rim, an inner hub ring, and eighteen short sails spanning
+         between them, each set at a pitch so it does not point at the
+         centre. That annular band IS the silhouette: it's what separates a
+         windmill from a wagon wheel at half a mile. Twelve sails rather than
+         eighteen, because at 22px the rim spacing is already ~2.1 units.
+
+         THE TAIL WAS A PENNANT ON THE HUB. A real vane hangs off a boom well
+         behind the wheel and is roughly half the wheel's diameter - the
+         second-largest surface on the machine.
+
+         THE TOWER HAD RUNGS. Four-leg Aermotor towers are X-braced in every
+         panel with a girt at each joint; ladder rungs read as scaffolding.
+         Four panels here, on a ~32% base spread (7.6 units over a 23.5-unit
+         rise), which is about what a 33ft tower runs.
+
+         AND THE WHEEL SAT INSIDE THE TOWER. The hub was one unit above the
+         tower top with a 5.2-unit radius, so the lower half of the wheel
+         hung below the top girt, in front of nothing at all.
+
+         Stroke weight is a hierarchy now rather than a flat 1px: legs
+         heaviest, bracing and sails thin enough to read as texture at this
+         size. The hub moved from (11,8) to (11,6), so transform-origin moved
+         with it in three places in the stylesheet. -->
     <svg
       id="windmill"
       aria-hidden="true"
       class="absolute pointer-events-none"
       width="22" height="34" viewBox="0 0 22 34"
     >
-      <g stroke="currentColor" stroke-width="1" fill="none" stroke-linecap="round">
-        <!-- tower + braces -->
-        <path d="M7 34 L10.4 9" />
-        <path d="M15 34 L11.6 9" />
-        <path d="M8.3 26 H13.7" />
-        <path d="M9.2 18 H12.8" />
-        <!-- The head yaws to face the wind: #windmill-head carries the
-             horizontal foreshortening of the rotor face, #windmill-tail
-             mirrors to whichever side is downwind. Both are separate groups
-             from #windmill-rotor because that one already owns a rotate
-             animation and a second transform on the same element would
-             simply overwrite it. -->
+      <g stroke="currentColor" fill="none" stroke-linecap="round">
+
+        <!-- TOWER: X-bracing and girts. Thin and slightly faded on purpose -
+             at this size the lattice wants to read as density, not lines. -->
+        <g stroke-width="0.45" opacity="0.68">
+          <path d="M7.2 34 L14.03 28.2 M14.8 34 L7.97 28.2" />
+          <path d="M7.97 28.2 L13.26 22.3 M14.03 28.2 L8.74 22.3" />
+          <path d="M8.74 22.3 L12.48 16.4 M13.26 22.3 L9.52 16.4" />
+          <path d="M9.52 16.4 L11.7 10.5 M12.48 16.4 L10.3 10.5" />
+          <path d="M7.97 28.2 H14.03 M8.74 22.3 H13.26 M9.52 16.4 H12.48" />
+        </g>
+
+        <!-- The pump rod. The reason the tower is there at all: this is a
+             water-pumping mill, not a generator. Barely visible, and it wants
+             to be - it mostly reads as the tower's own centre axis. -->
+        <path d="M11 32.5 V10.5" stroke-width="0.3" opacity="0.4" />
+
+        <!-- Legs + top girt (the platform the turntable stands on) -->
+        <path d="M7.2 34 L10.3 10.5 M14.8 34 L11.7 10.5 M10.3 10.5 H11.7"
+              stroke-width="0.9" />
+
+        <!-- THE TAIL. A SIBLING of #windmill-head now rather than a child of
+             it, because the two foreshorten inversely - see the note on
+             #windmill-tail in the stylesheet. Drawn before the wheel so the
+             wheel occludes the boom's inner end. -->
+        <g id="windmill-tail">
+          <path d="M12.4 6 L16.8 5" stroke-width="0.45" opacity="0.85" />
+          <path d="M12.4 6.9 L16.8 6.2" stroke-width="0.3" opacity="0.45" />
+          <path d="M16.6 3.5 L20.7 2.7 L20.7 6.9 L16.6 6.5 Z"
+                fill="currentColor" stroke="currentColor" stroke-width="0.3"
+                stroke-linejoin="round" opacity="0.8" />
+        </g>
+
+        <!-- THE WHEEL, SIZED SEPARATELY FROM THE YAW. #windmill-wheel carries
+             a plain scale() around the shared 11px 6px hub, driven by a
+             wheel-scale variable (see the stylesheet), independent of
+             #windmill-head's own yaw scaleX below, so the two nest rather
+             than fight: this sets how BIG the wheel is, the inner group
+             still sets how FACE-ON it looks. 1.3 is close to the safe
+             ceiling at this viewBox: the sail tips start clipping the top
+             edge (y=0) above roughly scale 1.37, since the rim sits 4.1
+             units off a hub at y=6. Push it further only by adding
+             headroom to the svg's own viewBox, not by raising this alone. -->
+        <g id="windmill-wheel">
+        <!-- THE HEAD. Carries only the rotor's own foreshortening now. -->
         <g id="windmill-head">
-          <g id="windmill-tail">
-            <path d="M11.6 7.6 L17 10 L16.3 11.9 L11.6 9.4 Z" fill="currentColor" stroke="none" opacity="0.85" />
-          </g>
+          <!-- The gearbox, drawn before the wheel so the sails cross in front
+               of it - which is where it actually sits. Kept symmetric about
+               the mast so it needs no mirroring when the tail changes sides. -->
+          <path d="M9.9 4.9 H12.1 V7.1 H9.9 Z"
+                fill="currentColor" stroke="none" opacity="0.5" />
+
           <g id="windmill-rotor">
-            <circle cx="11" cy="8" r="5.2" opacity="0.65" />
-            <path d="M11 2.8 V13.2 M5.8 8 H16.2 M7.3 4.3 L14.7 11.7 M7.3 11.7 L14.7 4.3" />
+            <circle cx="11" cy="6" r="4.1" stroke-width="0.55" opacity="0.75" />
+            <circle cx="11" cy="6" r="1.7" stroke-width="0.3" opacity="0.45" />
+            <!-- Twelve sails, each leading its own radius by 26deg - the pitch
+                 that makes a wheel a fan. Hub ring to rim, never through the
+                 centre. -->
+            <g stroke-width="0.5" opacity="0.9">
+              <path d="M15.10 6.00 L12.53 6.75" />
+              <path d="M14.55 8.05 L11.95 7.41" />
+              <path d="M13.05 9.55 L11.12 7.70" />
+              <path d="M11.00 10.10 L10.26 7.53" />
+              <path d="M8.95 9.55 L9.59 6.95" />
+              <path d="M7.45 8.05 L9.30 6.12" />
+              <path d="M6.90 6.00 L9.47 5.26" />
+              <path d="M7.45 3.95 L10.05 4.59" />
+              <path d="M8.95 2.45 L10.88 4.30" />
+              <path d="M11.00 1.90 L11.75 4.47" />
+              <path d="M13.05 2.45 L12.41 5.05" />
+              <path d="M14.55 3.95 L12.70 5.88" />
+            </g>
           </g>
-          <circle cx="11" cy="8" r="0.9" fill="currentColor" stroke="none" />
+
+          <circle cx="11" cy="6" r="0.85" fill="currentColor" stroke="none" />
+        </g>
         </g>
       </g>
     </svg>
@@ -845,6 +979,21 @@ const isDev = import.meta.env.DEV;
   function debugWindMph(): number | null {
     if (!debugEnabled) return null;
     const raw = new URLSearchParams(location.search).get('debugWind');
+    if (raw == null) return null;
+    const v = parseFloat(raw);
+    return Number.isFinite(v) ? v : null;
+  }
+
+  /* Dev-only wind DIRECTION override: ?debugWindDir=<compass degrees>, same
+     gate and same idiom as ?debugWind above. Added 2026-08-09 alongside the
+     yaw fix, and it is half of that fix: the head's orientation was the one
+     real-data-driven thing in this header with no way to drive it by hand, so
+     a sign error in it could only have been caught by waiting for the weather
+     to change and remembering what it looked like last time. Meteorological
+     convention, matching the API: the direction the wind comes FROM. */
+  function debugWindDirDeg(): number | null {
+    if (!debugEnabled) return null;
+    const raw = new URLSearchParams(location.search).get('debugWindDir');
     if (raw == null) return null;
     const v = parseFloat(raw);
     return Number.isFinite(v) ? v : null;
@@ -1898,29 +2047,55 @@ const isDev = import.meta.env.DEV;
     }
     const clamped = mph == null ? DUST_FALLBACK_MPH : Math.min(45, Math.max(2, mph));
 
+    /* Applied after the cache/fetch so it overrides either, and never
+       written back - a test bearing can't poison the session's real one. */
+    const dbgDir = debugWindDirDeg();
+    if (dbgDir != null) windFromDeg = dbgDir;
+
     windMph = clamped;
 
     if (svg) {
       const duration = Math.min(32, Math.max(13, 26 - clamped * 0.35));
       svg.style.setProperty('--windmill-speed', `${duration.toFixed(1)}s`);
 
-      /* YAW. An Aermotor's whole head turns to face the wind — that's what the
-         tail vane is for. The viewer here faces SOUTH (the sun rises on the
-         left and sets on the right), so a wind out of the south points the
-         rotor straight at us and a wind out of the east or west turns it
-         edge-on.
+      /* YAW. An Aermotor's whole head turns to face the wind - that's what
+         the tail vane is for. The viewer here faces SOUTH (the sun rises on
+         the left and sets on the right), so psi is the wind's bearing
+         relative to the line of sight.
 
          A stylized projection, not a true one: at 22x34px a real perspective
-         rotor would be illegible, so the rotor face is scaled horizontally by
-         |cos| of its bearing relative to the line of sight, floored at 0.18 so
-         it never collapses to nothing, and the tail mirrors to whichever side
-         is downwind. The result reads correctly — head-on when it blows from
-         the south, edge-on and tail out to the side when it blows across —
-         without pretending to be a camera. */
+         rotor would be illegible, so each surface is scaled horizontally by
+         its own foreshortening factor and floored so it never collapses to
+         nothing.
+
+         THE TWO FACTORS ARE COMPLEMENTARY, which is what the previous version
+         got wrong. The rotor faces into the wind, so its disc foreshortens by
+         |cos psi|. The vane's plane contains the wind, so it foreshortens by
+         |sin psi|. The tail used to be a child of #windmill-head and simply
+         inherited the rotor's |cos psi| - putting the vane at full length
+         under a due-south wind, the one case where it points straight away
+         from the viewer and should be a hairline. Wind out of the south now:
+         wheel full, tail hidden behind it. Wind across: wheel edge-on, tail
+         broadside.
+
+         WHICH SIDE THE VANE HANGS ON. Screen-right is WEST, since the viewer
+         faces south - so a bearing A has a screen-right component of -sin(A).
+         The tail points at windFromDeg + 180, which works out to -sin(psi):
+         positive, i.e. the vane drawn to the right in its native orientation,
+         when sin(psi) <= 0. This is the INVERSE of what shipped before.
+         Sanity check it with a due-east wind: facing south, east is on the
+         LEFT, so the wheel turns to face left and the vane trails RIGHT.
+         ?debugWindDir=90 should put the vane right of the mast.
+
+         (That override is the other half of this fix. There was a ?debugWind
+         hook for wind SPEED and none for DIRECTION, so the yaw had never been
+         steerable on demand - which is why a straightforward sign error
+         survived several passes. Same gate, same idiom, added above.) */
       if (windFromDeg != null) {
         const psi = ((windFromDeg - 180) * Math.PI) / 180;
-        svg.style.setProperty('--rotor-scale-x', Math.max(0.18, Math.abs(Math.cos(psi))).toFixed(3));
-        svg.style.setProperty('--head-flip', Math.sin(psi) >= 0 ? '1' : '-1');
+        svg.style.setProperty('--rotor-scale-x', Math.max(0.16, Math.abs(Math.cos(psi))).toFixed(3));
+        svg.style.setProperty('--tail-scale-x', Math.max(0.12, Math.abs(Math.sin(psi))).toFixed(3));
+        svg.style.setProperty('--head-flip', Math.sin(psi) <= 0 ? '1' : '-1');
       }
     }
     if (header) {
@@ -2170,6 +2345,11 @@ const isDev = import.meta.env.DEV;
     --belt-shadow: #6E7C93; /* Earth's shadow — cool, desaturated, low */
     --belt-pink: #E2A0A4;   /* the Belt itself — backscatter, sitting on top */
     --rotor-scale-x: 1;
+    /* Pre-fetch, and where a failed fetch settles: wheel face-on with the
+       vane edge-on behind it, i.e. a wind out of the south - which is the
+       prevailing direction here, so the fallback orientation is the
+       likeliest one rather than an arbitrary one. */
+    --tail-scale-x: 0.12;
     --head-flip: 1;
     /* Pre-fetch fallback, and the value a failed fetch settles on: a clean
        sky. Inventing a dust storm that isn't happening is the worse error. */
@@ -2700,6 +2880,21 @@ const isDev = import.meta.env.DEV;
     left: 38%;
     bottom: 3px; /* the line sits 3px up inside the horizon svg */
     color: color-mix(in oklch, var(--color-dust, #B3A38F) 68%, var(--color-iron, #1A1919));
+    /* THE WHOLE WINDMILL'S SIZE, separate from --wheel-scale (which only
+       grows the wheel relative to the tower). This scales tower, wheel and
+       tail together around the feet, so raising it doesn't lift the base
+       off the horizon line — transform-origin is bottom-centre, not centre.
+
+       No CSS length here can target "the sun's peak height" exactly: that
+       height is a real percentage of the header's own rendered pixel
+       height (see SKY_SPAN_PCT in the module script), and the header's
+       height itself isn't a fixed number — it depends on font metrics and
+       the breakpoint, and it shrinks again on scroll. --windmill-scale is
+       therefore a dial to tune by eye against the real page, not a
+       computed value. 1.25 is a modest bump, not a target hit exactly —
+       3 was tried and was much too large. */
+    transform: scale(var(--windmill-scale, 1.25));
+    transform-origin: 50% 100%;
     /* AERIAL PERSPECTIVE (2026-08-05, ninth pass). The dust layer sits at
        -z-10, behind everything, so on its own it can only ever tint a strip —
        it never obscures anything, which is what separates haze from a
@@ -2715,21 +2910,56 @@ const isDev = import.meta.env.DEV;
     transition: opacity 1.2s ease-out, filter 1.2s ease-out;
   }
 
-  /* The yaw. Both transforms sit on their own groups so neither collides with
-     the rotor's rotate animation, which would otherwise just overwrite them. */
+  /* THE YAW. Both transforms sit on their own groups so neither collides with
+     the rotor's rotate animation, which would otherwise just overwrite them.
+
+     THE TAIL IS NO LONGER NESTED INSIDE THE HEAD, and that's the fix. The
+     rotor disc's normal points INTO the wind; the tail vane's plane CONTAINS
+     the wind, so its normal is perpendicular to the rotor's. Their
+     foreshortenings are therefore complementary - |cos psi| and |sin psi|.
+     Nesting the tail inside the head made it inherit the rotor's |cos psi|,
+     so the vane was at full length in exactly the case where it should have
+     been invisible: wind out of the south, wheel face-on, tail pointing
+     straight away from the viewer. It was longest when it should have been
+     gone, and the error was self-concealing because a windmill with a
+     permanently visible tail still looks like a windmill.
+
+     --tail-scale-x carries the foreshortening and --head-flip carries which
+     side of the mast the vane hangs on; multiplying them inside one scaleX
+     keeps both on a single transition.
+
+     All three origins are 11px 6px now, following the hub down from 8. */
+
+  /* THE WHEEL'S SIZE, separate from the yaw. #windmill-wheel wraps
+     #windmill-head and applies a plain scale() around the same 11px 6px
+     hub — it doesn't touch #windmill-head's own scaleX, so the two nest
+     rather than compete: this decides how BIG the wheel is, the inner
+     transform still decides how FACE-ON it looks. The tower and tail are
+     siblings outside this group, so neither one grows with the wheel.
+
+     1.3 is close to the safe ceiling at the current 22x34 viewBox: the
+     rim sits 4.1 units off a hub at y=6, so the sail tips start clipping
+     the top edge (y=0) above roughly scale 1.37. Push it further only by
+     giving the svg's own viewBox more headroom above — raising this past
+     ~1.35 without doing that will visibly flatten the top of the wheel. */
+  #windmill-wheel {
+    transform: scale(var(--wheel-scale, 1.3));
+    transform-origin: 11px 6px;
+  }
+
   #windmill-head {
     transform: scaleX(var(--rotor-scale-x, 1));
-    transform-origin: 11px 8px;
+    transform-origin: 11px 6px;
     transition: transform 2s ease-out;
   }
   #windmill-tail {
-    transform: scaleX(var(--head-flip, 1));
-    transform-origin: 11px 8px;
+    transform: scaleX(calc(var(--tail-scale-x, 0.12) * var(--head-flip, 1)));
+    transform-origin: 11px 6px;
     transition: transform 2s ease-out;
   }
 
   #windmill-rotor {
-    transform-origin: 11px 8px;
+    transform-origin: 11px 6px;
     animation: windmill-turn var(--windmill-speed, 22s) linear infinite;
   }
   @keyframes windmill-turn {

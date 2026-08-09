@@ -54,6 +54,13 @@ export type SeriesEntry = {
   number: string;
   title: string;
   built: boolean;
+  /** two or three sentences for the album page — the pitch for entering
+   *  the series. Lives here rather than on the gallery so an unbuilt
+   *  series can still describe itself. */
+  lede: string;
+  /** cover image, relative to src/assets/photography */
+  cover: string;
+  coverLabel: string;
 };
 
 export type PlateInput = {
@@ -79,18 +86,65 @@ export type GalleryInput = {
    *  to be sold. */
   sellable: boolean;
   region: string;
-  essay: string;
   centerX: number;
   centerY: number;
   plates: PlateInput[];
 };
 
+/* ── PARKED ────────────────────────────────────────────────────────
+ * The long-form American Escarpments essay used to render inside the
+ * light table's HUD, where nobody read it — wrong posture, wrong
+ * measure. The album page now carries the shorter `lede` below. Kept
+ * here in case it wants a home later (a series preface on the plate
+ * index, or an About page):
+ *
+ * From the rugged Permian red beds of the Southern Plains to the
+ * ancient volcanic chasms of the Pacific Northwest and the dramatic
+ * glacial coulees of Montana's Big Sky country, this photo set
+ * captures the breathtaking geological fractures that define the
+ * American West. These landscapes are a masterclass in geomorphology,
+ * visually documenting the diverse forces of water, wind, and ancient
+ * cataclysms that have sculpted the continent's vast interior
+ * tablelands. By showcasing the abrupt transitions where endless high
+ * prairies drop away into hidden canyons, valleys, and river floors,
+ * the collection highlights both the immense isolation and the
+ * unexpected productivity of the Western terrain. Ultimately, the
+ * images serve as a striking testament to human adaptation, where
+ * ancient natural fortresses and challenging migratory barriers have
+ * seamlessly transformed into modern landscapes of recreation and
+ * massive agricultural abundance.
+ */
+
 /* ── the registry ───────────────────────────────────────────────── */
 
 export const SERIES: SeriesEntry[] = [
-  { slug: 'escarpments',                 number: 'I',   title: 'American Escarpments',        built: true  },
-  { slug: 'water_on_the_llano_estacado', number: 'II',  title: 'Water on the Llano Estacado', built: true  },
-  { slug: 'cotton_gins',                 number: 'III', title: 'Cotton Gins of Texas',        built: false },
+  {
+    slug: 'escarpments',
+    number: 'I',
+    title: 'American Escarpments',
+    built: true,
+    lede: "A gallery of the vertical escarpments outlining the edges of our country's plateaus. This collection captures the jarring drops of these areas under natural light. Encompassing three states, this gallery only captures a small portion of our nation's plateaus and escarpments.",
+    cover: 'escarpments/escarpment5.jpg',
+    coverLabel: 'Plate 1.05 \u00B7 Little Jerusalem',
+  },
+  {
+    slug: 'water_on_the_llano_estacado',
+    number: 'II',
+    title: 'Water on the Llano Estacado',
+    built: true,
+    lede: 'A documentary index isolating the diminutive water sources of the Llano Estacado.',
+    cover: 'water/water1.jpg',
+    coverLabel: 'Plate 2.01 \u00B7 Tule Creek',
+  },
+  {
+    slug: 'cotton_gins',
+    number: 'III',
+    title: 'Cotton Gins of Texas',
+    built: false,
+    lede: 'An intentional survey of the remnant legacy cotton gins in West Texas. No longer in use, these sentinels of the plains register stories of economic prosperity dating back more than a century.',
+    cover: 'cotton_gins/dumont.jpg',
+    coverLabel: 'Plate 3.01 \u00B7 Dumont',
+  },
 ];
 
 const galleryData: GalleryInput[] = [
@@ -98,8 +152,6 @@ const galleryData: GalleryInput[] = [
     slug: 'escarpments',
     sellable: true,
     region: 'Texas | Montana | Washington',
-    essay:
-      'From the rugged Permian red beds of the Southern Plains to the ancient volcanic chasms of the Pacific Northwest and the dramatic glacial coulees of Montana\u2019s Big Sky country, this photo set captures the breathtaking geological fractures that define the American West. These landscapes are a masterclass in geomorphology, visually documenting the diverse forces of water, wind, and ancient cataclysms that have sculpted the continent\u2019s vast interior tablelands. By showcasing the abrupt transitions where endless high prairies drop away into hidden canyons, valleys, and river floors, the collection highlights both the immense isolation and the unexpected productivity of the Western terrain. Ultimately, the images serve as a striking testament to human adaptation, where ancient natural fortresses and challenging migratory barriers have seamlessly transformed into modern landscapes of recreation and massive agricultural abundance.',
     centerX: 1550,
     centerY: 920,
     plates: [
@@ -217,7 +269,7 @@ const galleryData: GalleryInput[] = [
         specs: '12mm \u00B7 \u0192/4.4 \u00B7 1/320s',
         x: 950, y: 1150, w: 300,
         caption: 'Rooted in the cracks of ancient, tilted granite, a lone pine stands tall over the rugged foothills of the Cache la Poudre Canyon.',
-        printLink: 'https://buy.stripe.com/aFa5kD26U2fccmmbr56c000',
+        printLink: '',
       },
       {
         file: 'escarpments/escarpment13.jpg',
@@ -247,7 +299,6 @@ const galleryData: GalleryInput[] = [
     // true once the metadata is filled in.
     sellable: false,
     region: 'Texas | New Mexico',
-    essay: '',
     centerX: 1250,
     centerY: 820,
     plates: [
@@ -258,6 +309,7 @@ const galleryData: GalleryInput[] = [
         lat: 34.546670, lng: -101.429921,
         specs: '12mm \u00B7 \u0192/8 \u00B7 1/320s',
         x: 750, y: 250, w: 250,
+        caption: 'Tule Creek originates on the Llano Estacado and descends the caprock carving a broad canyon through Briscoe and Swisher counties. The creek assumes the rust color as it flows east.'
       },
       {
         file: 'water/water2.jpg',
@@ -270,11 +322,12 @@ const galleryData: GalleryInput[] = [
       },
       {
         file: 'water/water3.jpg',
-        title: 'Active Runningwater Draw',
+        title: 'Flowing Running Water Draw',
         place: 'Parmer County, Texas',
-        lat: 34.471036, lng: -102.720865,
+        lat: 34.471036, lng: -102.720865, 
         specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/640s',
         x: 1100, y: 180, w: 400,
+        caption: 'Running Water Draw after a heavy rain in Parmer County, Texas. After head precipitation upstream, intermittent draws and creeks on the Llano Estacado can flow for periods before returning to their dry state.'
       },
       // ── untitled below: empty title marks a plate as in preparation.
       // The coordinates and specs are placeholders copied across all of
@@ -282,19 +335,21 @@ const galleryData: GalleryInput[] = [
       {
         file: 'water/water4.jpg',
         title: 'Winter Oasis', place: 'Bailey County, Texas',
-        lat: 33.986285, lng: -102.707952,
+        lat: 33.990590, lng: -1102.702870,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
         x: 1080, y: 480, w: 400,
+        caption: 'Remnant water in a lake basin as the season evolves to winter. Winter months on the Llano Estacado are its driest period, but remnant autumn precipitation and occasional fall and winter rain can fill these basins water for a short time.'
       },
       {
         file: 'water/water5.jpg',
-        title: '', place: '',
-        lat: 33.991164, lng: -102.708448,
+        title: 'Reflections and Fractures', place: 'Bailey County, Texas',
+        lat: 33.990590, lng: -1102.702870,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
         x: 880, y: 750, w: 400,
+        caption: 'Water in intermittently dry lake basins offer clear reflections of the sky above, while revealing fractures in the lake\'s underlying surface, a reminder of the Llano Estacado\'s arid climate and the ephemeral nature of these water sources.'
       },
       {
-        file: 'water/water6.jpg',
+        file: 'water/water14.jpg',
         title: '', place: '',
         lat: 33.991164, lng: -102.708448,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
@@ -576,6 +631,41 @@ async function build(): Promise<ResolvedGallery[]> {
 export function getGalleries(): Promise<ResolvedGallery[]> {
   if (!cache) cache = build();
   return cache;
+}
+
+/* ── album covers ───────────────────────────────────────────────
+   The album page shows one plate per series, including for series that
+   have no gallery yet. Reuses the board derivatives (700 / 1400), which
+   is the right size for a 7-of-12 column in a max-w-6xl page. */
+
+export type SeriesCover = SeriesEntry & {
+  src: string;
+  srcset?: string;
+  width: number;
+  height: number;
+};
+
+let coverCache: Promise<SeriesCover[]> | null = null;
+
+async function buildCovers(): Promise<SeriesCover[]> {
+  return Promise.all(
+    SERIES.map(async (entry) => {
+      const img = await resolveImage(entry.cover);
+      return {
+        ...entry,
+        src: img.board,
+        srcset: img.boardSrcset,
+        width: img.width,
+        height: img.height,
+      };
+    }),
+  );
+}
+
+/** Every series in registry order, cover image resolved. Memoized. */
+export function getCovers(): Promise<SeriesCover[]> {
+  if (!coverCache) coverCache = buildCovers();
+  return coverCache;
 }
 
 export async function getGallery(slug: string): Promise<ResolvedGallery> {
