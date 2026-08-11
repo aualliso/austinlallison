@@ -621,10 +621,20 @@ const isDev = import.meta.env.DEV;
          divs with a fixed pixel diameter stay round regardless.
          Precedes the content row in DOM order, which is load-bearing now
          that the stars share the sun's vertical band: the name, the nav
-         and the land all paint in front of the field. -->
+         and the land all paint in front of the field.
+
+         STARS BEFORE MOON in DOM order (2026-08-10 fix). Neither element
+         carries a z-index, so paint order here is plain DOM order —
+         later wins. The moon had been listed first, which put the star
+         field on top of it: a star sitting behind the moon's own disc
+         would incorrectly show through. The moon is millions of times
+         closer than any star in the catalog and should occlude them, not
+         the reverse — the same occludes-what's-behind-it logic already
+         used for the windmill against the sun. Swapped so the moon is
+         now the later sibling and paints on top. -->
     <div id="night-sky" aria-hidden="true" class="absolute inset-0 pointer-events-none">
-      <div id="horizon-moon"></div>
       <div id="night-stars" class="absolute inset-0 w-full h-full pointer-events-none"></div>
+      <div id="horizon-moon"></div>
     </div>
 
     <!-- A SEASONAL MARKER — sandhill cranes, fall migration only.
@@ -1716,10 +1726,40 @@ const isDev = import.meta.env.DEV;
     header.style.setProperty('--moon-lift', `${horizonLiftPx(mAzPct).toFixed(2)}px`);
 
     // The lit fraction, which drives how far the shadow disc is offset.
+    //
+    // FIXED 2026-08-10 (first pass). This was `(1 - illum) * 100`, which is
+    // the shadow disc's offset backwards. #horizon-moon::after is a
+    // same-size disc, clipped by the moon's own circular overflow:hidden,
+    // sliding across the lit base disc — so the offset needs to be SMALL
+    // when illum is low (shadow sits nearly concentric, covering almost
+    // everything, leaving only a thin lit sliver) and LARGE when illum is
+    // high (shadow slides almost entirely out of the clip circle, exposing
+    // the full disc). `(1 - illum)` inverted that: at that morning's real
+    // illum of ~9% (a waning crescent) it produced a 91% offset — pushing
+    // the shadow almost entirely out of frame and leaving the disc looking
+    // nearly full. The two forms only agree at illum = 0.5 (quarter moon),
+    // which is why a half-moon never looked wrong.
+    //
+    // FIXED 2026-08-10 (second pass). The sign here used to flip on
+    // `waxing`, which conflicted with the terminator-tilt rotation just
+    // below: that rotation hard-codes a `-90` offset on the fixed premise
+    // that the UNROTATED lit side is always on the right (see the comment
+    // on the tilt). A negative shadow-x offset genuinely does put the lit
+    // side on the right — confirmed by simulating the mask geometry
+    // directly — but only the WAXING branch produced a negative offset;
+    // waning flipped it positive, putting the lit side on the left, which
+    // the tilt's fixed `-90` doesn't account for. Because the base crescent
+    // is symmetric top-to-bottom, rotating a lit-left shape by an angle
+    // computed for lit-right lands exactly 180° off: the lit limb pointed
+    // directly away from the sun instead of toward it, for every waning
+    // phase — including the one on screen when the first bug was reported.
+    // The sign is now constant (always lit-right, unrotated), matching the
+    // tilt's premise for every phase; the real left/right/up/down direction
+    // comes entirely from the rotation below, which already uses the real
+    // sun bearing and needs no phase-dependent branch to get it right.
     const phase = moonPhaseFraction(now);
     const illum = (1 - Math.cos(2 * Math.PI * phase)) / 2;
-    const waxing = phase < 0.5;
-    header.style.setProperty('--moon-shadow-x', `${((1 - illum) * 100 * (waxing ? -1 : 1)).toFixed(1)}%`);
+    header.style.setProperty('--moon-shadow-x', `${(-illum * 100).toFixed(1)}%`);
 
     /* THE TERMINATOR'S TILT. The mask offsets purely horizontally, so without
        this the crescent always had a vertical edge — but the illuminated limb
