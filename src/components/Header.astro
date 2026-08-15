@@ -46,7 +46,8 @@
 //      horizon — some nights it's just a genuinely real star field, same
 //      as the real sky would look. (Reworked 2026-08-02: the old fixed
 //      20-dot scatter — same every night, no relation to real astronomy —
-//      is now ~26 real bright stars, each with real RA/Dec, positioned by
+//      is now a real bright-star catalog (26 at first, 77 as of the
+//      2026-08-10 expansion), each with real RA/Dec, positioned by
 //      actual altitude/azimuth for Lubbock at the current moment, same
 //      class of math as the moon above. Magnitude drives size/brightness
 //      — compressed range, since real stars are point sources and
@@ -231,7 +232,7 @@
 //      exactly the rate the sun sinks. The header had a warm arch on the
 //      sun's side and nothing at all on the other.
 //
-//      STAR COLOUR. All 26 rendered pure white, which is the one thing stars
+//      STAR COLOUR. All of them rendered pure white, which is the one thing stars
 //      visibly are not. Each catalog entry gained a B-V index mapped through
 //      a seven-stop ramp, blended toward white for dim stars since colour
 //      vision fades at low light.
@@ -392,6 +393,45 @@
 //      the wind, and stops - that's how it survives a Llano spring. Right now
 //      high wind just spins it faster, which is the one thing a real mill
 //      won't do. DUST_SATURATION_MPH is already 36.
+
+//  17. THE CATALOG GROWS, CAREFULLY (2026-08-10). The field read as sparse:
+//      26 catalog entries means about 10 above the horizon after extinction,
+//      one star per ~1,300px of a band that on a phone is only ~359x37px.
+//
+//      The obvious fix — extend to a magnitude limit — is the wrong one, and
+//      the numbers say why. mag<=4 is 513 entries: ~200 visible, an 8px
+//      spacing in a 37px-tall band, 15KB of catalog shipped to every visitor,
+//      and 400 querySelector calls per applyStars() pass through
+//      horizonLiftPx(). Worse, it would bury the point of having a real
+//      catalog at all: Orion's Belt and the Big Dipper are in here as real
+//      stars precisely so an attentive repeat visitor might catch the shape,
+//      and drowning them in mag-4 filler destroys exactly that.
+//
+//      So this is CURATED to 77, not magnitude-limited. Every addition either
+//      completes a figure someone can actually name (Orion's shoulders and
+//      sword, the Scorpius sting, the Sagittarius teapot, the Northern Cross,
+//      the Great Square, the Cassiopeia W, the Leo sickle) or anchors a
+//      stretch of sky that was otherwise empty. Result: ~30 visible, ~21px
+//      spacing, +1.5KB, 60 querySelectors per pass — comfortably under the
+//      point where the `d`-string caching deliberately avoided in
+//      horizonLiftPx() would become necessary.
+//
+//      TWO CONSTRAINTS SHAPED THE LIST. Nothing below dec -56.42deg is
+//      included because it never rises at this latitude: Achernar, Rigil
+//      Kentaurus and Acrux are all excluded on that basis, and Canopus (dec
+//      -52.7, max altitude 3.7deg) survives from the original list mostly as
+//      a curiosity, since extinction eats it almost immediately. And the
+//      northern sky is now the WORST place to add: note 15's piecewise
+//      projection puts the two margins at the header's edges, and the mobile
+//      widening in the sky-window pass compressed them to ~16px each, so
+//      Cassiopeia is squeezed on a phone and reads properly only on desktop.
+//      Polaris is deliberately ABSENT for the same reason taken to its
+//      limit: at azimuth 0 it maps to exactly x=0 in every layout and would
+//      sit permanently half-clipped against the left edge.
+//
+//      NOT DONE, deliberately: no procedural or invented filler stars. The
+//      whole claim of this layer is that every point is a real star at its
+//      real bearing, and one fake dot forfeits it.
 
 // The benchmark plate under the name no longer carries a place/elevation
 // label — decided it was redundant with the footer's own elevation rail
@@ -585,6 +625,54 @@ const isDev = import.meta.env.DEV;
          rather than always lighting the middle of the line. -->
     <div id="horizon-rim-light" aria-hidden="true" class="absolute pointer-events-none"></div>
 
+    <!-- THE NIGHT SKY: moon (real current phase, shown only when real
+         moonrise/moonset math says it's actually above the horizon) + a
+         real bright-star catalog (2026-08-02 rework — see applyStars()
+         below). Empty on purpose: populated as small circular divs by JS,
+         since real stars need real altitude/azimuth per star, and a
+         fixed-shape SVG scaled to fit whatever width/height the header
+         happens to be at could distort circles into ellipses; plain
+         divs with a fixed pixel diameter stay round regardless.
+         Precedes the content row in DOM order, which is load-bearing now
+         that the stars share the sun's vertical band: the name, the nav
+         and the land all paint in front of the field.
+
+         STARS BEFORE MOON, both BEFORE THE SUN. Nothing in this group
+         carries a z-index, so paint order is plain DOM order — later
+         wins — and the whole sky reads back-to-front: stars, then moon,
+         then sun, then the windmill and the land in front of all of it.
+
+         Stars before moon (2026-08-10): the moon had been first, so the
+         star field painted on top of it and a star behind the moon's own
+         disc showed through.
+
+         Night-sky before sun-wrap (2026-08-10, second pass): this block
+         used to sit AFTER #sun-wrap, so the moon painted over the sun.
+         That looked fine on desktop and broke on phones, and the reason
+         is the sky window, not the stacking: the projection squeezes
+         250deg of azimuth into the measured gap between the name and the
+         nav, and on a narrow viewport measureSkyWindow() falls through to
+         the MIN_SKY_SPAN_PCT floor of 12%. On a 390px phone that is ~47px
+         of total travel for the entire sky, so bodies up to ~60deg apart
+         land within a disc's width of each other — and 60deg of elongation
+         is an ordinary crescent, not a rare alignment. The same 60deg is
+         ~138px apart on a 1440px desktop, which is why it never showed
+         there.
+
+         Two bodies genuinely overlapping is a projection artifact rather
+         than astronomy: the real moon only crosses the real sun at new
+         moon, i.e. a solar eclipse. So the question is only which artifact
+         looks less wrong, and the sun has to win — it is the brightest
+         thing in the header and carries its own glow, while the moon at a
+         near-solar elongation is by definition nearly new, which here means
+         a disc filled almost entirely by the sky-coloured shadow mask. That
+         is the exact case the old order rendered: a sky-coloured hole
+         punched through the middle of the sun. -->
+    <div id="night-sky" aria-hidden="true" class="absolute inset-0 pointer-events-none">
+      <div id="night-stars" class="absolute inset-0 w-full h-full pointer-events-none"></div>
+      <div id="horizon-moon"></div>
+    </div>
+
     <!-- THE SUN (dawn / day / dusk) -->
     <div id="sun-wrap" aria-hidden="true" class="absolute pointer-events-none">
       <!-- Grazing light: the aureole — the atmosphere's own forward-scattered
@@ -609,32 +697,6 @@ const isDev = import.meta.env.DEV;
         </g>
       </svg>
       <div id="horizon-sun"></div>
-    </div>
-
-    <!-- THE NIGHT SKY: moon (real current phase, shown only when real
-         moonrise/moonset math says it's actually above the horizon) + a
-         real bright-star catalog (2026-08-02 rework — see applyStars()
-         below). Empty on purpose: populated as small circular divs by JS,
-         since real stars need real altitude/azimuth per star, and a
-         fixed-shape SVG scaled to fit whatever width/height the header
-         happens to be at could distort circles into ellipses; plain
-         divs with a fixed pixel diameter stay round regardless.
-         Precedes the content row in DOM order, which is load-bearing now
-         that the stars share the sun's vertical band: the name, the nav
-         and the land all paint in front of the field.
-
-         STARS BEFORE MOON in DOM order (2026-08-10 fix). Neither element
-         carries a z-index, so paint order here is plain DOM order —
-         later wins. The moon had been listed first, which put the star
-         field on top of it: a star sitting behind the moon's own disc
-         would incorrectly show through. The moon is millions of times
-         closer than any star in the catalog and should occlude them, not
-         the reverse — the same occludes-what's-behind-it logic already
-         used for the windmill against the sun. Swapped so the moon is
-         now the later sibling and paints on top. -->
-    <div id="night-sky" aria-hidden="true" class="absolute inset-0 pointer-events-none">
-      <div id="night-stars" class="absolute inset-0 w-full h-full pointer-events-none"></div>
-      <div id="horizon-moon"></div>
     </div>
 
     <!-- A SEASONAL MARKER — sandhill cranes, fall migration only.
@@ -1329,9 +1391,49 @@ const isDev = import.meta.env.DEV;
      collapses on scroll, and rect() would shrink with them — making the sky
      window silently breathe in and out while you scroll. Offsets are layout
      values and ignore transforms, so the window depends on viewport width
-     alone, which is the only thing that should move it. */
+     alone, which is the only thing that should move it.
+
+     WIDTH-RESPONSIVE as of 2026-08-10. The two problems quoted above are
+     both WIDE-SCREEN problems, and the fix was being applied at every width.
+     On a phone the first one cannot occur — there is no empty margin for a
+     sunrise to fly out into — while the cost is severe: the measured gap
+     between the name and the nav falls under MIN_SKY_SPAN_PCT, the floor
+     kicks in, and the whole sky collapses to a 12% strip. On a 390px screen
+     that is ~47px of travel for an entire day, which makes the summer sweep
+     45px and the winter one 23px. The seasonal narrowing that note 8 exists
+     to show is a 22px difference nobody will ever see, and the sun reads as
+     a stationary dot.
+
+     So the window is now a wide-screen device rather than a universal one.
+     Above WIDE_LAYOUT_PX the measured behaviour is UNCHANGED to the pixel —
+     same offsets, same gap, same floor — because that is where it earns its
+     keep. Below it the sun opens out to NARROW_SPAN and is allowed to pass
+     BEHIND the name and the nav, which the header already accepts for the
+     star field (note 14) on exactly the same reasoning: the content row
+     comes later in DOM order, so the type paints in front and the occlusion
+     reads as depth rather than collision.
+
+     NARROW_SPAN is 4-96 rather than 0-100 so a rise or set still happens
+     just inside the frame instead of half a disc off the edge; the sun's
+     own 6px radius plus its glow wants a little room to sit in.
+
+     WHAT TO WATCH: the disc is not the risk, the glow is. #horizon-sun
+     carries box-shadows out to 34px blur, and INK_FLIP_AT was solved
+     against the SKY's luminance ramp with a worst case of 3.94:1 — thin
+     enough that a bloom passing behind 11px type could push it under. If
+     that shows, attenuate the outer shadow layers near the content row
+     rather than dimming the disc: the disc is the object, the halo is what
+     eats text. */
   const SKY_EDGE_GAP_PX = 18;   // clearance from name/nav — disc is 12px plus glow
   const MIN_SKY_SPAN_PCT = 12;  // degenerate-layout floor; centred if we can't do better
+
+  /* Below this the measured window is abandoned for NARROW_SPAN. 900 sits
+     above the tablet widths where a real gap still opens between the name
+     and the nav, and below the point where max-w-7xl starts leaving margin
+     the original window was written to keep the sun out of. */
+  const WIDE_LAYOUT_PX = 900;
+  const NARROW_SPAN_LEFT_PCT = 4;
+  const NARROW_SPAN_RIGHT_PCT = 96;
 
   let skyLeftPct = 30;
   let skyRightPct = 70;
@@ -1343,13 +1445,27 @@ const isDev = import.meta.env.DEV;
     const total = header.offsetWidth;
     if (!landmark || !nav || !total) return;
 
+    /* Narrow viewport: let the sky use the whole width and pass behind the
+       type. Deliberately does not consult the landmark/nav offsets at all —
+       the point is that their positions should stop constraining the sun
+       here, not that they should constrain it a little less. */
+    if (total < WIDE_LAYOUT_PX) {
+      skyLeftPct = NARROW_SPAN_LEFT_PCT;
+      skyRightPct = NARROW_SPAN_RIGHT_PCT;
+      return;
+    }
+
     let l = ((landmark.offsetLeft + landmark.offsetWidth + SKY_EDGE_GAP_PX) / total) * 100;
     let r = ((nav.offsetLeft - SKY_EDGE_GAP_PX) / total) * 100;
 
     /* A very narrow viewport can leave no usable gap at all. Rather than
        freezing the sun in place, fall back to a minimum span centred on
        whatever gap there is and accept a little overlap: a sun that grazes
-       the nav reads as depth, a sun that never moves reads as broken. */
+       the nav reads as depth, a sun that never moves reads as broken.
+       Now only reachable above WIDE_LAYOUT_PX, where a degenerate gap means
+       unusually long text rather than a small screen — kept because that
+       case is still possible and freezing the sun is still the worse
+       outcome. */
     if (!(r - l >= MIN_SKY_SPAN_PCT)) {
       const mid = (l + r) / 2 || 50;
       l = mid - MIN_SKY_SPAN_PCT / 2;
@@ -1786,7 +1902,7 @@ const isDev = import.meta.env.DEV;
   };
 
   /* ---- real stars (2026-08-02 rework) -------------------------------------
-     Replaces the old fixed 20-dot scatter with ~26 real bright stars (real
+     Replaces the old fixed 20-dot scatter with a real bright-star catalog (real
      right ascension/declination), positioned by actual altitude/azimuth for
      Lubbock at the current moment — same class of math as the moon above,
      just extended with an azimuth calculation the moon didn't need. Stars
@@ -1814,6 +1930,7 @@ const isDev = import.meta.env.DEV;
      One number per entry, already tabulated for any bright star, and it's the
      difference between a field of dots and a field of stars. */
   const STAR_CATALOG: Array<[number, number, number, number]> = [
+    /* ---- the original bright core (mag <= ~2.4 + figure completions) ---- */
     [6.752, -16.716, -1.46, 0.00],  // Sirius
     [6.399, -52.696, -0.74, 0.15],  // Canopus
     [14.261, 19.182, -0.05, 1.23],  // Arcturus
@@ -1830,16 +1947,99 @@ const isDev = import.meta.env.DEV;
     [22.961, -29.622, 1.16, 0.09],  // Fomalhaut
     [20.690, 45.280, 1.25, 0.09],   // Deneb
     [10.139, 11.967, 1.36, -0.11],  // Regulus
-    [5.679, -1.943, 1.74, -0.20],   // Alnitak (Orion's Belt)
-    [5.603, -1.202, 1.69, -0.18],   // Alnilam (Orion's Belt)
-    [5.533, -0.299, 2.23, -0.22],   // Mintaka (Orion's Belt)
-    [11.062, 61.751, 1.79, 1.07],   // Dubhe (Big Dipper)
-    [11.031, 56.382, 2.37, 0.03],   // Merak (Big Dipper)
-    [11.897, 53.695, 2.44, 0.04],   // Phecda (Big Dipper)
-    [12.257, 57.033, 3.31, 0.08],   // Megrez (Big Dipper)
-    [12.900, 55.960, 1.77, -0.02],  // Alioth (Big Dipper)
-    [13.399, 54.925, 2.23, 0.02],   // Mizar (Big Dipper)
-    [13.792, 49.313, 1.86, -0.10],  // Alkaid (Big Dipper)
+
+    /* ---- ORION, completed (2026-08-10) ----
+       The belt was already here; the shoulders, knees and sword turn three
+       dots into the one figure almost anyone can name. */
+    [5.679, -1.943, 1.74, -0.20],   // Alnitak (belt)
+    [5.603, -1.202, 1.69, -0.18],   // Alnilam (belt)
+    [5.533, -0.299, 2.23, -0.22],   // Mintaka (belt)
+    [5.418, 6.350, 1.64, -0.22],    // Bellatrix (shoulder)
+    [5.796, -9.670, 2.06, -0.17],   // Saiph (knee)
+    [5.590, -5.910, 2.75, -0.24],   // Hatsya (sword)
+
+    /* ---- THE BIG DIPPER (unchanged) ---- */
+    [11.062, 61.751, 1.79, 1.07],   // Dubhe
+    [11.031, 56.382, 2.37, 0.03],   // Merak
+    [11.897, 53.695, 2.44, 0.04],   // Phecda
+    [12.257, 57.033, 3.31, 0.08],   // Megrez
+    [12.900, 55.960, 1.77, -0.02],  // Alioth
+    [13.399, 54.925, 2.23, 0.02],   // Mizar
+    [13.792, 49.313, 1.86, -0.10],  // Alkaid
+
+    /* ---- CANIS MAJOR — the body under Sirius ---- */
+    [6.977, -28.972, 1.50, -0.21],  // Adhara
+    [7.140, -26.393, 1.83, 0.67],   // Wezen
+    [6.378, -17.956, 1.98, -0.24],  // Mirzam
+
+    /* ---- TAURUS / GEMINI / AURIGA — the winter arc around Orion ---- */
+    [5.438, 28.608, 1.65, -0.13],   // Elnath
+    [3.791, 24.105, 2.87, -0.09],   // Alcyone (Pleiades)
+    [7.577, 31.888, 1.58, 0.03],    // Castor
+    [6.629, 16.399, 1.93, 0.00],    // Alhena
+    [5.992, 44.947, 1.90, 0.08],    // Menkalinan
+
+    /* ---- LEO — the sickle and the tail ---- */
+    [11.818, 14.572, 2.14, 0.09],   // Denebola
+    [10.333, 19.841, 2.08, 1.13],   // Algieba
+    [11.235, 20.524, 2.56, 0.13],   // Zosma
+
+    /* ---- SCORPIUS — the hook, which needs its sting to read ---- */
+    [17.560, -37.104, 1.62, -0.22], // Shaula
+    [17.622, -42.998, 1.87, 0.40],  // Sargas
+    [16.005, -22.622, 2.29, -0.12], // Dschubba
+    [16.091, -19.805, 2.62, -0.07], // Acrab
+    [17.512, -37.296, 2.69, -0.22], // Lesath
+
+    /* ---- SAGITTARIUS — the teapot ---- */
+    [18.403, -34.385, 1.85, -0.03], // Kaus Australis
+    [18.921, -26.297, 2.05, -0.22], // Nunki
+    [19.044, -29.880, 2.60, 0.06],  // Ascella
+    [18.350, -29.828, 2.70, 1.38],  // Kaus Media
+
+    /* ---- CYGNUS — the Northern Cross, with Deneb above ---- */
+    [19.512, 27.960, 3.05, 1.09],   // Albireo (foot)
+    [20.370, 40.257, 2.23, 0.68],   // Sadr (centre)
+    [20.770, 33.970, 2.46, 1.03],   // Gienah Cygni (wing)
+    [19.749, 45.131, 2.87, -0.04],  // Delta Cygni (wing)
+
+    /* ---- LYRA / AQUILA — the rest of the Summer Triangle's figures ---- */
+    [18.982, 32.690, 3.24, -0.05],  // Sulafat
+    [19.771, 10.613, 2.72, 1.52],   // Tarazed
+
+    /* ---- BOOTES / CORONA BOREALIS — the kite off Arcturus ---- */
+    [14.750, 27.074, 2.35, 0.97],   // Izar
+    [13.911, 18.398, 2.68, 0.58],   // Muphrid
+    [15.578, 26.715, 2.22, -0.02],  // Alphecca
+
+    /* ---- PEGASUS + ANDROMEDA — the Great Square and its chain ---- */
+    [0.140, 29.091, 2.06, -0.11],   // Alpheratz (shared corner)
+    [23.079, 15.205, 2.48, -0.04],  // Markab
+    [23.063, 28.083, 2.42, 1.67],   // Scheat
+    [21.736, 9.875, 2.38, 1.53],    // Enif
+    [1.162, 35.621, 2.05, 1.58],    // Mirach
+    [2.065, 42.330, 2.10, 1.37],    // Almach
+
+    /* ---- CASSIOPEIA — the W. Culminates high but due NORTH, so on a narrow
+       viewport the piecewise projection squeezes it into the ~16px margin.
+       Reads properly on desktop, where the margins are far wider per degree. */
+    [0.675, 56.537, 2.24, 1.17],    // Schedar
+    [0.153, 59.150, 2.28, 0.34],    // Caph
+    [0.945, 60.717, 2.47, -0.15],   // Gamma Cassiopeiae
+    [1.430, 60.235, 2.68, 0.13],    // Ruchbah
+    [1.907, 63.670, 3.38, -0.15],   // Segin
+
+    /* ---- PERSEUS ---- */
+    [3.405, 49.861, 1.79, 0.48],    // Mirfak
+    [3.136, 40.956, 2.12, -0.05],   // Algol
+
+    /* ---- singles that anchor otherwise empty stretches of sky ---- */
+    [17.582, 12.560, 2.08, 0.15],   // Rasalhague (Ophiuchus)
+    [0.726, -17.987, 2.04, 1.02],   // Diphda (Cetus)
+    [9.460, -8.659, 1.98, 1.44],    // Alphard (Hydra)
+    [12.263, -17.542, 2.59, -0.11], // Gienah Corvi (Corvus)
+    [2.119, 23.462, 2.00, 1.15],    // Hamal (Aries)
+    [17.943, 51.489, 2.24, 1.52],   // Eltanin (Draco)
   ];
 
   /* B-V index -> approximate rendered colour. A ramp rather than a blackbody
@@ -3442,8 +3642,22 @@ const isDev = import.meta.env.DEV;
   /* REDUCED MOTION — states still change (via .is-scrolled, which JS always  */
   /* drives here), but nothing glides, draws, spins, morphs, or shimmers.     */
   /* Sun elevation AND azimuth transitions turn off too — the minute-to-      */
-  /* minute step becomes an instant snap rather than a 1s glide (moot while   */
-  /* #sun-wrap is display:none below, but correct if that ever changes).      */
+  /* minute step becomes an instant snap rather than a 1s glide, which at     */
+  /* real solar rates is at most ~1.8px and usually far less.                 */
+  /*                                                                          */
+  /* THE SUN STAYS VISIBLE (2026-08-10). This block used to end with          */
+  /* `#sun-wrap { display: none }`, which removed the disc, the aureole, the  */
+  /* rays and every grazing-light effect hanging off them — so a visitor who  */
+  /* had only asked not to be moved lost the header's main subject entirely,  */
+  /* while the moon, the stars and the windmill (never covered by that rule)  */
+  /* stayed put. That was a content decision wearing a motion rule's clothes. */
+  /* Reduced motion means don't animate, not don't render. The sun does not   */
+  /* meaningfully animate anyway: it steps once a minute, and the transitions */
+  /* that made those steps glide are already killed by the rule above — so    */
+  /* what's left is a correctly-placed, entirely static sun. The entrance     */
+  /* fade is cancelled by `animation: none` and #sun-wrap declares no base    */
+  /* opacity, so it resolves to 1 rather than being stuck at the keyframe's   */
+  /* `from { opacity: 0 }`.                                                   */
   /* ======================================================================== */
   @media (prefers-reduced-motion: reduce) {
     #horizon-header, #sky-base, #sky-frost, #sky-dusk, #sun-wrap, #horizon-sun,
@@ -3456,7 +3670,6 @@ const isDev = import.meta.env.DEV;
       transition: none !important;
       animation: none !important;
     }
-    #sun-wrap { display: none; }
   }
   @media (min-width: 768px) {
   #windmill { width: 28px; height: 43px; }
