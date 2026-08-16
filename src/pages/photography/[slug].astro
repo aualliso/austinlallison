@@ -27,6 +27,10 @@
  *     The actions row hides itself when it has nothing in it.
  *  6. The gallery essay is gone from the HUD — it lives on the album
  *     page now as SERIES[].lede. `essay` is no longer a gallery field.
+ *  7. Plate x/y/w are optional in the data module now — omit them and
+ *     the auto-flow places the plate. The sheet sizes itself to the
+ *     result, so BOARD_W/BOARD_H are gone in favour of gallery.boardW
+ *     and gallery.boardH.
  *
  * Everything else — the pointer model, the clamped pan, fit-to-board,
  * the bake/unbake zoom, the focus trap — is unchanged.
@@ -35,8 +39,6 @@ import Layout from '../../layouts/RootLayout.astro';
 import {
   getGalleries,
   getGallery,
-  BOARD_W,
-  BOARD_H,
   LICENSE_EMAIL,
   SERIES,
   plateLine,
@@ -168,11 +170,11 @@ const registry = SERIES;
     <div
       id="light-table"
       class="absolute bg-topo-canvas pointer-events-auto origin-top-left will-change-transform"
-      style={`width:${BOARD_W}px; height:${BOARD_H}px;`}
+      style={`width:${gallery.boardW}px; height:${gallery.boardH}px;`}
       data-center-x={gallery.centerX}
       data-center-y={gallery.centerY}
-      data-board-w={BOARD_W}
-      data-board-h={BOARD_H}
+      data-board-w={gallery.boardW}
+      data-board-h={gallery.boardH}
       data-min-x={bounds.minX}
       data-min-y={bounds.minY}
       data-max-x={bounds.maxX}

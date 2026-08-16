@@ -9,7 +9,8 @@
  *   /photography/plates           the plate index
  *   /photography/[slug]/[plate]   the single-plate record
  *
- * — so a plate described once is described everywhere. This used to
+ * — plus /photography, the album, which reads SERIES for its covers and
+ * ledes. A plate described once is described everywhere. This used to
  * live inside getStaticPaths in [slug].astro, which meant nothing else
  * could see it; getStaticPaths runs in an isolated scope but CAN see
  * imports, so moving it here costs that page nothing.
@@ -22,9 +23,15 @@
  *         set in different type on the plate pages.
  *  lat/lng  real numbers, not a formatted string. coordLabel() makes
  *         the display form; geoUrl() makes a map link; the plate page
- *         emits them as schema.org GeoCoordinates.
- *  x/y/w  position on the 3200x2200 light table sheet. Height comes
- *         from the real image.
+ *         emits them as schema.org GeoCoordinates. Range-checked at
+ *         module load — a coordinate off the globe fails the build.
+ *  x/y    position on the light table sheet. BOTH OPTIONAL — omit them
+ *         and the auto-flow places the plate. See THE LAYOUT below.
+ *  w      printed width, also optional; omit for a seeded default.
+ *  after  place this plate directly beneath another, by filename, for
+ *         pairs that have to be read together.
+ *
+ * Height is never authored: it comes from the real image's aspect ratio.
  *
  * A plate with an empty `title` is treated as unfinished everywhere:
  * it shows as "in preparation" and is never offered for sale.
@@ -41,9 +48,12 @@
 import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
-export const BOARD_W = 3200;
-export const BOARD_H = 2200;
-export const CAPTION_H = 22; // caption row under each print, for bounds
+/* The sheet is no longer a fixed 3200x2200 — each gallery's boardW and
+   boardH are derived from whatever the layout produced, so a 40-plate
+   series and a 6-plate series each get a desk that fits. */
+
+/** caption row under each print — counted in the layout and the bounds */
+export const CAPTION_H = 22;
 export const LICENSE_EMAIL = 'hello@austinlallison.com';
 export const PHOTOGRAPHER = 'Austin Allison';
 
@@ -70,9 +80,18 @@ export type PlateInput = {
   lat: number;
   lng: number;
   specs: string;
-  x: number;
-  y: number;
-  w: number;
+  /** Top-left corner on the sheet. Omit BOTH to let the auto-flow place
+   *  this plate. Hand-place only where the position is doing
+   *  curatorial work. */
+  x?: number;
+  y?: number;
+  /** Printed width. Omit for a seeded default (300-450) that varies
+   *  plate to plate but never changes between builds. */
+  w?: number;
+  /** Place this plate directly beneath another, by that plate's `file`.
+   *  For pairs that have to be read together — a summer and winter of
+   *  the same view — without pinning either to absolute coordinates. */
+  after?: string;
   caption?: string;
   /** Fulfillment checkout URL — a Stripe Payment Link tied to a
    *  Prodigi print product. Empty means no Order a print button. */
@@ -86,8 +105,10 @@ export type GalleryInput = {
    *  to be sold. */
   sellable: boolean;
   region: string;
-  centerX: number;
-  centerY: number;
+  /** The opening view on desktop. Omit to open on the centre of
+   *  whatever the layout produced. */
+  centerX?: number;
+  centerY?: number;
   plates: PlateInput[];
 };
 
@@ -293,10 +314,9 @@ const galleryData: GalleryInput[] = [
   },
   {
     slug: 'water_on_the_llano_estacado',
-    // Set to false while nine of these twelve plates are untitled and
-    // share one set of coordinates. A licensing inquiry for "Plate 04,
-    // in preparation" is not an inquiry you want to receive. Flip to
-    // true once the metadata is filled in.
+    // Set to false while seven of these twelve plates are untitled. A
+    // licensing inquiry for "Plate 06, in preparation" is not one you
+    // want to receive. Flip to true once the metadata is filled in.
     sellable: false,
     region: 'Texas | New Mexico',
     centerX: 1250,
@@ -309,7 +329,7 @@ const galleryData: GalleryInput[] = [
         lat: 34.546670, lng: -101.429921,
         specs: '12mm \u00B7 \u0192/8 \u00B7 1/320s',
         x: 750, y: 250, w: 250,
-        caption: 'Tule Creek originates on the Llano Estacado and descends the caprock carving a broad canyon through Briscoe and Swisher counties. The creek assumes the rust color as it flows east.'
+        caption: 'Tule Creek originates on the Llano Estacado and descends the caprock carving a broad canyon through Briscoe and Swisher counties. The creek assumes the rust color as it flows east.',
       },
       {
         file: 'water/water2.jpg',
@@ -324,32 +344,40 @@ const galleryData: GalleryInput[] = [
         file: 'water/water3.jpg',
         title: 'Flowing Running Water Draw',
         place: 'Parmer County, Texas',
-        lat: 34.471036, lng: -102.720865, 
+        lat: 34.471036, lng: -102.720865,
         specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/640s',
         x: 1100, y: 180, w: 400,
-        caption: 'Running Water Draw after a heavy rain in Parmer County, Texas. After head precipitation upstream, intermittent draws and creeks on the Llano Estacado can flow for periods before returning to their dry state.'
+        caption: 'Running Water Draw after a heavy rain in Parmer County, Texas. After head precipitation upstream, intermittent draws and creeks on the Llano Estacado can flow for periods before returning to their dry state.',
       },
-      // ── untitled below: empty title marks a plate as in preparation.
-      // The coordinates and specs are placeholders copied across all of
-      // them; they'll want real values before this gallery is sellable.
       {
         file: 'water/water4.jpg',
-        title: 'Winter Oasis', place: 'Bailey County, Texas',
-        lat: 33.990590, lng: -1102.702870,
+        title: 'Winter Oasis',
+        place: 'Bailey County, Texas',
+        // was lng: -1102.702870 — the extra 1 put this plate three
+        // times around the globe. Out-of-range coordinates now fail
+        // the build rather than reaching schema.org and the map link.
+        lat: 33.990590, lng: -102.702870,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
         x: 1080, y: 480, w: 400,
-        caption: 'Remnant water in a lake basin as the season evolves to winter. Winter months on the Llano Estacado are its driest period, but remnant autumn precipitation and occasional fall and winter rain can fill these basins water for a short time.'
+        caption: 'Remnant water in a lake basin as the season evolves to winter. Winter months on the Llano Estacado are its driest period, but remnant autumn precipitation and occasional fall and winter rain can fill these basins water for a short time.',
       },
       {
         file: 'water/water5.jpg',
-        title: 'Reflections and Fractures', place: 'Bailey County, Texas',
-        lat: 33.990590, lng: -1102.702870,
+        title: 'Reflections and Fractures',
+        place: 'Bailey County, Texas',
+        lat: 33.990590, lng: -102.702870, // same correction as Plate 04
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
         x: 880, y: 750, w: 400,
-        caption: 'Water in intermittently dry lake basins offer clear reflections of the sky above, while revealing fractures in the lake\'s underlying surface, a reminder of the Llano Estacado\'s arid climate and the ephemeral nature of these water sources.'
+        caption: 'Water in intermittently dry lake basins offer clear reflections of the sky above, while revealing fractures in the lake\'s underlying surface, a reminder of the Llano Estacado\'s arid climate and the ephemeral nature of these water sources.',
       },
+      // ── untitled below: an empty title marks a plate as in
+      // preparation. The coordinates and specs here are still the
+      // placeholders copied across all of them.
       {
-        file: 'water/water14.jpg',
+        // RESTORED: your last edit had water14.jpg in this slot, which
+        // left water6 unused and rendered water14 twice under two plate
+        // numbers. Duplicate filenames now fail the build.
+        file: 'water/water6.jpg',
         title: '', place: '',
         lat: 33.991164, lng: -102.708448,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
@@ -418,6 +446,167 @@ export const plateHref = (slug: string, i: number) =>
 /** One line for a plate wherever both parts are shown together. */
 export const plateLine = (p: { title: string; place: string }) =>
   p.title ? (p.place ? `${p.title} \u00B7 ${p.place}` : p.title) : 'Untitled';
+
+/* ── THE LAYOUT ─────────────────────────────────────────────────
+ *
+ * A plate with x and y is pinned exactly where you put it. A plate
+ * without them is placed by the flow below, which fills the shortest
+ * column each time — a skyline pack, loosened with seeded jitter so it
+ * reads as a hand-laid desk rather than a grid.
+ *
+ * The jitter is seeded from the plate's own filename, so a given plate
+ * lands in the same spot on every build, on every machine. Add a plate
+ * and the ones after it shift; rename a file and that plate moves.
+ * Neither breaks anything — nothing links to a coordinate — but it is
+ * why you pin the plates whose position carries an argument.
+ *
+ * Pinned and flowed plates coexist: pinned rectangles are laid down
+ * first, and the flow reads them as obstacles.
+ *
+ * DIALS: wider gutters loosen the desk, narrower tighten it. COL_BIAS
+ * shapes the aspect ratio — higher is wider and shorter.
+ */
+
+const GUTTER_X = 110;   // horizontal breathing room between columns
+const GUTTER_Y = 96;    // vertical gap below a plate's caption
+const MARGIN = 220;     // slack from the sheet's top-left origin
+const JITTER_X = 46;    // how far a plate may drift within its column
+const JITTER_Y = 70;    // extra sag below the column head
+const PAIR_GAP = 34;    // gap under an `after:` plate — tighter, they pair
+const CLEARANCE = 24;   // minimum air between any two plates
+const COL_BIAS = 1.7;   // columns = sqrt(count * COL_BIAS)
+const DEFAULT_WIDTHS = [300, 340, 380, 420, 450];
+
+type Box = { x: number; y: number; w: number; h: number };
+
+/** FNV-1a — small and stable. It only needs to give each filename a
+ *  different seed, not to be a hash function that matters. */
+const hashSeed = (s: string) => {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return h >>> 0;
+};
+
+/** mulberry32, seeded per plate so the layout is reproducible */
+const seeded = (seed: number) => {
+  let a = seed;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+};
+
+/** the printed width of a plate that didn't declare one */
+export const defaultWidth = (file: string) =>
+  DEFAULT_WIDTHS[hashSeed(file) % DEFAULT_WIDTHS.length];
+
+const hits = (a: Box, b: Box) =>
+  a.x < b.x + b.w + CLEARANCE && b.x < a.x + a.w + CLEARANCE &&
+  a.y < b.y + b.h + CLEARANCE && b.y < a.y + a.h + CLEARANCE;
+
+type LayoutItem = {
+  file: string;
+  w: number;
+  /** image height only — the caption row is added inside the layout */
+  h: number;
+  x?: number;
+  y?: number;
+  after?: string;
+};
+
+/** Returns x/y for every item, in the order they were given. Keyed by
+ *  array position rather than filename, so a duplicate `file` can't
+ *  make two plates share one box. */
+function layout(items: LayoutItem[], slug: string): { x: number; y: number }[] {
+  const boxes: (Box | undefined)[] = new Array(items.length);
+  const placed: Box[] = [];
+
+  const put = (i: number, x: number, y: number) => {
+    const box = { x, y, w: items[i].w, h: items[i].h + CAPTION_H };
+    boxes[i] = box;
+    placed.push(box);
+  };
+
+  /* 1. pinned plates go down exactly as authored */
+  items.forEach((it, i) => {
+    if (it.x != null && it.y != null) put(i, it.x, it.y);
+  });
+
+  /* 2. `after:` plates hang off their target. Repeated because a chain
+        (C after B after A) needs its target resolved first; we stop as
+        soon as a pass places nothing. */
+  const indexOfFile = new Map<string, number>();
+  items.forEach((it, i) => {
+    if (!indexOfFile.has(it.file)) indexOfFile.set(it.file, i);
+  });
+
+  let pending = items
+    .map((it, i) => ({ it, i }))
+    .filter(({ it, i }) => !boxes[i] && it.after);
+
+  for (let pass = 0; pending.length && pass <= items.length; pass++) {
+    const still: typeof pending = [];
+    for (const entry of pending) {
+      const t = indexOfFile.get(entry.it.after!);
+      const target = t == null ? undefined : boxes[t];
+      if (!target) { still.push(entry); continue; }
+      put(entry.i, target.x, target.y + target.h + PAIR_GAP);
+    }
+    if (still.length === pending.length) break; // nothing resolved
+    pending = still;
+  }
+  if (import.meta.env.DEV) {
+    for (const { it } of pending) {
+      console.warn(
+        `[photography/${slug}] ${it.file} has after: "${it.after}", which is not a plate in this gallery (or the chain loops back on itself). Flowing it normally.`,
+      );
+    }
+  }
+
+  /* 3. everything else flows into the shortest column */
+  const auto = items.map((it, i) => ({ it, i })).filter(({ i }) => !boxes[i]);
+  if (auto.length) {
+    const widest = Math.max(...items.map((it) => it.w));
+    const colW = widest + GUTTER_X;
+    const cols = Math.max(3, Math.round(Math.sqrt(auto.length * COL_BIAS)));
+    const heads = new Array(cols).fill(MARGIN);
+
+    // a pinned plate raises the head of whatever column it sits in, so
+    // the flow starts below it instead of colliding and pushing down
+    for (const box of placed) {
+      const c = Math.round((box.x - MARGIN) / colW);
+      if (c >= 0 && c < cols) heads[c] = Math.max(heads[c], box.y + box.h + GUTTER_Y);
+    }
+
+    for (const { it, i } of auto) {
+      const rand = seeded(hashSeed(it.file) + i);
+      let col = 0;
+      for (let c = 1; c < cols; c++) if (heads[c] < heads[col]) col = c;
+
+      const h = it.h + CAPTION_H;
+      const x = MARGIN + col * colW + Math.round((rand() - 0.5) * JITTER_X);
+      let y = heads[col] + Math.round(rand() * JITTER_Y);
+
+      // slide down past anything already there (pinned plates, mostly)
+      for (let guard = 0; guard < items.length * 2; guard++) {
+        const clash = placed.find((b) => hits({ x, y, w: it.w, h }, b));
+        if (!clash) break;
+        y = clash.y + clash.h + GUTTER_Y;
+      }
+
+      put(i, x, y);
+      heads[col] = y + h + GUTTER_Y;
+    }
+  }
+
+  return boxes.map((b) => ({ x: b!.x, y: b!.y }));
+}
 
 /* ── image pipeline ─────────────────────────────────────────────── */
 
@@ -498,11 +687,15 @@ async function resolveImage(file: string): Promise<ResolvedImage> {
 
 /* ── resolved shapes ────────────────────────────────────────────── */
 
-export type ResolvedPlate = PlateInput & {
+export type ResolvedPlate = Omit<PlateInput, 'x' | 'y' | 'w'> & {
+  /** resolved by the layout — always concrete on a ResolvedPlate */
+  x: number;
+  y: number;
+  w: number;
   img: ResolvedImage;
   /** printed height on the sheet, from the real aspect ratio */
   h: number;
-  /** distance from the composed opening view, for eager-loading */
+  /** distance from the opening view, for eager-loading */
   d: number;
   index: number;
   no: string;
@@ -515,11 +708,17 @@ export type ResolvedPlate = PlateInput & {
   printLink: string;
 };
 
-export type ResolvedGallery = Omit<GalleryInput, 'plates'> & {
+export type ResolvedGallery = Omit<GalleryInput, 'plates' | 'centerX' | 'centerY'> & {
   number: string;
   title: string;
   plates: ResolvedPlate[];
   bounds: { minX: number; minY: number; maxX: number; maxY: number };
+  /** the sheet, sized to whatever the layout produced */
+  boardW: number;
+  boardH: number;
+  /** the opening view — authored, or the centre of the content */
+  centerX: number;
+  centerY: number;
   eager: Set<number>;
 };
 
@@ -542,6 +741,41 @@ for (const g of galleryData) {
       `[photography] gallery "${g.slug}" has zero plates — the light table has nothing to bound, fit, or open.`,
     );
   }
+
+  /* One image, one plate. A duplicated filename renders the same
+     photograph twice under two plate numbers and silently orphans
+     whichever file it displaced. */
+  const seen = new Map<string, number>();
+  g.plates.forEach((p, i) => {
+    const first = seen.get(p.file);
+    if (first != null) {
+      throw new Error(
+        `[photography/${g.slug}] ${p.file} is used by both Plate ${plateNo(first)} and Plate ${plateNo(i)}. Each plate needs its own image.`,
+      );
+    }
+    seen.set(p.file, i);
+
+    /* A coordinate off the globe reaches the plate page's schema.org
+       block and its map link, where it goes wrong quietly. */
+    if (!Number.isFinite(p.lat) || Math.abs(p.lat) > 90) {
+      throw new Error(
+        `[photography/${g.slug}] Plate ${plateNo(i)} (${p.file}) has lat ${p.lat} — latitude must be between -90 and 90.`,
+      );
+    }
+    if (!Number.isFinite(p.lng) || Math.abs(p.lng) > 180) {
+      throw new Error(
+        `[photography/${g.slug}] Plate ${plateNo(i)} (${p.file}) has lng ${p.lng} — longitude must be between -180 and 180. A stray leading digit is the usual cause.`,
+      );
+    }
+
+    /* x without y (or the reverse) is almost always a half-finished
+       edit; flowing it silently would hide the mistake. */
+    if ((p.x == null) !== (p.y == null)) {
+      throw new Error(
+        `[photography/${g.slug}] Plate ${plateNo(i)} (${p.file}) has only one of x/y. Give it both to pin it, or neither to let the layout place it.`,
+      );
+    }
+  });
 }
 
 for (const s of SERIES) {
@@ -562,41 +796,67 @@ async function build(): Promise<ResolvedGallery[]> {
   for (const g of galleryData) {
     const entry = SERIES.find((s) => s.slug === g.slug)!;
 
-    const plates = await Promise.all(
-      g.plates.map(async (p, i) => {
+    /* Images first — the layout needs real aspect ratios to know how
+       tall each plate prints, and height is never authored. */
+    const sized = await Promise.all(
+      g.plates.map(async (p) => {
         const img = await resolveImage(p.file);
-        const h = Math.round((img.height / img.width) * p.w);
-        const draft = !p.title;
-        return {
-          ...p,
-          img,
-          h,
-          d: Math.hypot(p.x + p.w / 2 - g.centerX, p.y + h / 2 - g.centerY),
-          index: i,
-          no: plateNo(i),
-          plate: `Plate ${plateNo(i)}`,
-          // an untitled plate gets no record page, so it gets no link
-          href: draft ? '' : plateHref(g.slug, i),
-          coordinates: coordLabel(p.lat, p.lng),
-          mapUrl: geoUrl(p.lat, p.lng),
-          draft,
-          // an unfinished plate is never for sale, whatever the gallery says
-          sellable: g.sellable !== false && !draft,
-          printLink: p.printLink || '',
-        } satisfies ResolvedPlate;
+        const w = p.w ?? defaultWidth(p.file);
+        return { p, img, w, h: Math.round((img.height / img.width) * w) };
       }),
     );
 
-    const bounds = plates.reduce(
-      (acc, p) => ({
-        minX: Math.min(acc.minX, p.x),
-        minY: Math.min(acc.minY, p.y),
-        maxX: Math.max(acc.maxX, p.x + p.w),
-        maxY: Math.max(acc.maxY, p.y + p.h + CAPTION_H),
+    const positions = layout(
+      sized.map(({ p, w, h }) => ({ file: p.file, w, h, x: p.x, y: p.y, after: p.after })),
+      g.slug,
+    );
+
+    const bounds = sized.reduce(
+      (acc, { w, h }, i) => ({
+        minX: Math.min(acc.minX, positions[i].x),
+        minY: Math.min(acc.minY, positions[i].y),
+        maxX: Math.max(acc.maxX, positions[i].x + w),
+        maxY: Math.max(acc.maxY, positions[i].y + h + CAPTION_H),
       }),
       { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity },
     );
 
+    /* The sheet is whatever the plates need plus a margin, instead of a
+       fixed 3200x2200 that a large series would overflow and a small
+       one would rattle around inside. */
+    const boardW = Math.max(1200, Math.ceil(bounds.maxX + MARGIN));
+    const boardH = Math.max(900, Math.ceil(bounds.maxY + MARGIN));
+
+    const centerX = g.centerX ?? Math.round((bounds.minX + bounds.maxX) / 2);
+    const centerY = g.centerY ?? Math.round((bounds.minY + bounds.maxY) / 2);
+
+    const plates = sized.map(({ p, img, w, h }, i) => {
+      const { x, y } = positions[i];
+      const draft = !p.title;
+      return {
+        ...p,
+        x,
+        y,
+        w,
+        img,
+        h,
+        d: Math.hypot(x + w / 2 - centerX, y + h / 2 - centerY),
+        index: i,
+        no: plateNo(i),
+        plate: `Plate ${plateNo(i)}`,
+        // an untitled plate gets no record page, so it gets no link
+        href: draft ? '' : plateHref(g.slug, i),
+        coordinates: coordLabel(p.lat, p.lng),
+        mapUrl: geoUrl(p.lat, p.lng),
+        draft,
+        // an unfinished plate is never for sale, whatever the gallery says
+        sellable: g.sellable !== false && !draft,
+        printLink: p.printLink || '',
+      } satisfies ResolvedPlate;
+    });
+
+    /* dev-only collision report — hand-placed coordinates drift, and
+       the flow only guarantees clearance against what it can see. */
     if (import.meta.env.DEV) {
       for (let i = 0; i < plates.length; i++) {
         for (let j = i + 1; j < plates.length; j++) {
@@ -617,6 +877,10 @@ async function build(): Promise<ResolvedGallery[]> {
       title: entry.title,
       plates,
       bounds,
+      boardW,
+      boardH,
+      centerX,
+      centerY,
       eager: new Set(
         [...plates].sort((a, b) => a.d - b.d).slice(0, 4).map((p) => p.index),
       ),
@@ -626,17 +890,23 @@ async function build(): Promise<ResolvedGallery[]> {
   return out;
 }
 
-/** Every built gallery, images resolved. Memoized — the three routes
- *  that call it share one pass over the image pipeline. */
+/** Every built gallery, images resolved. Memoized — the routes that
+ *  call it share one pass over the image pipeline. */
 export function getGalleries(): Promise<ResolvedGallery[]> {
   if (!cache) cache = build();
   return cache;
 }
 
+export async function getGallery(slug: string): Promise<ResolvedGallery> {
+  const g = (await getGalleries()).find((x) => x.slug === slug);
+  if (!g) throw new Error(`[photography] no gallery for slug "${slug}".`);
+  return g;
+}
+
 /* ── album covers ───────────────────────────────────────────────
    The album page shows one plate per series, including for series that
-   have no gallery yet. Reuses the board derivatives (700 / 1400), which
-   is the right size for a 7-of-12 column in a max-w-6xl page. */
+   have no gallery yet. Reuses the board derivatives (700 / 1400), the
+   right size for a 7-of-12 column in a max-w-6xl page. */
 
 export type SeriesCover = SeriesEntry & {
   src: string;
@@ -666,10 +936,4 @@ async function buildCovers(): Promise<SeriesCover[]> {
 export function getCovers(): Promise<SeriesCover[]> {
   if (!coverCache) coverCache = buildCovers();
   return coverCache;
-}
-
-export async function getGallery(slug: string): Promise<ResolvedGallery> {
-  const g = (await getGalleries()).find((x) => x.slug === slug);
-  if (!g) throw new Error(`[photography] no gallery for slug "${slug}".`);
-  return g;
 }
