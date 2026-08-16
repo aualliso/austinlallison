@@ -370,32 +370,31 @@ const galleryData: GalleryInput[] = [
         x: 880, y: 750, w: 400,
         caption: 'Water in intermittently dry lake basins offer clear reflections of the sky above, while revealing fractures in the lake\'s underlying surface, a reminder of the Llano Estacado\'s arid climate and the ephemeral nature of these water sources.',
       },
+      {
+        file: 'water/water6.jpg',
+        title: 'Dry Basin', place: 'Bailey County, Texas',
+        lat: 34.136934, lng: -103.264933,
+        specs: '5mm \u00B7 \u0192/2.8 \u00B7 1/1800s',
+        caption: '',
+      },
       // ── untitled below: an empty title marks a plate as in
       // preparation. The coordinates and specs here are still the
-      // placeholders copied across all of them.
-      {
-        // RESTORED: your last edit had water14.jpg in this slot, which
-        // left water6 unused and rendered water14 twice under two plate
-        // numbers. Duplicate filenames now fail the build.
-        file: 'water/water6.jpg',
-        title: '', place: '',
-        lat: 33.991164, lng: -102.708448,
-        specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
-        x: 1510, y: 250, w: 400,
-      },
+      // placeholders copied across all of them.,
       {
         file: 'water/water7.jpg',
-        title: '', place: '',
-        lat: 33.991164, lng: -102.708448,
-        specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
+        title: 'Dry Portales Spring', place: 'Roosevelt County, NM',
+        lat: 34.136934, lng: -103.264933,
+        specs: '5mm \u00B7 \u0192/2.8 \u00B7 1/1800s',
         x: 1510, y: 550, w: 400,
+        caption: 'One of the consistent springs on the old Fort Sumner Trail, Portales Spring stands dry today, but the location along Yellow House Draw is marked by white caliche deposits and a small depression in the surrounding terrain. Billy the Kid stayed at the spring in 1880.',
       },
       {
         file: 'water/water8.jpg',
         title: '', place: '',
-        lat: 33.991164, lng: -102.708448,
-        specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
+        lat: 34.090618, lng: -102.908060,
+        specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/20000s',
         x: 460, y: 720, w: 400,
+        caption: ''
       },
       {
         file: 'water/water9.jpg',
