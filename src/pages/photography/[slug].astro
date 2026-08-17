@@ -31,6 +31,23 @@
  *     the auto-flow places the plate. The sheet sizes itself to the
  *     result, so BOARD_W/BOARD_H are gone in favour of gallery.boardW
  *     and gallery.boardH.
+ *  8. The HUD moved OUT of <main> to sit beside it, so it escapes the
+ *     board's touch-none and can be scrolled and pinched on a phone.
+ *     It's inerted explicitly while the lightbox is open. Ctrl/Cmd/Alt
+ *     key combinations and a ctrl+wheel over the HUD now pass through
+ *     to the browser — previously the board swallowed Ctrl+- and
+ *     Ctrl+0, so a page-zoomed visitor was stuck at that zoom.
+ *  9. PAGE-ZOOM ESCAPE, all of it local to this file. `touch-none` on
+ *     the viewport hands pinch to the board, which is right — except
+ *     when the PAGE itself is zoomed (the visual viewport), because
+ *     then the one gesture that would undo it is the one the board has
+ *     claimed. The board now watches visualViewport.scale and, while
+ *     the page is zoomed, releases pinch back to the browser and says
+ *     so. It reclaims it the moment the page returns to 1:1.
+ *
+ *     ?debugViewport puts the live numbers on screen — for reading on
+ *     a real phone, where there's no console. Remove that block once
+ *     this is settled, or gate it on import.meta.env.DEV.
  *
  * Everything else — the pointer model, the clamped pan, fit-to-board,
  * the bake/unbake zoom, the focus trap — is unchanged.
@@ -60,112 +77,6 @@ const registry = SERIES;
     id="workspace-viewport"
     class="w-full h-[100dvh] overflow-hidden bg-canvas text-iron select-none cursor-grab active:cursor-grabbing relative touch-none"
   >
-    <!-- ── field notebook (fixed HUD) ─────────────────────────── -->
-    <div
-      id="fixed-hud-container"
-      class="fixed top-4 left-4 right-4 md:top-8 md:left-8 md:right-8 z-50 flex justify-between items-start pointer-events-none gap-4"
-    >
-      <div
-        id="hud-overlay"
-        data-expanded="false"
-        class="pointer-events-auto w-full bg-canvas/95 backdrop-blur-xs p-4 md:p-6 border border-haze rounded-sm shadow-lg transition-all duration-300 flex flex-col gap-1.5"
-      >
-        <div class="flex items-start justify-between gap-3">
-          <span class="font-serif text-lg md:text-2xl text-sage">
-            Series {gallery.number}.
-          </span>
-          <button
-            id="hud-toggle"
-            type="button"
-            class="md:hidden font-mono text-[9px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors flex items-center gap-1 focus:outline-none shrink-0"
-            aria-expanded="false"
-            aria-controls="hud-collapsible"
-          >
-            <span id="toggle-text">info</span>
-            <span id="toggle-icon" class="transition-transform duration-300 inline-block">+</span>
-          </button>
-        </div>
-
-        <h1 class="font-serif text-lg md:text-2xl font-light tracking-tight text-caprock leading-tight">
-          {gallery.title}
-        </h1>
-
-        <p class="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-sage/90">
-          {gallery.region}
-        </p>
-
-        <div id="hud-collapsible" class="hidden md:block transition-all duration-300 overflow-hidden">
-          <nav class="flex flex-col gap-1.5 mt-4 border-t border-haze/40 pt-4 pb-2">
-            <span class="font-mono text-[9px] uppercase tracking-widest text-iron/40 mb-1">
-              Series Registry
-            </span>
-            {registry.map((s) =>
-              !s.built ? (
-                <span
-                  class="font-mono text-[10px] text-iron/30 truncate cursor-default"
-                  title="In preparation"
-                >
-                  {s.number}. {s.title} <span class="text-iron/25">— in preparation</span>
-                </span>
-              ) : s.slug === gallery.slug ? (
-                <span
-                  aria-current="page"
-                  class="font-mono text-[10px] text-caprock truncate flex items-center gap-1.5"
-                >
-                  <span aria-hidden="true">▸</span>{s.number}. {s.title}
-                </span>
-              ) : (
-                <a
-                  href={`/photography/${s.slug}`}
-                  class="font-mono text-[10px] text-sage hover:text-caprock transition-colors truncate"
-                >
-                  {s.number}. {s.title}
-                </a>
-              ),
-            )}
-
-            <a
-              href={`/photography/plates#${gallery.slug}`}
-              class="font-mono text-[9px] uppercase tracking-widest text-iron/40 hover:text-caprock transition-colors mt-2 pt-2 border-t border-haze/30"
-            >
-              Plate index &rarr;
-            </a>
-          </nav>
-        </div>
-
-        <!-- board controls + legend -->
-        <div class="flex items-center gap-3 mt-2 pt-2 border-t border-haze/40">
-          <button
-            id="btn-fit"
-            type="button"
-            class="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors focus:outline-none"
-            title="Frame every plate (0)"
-          >
-            fit board
-          </button>
-          <span class="hidden md:inline font-mono text-[10px] uppercase tracking-wider text-caprock">
-            drag to move · ⌘/ctrl + scroll to zoom · click to open
-          </span>
-        </div>
-
-        <div
-          id="mobile-instructions"
-          class="hidden md:hidden font-mono text-[9px] uppercase tracking-wider text-sage/80 items-center gap-2 border-t border-haze/30 pt-3 mt-1"
-        >
-          <span class="animate-pulse" aria-hidden="true">●</span> Pinch and drag to explore. Tap to open.
-        </div>
-      </div>
-
-      <div class="pointer-events-auto shrink-0">
-        <a
-          href="/photography"
-          class="font-mono text-[9px] md:text-[10px] lowercase tracking-wide bg-caprock/80 backdrop-blur-xs px-3 py-1.5 md:px-4 md:py-2 border border-haze rounded-sm text-canvas hover:text-caprock hover:bg-canvas transition-colors shadow-xs block"
-        >
-          &larr; close<span class="hidden sm:inline"> album</span>
-        </a>
-      </div>
-    </div>
-
     <!-- ── the mount desk ─────────────────────────────────────── -->
     <div
       id="light-table"
@@ -213,6 +124,136 @@ const registry = SERIES;
       ))}
     </div>
   </main>
+
+  <!-- ── field notebook (fixed HUD) ────────────────────────────────
+       A SIBLING of <main>, not a child. It's position:fixed either way,
+       so it renders in the same place — but touch-action is intersected
+       down the ancestor chain, and #workspace-viewport carries
+       touch-none for the board's own pinch. Nested, the notebook
+       inherited that and couldn't be pinched or scrolled on a phone; a
+       `touch-action: auto` rule on it lost to the ancestor. Out here the
+       rule actually applies.
+
+       The trade: it's no longer covered when the board is made inert,
+       so openLightbox/closeLightbox toggle inert on it explicitly. -->
+  <div
+    id="fixed-hud-container"
+    class="fixed top-4 left-4 right-4 md:top-8 md:left-8 md:right-8 z-50 flex justify-between items-start pointer-events-none gap-4"
+  >
+    <div
+      id="hud-overlay"
+      data-expanded="false"
+      class="pointer-events-auto w-full bg-canvas/95 backdrop-blur-xs p-4 md:p-6 border border-haze rounded-sm shadow-lg transition-all duration-300 flex flex-col gap-1.5"
+    >
+      <div class="flex items-start justify-between gap-3">
+        <span class="font-serif text-lg md:text-2xl text-sage">
+          Series {gallery.number}.
+        </span>
+        <button
+          id="hud-toggle"
+          type="button"
+          class="md:hidden font-mono text-[9px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors flex items-center gap-1 focus:outline-none shrink-0"
+          aria-expanded="false"
+          aria-controls="hud-collapsible"
+        >
+          <span id="toggle-text">info</span>
+          <span id="toggle-icon" class="transition-transform duration-300 inline-block">+</span>
+        </button>
+      </div>
+
+      <h1 class="font-serif text-lg md:text-2xl font-light tracking-tight text-caprock leading-tight">
+        {gallery.title}
+      </h1>
+
+      <p class="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-sage/90">
+        {gallery.region}
+      </p>
+
+      <div id="hud-collapsible" class="hidden md:block transition-all duration-300 overflow-hidden">
+        <nav class="flex flex-col gap-1.5 mt-4 border-t border-haze/40 pt-4 pb-2">
+          <span class="font-mono text-[9px] uppercase tracking-widest text-iron/40 mb-1">
+            Series Registry
+          </span>
+          {registry.map((s) =>
+            !s.built ? (
+              <span
+                class="font-mono text-[10px] text-iron/30 truncate cursor-default"
+                title="In preparation"
+              >
+                {s.number}. {s.title} <span class="text-iron/25">— in preparation</span>
+              </span>
+            ) : s.slug === gallery.slug ? (
+              <span
+                aria-current="page"
+                class="font-mono text-[10px] text-caprock truncate flex items-center gap-1.5"
+              >
+                <span aria-hidden="true">▸</span>{s.number}. {s.title}
+              </span>
+            ) : (
+              <a
+                href={`/photography/${s.slug}`}
+                class="font-mono text-[10px] text-sage hover:text-caprock transition-colors truncate"
+              >
+                {s.number}. {s.title}
+              </a>
+            ),
+          )}
+
+          <a
+            href={`/photography/plates#${gallery.slug}`}
+            class="font-mono text-[9px] uppercase tracking-widest text-iron/40 hover:text-caprock transition-colors mt-2 pt-2 border-t border-haze/30"
+          >
+            Plate index &rarr;
+          </a>
+        </nav>
+      </div>
+
+      <!-- board controls + legend -->
+      <div class="flex items-center gap-3 mt-2 pt-2 border-t border-haze/40">
+        <button
+          id="btn-fit"
+          type="button"
+          class="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors focus:outline-none"
+          title="Frame every plate (0)"
+        >
+          fit board
+        </button>
+        <span class="hidden md:inline font-mono text-[10px] uppercase tracking-wider text-caprock">
+          drag to move · ⌘/ctrl + scroll to zoom · click to open
+        </span>
+      </div>
+
+      <div
+        id="mobile-instructions"
+        class="hidden md:hidden font-mono text-[9px] uppercase tracking-wider text-sage/80 items-center gap-2 border-t border-haze/30 pt-3 mt-1"
+      >
+        <span class="animate-pulse" aria-hidden="true">●</span> Pinch and drag to explore. Tap to open.
+      </div>
+    </div>
+
+    <div class="pointer-events-auto shrink-0">
+      <a
+        href="/photography"
+        class="font-mono text-[9px] md:text-[10px] lowercase tracking-wide bg-caprock/80 backdrop-blur-xs px-3 py-1.5 md:px-4 md:py-2 border border-haze rounded-sm text-canvas hover:text-caprock hover:bg-canvas transition-colors shadow-xs block"
+      >
+        &larr; close<span class="hidden sm:inline"> album</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ?debugViewport readout — hidden unless the param is present -->
+  <div
+    id="viewport-probe"
+    class="hidden fixed bottom-2 left-2 z-[200] bg-canvas/95 border border-caprock rounded-sm px-2 py-1.5 font-mono text-[10px] leading-snug text-iron pointer-events-none whitespace-pre"
+  ></div>
+
+  <!-- page-zoom notice — shown only while the visual viewport is zoomed -->
+  <div
+    id="zoom-notice"
+    class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[150] bg-caprock text-canvas rounded-sm px-3 py-2 font-mono text-[10px] uppercase tracking-widest shadow-lg pointer-events-none"
+  >
+    Page is zoomed — pinch to return to 1:1
+  </div>
 
   <!-- ── viewing station ──────────────────────────────────────────
        Outside <main> so the board can be made inert while it's open. -->
@@ -493,6 +534,7 @@ const registry = SERIES;
 
     /* ── HUD ──────────────────────────────────────────────────── */
 
+    const hudContainer = document.getElementById('fixed-hud-container');
     const hud = document.getElementById('hud-overlay');
     const hudToggle = document.getElementById('hud-toggle');
     const hudCollapsible = document.getElementById('hud-collapsible');
@@ -531,6 +573,12 @@ const registry = SERIES;
       'wheel',
       (e) => {
         if (isOpen()) return;
+        if (viewport.classList.contains('pinch-released')) return;
+
+        // the notebook isn't board surface — let it scroll, and let a
+        // ctrl+wheel over it reach the browser's own zoom
+        if ((e.target as HTMLElement).closest('#fixed-hud-container')) return;
+
         e.preventDefault();
 
         // A trackpad pinch arrives as ctrlKey+wheel. A mouse wheel
@@ -585,6 +633,8 @@ const registry = SERIES;
 
     viewport.addEventListener('pointerdown', (e) => {
       if (isOpen()) return;
+      // the page itself is zoomed — the browser gets this gesture
+      if (viewport.classList.contains('pinch-released')) return;
       if ((e.target as HTMLElement).closest('#fixed-hud-container')) return;
 
       active.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -941,6 +991,8 @@ const registry = SERIES;
       lastFocus = from;
       modal.setAttribute('data-open', '');
       viewport.setAttribute('inert', '');
+      // the HUD is a sibling now, so it needs its own inert
+      hudContainer?.setAttribute('inert', '');
       requestAnimationFrame(() => requestAnimationFrame(() => modal.classList.remove('opacity-0')));
       loadPlate(index);
       (document.getElementById('close-lightbox') as HTMLElement | null)?.focus();
@@ -949,6 +1001,7 @@ const registry = SERIES;
     const closeLightbox = () => {
       modal.classList.add('opacity-0');
       viewport.removeAttribute('inert');
+      hudContainer?.removeAttribute('inert');
       syncUrl(null);
       if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
       window.setTimeout(() => {
@@ -1109,6 +1162,12 @@ const registry = SERIES;
     /* ── keyboard ─────────────────────────────────────────────── */
 
     const onKey = (e: KeyboardEvent) => {
+      /* Ctrl/Cmd/Alt combinations belong to the browser and the OS.
+         Without this, the board's own -/0/+ and w/a/s/d bindings swallow
+         Ctrl+- and Ctrl+0 (leaving a page-zoomed visitor with no way
+         back) along with Cmd+A, Cmd+S and Cmd+R. */
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
       if (isOpen()) {
         if (e.key === 'Escape') { closeLightbox(); return; }
         if (e.key === 'ArrowRight') { loadPlate(current + 1); return; }
@@ -1148,6 +1207,89 @@ const registry = SERIES;
     };
     window.addEventListener('keydown', onKey, sig);
 
+    /* ══ PAGE ZOOM ═════════════════════════════════════════════
+       Two different zooms live on this page. The BOARD's zoom is
+       `scale` above, ours to control. The PAGE's zoom is the visual
+       viewport — a two-finger pinch on the browser chrome itself — and
+       it is read-only: nothing here can set it back to 1.
+
+       That matters because #workspace-viewport carries touch-none so
+       the board can own pinch. If a visitor arrives already pinched
+       (a soft View Transition swap carries the visual viewport across
+       from the previous page, where a hard navigation would have reset
+       it), the board is magnified and the gesture that would undo it
+       has been taken away.
+
+       So: while the page is zoomed, give pinch back. The board loses
+       its own pinch for exactly as long as the page is zoomed, and
+       takes it back the moment we're at 1:1. */
+
+    const vv = window.visualViewport;
+    const probe = document.getElementById('viewport-probe');
+    const notice = document.getElementById('zoom-notice');
+    const debugging = new URLSearchParams(window.location.search).has('debugViewport');
+
+    let pageZoomed = false;
+
+    const pageScale = () => {
+      if (vv) return vv.scale;
+      // no visualViewport (older browsers): outer/inner is the best proxy
+      return window.outerWidth / window.innerWidth;
+    };
+
+    const readProbe = () => {
+      const m = /scale\(([\d.]+)\)/.exec(table.style.transform);
+      return {
+        visualScale: (vv?.scale ?? NaN),
+        outerInner: window.outerWidth / window.innerWidth,
+        vvW: Math.round(vv?.width ?? 0),
+        innerW: window.innerWidth,
+        dpr: window.devicePixelRatio,
+        boardScale: m ? Number(m[1]) : scale,
+        released: pageZoomed,
+      };
+    };
+
+    const paintProbe = () => {
+      if (!debugging || !probe) return;
+      const r = readProbe();
+      probe.textContent =
+        `visualScale  ${r.visualScale.toFixed(3)}\n` +
+        `outer/inner  ${r.outerInner.toFixed(3)}\n` +
+        `vv width     ${r.vvW}\n` +
+        `innerWidth   ${r.innerW}\n` +
+        `dpr          ${r.dpr}\n` +
+        `board scale  ${r.boardScale.toFixed(3)}\n` +
+        `pinch        ${r.released ? 'RELEASED to browser' : 'held by board'}`;
+    };
+
+    /* 1.02 rather than 1: iOS reports tiny fractional scales at rest. */
+    const syncPageZoom = () => {
+      const zoomed = pageScale() > 1.02;
+      if (zoomed !== pageZoomed) {
+        pageZoomed = zoomed;
+        viewport.classList.toggle('pinch-released', zoomed);
+        notice?.classList.toggle('hidden', !zoomed);
+        if (zoomed) {
+          // drop any gesture the board thinks is in flight
+          active.clear();
+          dragging = false;
+          pinchDist = 0;
+        }
+      }
+      paintProbe();
+    };
+
+    if (debugging) probe?.classList.remove('hidden');
+    syncPageZoom();
+
+    if (vv) {
+      vv.addEventListener('resize', syncPageZoom, sig);
+      vv.addEventListener('scroll', paintProbe, sig);
+    } else {
+      window.addEventListener('resize', syncPageZoom, sig);
+    }
+
     /* ── arriving on a plate ──────────────────────────────────────
        /photography/escarpments?plate=04 opens straight into the
        viewing station. Anything out of range is ignored rather than
@@ -1176,6 +1318,17 @@ html, body {
 }
   .scrollbar-none::-webkit-scrollbar { display: none; }
   .scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* works now that the container is a sibling of #workspace-viewport
+     rather than a child of it — see the markup comment */
+  #fixed-hud-container { touch-action: auto; }
+
+  /* While the PAGE is zoomed, the board gives pinch back to the browser
+     so the visitor can get to 1:1 — otherwise touch-none traps them at
+     whatever zoom they arrived with. Set from the script; see PAGE ZOOM
+     there. !important because it has to beat Tailwind's touch-none on
+     the same element. */
+  #workspace-viewport.pinch-released { touch-action: auto !important; }
 
   /* one display authority — `hidden` and `flex` on the same element
      is a coin flip on which utility wins */
