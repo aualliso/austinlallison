@@ -520,25 +520,71 @@ const navItems = [
   { href: '/photography', label: 'photography' },
 ];
 
-// All silhouettes share an identical command structure (M, H, 13×L, H) so
-// the CSS `d` property can interpolate between them, and — as of this pass —
-// they all share the same 13 x-positions too (300…1020), so only the y
-// values differ between routes. That widened the varying zone from ~160px
-// to ~720px and let the relief use most of the 22-unit viewBox height
-// instead of a ~5-unit notch. Each route is now a genuinely different
-// landform rather than two shapes doing double duty:
-//   home         — one broad, rounded mesa
-//   cv           — the true flat Llano (near-zero relief is the point —
-//                  it's meant to read as flat *because* the others aren't)
-//   publications — a jagged, double-summited stacked mesa
-//   photography  — plateau, then a hard rim break, then a long rolling
-//                  apron descent — the same PLATEAU/RIM/FACE/APRON grammar
-//                  used on the CaprockFooter and the descent/traverse page.
+// ROUTE GEOGRAPHY (rebuilt 2026-08-18 — see the note on landforms below).
+//
+// All four silhouettes share an identical command structure (M, H, 38xL, H)
+// AND identical x positions, so the CSS `d` property interpolates them
+// cleanly and only the y values differ between routes. The outer runs — 0-250
+// and 1020-1440 — stay dead flat on every route on purpose: the name and the
+// mile markers stand on those, and type reads badly off a slope.
+//
+// WHAT CHANGED, AND WHY. The previous set was 13 points per route describing
+// symmetric bell curves — a rounded hump for home, two spikes for
+// publications, a lopsided dome for photography. That is not what this
+// country looks like. Three things were wrong with it as landform:
+//
+//   1. SYMMETRY. Erosional landforms are not symmetric. The Caprock has a
+//      gentle back-slope on its west side and an abrupt face on its east,
+//      because that is the direction it retreats. Every profile here now runs
+//      long-and-gentle on the left, short-and-steep on the right, which is
+//      also the correct compass orientation with north up.
+//   2. ROUND TOPS. The single most identifiable feature of this landscape is
+//      that the tops are FLAT. A mesa is a piece of the old plain left
+//      standing; its summit is the plain. Each route now holds a genuinely
+//      level cap — the same y repeated across several points — and reaches it
+//      through a short rim break rather than a curve.
+//   3. CONVEX SLOPES. The old humps were convex all the way down. Real
+//      escarpment slopes are the opposite below the rim: a steep face off the
+//      caprock, then a long CONCAVE talus apron that flattens as it merges
+//      into the plain. That concavity is most of what makes a drawn skyline
+//      read as land rather than as a shape.
+//
+// The four routes are now four real landforms rather than four abstractions:
+//
+//   home         — a broad caprock mesa. Long west apron with a shoulder
+//                  bench where a resistant ledge crops out, a dead-level cap
+//                  bitten by one head-cut notch (a draw working back into the
+//                  rim), then a short dissected scarp on the east.
+//   cv           — the Llano Estacado, and still the flattest thing here on
+//                  purpose. What relief it has is now real instead of jitter:
+//                  one imperceptible swell, and a playa — the only place the
+//                  land dips BELOW the baseline — with its lunette, the
+//                  wind-built rim banked on the basin's east lip.
+//   publications — Double Mountain, in Stonewall County: two flat-topped
+//                  buttes of nearly equal height standing off the escarpment
+//                  with a saddle between them. Replaces a jagged twin-peak
+//                  that belonged to a different state.
+//   photography  — the canyon rim, and the same PLATEAU / RIM / FACE / APRON
+//                  grammar the CaprockFooter uses. Long back-slope, broad
+//                  level plateau, a hard rim break where the thin caliche cap
+//                  fails, the sandstone bench below it, a concave apron, and
+//                  one detached outlier butte stranded out on the plain —
+//                  which is what a retreating escarpment leaves behind.
+//
+// The fine relief on the slopes (roughly a fifth of a unit) is deterministic,
+// not random, and it is masked off the caps and benches so those stay
+// perfectly level. It reads as gullying at desktop widths and disappears into
+// the line on a phone, which is the correct behaviour for both.
+//
+// SCALE HONESTY: the viewBox is 22 units tall against 1440 wide and renders
+// with preserveAspectRatio="none", so all of this is enormously
+// vertically exaggerated and horizontally elastic. These are silhouettes in
+// the sense a woodcut is — the grammar is accurate, the proportions are not.
 const SILHOUETTES: Record<string, string> = {
-  home:         "M0 19 H250 L300 18.8 L380 16 L460 12.5 L540 10.5 L620 9.8 L660 9.7 L700 9.8 L740 10.5 L780 12.5 L860 16 L940 18.3 L980 18.7 L1020 19 H1440",
-  cv:           "M0 19 H250 L300 19 L380 18.95 L460 18.9 L540 18.95 L620 18.85 L660 18.9 L700 18.8 L740 18.9 L780 18.6 L860 18.9 L940 18.95 L980 19 L1020 19 H1440",
-  publications: "M0 19 H250 L300 18.6 L380 14.5 L460 6.5 L540 10 L620 12 L660 14 L700 9 L740 5.5 L780 12 L860 17 L940 18.6 L980 18.9 L1020 19 H1440",
-  photography:  "M0 19 H250 L300 18.7 L380 16 L460 8 L540 7 L620 7.5 L660 8 L700 15.5 L740 17 L780 16.3 L860 17.8 L940 18.5 L980 18.8 L1020 19 H1440",
+  home:         "M0 19 H250 L280 18.63 L300 18.53 L320 18.13 L340 17.74 L360 17.33 L380 16.92 L400 16.62 L420 16.26 L440 15.89 L460 15.56 L480 15.4 L500 14.39 L520 13.55 L540 12.52 L560 11.4 L580 10.81 L600 9.75 L620 9.5 L640 9.5 L660 9.5 L680 9.5 L700 9.92 L720 10.31 L740 9.81 L760 9.57 L780 9.54 L800 9.5 L820 11.71 L840 13.78 L860 15.21 L880 16.5 L900 17.12 L920 17.64 L940 17.88 L960 18.29 L980 18.75 L1000 18.86 L1020 19 H1440",
+  cv:           "M0 19 H250 L280 18.99 L300 18.95 L320 18.89 L340 18.88 L360 18.89 L380 18.85 L400 18.85 L420 18.84 L440 18.78 L460 18.76 L480 18.81 L500 18.82 L520 18.84 L540 18.91 L560 18.91 L580 18.89 L600 18.92 L620 18.99 L640 19.08 L660 19.17 L680 19.2 L700 19.18 L720 19.19 L740 19.11 L760 18.99 L780 18.96 L800 18.78 L820 18.64 L840 18.73 L860 18.87 L880 18.87 L900 18.9 L920 18.95 L940 18.97 L960 18.99 L980 19 L1000 18.99 L1020 19 H1440",
+  publications: "M0 19 H250 L280 18.53 L300 18.27 L320 18.18 L340 17.64 L360 17.21 L380 16.88 L400 15.95 L420 15.03 L440 13.46 L460 11.45 L480 9.71 L500 8.2 L520 8.2 L540 8.2 L560 8.2 L580 8.2 L600 9.91 L620 11.93 L640 13.59 L660 15.29 L680 16.03 L700 16.8 L720 16.55 L740 15.67 L760 14.14 L780 12.12 L800 10.04 L820 8.8 L840 8.8 L860 8.8 L880 8.8 L900 10.59 L920 12.7 L940 14.51 L960 16.63 L980 17.73 L1000 18.52 L1020 19 H1440",
+  photography:  "M0 19 H250 L280 18.04 L300 17.6 L320 17.23 L340 16.48 L360 15.61 L380 14.83 L400 14.01 L420 13.09 L440 12.34 L460 11.64 L480 10.72 L500 9.84 L520 9.47 L540 8.67 L560 8.6 L580 8.6 L600 8.6 L620 8.6 L640 8.6 L660 8.6 L680 8.6 L700 8.6 L720 8.6 L740 11.18 L760 13.23 L780 14.08 L800 14.12 L820 14.15 L840 15.51 L860 16.91 L880 17.58 L900 18.31 L920 17.82 L940 16.86 L960 16.7 L980 16.7 L1000 18.44 L1020 19 H1440",
 };
 
 // THE FAR GROUND PLANE (2026-08-05, replaces the distant ridge).
@@ -558,24 +604,37 @@ const SILHOUETTES: Record<string, string> = {
 // the wrong kind of wrong.
 //
 // And it contradicted the silhouettes' own argument. The cv route is the true
-// flat Llano at y 18.9, and the point of that near-zero relief is that it
-// reads as flat BECAUSE the others aren't — but a fixed range floated above
-// it across the full width, so the one page built to say "this place is
-// featureless" was the page where the invented mountains showed most.
+// flat Llano, and the point of that near-zero relief is that it reads as flat
+// BECAUSE the others aren't — but a fixed range floated above it across the
+// full width, so the one page built to say "this place is featureless" was
+// the page where the invented mountains showed most.
 //
 // What replaces it is a far ground plane: a second, much lower profile
-// sitting only 0.7-2.2 units above the baseline, per route, morphing with
-// the same `d` transition as the near silhouette (identical command
-// structure and x positions, so the two interpolate the same way). It gives
-// the layering cue without inventing terrain, and it goes genuinely flat on
-// cv. Depth on the Llano comes from atmosphere rather than relief, which is
-// what the dust haze and the aerial-perspective coupling already do — this
-// is deliberately subtle, and that is the correct amount.
+// sitting only 0.65-2.2 units above the baseline, per route, morphing with
+// the same `d` transition as the near silhouette. It gives the layering cue
+// without inventing terrain, and it goes genuinely flat on cv.
+//
+// 2026-08-18: rebuilt alongside the near profiles, on the same x grid. The
+// governing rule is now explicit — THE FAR PLANE IS NEVER A SMALL COPY OF THE
+// NEAR ONE. It was, and that read as one hill with a shadow. Distance on this
+// plain does not look like a smaller hill; it looks like a second dead-level
+// line at a different height, because what you are actually seeing fifty
+// miles out is the same flat surface. So each far plane is a long level
+// table with soft ends, placed to show in the gaps the near landform leaves:
+// on both flanks of home's mesa, past the toe of publications' aprons, and on
+// photography as a lower step to the right — the rim continuing away from you
+// after the near one has broken down. It stays clear of photography's outlier
+// butte by about a unit so the butte still reads as standing in front of it.
+//
+// Worth knowing: .horizon-ground paints over this, so wherever the near land
+// is higher the far plane is simply hidden, and horizonLiftPx() samples BOTH
+// and takes whichever is higher — so where the far plane does show above the
+// near skyline, the sun correctly sets behind it.
 const FAR_PLANES: Record<string, string> = {
-  home:         "M0 18.3 H250 L300 18.2 L380 17.9 L460 17.4 L540 17.1 L620 16.9 L660 16.9 L700 17 L740 17.2 L780 17.5 L860 17.9 L940 18.15 L980 18.25 L1020 18.3 H1440",
-  cv:           "M0 18.3 H250 L300 18.3 L380 18.25 L460 18.3 L540 18.25 L620 18.3 L660 18.25 L700 18.3 L740 18.25 L780 18.2 L860 18.25 L940 18.3 L980 18.3 L1020 18.3 H1440",
-  publications: "M0 18.3 H250 L300 18.1 L380 17.7 L460 17 L540 17.4 L620 17.6 L660 17.5 L700 16.9 L740 16.8 L780 17.3 L860 17.8 L940 18.1 L980 18.25 L1020 18.3 H1440",
-  photography:  "M0 18.3 H250 L300 18.15 L380 17.8 L460 17.2 L540 17 L620 17.1 L660 17.2 L700 17.7 L740 17.9 L780 17.8 L860 18 L940 18.2 L980 18.28 L1020 18.3 H1440",
+  home:         "M0 18.35 H250 L280 18.23 L300 18 L320 17.81 L340 17.73 L360 17.54 L380 17.33 L400 17.22 L420 17.21 L440 17.19 L460 17.15 L480 17.15 L500 17.15 L520 17.15 L540 17.15 L560 17.15 L580 17.15 L600 17.15 L620 17.15 L640 17.15 L660 17.15 L680 17.15 L700 17.15 L720 17.15 L740 17.15 L760 17.15 L780 17.15 L800 17.15 L820 17.15 L840 17.15 L860 17.15 L880 17.15 L900 17.15 L920 17.28 L940 17.49 L960 17.58 L980 17.88 L1000 18.2 L1020 18.35 H1440",
+  cv:           "M0 18.35 H250 L280 18.34 L300 18.33 L320 18.32 L340 18.29 L360 18.29 L380 18.31 L400 18.29 L420 18.28 L440 18.29 L460 18.26 L480 18.25 L500 18.27 L520 18.28 L540 18.28 L560 18.28 L580 18.26 L600 18.24 L620 18.24 L640 18.25 L660 18.25 L680 18.27 L700 18.27 L720 18.25 L740 18.25 L760 18.24 L780 18.25 L800 18.28 L820 18.3 L840 18.3 L860 18.31 L880 18.3 L900 18.27 L920 18.3 L940 18.32 L960 18.32 L980 18.34 L1000 18.35 L1020 18.35 H1440",
+  publications: "M0 18.35 H250 L280 18.23 L300 18.02 L320 17.92 L340 17.79 L360 17.59 L380 17.45 L400 17.35 L420 17.35 L440 17.35 L460 17.35 L480 17.35 L500 17.35 L520 17.35 L540 17.35 L560 17.35 L580 17.35 L600 17.35 L620 17.35 L640 17.35 L660 17.35 L680 17.35 L700 17.35 L720 17.35 L740 17.35 L760 17.35 L780 17.35 L800 17.35 L820 17.35 L840 17.35 L860 17.35 L880 17.35 L900 17.48 L920 17.71 L940 17.82 L960 17.91 L980 18.12 L1000 18.25 L1020 18.35 H1440",
+  photography:  "M0 18.35 H250 L280 18.28 L300 18.12 L320 17.97 L340 17.94 L360 17.83 L380 17.71 L400 17.65 L420 17.62 L440 17.58 L460 17.55 L480 17.5 L500 17.5 L520 17.5 L540 17.5 L560 17.5 L580 17.5 L600 17.5 L620 17.5 L640 17.5 L660 17.5 L680 17.5 L700 17.5 L720 17.5 L740 17.5 L760 17.5 L780 17.65 L800 17.75 L820 17.73 L840 17.7 L860 17.7 L880 17.7 L900 17.7 L920 17.7 L940 17.7 L960 17.7 L980 17.8 L1000 18.2 L1020 18.35 H1440",
 };
 
 const routeKey = (p: string): string => {
@@ -906,7 +965,7 @@ const isDev = import.meta.env.DEV;
           set:html={signatureInline}
         />
         <span class="flex flex-col items-start justify-end">
-          <span class="landmark-name font-serif font-medium whitespace-nowrap" transition:name="site-name">
+          <span class="landmark-name font-serif font-[400] whitespace-nowrap" transition:name="site-name">
             Austin Allison
           </span>
           <span class="station-plate flex items-end gap-1.5" transition:name="site-elevation">
@@ -2637,15 +2696,69 @@ const isDev = import.meta.env.DEV;
     /* The phase supplies only the HUE at the line; --night supplies the
        darkness. Splitting them is what lets the sky ease continuously from
        day through dusk to night while the tint still shifts rose at dawn and
-       gold at dusk. Overridden per phase below. */
-    --sky-tint: #7F98A6;
+       gold at dusk. Overridden per phase below.
+
+       2026-08-18: the DAY value was #7F98A6, a cool marine grey-blue, and it
+       was the wrong colour in the wrong place. Wrong place because at midday
+       the horizon is the PALEST part of the sky, not the most coloured — the
+       tinted end belongs overhead (see --zenith-blue below). The dawn, dusk
+       and night values stay exactly as they were, because at those hours the
+       colour genuinely IS at the line: that's the twilight arch.
+
+       Wrong colour because the near-horizon airlight out here is warm. You're
+       looking through roughly forty times the vertical air path, most of it
+       the dusty boundary layer over caliche and red dirt, so the band the
+       land stands against is pale straw rather than sea-grey. */
+    --sky-tint: #DCCDAE;
+
+    /* THE ZENITH (2026-08-18). --sky-top was plain canvas in daylight, which
+       made the sky run BACKWARDS: it got darker and bluer toward the horizon,
+       falling 15% in luminance on the way down, when the real sky does the
+       opposite. Near the horizon you look through far more atmosphere, so
+       multiply-scattered airlight fills the beam and the band goes pale;
+       overhead the path is short and Rayleigh scattering survives intact.
+       Deep at the top, washed out at the bottom.
+
+       That mattered here more than it would elsewhere. Lubbock sits at 3,200
+       feet with very little water vapour, and it's water vapour that
+       forward-scatters white light into the beam and greys a sky out. Clean
+       and high is exactly the recipe for a deep zenith, and it's most of what
+       people mean by the sky out here. The old sky spanned 0.003 to 0.005
+       chroma end to end — five times LESS saturated than --color-dust, so on
+       a site about this landscape the sky was the least coloured thing in the
+       header.
+
+       CALIBRATION: 0.3 is chosen, not picked. It lands the zenith at 0.034
+       chroma, level with --color-dust and just above --color-caliche — the
+       sky ends up exactly as saturated as the ground, never more. Turn this
+       one number down (0.18 is a whisper, 0 is the old paper sky) if it ever
+       reads as too much; nothing else needs touching.
+
+       DUST COUPLING: particulates scatter across the spectrum rather than
+       preferentially in the blue, so a blowing day bleaches the zenith toward
+       white. --haze-strength is already live from real Lubbock wind and
+       already drives the far plane and the windmill; this is the same aerial
+       perspective one layer further up. At 40mph the zenith loses over half
+       its blue, which is the correct and very recognisable behaviour.
+
+       Deliberately NOT gated on --night: the zenith stays blue through dusk
+       and deepens, which is what it really does. The outer mix below carries
+       it to night on its own, and at --night 1 the result is #131C2C either
+       way, so nothing about the dark-sky pass changes. */
+    --zenith-blue: #3F72B8;
+    --zenith-strength: calc((1 - var(--haze-strength, 0.08) * 0.55) * 0.3);
+    --sky-day-top: color-mix(
+      in oklab,
+      var(--color-canvas, #FBFBF9) calc((1 - var(--zenith-strength)) * 100%),
+      var(--zenith-blue)
+    );
 
     /* The sky at the zenith and at the horizon line, both ramping on --night.
        #sky-base is now ONE gradient built from these two, instead of four
        phase-specific gradients that snapped between each other. */
     --sky-top: color-mix(
       in oklab,
-      var(--color-canvas, #FBFBF9) calc((1 - var(--night, 0)) * 100%),
+      var(--sky-day-top) calc((1 - var(--night, 0)) * 100%),
       #131C2C
     );
     --sky-horizon: color-mix(
@@ -2723,12 +2836,25 @@ const isDev = import.meta.env.DEV;
      copies this replaces each hard-swapped their whole background at the
      civil-twilight boundary; the ramp lives in --sky-top / --sky-horizon
      instead, so the sky darkens continuously through the dusk that was
-     already being computed. */
+     already being computed.
+
+     FOUR STOPS as of 2026-08-18, and the extra one buys the shape rather than
+     the colour. Airlight doesn't build linearly with the path length — the
+     sky holds most of its depth down to twenty or thirty degrees and then
+     pales fast through the last ten, which is why the bright band on the
+     Llano reads as a distinct low band and not as a wash. Two evenly-spaced
+     stops gave a straight ramp and spent the range in the middle of the
+     header where nothing is. Holding 78% of the zenith at 45% and only
+     dropping to 30% at 78% concentrates the pale into the bottom fifth,
+     where the land actually stands against it — and where, not incidentally,
+     the name and the mile markers sit, so the type keeps the palest field in
+     the header to stand on. */
   #sky-base {
     background: linear-gradient(
       to bottom,
       var(--sky-top) 0%,
-      color-mix(in oklab, var(--sky-top) 60%, var(--sky-horizon)) 58%,
+      color-mix(in oklab, var(--sky-top) 78%, var(--sky-horizon)) 45%,
+      color-mix(in oklab, var(--sky-top) 30%, var(--sky-horizon)) 78%,
       var(--sky-horizon) 100%
     );
   }

@@ -27,7 +27,7 @@ const series = await getCovers();
         <span class="text-xs font-mono text-sage uppercase tracking-widest block mb-1">
           Series I &mdash; {series[series.length - 1]?.number}
         </span>
-        <h1 class="font-serif text-2xl font-medium tracking-tight text-caprock">
+        <h1 class="font-serif text-4xl font-medium tracking-tight text-caprock">
           Visual Monographs of the American West
         </h1>
       </div>
@@ -101,11 +101,11 @@ const series = await getCovers();
                 flipped ? 'md:order-1 md:text-right md:items-end' : ''
               }`}
             >
-              <span class="font-serif text-5xl font-light text-sage/60 block leading-none select-none mb-4">
+              <span class="font-serif text-5xl font-light text-sage/70 block leading-none select-none mb-4">
                 {s.number}
               </span>
 
-              <h2 class="font-serif text-2xl font-medium tracking-tight text-caprock leading-snug mb-4">
+              <h2 class="font-serif text-3xl font-medium tracking-tight text-caprock leading-snug mb-4">
                 {href ? (
                   <a href={href} data-astro-reload class="hover:text-sage transition-colors">{s.title}</a>
                 ) : (

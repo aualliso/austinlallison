@@ -18,8 +18,8 @@
   --color-basement: #1c1917;
   --color-gold: #D3AF37;
 
-  --font-serif: "adobe-caslon-pro", "Georgia", "Cambria", "Times New Roman", "Times", serif;
-  --font-sans: "Inter", "system-ui", "-apple-system", "BlinkMacSystemFont", sans-serif;
+  --font-serif: "cormorant-garamond", "Georgia", "Cambria", "Times New Roman", "Times", serif;
+  --font-sans: "komet", "system-ui", "-apple-system", "BlinkMacSystemFont", sans-serif;
 }
 
 /* Global Markdown Typography Handlers */

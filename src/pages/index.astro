@@ -454,7 +454,7 @@ const SIGNATURE_GOLD_SVG = `
 
           <div class="book" id="book" data-active-leaf="0">
 
-          <div class="pages" id="pages" inert>
+          <div class="pages" id="pages">
 
           <!-- ── 01 — Ex Libris ─────────────────────────────── -->
           <div class="leaf leaf--exlibris" data-leaf="0" data-code={leaves[0].code} role="tabpanel" id="leaf-0" aria-labelledby="tab-0">
@@ -485,7 +485,7 @@ const SIGNATURE_GOLD_SVG = `
           </div>
 
           <!-- ── 02 — Statement of Purpose ─────────────────── -->
-          <div class="leaf" data-leaf="1" data-code={leaves[1].code} role="tabpanel" id="leaf-1" aria-labelledby="tab-1" inert>
+          <div class="leaf" data-leaf="1" data-code={leaves[1].code} role="tabpanel" id="leaf-1" aria-labelledby="tab-1">
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[1]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title">{leaves[1].code}</span>
@@ -510,7 +510,7 @@ const SIGNATURE_GOLD_SVG = `
           </div>
 
           <!-- ── 03 — Photography ──────────────────────────── -->
-          <div class="leaf leaf--rake" data-leaf="2" data-code={leaves[2].code} data-rake role="tabpanel" id="leaf-2" aria-labelledby="tab-2" inert>
+          <div class="leaf leaf--rake" data-leaf="2" data-code={leaves[2].code} data-rake role="tabpanel" id="leaf-2" aria-labelledby="tab-2">
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[2]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title">{leaves[2].code}</span>
@@ -544,7 +544,7 @@ const SIGNATURE_GOLD_SVG = `
           </div>
 
           <!-- ── 04 — Current Work ─────────────────────────── -->
-          <div class="leaf" data-leaf="3" data-code={leaves[3].code} role="tabpanel" id="leaf-3" aria-labelledby="tab-3" inert>
+          <div class="leaf" data-leaf="3" data-code={leaves[3].code} role="tabpanel" id="leaf-3" aria-labelledby="tab-3">
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[3]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title">{leaves[3].code}</span>
@@ -568,7 +568,7 @@ const SIGNATURE_GOLD_SVG = `
           </div>
 
           <!-- ── 05 — Publication ──────────────────────────── -->
-          <div class="leaf" data-leaf="4" data-code={leaves[4].code} role="tabpanel" id="leaf-4" aria-labelledby="tab-4" inert>
+          <div class="leaf" data-leaf="4" data-code={leaves[4].code} role="tabpanel" id="leaf-4" aria-labelledby="tab-4">
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[4]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title">{leaves[4].code}</span>
@@ -658,7 +658,7 @@ const SIGNATURE_GOLD_SVG = `
       </div>
     </div>
 
-    <div class="register-controls" id="register-controls" inert>
+    <div class="register-controls" id="register-controls">
       <!-- prev/next now live at the foot of the page as catchwords; what
            remains here is the overview — the numbered tab row and the
            position counter — not the primary way to turn a page. -->
@@ -682,6 +682,37 @@ const SIGNATURE_GOLD_SVG = `
     </div>
 
   </section>
+
+  <script is:inline>
+    // The ledger's initial `inert` state is applied HERE rather than
+    // being written into the markup above, and this is a bug fix, not a
+    // refactor: `inert` can only ever be removed by JavaScript, so
+    // baking it into the HTML meant that with JS disabled the whole
+    // register rendered — cover, leaves, headings, links and all — with
+    // nothing in it focusable or clickable. The <noscript> stylesheet
+    // below can restyle that fallback but it cannot strip an attribute,
+    // so the fallback was unusable rather than merely plain.
+    //
+    // Inline and parser-blocking, so it runs before first paint: with JS
+    // on, nothing changes — no flash of interactive pages behind the
+    // closed cover, and initRegister()/initCover() find exactly the
+    // state they did before. With JS off it simply never runs, and what
+    // is left is a readable stack of sections whose links work.
+    //
+    // .cover is not in this list: it takes `inert` only once it has been
+    // opened, and the noscript stylesheet hides it outright.
+    (function () {
+      document.getElementById('pages')?.setAttribute('inert', '');
+      document.getElementById('register-controls')?.setAttribute('inert', '');
+      // every leaf but the first — leaf 0 is the one on top when the
+      // ledger opens. Sliced from the list rather than matched with
+      // :not(:first-of-type), which would silently repoint if a
+      // non-leaf div were ever added above them inside .pages.
+      Array.prototype.slice
+        .call(document.querySelectorAll('#pages .leaf'), 1)
+        .forEach(function (leaf) { leaf.setAttribute('inert', ''); });
+    })();
+  </script>
 
   <noscript>
     <style>
@@ -1007,7 +1038,7 @@ const SIGNATURE_GOLD_SVG = `
        than swapped via JS, since each leaf's header never changes */
     flex: 1;
     min-width: 0;
-    font-family: adobe-caslon-pro, serif;
+    font-family: cormorant-garamond, serif;
     font-weight: 500;
     font-size: clamp(1.15rem, 1.6vw, 1.45rem);
     letter-spacing: 0.01em;
@@ -1017,7 +1048,7 @@ const SIGNATURE_GOLD_SVG = `
     text-overflow: ellipsis;
   }
   .leaf-header-page {
-    font-family: adobe-caslon-pro, serif;
+    font-family: cormorant-garamond, serif;
     font-size: 1.5rem;
     letter-spacing: 0.04em;
     font-variant-numeric: tabular-nums;
@@ -1474,8 +1505,16 @@ const SIGNATURE_GOLD_SVG = `
        catchwords on every leaf — they can't collide with content no
        matter which leaf happens to be the tallest. measureLeavesHeight()
        picks this up on its own, since it measures the front face in
-       normal flow with its padding included. */
-    padding-bottom: calc(clamp(1.5rem, 3vw, 2.25rem) + 2.5rem);
+       normal flow with its padding included.
+
+       SIZING: on the tallest leaf, clearance below the content is
+       exactly this padding — .leaf-inner centres its children, so every
+       shorter leaf gets slack for free but the tallest gets none. So
+       this has to be at least the catchword's own `bottom` offset plus
+       its min-height. It is deliberately no larger: above 800px .pages'
+       min-height floor already leaves ~100px under the content and none
+       of this is visible, but below it the band is the page's height. */
+    padding-bottom: calc(clamp(1.5rem, 3vw, 2.25rem) + 2rem);
   }
 
   /* ── Catchwords ─────────────────────────────────────
@@ -1497,23 +1536,28 @@ const SIGNATURE_GOLD_SVG = `
      the right one clear of the deckled edge, which bites at most ~0.6%
      of the width.
 
-     min-height 2.75rem is a touch target, not a type decision — the
-     padding grows the hit area without moving the baseline. */
+     min-height is a touch target, not a type decision — the padding
+     grows the hit area without moving the baseline. It is also the
+     single biggest driver of the page's height on mobile: the band
+     .leaf-body reserves below has to be at least this tall plus the
+     `bottom` offset, or the catchword lands on the tallest leaf's
+     content. 2.5rem / 2.25rem on phones clears WCAG 2.2 AA (24px) with
+     room to spare while giving back most of what the band had cost. */
   .catchword {
     position: absolute;
-    bottom: clamp(0.55rem, 1.6vw, 1rem);
+    bottom: clamp(0.4rem, 1.2vw, 0.9rem);
     z-index: 5;
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    min-height: 2.75rem;
+    min-height: 2.5rem;
     padding: 0.35rem 0.2rem;
     margin: 0;
     border: none;
     background: none;
     cursor: pointer;
     white-space: nowrap;
-    font-family: adobe-caslon-pro, serif;
+    font-family: cormorant-garamond, serif;
     font-size: clamp(1rem, 1.4vw, 1.15rem);
     letter-spacing: 0.02em;
     color: var(--color-caprock, #B85A38);
@@ -1626,8 +1670,8 @@ const SIGNATURE_GOLD_SVG = `
     color: rgba(26, 25, 25, 0.55);
   }
   .exlibris-name {
-    font-family: adobe-caslon-pro, serif;
-    font-weight: 500;
+    font-family: cormorant-garamond, serif;
+    font-weight: 800;
     font-size: clamp(2rem, 5vw, 3.25rem);
     letter-spacing: -0.01em;
     color: var(--color-iron, #1A1919);
@@ -1648,7 +1692,7 @@ const SIGNATURE_GOLD_SVG = `
   .benchmark { display: block; flex-shrink: 0; }
 
   .title {
-    font-family: adobe-caslon-pro, serif;
+    font-family: cormorant-garamond, serif;
     font-weight: 500;
     font-size: clamp(1.6rem, 3.2vw, 2.5rem);
     line-height: 1.1;
@@ -1662,7 +1706,7 @@ const SIGNATURE_GOLD_SVG = `
   .title--sm { font-size: clamp(1.3rem, 2.2vw, 1.75rem); }
 
   .heading {
-    font-family: adobe-caslon-pro, serif;
+    font-family: cormorant-garamond, serif;
     font-weight: 500;
     font-size: clamp(1.6rem, 3.2vw, 2.5rem);
     line-height: 1.1;
@@ -1690,17 +1734,17 @@ const SIGNATURE_GOLD_SVG = `
   }
 
   .body {
-    font-size: 1.1rem;
-    line-height: 1.2;
+    font-size: 1.15rem;
+    line-height: 1.1;
     color: var(--color-iron, #1A1919);
     max-width: 38rem;
     margin: 0 0 1.35rem;
-    font-family: adobe-caslon-pro, serif;
+    font-family: cormorant-garamond, serif;
   }
 
 
   .quote {
-    font-family: adobe-caslon-pro, serif;
+    font-family: cormorant-garamond, serif;
     font-style: italic;
     font-size: clamp(1.1rem, 1.9vw, 1.35rem);
     line-height: 1.5;
@@ -1721,7 +1765,7 @@ const SIGNATURE_GOLD_SVG = `
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    font-family: adobe-caslon-pro, serif;
+    font-family: cormorant-garamond, serif;
     font-size: 1rem;
     letter-spacing: 0.03em;
     text-decoration: none;
@@ -1866,9 +1910,11 @@ const SIGNATURE_GOLD_SVG = `
   }
     .reg-tab { padding: 0.55rem 0.2rem; }
     /* no position override needed: --page-margin doesn't change across
-       breakpoints, because .leaf-header's padding doesn't either */
-    .leaf-body { padding-bottom: 3.75rem; }
-    .catchword { font-size: 0.95rem; }
+       breakpoints, because .leaf-header's padding doesn't either.
+       padding-bottom is the tightest it can be here: 2.25rem of target
+       plus the ~0.4rem bottom offset, and about 3px to spare. */
+    .leaf-body { padding-bottom: 2.875rem; }
+    .catchword { font-size: 0.95rem; min-height: 2.25rem; }
     .cover {
       /* still fully open (well past 90deg) but a bit shallower and
          narrower — less canvas to swing into on small screens */
