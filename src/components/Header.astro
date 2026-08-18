@@ -486,8 +486,30 @@
 // close to full intensity for the first stretch right at the horizon
 // before easing out, so the deep-orange moment reads as a held beat rather
 // than an instant that's already fading the moment it appears.
-import { Image } from 'astro:assets';
-import signature from '../assets/signature.svg';
+/* THE SIGNATURE JOINS THE SKY (2026-08-17). Imported as a raw string
+   rather than through astro:assets, so the mark ships as inline SVG and
+   can inherit `currentColor` from CSS. As an <Image> it was an opaque
+   <img>, recolourable only by filter — which is why it had been stuck on
+   invert() while every other object in this header derived its appearance
+   from the real sky.
+
+   The asset already declares fill="currentColor" on its root, so inlining
+   alone is what makes it live; no per-path rewriting is needed.
+
+   aria-hidden + focusable are injected here rather than edited into the
+   asset, so re-exporting the signature can't silently drop them. The
+   accessible name lives on the wrapper span instead (see the markup).
+
+   COST, stated plainly: this moves ~31KB of path data out of a separately
+   cached request and into the HTML of every page, since the header renders
+   on all of them. It gzips to about 14KB, and path data compresses well.
+   If that ever matters more than the colour coupling does, the fallback is
+   to keep <Image> and accept that the mark and the name disagree at dusk. */
+import signatureMarkup from '../assets/signature.svg?raw';
+const signatureInline = signatureMarkup.replace(
+  '<svg ',
+  '<svg aria-hidden="true" focusable="false" '
+);
 
 const currentPath = Astro.url.pathname.replace(/\/$/, "") || "/";
 const isActive = (path: string) => currentPath === (path.replace(/\/$/, "") || "/");
@@ -869,15 +891,22 @@ const isDev = import.meta.env.DEV;
         aria-current={isActive('/') ? 'page' : undefined}
         class={`landmark group flex items-end gap-3 min-w-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A] rounded-sm ${isActive('/') ? 'is-active' : ''}`}
       >
-        <Image
-          src={signature}
-          alt="Austin Allison signature"
-          class="signature-img w-auto object-contain hidden sm:block"
-          loading="eager"
+        <!-- The signature, inline so it can take currentColor. role/aria-label
+             carry the accessible name the <Image>'s alt used to; the inner
+             svg is aria-hidden so it isn't announced twice. `object-contain`
+             is dropped (it meant nothing on a span) and `loading` with it;
+             `hidden sm:block` stays, and the stylesheet deliberately sets no
+             `display` on .signature-img so those utilities keep control of
+             it. -->
+        <span
+          class="signature-img w-auto hidden sm:block"
+          role="img"
+          aria-label="Austin Allison signature"
           transition:name="site-signature"
+          set:html={signatureInline}
         />
         <span class="flex flex-col items-start justify-end">
-          <span class="landmark-name font-serif font-medium tracking-tight whitespace-nowrap" transition:name="site-name">
+          <span class="landmark-name font-serif font-medium whitespace-nowrap" transition:name="site-name">
             Austin Allison
           </span>
           <span class="station-plate flex items-end gap-1.5" transition:name="site-elevation">
@@ -2641,6 +2670,26 @@ const isDev = import.meta.env.DEV;
       var(--ink) calc((0.75 + 0.25 * min(1, var(--night, 0) / 0.625)) * 100%),
       var(--sky-horizon)
     );
+    /* THE LANDMARK'S OWN INK — the name and the signature, one value.
+       Factored out of .landmark-name when the signature was inlined
+       (2026-08-17), because the two sitting 12px apart and warming by
+       different amounts is the exact failure this change exists to fix; two
+       copies of the same expression would drift the first time either was
+       tuned. This is now the ONE number to turn if the grazing warmth on
+       the landmark reads too strong or too weak.
+
+       Everything else about it is as it was: --grazing-effective is 0 at a
+       high sun so this resolves to plain var(--ink), and oklab rather than
+       oklch because --ink is near-neutral at both ends of the --ink-flip
+       step while --grazing-color is saturated — the case that turned the
+       old .distant-ridge olive. */
+    --landmark-warmth: 0.24;
+    --landmark-ink: color-mix(
+      in oklab,
+      var(--ink) calc((1 - var(--grazing-effective, 0) * var(--landmark-warmth)) * 100%),
+      var(--grazing-color, #E8A85C)
+        calc(var(--grazing-effective, 0) * var(--landmark-warmth) * 100%)
+    );
     /* Distant land is mostly the airlight in front of it with a little ground
        showing through — so it's built FROM the sky colour rather than from
        canvas, and follows the sky into dawn, dusk and night for free. Dust
@@ -3283,30 +3332,119 @@ const isDev = import.meta.env.DEV;
 
 
   /* --- The landmark ------------------------------------------------------ */
-  /* The signature is a fixed dark-ink asset, so it has to invert rather than
-     recolour. Tied to --ink-flip (the step) rather than --night (the ramp),
-     for the same reason the type is: a half-inverted mark is mid-grey, which
-     is the one value guaranteed to vanish into a mid-grey twilight sky. */
+  /* The signature now RECOLOURS instead of inverting. `filter: invert()` was
+     the only tool available while this was an imported <Image>: an opaque
+     raster-shaped box that CSS could filter but not paint. Inlined, the
+     asset's own fill="currentColor" means it simply takes --landmark-ink,
+     the same value the name takes — so the two halves of the landmark warm
+     together through a sunset instead of the mark staying flatly neutral
+     beside a name that doesn't.
+
+     The old invert() reasoning still holds where it mattered and is now
+     handled upstream: --ink itself steps at --ink-flip rather than fading,
+     for exactly the mid-grey reason the comment gave, so the mark inherits
+     that step and never renders half-inverted.
+
+     NO `display` HERE, deliberately. The wrapper carries Tailwind's
+     `hidden sm:block`, and this is an unlayered rule — an unlayered
+     declaration beats a layered utility regardless of source order, so
+     setting display would silently reveal the signature on phones. Sizing
+     goes on the child svg instead. */
   .signature-img {
-    filter: invert(var(--ink-flip, 0));
+    color: var(--landmark-ink);
     height: 2rem;
     transform-origin: left bottom;
     margin-bottom: 1px; /* feet on the ground */
   }
 
+  /* The asset's viewBox is 3531x1209 (~2.92:1). Height is set on the
+     wrapper above and the svg fills it, taking its width from the ratio —
+     which is what `w-auto` on the wrapper is for. */
+  .signature-img > svg {
+    display: block;
+    height: 100%;
+    width: auto;
+  }
+
+  /* THE NAME CATCHES THE LOW SUN (2026-08-17).
+     Until now this was the one foreground object in the header with no
+     relationship to anything: every other element derives its appearance
+     from something real — the disc's colour from altitude, .far-plane's
+     fill from sky plus haze, #the-horizon's stroke from --night, the
+     windmill's opacity from dust — while the name was a flat var(--ink)
+     that didn't know what time it was. That, rather than the typeface,
+     was why it read as bland.
+
+     Same construction as .far-plane's fill, at a lower weight: 24% rather
+     than 35%, because this is type and the contrast floor is thinner than
+     a fill's. At a high sun --grazing-effective is 0 and this resolves to
+     plain var(--ink), so the daytime appearance is unchanged.
+
+     WHY oklab AND NOT oklch: --ink is near-neutral at BOTH ends of the
+     --ink-flip step (#1A1919 and #EAF0F7) and --grazing-color is heavily
+     saturated. That is precisely the near-neutral-meets-saturated case
+     that dragged the old .distant-ridge to olive at dusk, since oklch
+     interpolates hue as an angle and a near-achromatic colour still
+     carries a meaningless one.
+
+     CONTRAST. Worst case is a 24% mix, landing #1A1919 near rgb(70,54,42)
+     — far above the 3.94:1 floor INK_FLIP_AT was solved against. And the
+     one genuinely thin moment, the ink flip itself, is safe by
+     construction: --ink-flip steps at about -5.4deg of solar altitude,
+     where easeGrazing() has already fallen to ~0.05 and
+     --grazing-effective to ~0.03, so the tint is essentially absent
+     exactly where the margin is narrowest.
+
+     TRACKING. Was Tailwind's `tracking-tight`, a magazine-headline
+     default that argued with the thing 4px below it: the station plate is
+     mono at 0.14em. The name was typeset; the plate was stamped. Positive
+     tracking makes them read as one cast assembly, and the font-size bump
+     (1.05 -> 1.1, and 1.3 -> 1.36 at md) offsets the optical shrink that
+     letterspacing causes.
+
+     Set here rather than as a utility class on the element so tracking and
+     font-size always move together — including in the two media queries
+     below — and so nothing depends on where Tailwind's utilities layer
+     lands relative to this unlayered block.
+
+     ONE COUPLING WORTH KNOWING: the added tracking widens .landmark by
+     roughly 9px at md, and measureSkyWindow() measures .landmark's
+     offsetWidth to decide where the sun is allowed to travel. It is
+     measured at runtime, so it self-corrects — the sky window's left edge
+     simply moves right by about 9px on wide layouts, well inside
+     SKY_EDGE_GAP_PX's own clearance. Nothing to tune.
+
+     NOTE ON THE TRANSITION: the blanket `transition: all 0.5s` block
+     further down (the Safari/Firefox fallback list) names .landmark-name
+     at equal specificity and later in source order, so it wins — and
+     under .scroll-driven the transition is killed outright. Both are
+     fine: --grazing-effective moves at most a few hundredths per 60s
+     tick, so a 24% mix steps by an imperceptible amount either way. The
+     declaration is kept for the case where neither rule applies. */
   .landmark-name {
-    font-size: 1.05rem;
-    color: var(--ink);
-    transition: color 0.6s linear;
+    font-size: 1.1rem;
+    color: var(--landmark-ink);
+    transition: color 1.5s linear;
     line-height: 1;
     padding-bottom: 0.45rem;
     transform-origin: left bottom;
   }
 
-  .landmark.is-active .landmark-name,
-  .landmark:hover .landmark-name {
-    color: var(--ink);
-  }
+  /* `.landmark.is-active .landmark-name, .landmark:hover .landmark-name
+     { color: var(--ink) }` was deleted here (2026-08-17). It restated the
+     colour the name already had, so it was a no-op — right up until the
+     name's colour became a function of the sun, at which point it silently
+     reverted the whole effect to flat ink on hover AND on every load of
+     the home route, where .landmark carries is-active. A rule that does
+     nothing is not the same as a rule that is safe to keep.
+
+     The landmark now has no hover treatment of its own. That is unchanged
+     in practice — this rule never produced a visible one — but if you want
+     an affordance to match the nav markers' shimmer, add it as something
+     that composes with the tint rather than replacing it, e.g.
+     `.landmark:hover .landmark-name { color: color-mix(in oklab,
+     var(--ink) 82%, #C1AD8A); }`. (Note that .station-mark's own hover
+     rule below is already dead: the markup carries .station-meta now.) */
 
   .station-mark {
     color: var(--ink-muted);
@@ -3336,7 +3474,7 @@ const isDev = import.meta.env.DEV;
 
   /* --- Mile markers ------------------------------------------------------- */
   .marker-label {
-    font-size: 11px;
+    font-size: 13px;
     color: var(--ink-muted);
     padding-bottom: 0.35rem;
     transform: translateY(0);
@@ -3380,9 +3518,9 @@ const isDev = import.meta.env.DEV;
   @media (min-width: 768px) {
     #horizon-header { padding-top: 3.5rem; }
     .signature-img  { height: 2.75rem; }
-    .landmark-name  { font-size: 1.3rem; }
+    .landmark-name  { font-size: 1.36rem; }
     .station-meta   { font-size: 9px; }
-    .marker-label   { font-size: 13px; }
+    .marker-label   { font-size: 15px; }
   }
 
   /* Narrow phones: the name + three full words is over budget. Trim the
@@ -3390,7 +3528,12 @@ const isDev = import.meta.env.DEV;
      widths the plate is wider than the name and would otherwise be the
      floor on how far the landmark can yield. The line stays intact. */
   @media (max-width: 380px) {
-    .landmark-name { font-size: 0.92rem; }
+    /* Tracking costs horizontal width, and this block's own comment
+       notes the name plus three full nav words is already over budget
+       here. Back the letterspacing off rather than shrinking the name
+       any further — the plate below is already display:none at this
+       width, so the stamped-assembly reading it supports is gone anyway. */
+    .landmark-name { font-size: 0.92rem; letter-spacing: 0.02em; }
     .marker-label  { font-size: 10.5px; }
     /* At these widths the plate would be wider than the name it sits under,
        and the plate is what sets the floor on how far the landmark can yield. */

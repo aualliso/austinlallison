@@ -45,9 +45,13 @@
  *     the page is zoomed, releases pinch back to the browser and says
  *     so. It reclaims it the moment the page returns to 1:1.
  *
- *     ?debugViewport puts the live numbers on screen — for reading on
- *     a real phone, where there's no console. Remove that block once
- *     this is settled, or gate it on import.meta.env.DEV.
+ *     Confirmed on a phone: the notice fires, and it only can when
+ *     visualViewport.scale reads above 1.02 — so what carried across
+ *     really was the visual viewport, not browser page zoom.
+ *
+ *     ?debugViewport puts the live numbers on screen, for reading on a
+ *     real phone where there's no console. DEV only — it never reaches
+ *     a build. `npm run dev -- --host`, then the network URL.
  *
  * Everything else — the pointer model, the clamped pan, fit-to-board,
  * the bake/unbake zoom, the focus trap — is unchanged.
@@ -241,19 +245,25 @@ const registry = SERIES;
     </div>
   </div>
 
-  <!-- ?debugViewport readout — hidden unless the param is present -->
-  <div
-    id="viewport-probe"
-    class="hidden fixed bottom-2 left-2 z-[200] bg-canvas/95 border border-caprock rounded-sm px-2 py-1.5 font-mono text-[10px] leading-snug text-iron pointer-events-none whitespace-pre"
-  ></div>
+  <!-- ?debugViewport readout. DEV only — it never reaches a build, so
+       nobody can summon a diagnostic panel on the live site by pasting
+       a query string. Run `npm run dev -- --host` and open the network
+       URL on a phone to use it. -->
+  {import.meta.env.DEV && (
+    <div
+      id="viewport-probe"
+      class="hidden fixed bottom-2 left-2 z-[200] bg-canvas/95 border border-caprock rounded-sm px-2 py-1.5 font-mono text-[10px] leading-snug text-iron pointer-events-none whitespace-pre"
+    ></div>
+  )}
 
-  <!-- page-zoom notice — shown only while the visual viewport is zoomed -->
+  <!-- Page-zoom notice, shown only while the visual viewport is zoomed.
+       Empty here: the script fills it, because a phone gets "pinch" and
+       anything else gets the keyboard shortcut. A desktop visitor has
+       no pinch to offer them. -->
   <div
     id="zoom-notice"
-    class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[150] bg-caprock text-canvas rounded-sm px-3 py-2 font-mono text-[10px] uppercase tracking-widest shadow-lg pointer-events-none"
-  >
-    Page is zoomed — pinch to return to 1:1
-  </div>
+    class="hidden fixed bottom-4 left-1/2 -translate-x-1/2 z-[150] bg-caprock text-canvas rounded-sm px-3 py-2 font-mono text-[10px] uppercase tracking-widest shadow-lg pointer-events-none max-w-[90vw] text-center"
+  ></div>
 
   <!-- ── viewing station ──────────────────────────────────────────
        Outside <main> so the board can be made inert while it's open. -->
@@ -1227,7 +1237,9 @@ const registry = SERIES;
     const vv = window.visualViewport;
     const probe = document.getElementById('viewport-probe');
     const notice = document.getElementById('zoom-notice');
-    const debugging = new URLSearchParams(window.location.search).has('debugViewport');
+    const debugging =
+      import.meta.env.DEV &&
+      new URLSearchParams(window.location.search).has('debugViewport');
 
     let pageZoomed = false;
 
@@ -1262,6 +1274,14 @@ const registry = SERIES;
         `board scale  ${r.boardScale.toFixed(3)}\n` +
         `pinch        ${r.released ? 'RELEASED to browser' : 'held by board'}`;
     };
+
+    /* A phone can pinch its way back; a laptop can't. Ask for the
+       gesture the visitor actually has. */
+    if (notice) {
+      notice.textContent = window.matchMedia('(pointer: coarse)').matches
+        ? 'Page is zoomed \u2014 pinch to return to 1:1'
+        : 'Page is zoomed \u2014 press \u2318/Ctrl + 0 to reset';
+    }
 
     /* 1.02 rather than 1: iOS reports tiny fractional scales at rest. */
     const syncPageZoom = () => {

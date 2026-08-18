@@ -43,6 +43,14 @@ const series = await getCovers();
     <div class="space-y-32">
       {series.map((s, i) => {
         const href = s.built ? `/photography/${s.slug}` : null;
+        /* data-astro-reload: a View Transition swaps the document
+           without a real navigation, and the browser carries the visual
+           viewport's pinch zoom straight across. The light table owns
+           pinch (touch-none, for the board's own zoom), so a visitor
+           who pinched here used to arrive magnified with no way back.
+           A full load resets the visual viewport. The light table also
+           detects and recovers from this on its own — belt and braces,
+           but this way the reader never has to read an instruction. */
         const flipped = i % 2 === 1; // odd spreads put the plate on the right
 
         return (
@@ -53,7 +61,7 @@ const series = await getCovers();
               <div class="border border-iron/10 rounded-sm overflow-hidden p-3 bg-canvas shadow-lg">
                 <div class="overflow-hidden bg-dust/35">
                   {href ? (
-                    <a href={href}>
+                    <a href={href} data-astro-reload>
                       <img
                         src={s.src}
                         srcset={s.srcset}
@@ -99,7 +107,7 @@ const series = await getCovers();
 
               <h2 class="font-serif text-2xl font-medium tracking-tight text-caprock leading-snug mb-4">
                 {href ? (
-                  <a href={href} class="hover:text-sage transition-colors">{s.title}</a>
+                  <a href={href} data-astro-reload class="hover:text-sage transition-colors">{s.title}</a>
                 ) : (
                   s.title
                 )}
