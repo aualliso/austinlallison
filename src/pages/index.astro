@@ -169,6 +169,15 @@ const leaves = [
   { code: 'Publications', label: '05 · Publications' },
 ];
 
+// Catchword text: each leaf's label minus its "NN · " numbering. The
+// tab row below the book carries the numbers and is the overview; the
+// catchword at the foot of the page only needs to name where you're
+// going. Derived from `leaves` rather than kept as a second hand-
+// maintained field, so renaming a leaf updates both at once — the
+// client script strips the same prefix off the tab text at runtime for
+// exactly the same reason.
+const shortLabels = leaves.map((l) => l.label.replace(/^\s*\d+\s*\u00B7\s*/, ''));
+
 // ── Foxing textures (see v10 note above) ─────────────────────────
 //
 // TILE GEOMETRY: 900x600, and every baseFrequency below is a multiple
@@ -544,11 +553,11 @@ const SIGNATURE_GOLD_SVG = `
             <div class="leaf-body">
             <div class="leaf-inner">
               <h1 class="title title--sm">
-                  Current Work
+                  Newspaper Digitization Enhancements
               </h1>
               <h2 class="heading heading--sm">Open-source optical character recognition software for newspaper digitization</h2>
-              <p class="quote">
-                Using open-source optical character recognition software to enhance
+              <p class="body">
+                Using open-source optical character recognition software and enhanced image binarization and processing to strengthen
                 newspaper digitization efforts in West Texas.
               </p>
               <a href="/projects/ocr_project/" class="cta">The Project</a>
@@ -593,6 +602,52 @@ const SIGNATURE_GOLD_SVG = `
             <div class="leaf-face leaf-face--back" aria-hidden="true" style={`--foxing-image:url("${foxingBack[4]}")`}></div>
           </div>
 
+          <!-- ── Catchwords ───────────────────────────────
+               The page-turn controls, moved out of .register-controls
+               and printed at the foot of the leaf instead. Set as
+               CATCHWORDS — the printer's convention of putting the next
+               page's opening word at the bottom of the current one —
+               rather than as overlaid arrow buttons, so the affordance
+               stays in the book's own vocabulary and NAMES its
+               destination ("Photography →") instead of being a bare
+               chevron the reader has to guess at.
+
+               They live INSIDE .pages rather than as siblings of it,
+               for two reasons: .pages already carries the `inert`
+               attribute that gates the whole book until the cover is
+               opened, so these are covered by it for free; and .pages'
+               `perspective` makes it a stacking context, so a z-index
+               here only has to clear the leaves (0–2 during a turn),
+               not .book's own vignette layer.
+
+               They deliberately do NOT turn with the page, unlike
+               .leaf-header. A running head is printed ON the sheet, and
+               it looked wrong sitting still while the page flipped
+               underneath it (that was the v8 fix). A navigation control
+               isn't part of the printing, so it staying put is right.
+
+               IDs are unchanged from the old .reg-arrow buttons, so
+               every existing click handler, the arrow-pulse hint and
+               the disabled-state sync in goTo() keep working untouched.
+               `disabled` is simply styled as invisible here, since a
+               book has no catchword on its last page.
+
+               aria-hidden + tabindex="-1": the tablist below is already
+               the accessible interface for turning pages, and the
+               register's own ArrowLeft/ArrowRight handler covers the
+               keyboard. A third set of controls for the same five
+               panels would be noise for screen-reader users, not help.
+               (tabindex="-1" is what keeps this a valid aria-hidden
+               subtree — it removes the buttons from the tab order.) -->
+          <button class="catchword catchword--prev" id="reg-prev" aria-hidden="true" tabindex="-1" disabled>
+            <span class="catchword-arrow">&larr;</span>
+            <span class="catchword-label" id="catchword-prev-label"></span>
+          </button>
+          <button class="catchword catchword--next" id="reg-next" aria-hidden="true" tabindex="-1">
+            <span class="catchword-label" id="catchword-next-label">{shortLabels[1]}</span>
+            <span class="catchword-arrow">&rarr;</span>
+          </button>
+
           <div class="swipe-hint" id="swipe-hint" aria-hidden="true">
             <span>&larr;</span> swipe <span>&rarr;</span>
           </div>
@@ -604,8 +659,9 @@ const SIGNATURE_GOLD_SVG = `
     </div>
 
     <div class="register-controls" id="register-controls" inert>
-      <button class="reg-arrow" id="reg-prev" aria-label="Previous section" disabled>&larr;</button>
-
+      <!-- prev/next now live at the foot of the page as catchwords; what
+           remains here is the overview — the numbered tab row and the
+           position counter — not the primary way to turn a page. -->
       <div class="reg-tabs" role="tablist" aria-label="Homepage sections" id="reg-tablist">
         {leaves.map((leaf, i) => (
           <button
@@ -623,8 +679,6 @@ const SIGNATURE_GOLD_SVG = `
       </div>
 
       <span class="reg-counter" id="reg-counter" aria-hidden="true">01 / 05</span>
-
-      <button class="reg-arrow" id="reg-next" aria-label="Next section">&rarr;</button>
     </div>
 
   </section>
@@ -632,6 +686,7 @@ const SIGNATURE_GOLD_SVG = `
   <noscript>
     <style>
       .register-controls { display: none; }
+      .catchword { display: none; }
       .spine { display: none; }
       .cover { display: none; }
       .back-cover-corner { display: none; }
@@ -732,48 +787,6 @@ const SIGNATURE_GOLD_SVG = `
   }
   .register-controls[inert] {
     opacity: 0.35;
-  }
-
-  .reg-arrow {
-    flex-shrink: 0;
-    width: 2.5rem;
-    height: 2.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 1.5px solid rgba(26, 25, 25, 0.28);
-    border-radius: 50%;
-    background: transparent;
-    color: var(--color-iron, #1A1919);
-    font-size: 1.05rem;
-    cursor: pointer;
-    transition: border-color 0.25s ease, background-color 0.25s ease, color 0.25s ease, opacity 0.25s ease;
-  }
-  .reg-arrow:hover:not(:disabled),
-  .reg-arrow:focus-visible:not(:disabled) {
-    border-color: var(--color-caprock, #B85A38);
-    background-color: var(--color-caprock, #B85A38);
-    color: var(--color-caliche, #E8E1D1);
-  }
-  .reg-arrow:disabled { opacity: 0.3; cursor: default; }
-  .reg-arrow:focus-visible {
-    outline: 2px solid var(--color-caprock, #B85A38);
-    outline-offset: 2px;
-  }
-
-  @keyframes arrow-pulse {
-    0%, 100% {
-      transform: scale(1);
-      box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-caprock, #B85A38) 45%, transparent);
-    }
-    50% {
-      transform: scale(1.12);
-      box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-caprock, #B85A38) 0%, transparent);
-    }
-  }
-  .reg-arrow.is-pulsing {
-    border-color: var(--color-caprock, #B85A38);
-    animation: arrow-pulse 1s ease-in-out 3;
   }
 
   .reg-counter {
@@ -984,7 +997,7 @@ const SIGNATURE_GOLD_SVG = `
     align-items: baseline;
     justify-content: space-between;
     gap: 1rem;
-    padding: 0.85rem 1.5rem 0.7rem;
+    padding: 0.85rem var(--page-margin) 0.7rem;
     border-bottom: 6px double color-mix(in srgb, var(--color-caprock, #B85A38) 65%, transparent);
     flex-shrink: 0;
   }
@@ -1240,6 +1253,14 @@ const SIGNATURE_GOLD_SVG = `
     overflow: hidden;
     perspective: 1600px;
 
+    /* the margin the page's FURNITURE hangs off — the running head at
+       the top and the catchwords at the foot. Deliberately not the same
+       as .leaf-body's own padding-left: body text respects the ruled
+       margin column (16%), while the header and the catchwords sit
+       outside it against the page edge. Defined once here so the two
+       can't drift apart; .leaf-header and .catchword both read it. */
+    --page-margin: 1.5rem;
+
     --ledger-rule: color-mix(in srgb, var(--color-iron, #1A1919) 12%, transparent);
     --ledger-accent: color-mix(in srgb, var(--color-caprock, #B85A38) 45%, transparent);
   }
@@ -1447,7 +1468,105 @@ const SIGNATURE_GOLD_SVG = `
     min-height: 0;
     padding: clamp(1.5rem, 3vw, 2.25rem) clamp(1.5rem, 3vw, 2rem);
     padding-left: 16%;
+    /* reserves the band the catchwords sit in. Every leaf-body is the
+       same height (.leaf is inset:0 inside .pages, so short leaves
+       stretch too), which means one reserved band clears the
+       catchwords on every leaf — they can't collide with content no
+       matter which leaf happens to be the tallest. measureLeavesHeight()
+       picks this up on its own, since it measures the front face in
+       normal flow with its padding included. */
+    padding-bottom: calc(clamp(1.5rem, 3vw, 2.25rem) + 2.5rem);
   }
+
+  /* ── Catchwords ─────────────────────────────────────
+     Set as printing, not as chrome: Caslon at reading size, caprock,
+     with the rule sweeping under the destination's NAME on hover the
+     way .cta's does — so a catchword and a link read as the same kind
+     of object. No circle, no chevron glyph, no translucent panel; the
+     rest of this page works hard to be a physical ledger and a
+     carousel button would be the one element admitting it isn't.
+
+     Aligned to --page-margin, i.e. to .leaf-header directly above:
+     running head and catchword share one left edge and one right edge,
+     so the page's furniture frames the text block instead of hiding
+     inside it. (An earlier pass aligned these to .leaf-body's measure
+     on the grounds that a real catchword hangs off the text block —
+     true, but only of the RIGHT one. There is no such thing as a
+     left-hand catchword, so that argument never bound this pair, and
+     matching the header is the stronger constraint.) 1.5rem also keeps
+     the right one clear of the deckled edge, which bites at most ~0.6%
+     of the width.
+
+     min-height 2.75rem is a touch target, not a type decision — the
+     padding grows the hit area without moving the baseline. */
+  .catchword {
+    position: absolute;
+    bottom: clamp(0.55rem, 1.6vw, 1rem);
+    z-index: 5;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    min-height: 2.75rem;
+    padding: 0.35rem 0.2rem;
+    margin: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    white-space: nowrap;
+    font-family: adobe-caslon-pro, serif;
+    font-size: clamp(1rem, 1.4vw, 1.15rem);
+    letter-spacing: 0.02em;
+    color: var(--color-caprock, #B85A38);
+    transition: opacity 0.3s ease, color 0.25s ease;
+  }
+  .catchword--prev { left: var(--page-margin); }
+  .catchword--next { right: var(--page-margin); }
+
+  /* a book has no catchword on its last page */
+  .catchword:disabled {
+    opacity: 0;
+    pointer-events: none;
+    cursor: default;
+  }
+
+  .catchword-arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
+  }
+  .catchword-label {
+    position: relative;
+    padding-bottom: 2px;
+  }
+  .catchword-label::after {
+    content: '';
+    position: absolute;
+    left: 0; bottom: 0; width: 100%; height: 1px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.32s cubic-bezier(0.2, 0.7, 0.3, 1);
+  }
+  .catchword:hover .catchword-label::after,
+  .catchword:focus-visible .catchword-label::after { transform: scaleX(1); }
+  .catchword--prev:hover .catchword-arrow { transform: translateX(-3px); }
+  .catchword--next:hover .catchword-arrow { transform: translateX(3px); }
+  .catchword:focus-visible {
+    outline: 2px solid var(--color-caprock, #B85A38);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  /* replaces the old .reg-arrow ring pulse. A scaling halo made sense
+     around a circular button; on set type it reads as a glitch, so the
+     arrow just steps toward its own margin and the rule comes up. */
+  @keyframes catchword-pulse {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+  }
+  .catchword.is-pulsing .catchword-arrow {
+    animation: catchword-pulse 1s ease-in-out 3;
+  }
+  .catchword.is-pulsing .catchword-label::after { transform: scaleX(1); }
 
   .leaf-face--back {
     /* the blank verso — same paper stock, no ruling, just a soft
@@ -1745,8 +1864,11 @@ const SIGNATURE_GOLD_SVG = `
     padding: 1.25rem 1.1rem; 
     padding-left: 15%; 
   }
-    .reg-arrow { width: 2.75rem; height: 2.75rem; font-size: 1rem; }
     .reg-tab { padding: 0.55rem 0.2rem; }
+    /* no position override needed: --page-margin doesn't change across
+       breakpoints, because .leaf-header's padding doesn't either */
+    .leaf-body { padding-bottom: 3.75rem; }
+    .catchword { font-size: 0.95rem; }
     .cover {
       /* still fully open (well past 90deg) but a bit shallower and
          narrower — less canvas to swing into on small screens */
@@ -1766,6 +1888,10 @@ const SIGNATURE_GOLD_SVG = `
     }
   }
 
+  @media (max-width: 360px) {
+    .catchword { font-size: 0.85rem; gap: 0.3rem; }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .leaf { transition: none; }
     .leaf[inert] { transform: none; display: none; }
@@ -1778,7 +1904,10 @@ const SIGNATURE_GOLD_SVG = `
     }
     .leaf.is-nudging { animation: none; }
     .cover-open-cue { animation: none; opacity: 1; }
-    .reg-arrow.is-pulsing { animation: none; }
+    .catchword,
+    .catchword-arrow,
+    .catchword-label::after { transition: none; }
+    .catchword.is-pulsing .catchword-arrow { animation: none; }
   }
 </style>
 
@@ -1805,6 +1934,26 @@ const SIGNATURE_GOLD_SVG = `
     const EXIT_DEG = 100;
     const TURN_MS = 600; // keep in sync with the .leaf transition/keyframe durations in CSS
     let current = 0;
+
+    // The catchwords name their destination. Their text is read off the
+    // tab row's own labels minus the "NN · " numbering rather than kept
+    // as a second copy of the titles — renaming a leaf in the
+    // frontmatter `leaves` array updates the tabs, and the catchwords
+    // follow. Empty at either end of the book, where the corresponding
+    // button is also disabled (and so invisible).
+    const prevLabelEl = document.getElementById('catchword-prev-label');
+    const nextLabelEl = document.getElementById('catchword-next-label');
+
+    function shortLabel(i: number) {
+      return (tabs[i]?.textContent ?? '').replace(/^\s*\d+\s*\u00B7\s*/, '').trim();
+    }
+
+    function syncCatchwords(index: number) {
+      if (prevLabelEl) prevLabelEl.textContent = index > 0 ? shortLabel(index - 1) : '';
+      if (nextLabelEl) {
+        nextLabelEl.textContent = index < leafEls.length - 1 ? shortLabel(index + 1) : '';
+      }
+    }
 
     function measureLeavesHeight() {
       let max = 0;
@@ -1891,17 +2040,23 @@ const SIGNATURE_GOLD_SVG = `
       tabs[index].setAttribute('tabindex', '0');
       if (focusTab) tabs[index].focus();
 
-      prevBtn!.disabled = index === 0;
-      nextBtn!.disabled = index === leafEls.length - 1;
-
       // Content that should feel like it "arrives with" the incoming
       // page rather than snapping ahead of it while the outgoing page
       // is still visibly turning — timed to land a little after the
       // midpoint, roughly when the outgoing page has gone edge-on.
+      //
+      // The prev/next disabled state moved in here too (it used to be
+      // set immediately, above). Now that those buttons are printed at
+      // the foot of the page rather than sitting in a bar below the
+      // book, flipping their labels and visibility ahead of the turn
+      // would announce the next page before it has arrived.
       const applyContent = () => {
         if (photoLeaf) photoLeaf.classList.toggle('is-developed', index === 2);
         book?.setAttribute('data-active-leaf', String(index));
         if (counterEl) counterEl.textContent = `${String(index + 1).padStart(2, '0')} / ${String(leafEls.length).padStart(2, '0')}`;
+        prevBtn!.disabled = index === 0;
+        nextBtn!.disabled = index === leafEls.length - 1;
+        syncCatchwords(index);
       };
 
       if (reduced || dir === -1) {
@@ -2032,6 +2187,7 @@ const SIGNATURE_GOLD_SVG = `
       });
     }
 
+    syncCatchwords(current);
     measureLeavesHeight();
     window.addEventListener('resize', measureLeavesHeight);
     initRake();
