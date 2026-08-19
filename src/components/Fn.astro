@@ -1,0 +1,124 @@
+---
+// src/components/Fn.astro
+// A single footnote reference. Deliberately imports NOTHING: it takes only a
+// number, so the same component works on any article. The hover preview is
+// filled at runtime from the rendered <Endnotes /> list on the page, which
+// means there is exactly one copy of every note in the HTML and no way for
+// the preview and the note to disagree.
+interface Props {
+  /** Note number. Must have a matching <li id="fnN"> from <Endnotes />. */
+  n: number;
+  /** Set false to suppress the hover preview for one marker. */
+  preview?: boolean;
+}
+
+const { n, preview = true } = Astro.props;
+---
+
+<sup class="fn-ref" data-fn-preview={preview ? '' : undefined}
+  ><a
+    id={`fnref${n}`}
+    href={`#fn${n}`}
+    role="doc-noteref"
+    aria-label={`Note ${n}`}>{n}</a
+  ></sup
+>
+
+<style>
+  /* Specificity note: `.prose-article a` is (0,1,1) and beats a `.text-caprock`
+     utility (0,1,0), which is why these markers once carried inline styles.
+     `sup.fn-ref a` is (0,1,2) and wins on merit — no !important. */
+  sup.fn-ref {
+    position: relative;
+    font-family: var(--font-serif, inherit);
+    font-size: 0.65em;
+    margin-left: 1px;
+    line-height: 0;
+  }
+
+  sup.fn-ref a {
+    color: #9c5b3f; /* caprock */
+    font-weight: 600;
+    text-decoration: none;
+    /* a 0.65em marker is a small tap target; pad it out without moving it */
+    padding: 0.35em 0.2em;
+    margin: -0.35em -0.2em;
+  }
+
+  sup.fn-ref a:hover,
+  sup.fn-ref a:focus-visible {
+    text-decoration: underline;
+  }
+
+  /* The preview element is injected by the page script, so it is styled
+     with :global rather than through Astro's scoping. */
+  sup.fn-ref :global(.fn-pop) {
+    position: absolute;
+    bottom: 1.9em;
+    left: 50%;
+    z-index: 40;
+    display: block;
+    width: max-content;
+    max-width: min(26rem, 78vw);
+    padding: 0.75rem 0.85rem;
+    border: 1px solid var(--color-haze, #ddd8cf);
+    border-radius: 2px;
+    background: var(--color-canvas, #faf8f3);
+    box-shadow: 0 6px 24px rgb(0 0 0 / 0.1);
+    font-family: var(--font-serif, inherit);
+    font-size: 0.78rem;
+    font-weight: 400;
+    line-height: 1.5;
+    text-align: left;
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.85);
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(calc(-50% + var(--fn-nudge, 0px)), 4px);
+    transition:
+      opacity 140ms ease,
+      transform 140ms ease,
+      visibility 0s linear 140ms;
+    pointer-events: none;
+  }
+
+  sup.fn-ref :global(.fn-pop__n) {
+    float: left;
+    margin-right: 0.4rem;
+    color: #9c5b3f;
+    font-weight: 600;
+  }
+
+  sup.fn-ref :global(.fn-pop a) {
+    color: #9c5b3f;
+    word-break: break-word;
+  }
+
+  /* Pointer devices only. On touch, tapping the marker jumps to the note,
+     which is the correct behaviour there. */
+  @media (hover: hover) and (pointer: fine) {
+    sup.fn-ref:hover :global(.fn-pop),
+    sup.fn-ref:focus-within :global(.fn-pop) {
+      opacity: 1;
+      visibility: visible;
+      transform: translate(calc(-50% + var(--fn-nudge, 0px)), 0);
+      transition-delay: 0s, 0s, 0s;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    sup.fn-ref :global(.fn-pop) {
+      transition-duration: 0s;
+      transform: translate(calc(-50% + var(--fn-nudge, 0px)), 0);
+    }
+  }
+
+  @media print {
+    sup.fn-ref :global(.fn-pop) {
+      display: none;
+    }
+    sup.fn-ref a {
+      color: #000;
+      text-decoration: none;
+    }
+  }
+</style>

@@ -1,0 +1,176 @@
+---
+// src/components/CiteThis.astro
+// Sits between the article and the notes, not at the foot of the page —
+// a hundred endnotes is a long scroll and nobody would find it down there.
+//
+// On a manuscript page the citation shown is the PUBLISHED version. A reader
+// who cites the preprint when a version of record exists has cited the wrong
+// thing, so the box says so plainly rather than offering a preprint citation.
+import type { Citation } from '../lib/citation';
+import { citeChicago, citeMla, citeBibtex, doiLink, citable } from '../lib/citation';
+
+interface Props {
+  citation: Citation;
+  /** BibTeX key. Defaults to a slug built from the first author and year. */
+  bibkey?: string;
+}
+
+const { citation: c, bibkey } = Astro.props;
+
+const key =
+  bibkey ??
+  `${(c.authors[0] ?? 'anon').split(' ').pop()?.toLowerCase()}${c.publishedAs?.year ?? c.year}`;
+
+const k = citable(c);
+const doi = c.publishedAs?.doi ?? c.doi;
+
+const formats = k
+  ? [
+      { id: 'chicago', label: 'Chicago', text: citeChicago(c) },
+      { id: 'mla', label: 'MLA', text: citeMla(c) },
+      { id: 'bibtex', label: 'BibTeX', text: citeBibtex(c, key) },
+    ]
+  : [];
+---
+
+{
+  formats.length > 0 && (
+    <aside
+      class="cite-this max-w-3xl mx-auto mt-14 border border-haze rounded-sm"
+      aria-labelledby="cite-this-heading"
+    >
+      <div class="flex flex-wrap items-baseline justify-between gap-2 px-4 pt-3 pb-2 border-b border-haze">
+        <h2
+          id="cite-this-heading"
+          class="text-xs font-serif text-sage uppercase tracking-widest font-bold"
+        >
+          Cite this article
+        </h2>
+        {doi && (
+          <a href={doiLink(doi)} class="text-xs font-mono text-caprock hover:underline" rel="noopener">
+            {doi}
+          </a>
+        )}
+      </div>
+
+      <div class="px-4 py-3" data-cite-root>
+        {c.status !== 'record' && (
+          <p class="text-xs font-serif text-iron/60 mb-3 leading-relaxed">
+            Cite the published version of record, not this manuscript.
+          </p>
+        )}
+
+        <div role="tablist" aria-label="Citation format" class="flex gap-1 mb-3">
+          {formats.map((f, i) => (
+            <button
+              type="button"
+              role="tab"
+              id={`cite-tab-${f.id}`}
+              aria-controls={`cite-panel-${f.id}`}
+              aria-selected={i === 0 ? 'true' : 'false'}
+              tabindex={i === 0 ? 0 : -1}
+              class="cite-tab text-xs font-mono uppercase tracking-wide px-2 py-1 rounded-sm"
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        {formats.map((f, i) => (
+          <div
+            id={`cite-panel-${f.id}`}
+            role="tabpanel"
+            aria-labelledby={`cite-tab-${f.id}`}
+            hidden={i !== 0}
+          >
+            <p
+              class:list={[
+                'text-xs text-iron/80 leading-relaxed',
+                f.id === 'bibtex' ? 'font-mono whitespace-pre-wrap' : 'font-serif',
+              ]}
+              data-cite-text
+            >
+              {f.text}
+            </p>
+          </div>
+        ))}
+
+        <button
+          type="button"
+          class="cite-copy mt-3 text-xs font-mono uppercase tracking-wide text-caprock"
+          data-cite-copy
+        >
+          Copy citation
+        </button>
+      </div>
+    </aside>
+  )
+}
+
+<script>
+  const init = () => {
+    document.querySelectorAll<HTMLElement>('[data-cite-root]').forEach((root) => {
+      if (root.dataset.citeBound) return;
+      root.dataset.citeBound = 'true';
+
+      const tabs = Array.from(root.querySelectorAll<HTMLButtonElement>('[role="tab"]'));
+      const panels = Array.from(root.querySelectorAll<HTMLElement>('[role="tabpanel"]'));
+
+      const select = (i: number, focus = false) => {
+        tabs.forEach((t, j) => {
+          t.setAttribute('aria-selected', String(j === i));
+          t.tabIndex = j === i ? 0 : -1;
+        });
+        panels.forEach((p, j) => (p.hidden = j !== i));
+        if (focus) tabs[i].focus();
+      };
+
+      tabs.forEach((tab, i) => {
+        tab.addEventListener('click', () => select(i));
+        tab.addEventListener('keydown', (e) => {
+          const step = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+          if (!step) return;
+          e.preventDefault();
+          select((i + step + tabs.length) % tabs.length, true);
+        });
+      });
+
+      const copy = root.querySelector<HTMLButtonElement>('[data-cite-copy]');
+      copy?.addEventListener('click', async () => {
+        const active = panels.find((p) => !p.hidden);
+        const text = active?.querySelector('[data-cite-text]')?.textContent?.trim();
+        if (!text) return;
+        try {
+          await navigator.clipboard.writeText(text);
+          copy.textContent = 'Copied';
+        } catch {
+          copy.textContent = 'Press \u2318/Ctrl+C to copy';
+        }
+        window.setTimeout(() => (copy.textContent = 'Copy citation'), 2200);
+      });
+    });
+  };
+
+  init();
+  document.addEventListener('astro:after-swap', init);
+</script>
+
+<style>
+  .cite-tab {
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.55);
+    border: 1px solid transparent;
+  }
+  .cite-tab[aria-selected='true'] {
+    color: #9c5b3f;
+    border-color: var(--color-haze, #ddd8cf);
+  }
+  .cite-copy:hover {
+    text-decoration: underline;
+  }
+
+  @media print {
+    .cite-this {
+      display: none;
+    }
+  }
+</style>

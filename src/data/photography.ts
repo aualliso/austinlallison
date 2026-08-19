@@ -372,10 +372,10 @@ const galleryData: GalleryInput[] = [
       },
       {
         file: 'water/water6.jpg',
-        title: 'Dry Basin', place: 'Bailey County, Texas',
-        lat: 34.136934, lng: -103.264933,
-        specs: '5mm \u00B7 \u0192/2.8 \u00B7 1/1800s',
-        caption: '',
+        title: 'White Lake Springs', place: 'Bailey County, Texas',
+        lat: 33.928283, lng: -102.767109,
+        specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/160s',
+        caption: 'The springs that occasionally feed White Lake in Bailey County generate these narrow meanders of living water that temporarily sustain life at the lake.',
       },
       // ── untitled below: an empty title marks a plate as in
       // preparation. The coordinates and specs here are still the
@@ -386,44 +386,56 @@ const galleryData: GalleryInput[] = [
         lat: 34.136934, lng: -103.264933,
         specs: '5mm \u00B7 \u0192/2.8 \u00B7 1/1800s',
         x: 1510, y: 550, w: 400,
-        caption: 'One of the consistent springs on the old Fort Sumner Trail, Portales Spring stands dry today, but the location along Yellow House Draw is marked by white caliche deposits and a small depression in the surrounding terrain. Billy the Kid stayed at the spring in 1880.',
+        caption: 'One of the consistent water sources on the old Fort Sumner Trail, Portales Spring stands dry today, but the location along Yellow House Draw is marked by white caliche deposits and a small depression in the surrounding terrain. Billy the Kid stayed at the spring in 1880.',
       },
       {
         file: 'water/water8.jpg',
-        title: '', place: '',
-        lat: 34.090618, lng: -102.908060,
-        specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/20000s',
-        x: 460, y: 720, w: 400,
-        caption: ''
+        title: 'Coyote Lake', place: 'Bailey County, Texas',
+        lat: 34.084710, lng: -102.906476,
+        specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/2000s',
+        x: 460, y: 720, w: 300,
+        caption: 'Coyote Lake, originally named Agua Negra, is one of the largest salt lakes on the Llano Estacado. Ranald Mackenzie camped here in the 1870s on his foray across the plains. Another plate in this series shows the water coloration, a potential indication of how its original name was derived.'
       },
       {
         file: 'water/water9.jpg',
-        title: '', place: '',
+        title: 'Earth\'s Canvas in Texas', place: 'Bailey County, Texas',
         lat: 33.991164, lng: -102.708448,
-        specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
-        x: 1310, y: 880, w: 400,
+        specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/800s',
+        w: 300,
+        caption:'The rust-colored water bleeds into the vibrant green shoreline, separated by chalky white salt flats that look like brushstrokes from above, showcasing the raw, abstract beauty of a receding playa lake.'
       },
       {
         file: 'water/water12.jpg',
-        title: '', place: '',
+        title: 'Above the Draw', place: 'Bailey County, Texas',
         lat: 33.991164, lng: -102.708448,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
         x: 395, y: 470, w: 300,
+        caption:'The vast agricultural landscape of Texas is illustrated here showcasing the distinct, muddy path of the Blackwater Draw. Although flow is highly irregular, still collects in the draw, creating a temporary water source for wildlife and livestock.'
       },
       {
         file: 'water/water13.jpg',
-        title: '', place: '',
-        lat: 33.991164, lng: -102.708448,
-        specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
+        title: 'Evaporating Hues', place: 'Bailey County, Texas',
+        lat: 33.979772, lng: -102.720094,
+        specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/2150s',
         x: 395, y: 990, w: 300,
+        caption:'As water evaporates out of Pauls Lake, it leaves behind a sprawling, cracked expanse of pink and reddish salt deposits, ringed by a bright white mineral shoreline that cuts sharply into the surrounding dry plains.'
       },
       {
         file: 'water/water14.jpg',
-        title: '', place: '',
+        title: 'Tierra Blanca Crossing', place: 'Parmer County, Texas',
         lat: 33.991164, lng: -102.708448,
-        specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
+        specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/400s',
         x: 795, y: 1020, w: 300,
+        caption: 'Tierra Blanca Creek after a rain. A lone tree stands as a sentinel beside the muddy, receded creek bed, highlighting the seasonal, ephemeral nature of these vital historical waterways.'
       },
+      {
+        file: 'water/water31.jpg',
+        title: 'Aermotor on the Plains', place: 'Lamb County, Texas',
+        lat: 33.991164, lng: -102.708448,
+        specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/1250s',
+        w: 300,
+        caption: 'Windmills mark water on the Llano Estacado in a different way. The Aermotor windmill, a common sight across the plains, extracts water from underground aquifers to the surface, providing vital water for both livestock and agriculture in this arid region.'
+      }
     ],
   },
 ];

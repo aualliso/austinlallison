@@ -1,0 +1,117 @@
+---
+// src/components/Figure.astro
+// Numbered figure, shared by every publication page.
+//
+// Images: if the file exists under src/assets/publications/<set.dir>/ it goes
+// through astro:assets (intrinsic width/height, srcset, modern formats). If
+// not, it falls back to /images/<set.dir>/ with lazy/async decoding. So this
+// works whether or not an article's images have been moved into src/assets.
+import { Image } from 'astro:assets';
+import type { FigureSet } from '../lib/citation';
+import { figure, figureNumber } from '../lib/citation';
+
+interface Props {
+  set: FigureSet;
+  id: string;
+  /** the lead figure sits above the article and is eagerly loaded */
+  lead?: boolean;
+  class?: string;
+}
+
+const { set, id, lead = false, class: className } = Astro.props;
+const f = figure(set, id);
+const n = figureNumber(set, id);
+
+// One static glob covers every article; the lookup key is built per set.
+const assets = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/publications/**/*.{png,jpg,jpeg,webp,avif}',
+  { eager: true }
+);
+
+const resolve = (file: string) =>
+  assets[`/src/assets/publications/${set.dir}/${file}`]?.default;
+
+const sizeClass = {
+  xs: 'max-w-xs',
+  sm: 'max-w-sm',
+  md: 'max-w-md',
+  lg: 'max-w-lg',
+  xl: 'max-w-xl',
+  '2xl': 'max-w-2xl',
+  '3xl': 'max-w-3xl',
+}[f.size];
+
+const multi = f.plates.length > 1;
+const sizes = multi
+  ? '(max-width: 640px) 88vw, 30vw'
+  : '(max-width: 768px) 88vw, 720px';
+const widths = multi ? [320, 480, 720] : [480, 800, 1200];
+---
+
+<figure
+  id={`fig-${f.id}`}
+  class:list={[
+    'figure',
+    sizeClass,
+    'mx-auto',
+    lead ? 'mb-10' : '!my-8',
+    className,
+  ]}
+>
+  <div class:list={[multi && 'grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4']}>
+    {
+      f.plates.map((plate) => {
+        const asset = resolve(plate.file);
+        return (
+          <div>
+            {asset ? (
+              <Image
+                src={asset}
+                alt={plate.alt ?? ''}
+                widths={widths}
+                sizes={sizes}
+                loading={lead ? 'eager' : 'lazy'}
+                decoding="async"
+                class="w-full border border-haze rounded-sm shadow-sm"
+              />
+            ) : (
+              <img
+                src={`/images/${set.dir}/${plate.file}`}
+                alt={plate.alt ?? ''}
+                loading={lead ? 'eager' : 'lazy'}
+                decoding="async"
+                class="w-full border border-haze rounded-sm shadow-sm"
+              />
+            )}
+            {plate.label && (
+              <p class="text-[0.65rem] font-mono uppercase tracking-widest text-iron/50 text-center mt-1.5">
+                {plate.label}
+              </p>
+            )}
+          </div>
+        );
+      })
+    }
+  </div>
+
+  <figcaption class="text-xs font-serif text-iron/60 italic text-center mt-2 leading-snug">
+    <span class="not-italic font-medium text-iron/70">Fig.&nbsp;{n}.</span>{' '}
+    <span set:html={f.caption} />
+    {f.credit && <br />}
+    {f.credit && <span class="not-italic" set:html={f.credit} />}
+  </figcaption>
+</figure>
+
+<style>
+  .figure {
+    scroll-margin-top: var(--anchor-offset, 7.5rem);
+  }
+  .figure:target figcaption {
+    color: #9c5b3f;
+  }
+  @media print {
+    .figure {
+      break-inside: avoid;
+    }
+  }
+</style>

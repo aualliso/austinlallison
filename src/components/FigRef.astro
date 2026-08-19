@@ -1,0 +1,39 @@
+---
+// src/components/FigRef.astro
+// An in-text pointer to a numbered figure.
+import type { FigureSet } from '../lib/citation';
+import { figureNumber } from '../lib/citation';
+
+interface Props {
+  set: FigureSet;
+  id: string;
+  /** render bare "Fig. 4" instead of "(Fig. 4)" */
+  bare?: boolean;
+}
+
+const { set, id, bare = false } = Astro.props;
+const n = figureNumber(set, id);
+---
+
+<a href={`#fig-${id}`} class="fig-ref" aria-label={`Go to figure ${n}`}
+  >{bare ? '' : '('}Fig.&nbsp;{n}{bare ? '' : ')'}</a
+>
+
+<style>
+  .fig-ref {
+    font-size: 0.85em;
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.55);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .fig-ref:hover,
+  .fig-ref:focus-visible {
+    color: #9c5b3f;
+    text-decoration: underline;
+  }
+  @media print {
+    .fig-ref {
+      color: #000;
+    }
+  }
+</style>

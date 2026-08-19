@@ -1,0 +1,134 @@
+---
+// src/components/Endnotes.astro
+// Renders the notes list AND owns the footnote-preview behaviour, since the
+// list is the single source of every note's text.
+import type { Note } from '../lib/citation';
+
+interface Props {
+  notes: Note[];
+  heading?: string;
+  headingId?: string;
+}
+
+const { notes, heading = 'Notes', headingId = 'notes' } = Astro.props;
+---
+
+<section
+  class="max-w-3xl mx-auto mt-16 pt-8 border-t border-haze"
+  role="doc-endnotes"
+  aria-labelledby={headingId}
+>
+  <h2
+    id={headingId}
+    class="text-sm font-serif text-sage uppercase tracking-widest font-bold mb-4"
+  >
+    {heading}
+  </h2>
+
+  <ol class="endnotes text-sm font-serif text-iron/80 leading-relaxed space-y-2 list-decimal list-outside pl-5">
+    {
+      notes.map((n) => (
+        <li id={`fn${n.n}`} value={n.n} role="doc-endnote">
+          <span data-note-body set:html={n.html} />{' '}
+          <a
+            href={`#fnref${n.n}`}
+            role="doc-backlink"
+            class="endnote-back no-underline hover:underline"
+            aria-label={`Return to note ${n.n} in the text`}
+          >
+            <span aria-hidden="true">&uarr;</span>
+          </a>
+        </li>
+      ))
+    }
+  </ol>
+</section>
+
+<script>
+  /* Footnote previews. The text is cloned out of the rendered notes list, so
+     nothing is duplicated in the HTML and the two can never drift apart.
+     The clone is aria-hidden — the marker already links to the real note, so
+     announcing it twice would be worse than not previewing at all. */
+  const PAD = 12;
+
+  const build = () => {
+    const notes = document.querySelector('[role="doc-endnotes"]');
+    if (!notes) return;
+
+    document.querySelectorAll<HTMLElement>('sup.fn-ref').forEach((sup) => {
+      if (sup.dataset.fnBound) return;
+      sup.dataset.fnBound = 'true';
+      if (!('fnPreview' in sup.dataset)) return;
+
+      const link = sup.querySelector('a[href^="#fn"]');
+      const id = link?.getAttribute('href')?.slice(1);
+      const body = id
+        ? notes.querySelector(`#${CSS.escape(id)} [data-note-body]`)
+        : null;
+      if (!body) return;
+
+      const pop = document.createElement('span');
+      pop.className = 'fn-pop';
+      pop.setAttribute('aria-hidden', 'true');
+
+      const num = document.createElement('span');
+      num.className = 'fn-pop__n';
+      num.textContent = id!.replace('fn', '');
+      pop.append(num, body.cloneNode(true));
+      sup.append(pop);
+
+      const nudge = () => {
+        pop.style.setProperty('--fn-nudge', '0px');
+        const r = pop.getBoundingClientRect();
+        let dx = 0;
+        if (r.left < PAD) dx = PAD - r.left;
+        else if (r.right > window.innerWidth - PAD)
+          dx = window.innerWidth - PAD - r.right;
+        if (dx) pop.style.setProperty('--fn-nudge', `${Math.round(dx)}px`);
+      };
+
+      sup.addEventListener('pointerenter', nudge);
+      sup.addEventListener('focusin', nudge);
+    });
+  };
+
+  build();
+  document.addEventListener('astro:after-swap', build);
+</script>
+
+<style>
+  /* Both jump directions clear the sticky site header. One knob. */
+  :global([id^='fn']) {
+    scroll-margin-top: var(--anchor-offset, 7.5rem);
+  }
+
+  .endnote-back {
+    color: #9c5b3f; /* caprock */
+    margin-left: 0.25rem;
+  }
+
+  .endnotes :global(a) {
+    color: #9c5b3f;
+    word-break: break-word;
+  }
+
+  /* Briefly mark the note you jumped to, so a long list doesn't
+     make you hunt for where you landed. */
+  .endnotes li:target {
+    background: rgb(from #9c5b3f r g b / 0.07);
+    box-shadow: -0.5rem 0 0 rgb(from #9c5b3f r g b / 0.07);
+    border-radius: 1px;
+  }
+
+  @media print {
+    .endnote-back {
+      display: none;
+    }
+    .endnotes {
+      font-size: 9pt;
+    }
+    .endnotes li {
+      break-inside: avoid;
+    }
+  }
+</style>

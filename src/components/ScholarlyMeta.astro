@@ -1,0 +1,126 @@
+---
+// src/components/ScholarlyMeta.astro
+// MUST be rendered inside <head>. Google Scholar ignores citation_* tags that
+// appear in the body — hence the named head slot in RootLayout.
+//
+// Status matters here. A version-of-record page emits the full journal set so
+// Scholar indexes it as the citable article. A manuscript page deliberately
+// emits almost none of it: two pages advertising the same journal, volume and
+// page range would compete, and the one that should win is the published one.
+// The manuscript instead points at the record via dc.relation and JSON-LD.
+import type { Citation } from '../lib/citation';
+import { doiLink, pages } from '../lib/citation';
+
+interface Props {
+  citation: Citation;
+}
+
+const c = Astro.props.citation;
+const base = Astro.site ?? Astro.url;
+const canonical = new URL(c.canonicalPath, base).toString();
+const isRecord = c.status === 'record';
+const relatedUrl = c.publishedAs
+  ? new URL(c.publishedAs.url, base).toString()
+  : '';
+
+const jsonLd: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'ScholarlyArticle',
+  headline: c.title,
+  name: c.title,
+  author: c.authors.map((name) => ({
+    '@type': 'Person',
+    name,
+    ...(c.orcid ? { identifier: c.orcid, url: c.orcid } : {}),
+  })),
+  url: canonical,
+  inLanguage: c.language,
+};
+
+if (isRecord) {
+  jsonLd.datePublished = `${c.year}-01`;
+  jsonLd.isPartOf = {
+    '@type': 'PublicationIssue',
+    issueNumber: c.issue,
+    isPartOf: {
+      '@type': 'PublicationVolume',
+      volumeNumber: c.volume,
+      isPartOf: {
+        '@type': 'Periodical',
+        name: c.journal,
+        publisher: { '@type': 'Organization', name: c.publisher },
+        ...(c.issn ? { issn: c.issn } : {}),
+      },
+    },
+  };
+  jsonLd.pageStart = c.firstPage;
+  jsonLd.pageEnd = c.lastPage;
+  jsonLd.identifier = doiLink(c.doi);
+  jsonLd.sameAs = doiLink(c.doi);
+  jsonLd.publisher = { '@type': 'Organization', name: c.publisher };
+} else {
+  jsonLd.creativeWorkStatus = 'Submitted manuscript';
+  if (c.publishedAs) {
+    // "This work was published as …" — a relation, not an identity claim.
+    jsonLd.workExample = {
+      '@type': 'ScholarlyArticle',
+      name: c.publishedAs.title,
+      identifier: doiLink(c.publishedAs.doi),
+      sameAs: doiLink(c.publishedAs.doi),
+      url: relatedUrl,
+      isPartOf: {
+        '@type': 'Periodical',
+        name: c.publishedAs.journal,
+      },
+      pageStart: c.publishedAs.firstPage,
+      pageEnd: c.publishedAs.lastPage,
+      datePublished: `${c.publishedAs.year}-01`,
+    };
+  }
+}
+---
+
+<link rel="canonical" href={canonical} />
+
+<meta name="citation_title" content={c.title} />
+{c.authors.map((a) => <meta name="citation_author" content={a} />)}
+<meta name="citation_language" content={c.language} />
+
+{
+  isRecord && (
+    <>
+      <meta name="citation_journal_title" content={c.journal} />
+      <meta name="citation_journal_abbrev" content={c.journalAbbrev} />
+      <meta name="citation_publisher" content={c.publisher} />
+      <meta name="citation_volume" content={c.volume} />
+      <meta name="citation_issue" content={c.issue} />
+      <meta name="citation_firstpage" content={String(c.firstPage)} />
+      <meta name="citation_lastpage" content={String(c.lastPage)} />
+      <meta name="citation_publication_date" content={`${c.year}/01`} />
+      <meta name="citation_doi" content={c.doi} />
+      <meta name="citation_abstract_html_url" content={canonical} />
+      {c.issn && <meta name="citation_issn" content={c.issn} />}
+    </>
+  )
+}
+
+{!isRecord && <meta name="citation_online_date" content={`${c.year}`} />}
+
+<meta name="dc.title" content={c.title} />
+{c.authors.map((a) => <meta name="dc.creator" content={a} />)}
+<meta name="dc.type" content="Text.Article" />
+<meta
+  name="dc.identifier"
+  content={isRecord ? doiLink(c.doi) : canonical}
+/>
+{
+  c.publishedAs && (
+    <meta
+      name="dc.relation"
+      content={`Published as: ${c.publishedAs.title}. ${c.publishedAs.journal} ${c.publishedAs.volume}, no. ${c.publishedAs.issue} (${c.publishedAs.monthYear}): ${pages(c.publishedAs.firstPage, c.publishedAs.lastPage)}. ${doiLink(c.publishedAs.doi)}`}
+    />
+  )
+}
+{c.rights && <meta name="dc.rights" content={c.rights} />}
+
+<script type="application/ld+json" set:html={JSON.stringify(jsonLd)} is:inline />

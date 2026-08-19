@@ -432,6 +432,55 @@
 //      NOT DONE, deliberately: no procedural or invented filler stars. The
 //      whole claim of this layer is that every point is a real star at its
 //      real bearing, and one fake dot forfeits it.
+//
+//  18. THE WHEEL GETS A THIRD DIMENSION (2026-08-19). The wheel was drawn as
+//      a FLAT DISC: rim, hub ring and sails all concentric on (11,6), the
+//      whole assembly foreshortened by one shared scaleX. A real Aermotor
+//      wheel is a shallow DISH, concave into the wind, and the sails are
+//      pitched OUT of its plane - that pitch is the entire difference
+//      between a fan and a wheel. Neither fact was in the drawing, so no
+//      matter how far the head yawed the wheel stayed a squashed circle.
+//
+//      Per-sail modelling is not the answer and was rejected: at the largest
+//      breakpoint a sail renders about 5.5 x 1.0px (28px svg / 22 units,
+//      x1.25 --windmill-scale, x1.3 --wheel-scale = 2.07 px/unit), under up
+//      to 1.2px of dust blur at 0.55 opacity. Light and shade INSIDE a sail
+//      lands below one pixel and reads as a rendering fault, not as form -
+//      and it would put filled mass in a header made of line work. Worse,
+//      the rotor spins: tone drawn into the sails rotates WITH them, when
+//      real light is fixed in space and the sails pass through it.
+//
+//      So the dimension is carried by the wheel as a whole, in two parts.
+//
+//      THE HUB IS SET BACK FROM THE RIM. Everything on the back plane -
+//      gearbox, hub ring, hub cap - moved into #windmill-hub, which
+//      translates by --hub-offset toward the tail (downwind, away from the
+//      concave face). Zero face-on, largest edge-on. That lateral parallax
+//      between rim and hub is the depth cue, and it is the one that survives
+//      at 17px because it operates on the whole object rather than inside a
+//      sail. The translate is divided by the rim's own scale in JS, because
+//      it sits INSIDE #windmill-head's scaleX and would otherwise be crushed
+//      exactly when it is needed most.
+//
+//      THE SAILS NO LONGER COLLAPSE WITH THE RIM. The 26deg of lead in the
+//      sail paths is IN-PLANE skew; a real sail is also tilted out of the
+//      plane, so as the wheel turns edge-on the rim shrinks toward a line
+//      while the sails rotate toward presenting their faces. #windmill-rotor
+//      (sails only now) sits inside a new #windmill-sail-plane carrying
+//      --sail-spread, so the sail band stays wider than the rim ellipse -
+//      about 15% at 45deg of yaw, 25% at 60deg, and floored so the band
+//      never becomes a hairline. The rim circle came out of the rotor
+//      entirely: it is centred on the axis, so spinning it was a no-op, and
+//      keeping it there forced it to share the sails' foreshortening.
+//
+//      STILL A STYLIZED PROJECTION, and note 16's caveat stands. A scaleX is
+//      not the true projection of a pitched surface - it reproduces the
+//      silhouette's envelope and distorts inside it. At this size the
+//      envelope is all that resolves.
+//
+//      NOT DONE: giving the RIM visible thickness. A rim hoop's axial depth
+//      is a few inches on an 8-foot wheel, genuinely sub-pixel here, and
+//      faking it larger reads as a drawing error rather than as depth.
 
 // The benchmark plate under the name no longer carries a place/elevation
 // label — decided it was redundant with the footer's own elevation rail
@@ -904,20 +953,55 @@ const isDev = import.meta.env.DEV;
              units off a hub at y=6. Push it further only by adding
              headroom to the svg's own viewBox, not by raising this alone. -->
         <g id="windmill-wheel">
-        <!-- THE HEAD. Carries only the rotor's own foreshortening now. -->
+        <!-- THE HEAD. Carries the WHEEL PLANE's foreshortening - the rim, and
+             the plane the hub ellipse lies parallel to. The sails no longer
+             take it unmodified; see #windmill-sail-plane below. -->
         <g id="windmill-head">
-          <!-- The gearbox, drawn before the wheel so the sails cross in front
-               of it - which is where it actually sits. Kept symmetric about
-               the mast so it needs no mirroring when the tail changes sides. -->
-          <path d="M9.9 4.9 H12.1 V7.1 H9.9 Z"
-                fill="currentColor" stroke="none" opacity="0.5" />
 
-          <g id="windmill-rotor">
-            <circle cx="11" cy="6" r="4.1" stroke-width="0.55" opacity="0.75" />
+          <!-- THE HUB ASSEMBLY, SET BACK FROM THE RIM PLANE (2026-08-19).
+               An Aermotor wheel is a shallow dish, concave into the wind: the
+               rim stands forward of the hub by roughly a foot on an 8-foot
+               wheel, and the gearbox sits further back still. Everything on
+               that back plane therefore shifts laterally against the rim as
+               the head yaws, and that parallax is what makes the wheel read
+               as an object rather than a squashed circle. It was drawn
+               concentric with the rim before, so the wheel stayed flat no
+               matter how far it turned. --hub-offset carries the shift,
+               toward the tail (downwind, away from the concave face).
+
+               Still drawn BEFORE the sails, for the reason the gearbox
+               always was: the sails cross in FRONT of the hub, because that
+               is where they physically are. The hub cap moved inside this
+               group and so moved behind the sails with it - it used to paint
+               last, on top of everything, which was only right while the hub
+               had no depth to be behind. -->
+          <g id="windmill-hub">
+            <path d="M9.9 4.9 H12.1 V7.1 H9.9 Z"
+                  fill="currentColor" stroke="none" opacity="0.5" />
             <circle cx="11" cy="6" r="1.7" stroke-width="0.3" opacity="0.45" />
-            <!-- Twelve sails, each leading its own radius by 26deg - the pitch
-                 that makes a wheel a fan. Hub ring to rim, never through the
-                 centre. -->
+            <circle cx="11" cy="6" r="0.85" fill="currentColor" stroke="none" />
+          </g>
+
+          <!-- THE RIM. Lifted out of #windmill-rotor: it is a circle centred
+               on the axis, so rotating it was a no-op, and leaving it inside
+               forced the sails to share its foreshortening exactly - which
+               is the thing being undone here. -->
+          <circle cx="11" cy="6" r="4.1" stroke-width="0.55" opacity="0.75" />
+
+          <!-- THE SAIL PLANE. The sails are pitched OUT of the wheel plane,
+               so they do not foreshorten at the rim's rate: as the wheel
+               turns edge-on the rim shrinks toward a line while the sails
+               rotate toward showing their faces, and the annulus becomes a
+               band of slats. --sail-spread is the ratio between the two, so
+               this group nests inside the head's scaleX rather than
+               replacing it. The rotation stays on the inner group, so the
+               sails still spin as a circle and are squashed afterwards. -->
+          <g id="windmill-sail-plane">
+          <g id="windmill-rotor">
+            <!-- Twelve sails, each leading its own radius by 26deg - the
+                 in-plane half of the pitch that makes a wheel a fan; the
+                 out-of-plane half is --sail-spread. Hub ring to rim, never
+                 through the centre. -->
             <g stroke-width="0.5" opacity="0.9">
               <path d="M15.10 6.00 L12.53 6.75" />
               <path d="M14.55 8.05 L11.95 7.41" />
@@ -933,8 +1017,7 @@ const isDev = import.meta.env.DEV;
               <path d="M14.55 3.95 L12.70 5.88" />
             </g>
           </g>
-
-          <circle cx="11" cy="6" r="0.85" fill="currentColor" stroke="none" />
+          </g>
         </g>
         </g>
       </g>
@@ -965,7 +1048,7 @@ const isDev = import.meta.env.DEV;
           set:html={signatureInline}
         />
         <span class="flex flex-col items-start justify-end">
-          <span class="landmark-name font-serif font-[400] whitespace-nowrap" transition:name="site-name">
+          <span class="landmark-name font-serif font-[500] whitespace-nowrap" transition:name="site-name">
             Austin Allison
           </span>
           <span class="station-plate flex items-end gap-1.5" transition:name="site-elevation">
@@ -2335,6 +2418,33 @@ const isDev = import.meta.env.DEV;
   let windFromDeg: number | null = null;
   let windMph: number | null = null;
 
+  /* ---- wheel geometry (2026-08-19) ---------------------------------------
+     Three numbers describing the wheel as a solid rather than a disc. All in
+     the svg's own user units, so they scale with --windmill-scale and
+     --wheel-scale without being touched.
+
+     WHEEL_DISH — how far the hub sits behind the rim plane. RIM_R 4.1 units
+     is half of an 8ft wheel, so a unit is very close to a foot and 0.9 is a
+     ~1ft dish plus the gearbox behind it. This is the dial for how strongly
+     the wheel reads as three-dimensional; 0 restores the flat disc.
+
+     SAIL_PITCH_DEG / SAIL_CHORD — a sail's chord is roughly its
+     circumferential width, which at twelve sails is about the rim spacing
+     (2*pi*4.1/12 = 2.15 units), and it is tilted out of the wheel plane.
+     Its axial half-extent is therefore 0.5 * chord * sin(pitch), and that is
+     the part of a sail that stays visible as the rim collapses.
+
+     SAIL_MIN_SPREAD floors the sail band the way 0.16 floors the rim, and
+     sits above it on purpose: edge-on, a real wheel is a band of slats
+     around a narrow hoop, not a single hairline. */
+  const RIM_R = 4.1;
+  const WHEEL_DISH = 0.9;
+  const SAIL_PITCH_DEG = 34;
+  const SAIL_CHORD = 2.15;
+  const SAIL_AXIAL_HALF = 0.5 * SAIL_CHORD * Math.sin((SAIL_PITCH_DEG * Math.PI) / 180);
+  const ROTOR_MIN_SCALE = 0.16;
+  const SAIL_MIN_SPREAD = 0.26;
+
   async function applyWeather() {
     const svg = document.getElementById('windmill') as HTMLElement | null;
     let mph: number | null = debugWindMph();
@@ -2419,10 +2529,42 @@ const isDev = import.meta.env.DEV;
          hook for wind SPEED and none for DIRECTION, so the yaw had never been
          steerable on demand - which is why a straightforward sign error
          survived several passes. Same gate, same idiom, added above.) */
+      /* THE WHEEL IS A DISH, NOT A DISC (2026-08-19). Two more surfaces come
+         off the same psi, both of them depth cues that the old single
+         scaleX could not express - see note 18.
+
+         --sail-spread. The rim lies IN the wheel plane and foreshortens by
+         |cos psi|. A sail is pitched out of that plane, so it keeps an
+         apparent width of SAIL_AXIAL_HALF * |sin psi| after the in-plane
+         part has gone. The sail band's envelope is the sum; dividing by the
+         rim's own scale gives the ratio, because #windmill-sail-plane nests
+         INSIDE #windmill-head's scaleX rather than replacing it. Face-on
+         this is 1.000 and the drawing is unchanged.
+
+         --hub-offset. The hub sits WHEEL_DISH behind the rim, so it shifts
+         sideways by WHEEL_DISH * sin psi as the head turns - in the same
+         direction the vane trails, which is -sin(psi) in this projection
+         (see the sign note above; screen-right is west). Divided by the
+         rim's scale for the same nesting reason: #windmill-hub is inside
+         #windmill-head, so its translate is multiplied by that scaleX on the
+         way out, and without the division the parallax would be crushed to
+         nothing at exactly the yaw that shows it best. */
       if (windFromDeg != null) {
         const psi = ((windFromDeg - 180) * Math.PI) / 180;
-        svg.style.setProperty('--rotor-scale-x', Math.max(0.16, Math.abs(Math.cos(psi))).toFixed(3));
-        svg.style.setProperty('--tail-scale-x', Math.max(0.12, Math.abs(Math.sin(psi))).toFixed(3));
+        const cosPsi = Math.abs(Math.cos(psi));
+        const sinPsi = Math.abs(Math.sin(psi));
+        const rimScale = Math.max(ROTOR_MIN_SCALE, cosPsi);
+        const sailScale = Math.max(
+          SAIL_MIN_SPREAD,
+          (RIM_R * cosPsi + SAIL_AXIAL_HALF * sinPsi) / RIM_R
+        );
+        svg.style.setProperty('--rotor-scale-x', rimScale.toFixed(3));
+        svg.style.setProperty('--sail-spread', (sailScale / rimScale).toFixed(3));
+        svg.style.setProperty(
+          '--hub-offset',
+          `${(-WHEEL_DISH * Math.sin(psi) / rimScale).toFixed(2)}px`
+        );
+        svg.style.setProperty('--tail-scale-x', Math.max(0.12, sinPsi).toFixed(3));
         svg.style.setProperty('--head-flip', Math.sin(psi) <= 0 ? '1' : '-1');
       }
     }
@@ -2673,6 +2815,11 @@ const isDev = import.meta.env.DEV;
     --belt-shadow: #6E7C93; /* Earth's shadow — cool, desaturated, low */
     --belt-pink: #E2A0A4;   /* the Belt itself — backscatter, sitting on top */
     --rotor-scale-x: 1;
+    /* Wheel-as-a-dish, both zero-effect until a real bearing arrives: no
+       hub parallax and sails at exactly the rim's scale is the face-on
+       case, which is also what the wheel is drawn as. */
+    --hub-offset: 0px;
+    --sail-spread: 1;
     /* Pre-fetch, and where a failed fetch settles: wheel face-on with the
        vane edge-on behind it, i.e. a wind out of the south - which is the
        prevailing direction here, so the fallback orientation is the
@@ -3367,6 +3514,31 @@ const isDev = import.meta.env.DEV;
     transform-origin: 11px 6px;
     transition: transform 2s ease-out;
   }
+
+  /* THE DISH, PART ONE: the hub sits behind the rim plane, so it slides
+     against the rim as the head turns. --hub-offset already carries the
+     division by --rotor-scale-x (see the JS), because this translate is
+     applied INSIDE #windmill-head's scaleX and comes out multiplied by it.
+     No transform-origin needed - a translate doesn't have one. */
+  #windmill-hub {
+    transform: translateX(var(--hub-offset, 0px));
+    transition: transform 2s ease-out;
+  }
+
+  /* THE DISH, PART TWO: the sails are pitched out of the wheel plane, so
+     they don't shrink at the rim's rate. This multiplies the head's scaleX
+     rather than replacing it, which is why the JS sends a ratio and not an
+     absolute scale. It is 1 face-on, so the drawing is untouched there.
+
+     Both this and the head transition over the same 2s with the same easing
+     and start together, so the pair stays coherent while the wind shifts.
+     Their product isn't the eased product exactly, but at a real yaw rate
+     over a 17px wheel that's far under a pixel. */
+  #windmill-sail-plane {
+    transform: scaleX(var(--sail-spread, 1));
+    transform-origin: 11px 6px;
+    transition: transform 2s ease-out;
+  }
   #windmill-tail {
     transform: scaleX(calc(var(--tail-scale-x, 0.12) * var(--head-flip, 1)));
     transform-origin: 11px 6px;
@@ -3600,7 +3772,7 @@ const isDev = import.meta.env.DEV;
 
   /* --- Mile markers ------------------------------------------------------- */
   .marker-label {
-    font-size: 13px;
+    font-size: 13.5px;
     color: var(--ink-muted);
     padding-bottom: 0.35rem;
     transform: translateY(0);
@@ -3644,7 +3816,7 @@ const isDev = import.meta.env.DEV;
   @media (min-width: 768px) {
     #horizon-header { padding-top: 3.5rem; }
     .signature-img  { height: 2.75rem; }
-    .landmark-name  { font-size: 1.36rem; }
+    .landmark-name  { font-size: 1.5rem; }
     .station-meta   { font-size: 9px; }
     .marker-label   { font-size: 15px; }
   }
@@ -3931,7 +4103,7 @@ const isDev = import.meta.env.DEV;
   @media (prefers-reduced-motion: reduce) {
     #horizon-header, #sky-base, #sky-frost, #sky-dusk, #sun-wrap, #horizon-sun,
     #sun-rays, #sun-bloom, #horizon-rim-light, #haze-warm-overlay, #belt-of-venus,
-    #windmill-head, #windmill-tail,
+    #windmill-head, #windmill-tail, #windmill-hub, #windmill-sail-plane,
     #night-sky, #horizon-moon, .star-point, #windmill, #windmill-rotor, #crane-flock,
     #horizon-haze, #the-horizon, .horizon-path, .horizon-ground, .far-plane,
     .signature-img, .landmark-name, .landmark, .station-plate, .station-meta,
