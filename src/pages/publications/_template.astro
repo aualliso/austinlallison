@@ -1,0 +1,220 @@
+---
+// TEMPLATE — copy to src/pages/publications/<slug>.astro and edit.
+// The leading underscore keeps Astro from building this as a route, so it is
+// safe to leave in place. See src/data/publications/README.txt.
+//
+// Delete the imports you don't use: Figure/FigRef for an article with no
+// images, Fn/Endnotes for one with no notes, CiteThis for anything that
+// isn't citable.
+import RootLayout from '../../layouts/RootLayout.astro';
+import ScholarlyMeta from '../../components/ScholarlyMeta.astro';
+import Figure from '../../components/Figure.astro';
+import FigRef from '../../components/FigRef.astro';
+import Fn from '../../components/Fn.astro';
+import CiteThis from '../../components/CiteThis.astro';
+import Endnotes from '../../components/Endnotes.astro';
+import {
+  CITATION,
+  NOTES,
+  FIGURES,
+  pageRange,
+  doiUrl,
+} from '../../data/publications/TODO-slug';
+
+const c = CITATION;
+
+// The abstract lives here rather than inline because it feeds THREE places:
+// the visible abstract below, RootLayout's `description` (search snippets and
+// link previews), and the schema.org abstract in ScholarlyMeta.
+// Use the journal's own abstract where there is one.
+const ABSTRACT =
+  'TODO first sentence of the abstract. ' +
+  'TODO second sentence.';
+---
+
+<RootLayout
+  title={`${c.title} | ${c.authors[0]}`}
+  description={ABSTRACT}
+  image="/images/TODO-folder-name/TODO-lead-image.jpg"
+>
+  <Fragment slot="head">
+    <ScholarlyMeta citation={c} />
+  </Fragment>
+
+  <article class="max-w-4xl mx-auto py-6 text-iron" itemscope itemtype="https://schema.org/ScholarlyArticle">
+
+    <!-- Breadcrumb Anchor Navigation -->
+    <div class="mb-8">
+      <a href="/publications" class="text-sm font-serif text-sage hover:text-caprock transition-colors lowercase tracking-wide">
+        &larr; return to repository index
+      </a>
+    </div>
+
+    <!-- Masthead: byline, citation, abstract -->
+    <header class="space-y-6 mb-12">
+      <div class="space-y-2">
+        <!-- Change the eyebrow to match: "Peer-Reviewed Article",
+             "Peer-Reviewed Article &bull; Version of Record",
+             "Submitted Manuscript", "Essay", etc. -->
+        <span class="text-sm font-serif text-caprock font-semibold uppercase tracking-wider block">Peer-Reviewed Article</span>
+
+        <h1 class="font-serif text-2xl md:text-4xl font-medium tracking-tight text-iron leading-tight" itemprop="headline">
+          {c.displayTitle ?? c.title}
+        </h1>
+
+        {c.subtitle && (
+          <p class="font-serif text-lg md:text-xl text-iron/70 italic leading-snug max-w-2xl">
+            {c.subtitle}
+          </p>
+        )}
+
+        <p class="font-serif text-base text-iron/80 pt-1" itemprop="author" itemscope itemtype="https://schema.org/Person">
+          <span itemprop="name">{c.authors[0]}</span>
+          {c.orcid && (
+            <a
+              href={c.orcid}
+              class="ml-2 text-xs font-mono text-sage hover:text-caprock transition-colors align-middle"
+              rel="noopener me"
+              itemprop="identifier"
+            >ORCID</a>
+          )}
+        </p>
+
+        <!-- Citation line. Use the DOI version when there is a DOI:
+             Published in <a href={doiUrl()} class="italic font-medium text-caprock hover:text-sage transition-colors" rel="noopener">{c.journal}</a> &bull; ...
+             Drop ", No. {c.issue}" for journals with one annual volume. -->
+        <p class="text-sm font-serif text-iron/60 pt-1">
+          Published in <span class="italic font-medium text-caprock">{c.journal}</span> &bull; Vol. {c.volume} ({c.year}), pp. {pageRange()}
+        </p>
+      </div>
+
+      <!-- Version switcher. Renders only when the data file lists versions,
+           so this block is safe to leave in for a single-version article. -->
+      {c.versions.length > 0 && (
+        <nav class="versions" aria-label="Versions of this article">
+          <ul class="flex flex-wrap items-stretch gap-2 text-xs font-mono uppercase tracking-wide">
+            {c.versions.map((v) => (
+              v.path === c.canonicalPath ? (
+                <li><span class="version-link version-link--current" aria-current="page">{v.label}</span></li>
+              ) : (
+                <li><a href={v.path} class="version-link">{v.label}</a></li>
+              )
+            ))}
+          </ul>
+        </nav>
+      )}
+
+      <!-- Provenance / rights note. Delete if there is nothing to say. -->
+      <!--
+      <p class="text-xs font-serif text-iron/60 max-w-3xl leading-relaxed">
+        TODO republication permission, or what this version is.
+      </p>
+      -->
+
+      <hr class="border-haze" />
+
+      <div class="space-y-3 max-w-3xl">
+        <h2 class="text-sm font-serif text-sage uppercase tracking-widest font-bold">Abstract</h2>
+        <p class="text-sm text-iron/80 leading-relaxed font-serif" itemprop="abstract">
+          {ABSTRACT}
+        </p>
+      </div>
+
+      <!-- PDF download. Delete if there is no PDF. -->
+      <!--
+      <div class="pt-2 flex flex-wrap gap-3">
+        <a href="/documents/TODO-slug.pdf" download class="px-4 py-2 bg-iron text-canvas text-xs font-serif rounded-sm hover:bg-caprock transition-colors">
+          download print-ready version
+        </a>
+      </div>
+      -->
+    </header>
+
+    <!-- Lead figure, above the article. Delete if there are no images. -->
+    <Figure set={FIGURES} id="TODO-figure-id" lead />
+
+    <!-- Article Body -->
+    <div class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6" itemprop="articleBody">
+
+      <p>TODO first paragraph. A footnote marker looks like this.<Fn n={1} /></p>
+
+      <p>
+        A cross-reference to a figure looks like this <FigRef set={FIGURES} id="TODO-figure-id" />,
+        and points at whichever number that figure ends up with.<Fn n={2} />
+      </p>
+
+      <!-- Figures sit between paragraphs, at the point they are discussed. -->
+      <Figure set={FIGURES} id="TODO-figure-id" />
+
+    </div>
+
+    <!-- Cite this / Endnotes. Delete either if it doesn't apply.
+         CiteThis renders nothing when there is no citable journal info,
+         so it is harmless to leave in.
+         Endnotes takes heading="Endnotes" if you prefer that word. -->
+    <CiteThis citation={c} />
+
+    <Endnotes notes={NOTES} />
+
+  </article>
+</RootLayout>
+
+<style is:global>
+  /* One knob for every in-page jump (footnote there, backlink here, figure
+     cross-reference) so nothing lands underneath the sticky site header. */
+  :root {
+    --anchor-offset: 7.5rem;
+  }
+
+  .versions .version-link {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-haze, #ddd8cf);
+    border-radius: 2px;
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.6);
+    text-decoration: none;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .versions a.version-link:hover,
+  .versions a.version-link:focus-visible {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+  }
+  .versions .version-link--current {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+    background: rgb(from #9c5b3f r g b / 0.06);
+  }
+
+  /* The printed page. Scholars print this kind of article. */
+  @media print {
+    :root {
+      --anchor-offset: 0;
+    }
+    nav,
+    .versions,
+    a[href="/publications"],
+    a[download] {
+      display: none !important;
+    }
+    .prose-article {
+      max-width: none;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: #000;
+    }
+    h1 {
+      font-size: 18pt;
+    }
+    /* Expand the URL of any link that is not an internal jump. */
+    .prose-article a[href^="http"]::after {
+      content: " (" attr(href) ")";
+      font-size: 8pt;
+      word-break: break-all;
+    }
+    p {
+      orphans: 3;
+      widows: 3;
+    }
+  }
+</style>

@@ -51,7 +51,14 @@ const { notes, heading = 'Notes', headingId = 'notes' } = Astro.props;
      announcing it twice would be worse than not previewing at all. */
   const PAD = 12;
 
+  /* Pointer devices only. On touch the marker just jumps to the note, so the
+     preview elements are never needed there — and building them anyway put
+     100+ wide absolutely-positioned boxes in the layout, widening the
+     document on narrow screens. */
+  const canHover = window.matchMedia('(hover: hover) and (pointer: fine)');
+
   const build = () => {
+    if (!canHover.matches) return;
     const notes = document.querySelector('[role="doc-endnotes"]');
     if (!notes) return;
 
@@ -94,6 +101,8 @@ const { notes, heading = 'Notes', headingId = 'notes' } = Astro.props;
 
   build();
   document.addEventListener('astro:after-swap', build);
+  /* Covers a tablet switching between touch and a paired trackpad/mouse. */
+  canHover.addEventListener('change', build);
 </script>
 
 <style>

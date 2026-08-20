@@ -53,11 +53,15 @@ const { n, preview = true } = Astro.props;
   /* The preview element is injected by the page script, so it is styled
      with :global rather than through Astro's scoping. */
   sup.fn-ref :global(.fn-pop) {
+    /* display:none, not just visibility:hidden. A hidden-but-displayed
+       absolutely positioned box still contributes to the document's
+       scrollable overflow area, which on a narrow screen shows up as a
+       strip of blank space down the right-hand side. */
+    display: none;
     position: absolute;
     bottom: 1.9em;
     left: 50%;
     z-index: 40;
-    display: block;
     width: max-content;
     max-width: min(26rem, 78vw);
     padding: 0.75rem 0.85rem;
@@ -96,6 +100,10 @@ const { n, preview = true } = Astro.props;
   /* Pointer devices only. On touch, tapping the marker jumps to the note,
      which is the correct behaviour there. */
   @media (hover: hover) and (pointer: fine) {
+    sup.fn-ref :global(.fn-pop) {
+      display: block;
+    }
+
     sup.fn-ref:hover :global(.fn-pop),
     sup.fn-ref:focus-within :global(.fn-pop) {
       opacity: 1;

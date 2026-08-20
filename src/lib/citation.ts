@@ -188,14 +188,39 @@ export interface FigureSet {
   entries: FigureEntry[];
 }
 
+/**
+ * Guard with a message that names the actual mistake. Without this, a missing
+ * `set` prop or a data file still exporting FIGURES as a plain array surfaces
+ * as "Cannot read properties of undefined (reading 'entries')" pointing here,
+ * which tells you nothing about which page is wrong.
+ */
+const assertSet = (set: FigureSet | undefined, id: string): FigureSet => {
+  if (!set) {
+    throw new Error(
+      `<Figure|FigRef id="${id}"> was called without a \`set\` prop. ` +
+        `Pass the article's figure register, e.g. set={FIGURES}.`
+    );
+  }
+  if (!Array.isArray(set.entries)) {
+    throw new Error(
+      `The figure set passed for id="${id}" has no \`entries\` array. ` +
+        `FIGURES must be a FigureSet — { dir: '<folder>', entries: [...] } — ` +
+        `not a bare array of figures.`
+    );
+  }
+  return set;
+};
+
 export const figureNumber = (set: FigureSet, id: string): number => {
-  const i = set.entries.findIndex((f) => f.id === id);
-  if (i === -1) throw new Error(`Unknown figure id: ${id} (in ${set.dir})`);
+  const s = assertSet(set, id);
+  const i = s.entries.findIndex((f) => f.id === id);
+  if (i === -1) throw new Error(`Unknown figure id: ${id} (in ${s.dir})`);
   return i + 1;
 };
 
 export const figure = (set: FigureSet, id: string): FigureEntry => {
-  const f = set.entries.find((f) => f.id === id);
-  if (!f) throw new Error(`Unknown figure id: ${id} (in ${set.dir})`);
+  const s = assertSet(set, id);
+  const f = s.entries.find((f) => f.id === id);
+  if (!f) throw new Error(`Unknown figure id: ${id} (in ${s.dir})`);
   return f;
 };
