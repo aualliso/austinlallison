@@ -1,10 +1,30 @@
 ---
-// src/pages/publications/tumbleweed-smith.astro
+// src/pages/publications/tumbleweed_smith.astro
+// Short piece with NO images: no Figure/FigRef imports, no FIGURES in the
+// data file. Otherwise the same pattern as the other magazine features.
 import RootLayout from '../../layouts/RootLayout.astro';
+import ScholarlyMeta from '../../components/ScholarlyMeta.astro';
+import PublicationHeader from '../../components/PublicationHeader.astro';
+import CiteThis from '../../components/CiteThis.astro';
+import { CITATION } from '../../data/publications/tumbleweed-smith';
+
+const c = CITATION;
+
+// The opening pull-quote doubles as the standfirst, so it feeds the meta
+// description and the link preview rather than being repeated as an abstract.
+const SUMMARY =
+  'One of Texas\u2019 most prolific broadcasters, Big Spring\u2019s Bob Lewis \u2014 known professionally as ' +
+  '\u201cTumbleweed Smith\u201d \u2014 created one of the longest-lasting radio programs in the state. ' +
+  '\u201cThe Sound of Texas\u201d has become not only a method by which a Texan transmits the story of ' +
+  'Texas, but also a vessel for preserving that story for future generations.';
 ---
 
-<RootLayout title="Tumbleweed Smith and the Sounds of Texas | Austin Allison">
-  <div class="max-w-4xl mx-auto py-6 text-iron">
+<RootLayout title={`${c.title} | ${c.authors[0]}`} description={SUMMARY}>
+  <Fragment slot="head">
+    <ScholarlyMeta citation={c} />
+  </Fragment>
+
+  <article class="max-w-4xl mx-auto py-6 text-iron" itemscope itemtype="https://schema.org/Article">
 
     <!-- Breadcrumb Anchor Navigation -->
     <div class="mb-8">
@@ -13,21 +33,10 @@ import RootLayout from '../../layouts/RootLayout.astro';
       </a>
     </div>
 
-    <!-- Masthead -->
-    <header class="space-y-6 mb-12">
-      <div class="space-y-2">
-        <span class="text-sm font-serif text-caprock font-semibold uppercase tracking-wider block">Magazine Feature</span>
-        <h1 class="font-serif text-2xl md:text-4xl font-medium tracking-tight text-iron leading-tight">
-          Tumbleweed Smith and the Sounds of Texas
-        </h1>
-        <p class="text-sm font-serif text-iron/60 pt-1">
-          Published in <span class="italic font-serif text-iron font-medium">Authentic Texas</span> &bull; Spring 2023
-        </p>
-      </div>
-    </header>
+    <PublicationHeader citation={c} eyebrow="Magazine Feature" />
 
     <!-- Article Body -->
-    <article class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6">
+    <div class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6" itemprop="articleBody">
 
       <blockquote class="border-l-2 border-caprock pl-5 italic text-iron/70 text-lg leading-relaxed">
         Transitory or not, tumbleweeds possess the sort of legendary semi-permanence in Texas that makes them one of the most prolific icons that represent the state. It is no surprise then that one of Texas&rsquo; most prolific broadcasters, Big Spring&rsquo;s Bob Lewis known professionally as &ldquo;Tumbleweed Smith,&rdquo; took on this Texas-style moniker to create one of the longest-lasting radio programs in the state. &ldquo;The Sound of Texas&rdquo; is a daily syndicated radio program that is heard on more than 50 stations across the state. Throughout its history the program has become not only a method by which a Texan transmits the story of Texas, but also a vessel for preserving that story for future generations.
@@ -45,7 +54,66 @@ import RootLayout from '../../layouts/RootLayout.astro';
         Lewis&rsquo; collection of interviews comprises one of the largest privately-held sets of interviews in the nation, but it isn&rsquo;t the size of the archive that matters. It is the content within that ranges five and a half decades of Texas history and the stories of those that date back even further. With this venture, Lewis produced more than just a radio program about Texas; he single-handedly curated an entirely Texan exhibition of what makes this great state tick.
       </p>
 
-    </article>
+    </div>
 
-  </div>
+    <CiteThis citation={c} />
+
+  </article>
 </RootLayout>
+
+<style is:global>
+  /* One knob for every in-page jump, so nothing lands under the sticky header. */
+  :root {
+    --anchor-offset: 7.5rem;
+  }
+
+  .versions .version-link {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-haze, #ddd8cf);
+    border-radius: 2px;
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.6);
+    text-decoration: none;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .versions a.version-link:hover,
+  .versions a.version-link:focus-visible {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+  }
+  .versions .version-link--current {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+    background: rgb(from #9c5b3f r g b / 0.06);
+  }
+
+  @media print {
+    :root {
+      --anchor-offset: 0;
+    }
+    nav,
+    .versions,
+    a[href="/publications"],
+    a[download] {
+      display: none !important;
+    }
+    .prose-article {
+      max-width: none;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: #000;
+    }
+    h1 {
+      font-size: 18pt;
+    }
+    .prose-article a[href^="http"]::after {
+      content: " (" attr(href) ")";
+      font-size: 8pt;
+      word-break: break-all;
+    }
+    p {
+      orphans: 3;
+      widows: 3;
+    }
+  }
+</style>

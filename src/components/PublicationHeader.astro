@@ -1,0 +1,187 @@
+---
+// src/components/PublicationHeader.astro
+// The masthead every publication page shares: eyebrow, title, deck, byline,
+// citation line, version switcher, provenance, abstract, PDF button.
+//
+// The citation line is derived from the Citation rather than written per
+// page, so a magazine feature and a journal article get the right shape
+// without either page knowing about the other's case.
+import type { Citation } from '../lib/citation';
+import { doiLink, pages } from '../lib/citation';
+
+interface Props {
+  citation: Citation;
+  /** Small caps line above the title. */
+  eyebrow: string;
+  /** Rendered as the abstract, and expected to be the page's meta description too. */
+  abstract?: string;
+  /** Path to a print-ready PDF, if there is one. */
+  pdfHref?: string;
+  /**
+   * Any other buttons for the masthead — "view the map online", a publisher
+   * page, a finding aid. `external` adds target/rel and is inferred from an
+   * http(s) href when not set.
+   */
+  links?: { label: string; href: string; external?: boolean }[];
+}
+
+const { citation: c, eyebrow, abstract, pdfHref, links = [] } = Astro.props;
+
+const doi = doiLink(c.doi);
+const pp = pages(c.firstPage, c.lastPage);
+
+// A magazine issue ('Summer 2025') stands in for volume, issue and pages.
+const when = c.dateLabel ?? c.monthYear ?? String(c.year);
+const hasNumbering = Boolean(c.volume || pp);
+
+// A chapter sits in a book; everything else sits in a periodical.
+const container = c.bookTitle ?? c.journal;
+const inWord = c.bookTitle ? 'A chapter in' : 'Published in';
+---
+
+<header class="space-y-6 mb-12">
+  <div class="space-y-2">
+    <span class="text-sm font-serif text-caprock font-semibold uppercase tracking-wider block">
+      {eyebrow}
+    </span>
+
+    <h1
+      class="font-serif text-2xl md:text-4xl font-medium tracking-tight text-iron leading-tight"
+      itemprop="headline"
+    >
+      {c.displayTitle ?? c.title}
+    </h1>
+
+    {
+      c.subtitle && (
+        <p class="font-serif text-lg md:text-xl text-iron/70 italic leading-snug max-w-2xl">
+          {c.subtitle}
+        </p>
+      )
+    }
+
+    <p
+      class="font-serif text-base text-iron/80 pt-1"
+      itemprop="author"
+      itemscope
+      itemtype="https://schema.org/Person"
+    >
+      <span itemprop="name">{c.authors.join(', ')}</span>
+      {
+        c.orcid && (
+          <a
+            href={c.orcid}
+            class="ml-2 text-xs font-mono text-sage hover:text-caprock transition-colors align-middle"
+            rel="noopener me"
+            itemprop="identifier"
+          >
+            ORCID
+          </a>
+        )
+      }
+    </p>
+
+    {
+      container && (
+        <p class="text-sm font-serif text-iron/60 pt-1">
+          {inWord}{' '}
+          {doi ? (
+            <a
+              href={doi}
+              class="italic font-medium text-caprock hover:text-sage transition-colors"
+              rel="noopener"
+            >
+              {container}
+            </a>
+          ) : (
+            <span class="italic font-medium text-caprock">{container}</span>
+          )}
+          {(c.editors?.length ?? 0) > 0 && <>, edited by {c.editors!.join(' and ')}</>}
+          {' '}&bull;{' '}
+          {hasNumbering ? (
+            <>
+              {c.volume && <>Vol. {c.volume}</>}
+              {c.issue && <>, No. {c.issue}</>}
+              {' '}({when}){pp && <>, pp. {pp}</>}
+            </>
+          ) : (
+            when
+          )}
+        </p>
+      )
+    }
+  </div>
+
+  {/* Renders only when the data file lists sibling versions. */}
+  {
+    c.versions.length > 0 && (
+      <nav class="versions" aria-label="Versions of this article">
+        <ul class="flex flex-wrap items-stretch gap-2 text-xs font-mono uppercase tracking-wide">
+          {c.versions.map((v) =>
+            v.path === c.canonicalPath ? (
+              <li>
+                <span class="version-link version-link--current" aria-current="page">
+                  {v.label}
+                </span>
+              </li>
+            ) : (
+              <li>
+                <a href={v.path} class="version-link">
+                  {v.label}
+                </a>
+              </li>
+            )
+          )}
+        </ul>
+      </nav>
+    )
+  }
+
+  {/* Provenance / rights note. Pass markup into the "provenance" slot. */}
+  <slot name="provenance" />
+
+  {
+    abstract && (
+      <>
+        <hr class="border-haze" />
+        <div class="space-y-3 max-w-3xl">
+          <h2 class="text-sm font-serif text-sage uppercase tracking-widest font-bold">
+            Abstract
+          </h2>
+          <p class="text-sm text-iron/80 leading-relaxed font-serif" itemprop="abstract">
+            {abstract}
+          </p>
+        </div>
+      </>
+    )
+  }
+
+  {
+    (pdfHref || links.length > 0) && (
+      <div class="pt-2 flex flex-wrap gap-3">
+        {pdfHref && (
+          <a
+            href={pdfHref}
+            download
+            class="px-4 py-2 bg-iron text-canvas text-xs font-serif rounded-sm hover:bg-caprock transition-colors"
+          >
+            download print-ready version
+          </a>
+        )}
+        {links.map((l) => {
+          const ext = l.external ?? /^https?:\/\//.test(l.href);
+          return (
+            <a
+              href={l.href}
+              target={ext ? '_blank' : undefined}
+              rel={ext ? 'noopener noreferrer' : undefined}
+              class="px-4 py-2 bg-iron text-canvas text-xs font-serif rounded-sm hover:bg-caprock transition-colors"
+            >
+              {l.label}
+            </a>
+          );
+        })}
+      </div>
+    )
+  }
+</header>

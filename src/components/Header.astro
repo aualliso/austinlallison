@@ -1057,6 +1057,9 @@ const isDev = import.meta.env.DEV;
                  real, and the one place it says whose sky you're looking at.
                  Empty until JS fills it, so it never renders a stale guess. -->
             <span class="station-meta" id="station-readout"></span>
+            <!-- The narrow-width form of the same plate. Only one of the two is
+                 ever visible; the 380px block decides which. -->
+            <span class="station-meta station-meta-wind" id="station-readout-wind"></span>
           </span>
         </span>
       </a>
@@ -2610,7 +2613,31 @@ const isDev = import.meta.env.DEV;
     const wind = windMph != null
       ? `${windFromDeg != null ? compassLabel(windFromDeg) + ' ' : ''}${Math.round(windMph)} mph`
       : '';
-    el.textContent = ['LBB', time].filter(Boolean).join(' · ');
+
+    /* THE BEARING IS THE POINT, not the speed. This header's viewer faces
+       SOUTH, so screen-right is WEST — the inverse of the north-up map
+       convention every reader arrives with. The windmill yaws on real
+       wind_direction_10m and is correct, but a mill whose wheel sits on its
+       mast and only narrows gives the eye nothing to read the direction
+       from; the vane does all of it, on the side opposite the one map habit
+       expects. This line is the check. "WSW" under a wheel aimed screen-right
+       resolves the ambiguity in three characters, and without it the yaw is
+       unfalsifiable to anyone looking at it — which is how it stayed mirrored
+       for several passes.
+
+       `wind` was computed and then dropped from the join below, so the plate
+       has read LBB + time since it was added. The note above and the one in
+       the stylesheet both describe it as carrying the wind. They described
+       the intent, not the code. */
+    el.textContent = ['LBB', time, wind].filter(Boolean).join(' · ');
+
+    const shortEl = document.getElementById('station-readout-wind');
+    if (shortEl) {
+      /* windMph falls back to DUST_FALLBACK_MPH when the fetch fails, so it
+         is effectively never null — but windFromDeg genuinely can be, and a
+         speed with no bearing is exactly the part with no value here. */
+      shortEl.textContent = windFromDeg != null ? wind : 'LBB';
+    }
   };
 
   /* ---- seasonal marker: fall sandhill-crane migration --------------------
@@ -3770,6 +3797,12 @@ const isDev = import.meta.env.DEV;
     transition: color 0.6s linear;
   }
 
+  /* The narrow-width form of the plate. Hidden by default; the block at
+     380px swaps which of the two is showing. Carries .station-meta as well,
+     so it inherits the type, the colour transition and every entrance and
+     scroll rule that targets that class. */
+  .station-meta-wind { display: none; }
+
   /* --- Mile markers ------------------------------------------------------- */
   .marker-label {
     font-size: 13.5px;
@@ -3829,13 +3862,19 @@ const isDev = import.meta.env.DEV;
     /* Tracking costs horizontal width, and this block's own comment
        notes the name plus three full nav words is already over budget
        here. Back the letterspacing off rather than shrinking the name
-       any further — the plate below is already display:none at this
-       width, so the stamped-assembly reading it supports is gone anyway. */
+       any further — the plate below is down to its bearing-only form at
+       this width, so it is no longer the constraint it was. */
     .landmark-name { font-size: 0.92rem; letter-spacing: 0.02em; }
     .marker-label  { font-size: 10.5px; }
-    /* At these widths the plate would be wider than the name it sits under,
-       and the plate is what sets the floor on how far the landmark can yield. */
-    .station-meta  { display: none; }
+    /* At these widths the full plate would be wider than the name it sits
+       under, and the plate is what sets the floor on how far the landmark
+       can yield. Drop the station and the clock rather than the whole line:
+       the bearing is the one element here that can't be recovered from
+       anywhere else on the page, and it is the thing the windmill above
+       needs in order to be readable at all. "WSW 14 mph" is shorter than the
+       name it sits under, so the floor doesn't move. */
+    .station-meta      { display: none; }
+    .station-meta-wind { display: block; }
   }
 
   /* ======================================================================== */

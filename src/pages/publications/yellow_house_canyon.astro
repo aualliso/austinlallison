@@ -1,10 +1,37 @@
 ---
-// src/pages/publications/yellow-house-canyon.astro
+// src/pages/publications/yellow_house_canyon.astro
+// A Caprock Chronicles column. No endnotes, unnumbered figures, no
+// citation_* journal tags. The opening blockquote is the newspaper's
+// editor's note, not a pull-quote — see SUMMARY below.
 import RootLayout from '../../layouts/RootLayout.astro';
+import ScholarlyMeta from '../../components/ScholarlyMeta.astro';
+import PublicationHeader from '../../components/PublicationHeader.astro';
+import Figure from '../../components/Figure.astro';
+import CiteThis from '../../components/CiteThis.astro';
+import { CITATION, FIGURES } from '../../data/publications/yellow-house-canyon';
+
+const c = CITATION;
+
+// Taken from the first body paragraph, NOT the blockquote — that is the
+// paper's editor's note, written about Austin in the third person, which
+// would read oddly as a search snippet.
+const SUMMARY =
+  'Precisely locating the 1877 battle of Yellow House Canyon remains a puzzle. It was a fight ' +
+  'between bison-hide hunters and Comanches, tracing its roots to a series of skirmishes on the ' +
+  'Southern Plains between angry Indian warriors and the hunters who in the early 1870s had been ' +
+  'denuding the region of bison.';
 ---
 
-<RootLayout title="Accounts Vary on Location of 1877 Battle of Yellow House Canyon | Austin Allison">
-  <div class="max-w-4xl mx-auto py-6 text-iron">
+<RootLayout
+  title={`${c.title} | ${c.authors[0]}`}
+  description={SUMMARY}
+  image="/images/yellow_house_canyon/yellow_house_canyon_map.jpg"
+>
+  <Fragment slot="head">
+    <ScholarlyMeta citation={c} />
+  </Fragment>
+
+  <article class="max-w-4xl mx-auto py-6 text-iron" itemscope itemtype="https://schema.org/Article">
 
     <!-- Breadcrumb Anchor Navigation -->
     <div class="mb-8">
@@ -13,21 +40,10 @@ import RootLayout from '../../layouts/RootLayout.astro';
       </a>
     </div>
 
-    <!-- Masthead -->
-    <header class="space-y-6 mb-12">
-      <div class="space-y-2">
-        <span class="text-sm font-serif text-caprock font-semibold uppercase tracking-wider block">Caprock Chronicles</span>
-        <h1 class="font-serif text-2xl md:text-4xl font-medium tracking-tight text-iron leading-tight">
-          Accounts Vary on Location of 1877 Battle of Yellow House Canyon
-        </h1>
-        <p class="text-sm font-serif text-iron/60 pt-1">
-          Published in <span class="italic font-serif text-iron font-medium">Lubbock Avalanche-Journal</span> &bull; September 2, 2017
-        </p>
-      </div>
-    </header>
+    <PublicationHeader citation={c} eyebrow="Caprock Chronicles Feature" />
 
     <!-- Article Body -->
-    <article class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6">
+    <div class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6" itemprop="articleBody">
 
       <blockquote class="border-l-2 border-caprock pl-5 italic text-iron/70 text-lg leading-relaxed">
         <strong class="not-italic text-iron">Editor&rsquo;s note:</strong> Caprock Chronicles is written or edited by Paul Carlson, emeritus professor of history at Texas Tech University. Today&rsquo;s essay, by Austin Allison of Texas Tech&rsquo;s Southwest Collection, examines several first-hand accounts of the 1877 battle of Yellow House Canyon, which may have occurred in present-day Mackenzie Park.
@@ -65,12 +81,7 @@ import RootLayout from '../../layouts/RootLayout.astro';
         Nonetheless, Collinson often ridiculed Cook&rsquo;s account of the skirmish, saying Cook embellished the affair to a greater extent than he (Collinson) remembered the engagement.
       </p>
 
-      <figure class="not-prose">
-        <img src="/images/yellow_house_canyon/yellow_house_canyon_map.jpg" alt="Map of Lubbock County showing Yellow House Draw, Blackwater Draw, Thompson's Canyon, and Yellow House Canyon, with the shaded area encompassing Mackenzie Park and the locations described by Cook, Collinson, and Glenn" class="w-full rounded-sm border border-haze shadow-sm" />
-        <figcaption class="text-xs font-serif text-iron/50 mt-2 italic">
-          Shaded area encompasses Mackenzie Park and locations described by Cook, Collinson, and Glenn.
-        </figcaption>
-      </figure>
+      <Figure set={FIGURES} id="canyon-location-map" numbered={false} />
 
       <p>
         Collinson&rsquo;s letter noted that Indians &ldquo;were camped on the hill right in the forks of the Yellow House draws&rdquo; &mdash; meaning between Yellow House and Blackwater draws. A month later, he clarified by writing that the Comanche camp was &ldquo;right in town [Lubbock].&rdquo;
@@ -120,15 +131,72 @@ import RootLayout from '../../layouts/RootLayout.astro';
         Mackenzie Park, which lies at the mouth of Thompson&rsquo;s Canyon, has been a popular meeting place for Lubbock and area residents for a century. As a result, evidence related to the skirmishes from 1877 probably has been lost or removed.
       </p>
 
-      <figure class="not-prose">
-        <img src="/images/yellow_house_canyon/cook_image.jpg" alt="19th-century illustration depicting mounted riflemen engaged in the battle of Yellow House Canyon" class="w-full rounded-sm border border-haze shadow-sm" />
-      </figure>
+      <Figure set={FIGURES} id="battle-illustration" numbered={false} />
 
       <p>
         Absent empirical evidence, such as bullets or cartridges, it remains difficult to establish an exact location for the March 18, 1877, battle of Yellow House Canyon.
       </p>
 
-    </article>
+    </div>
 
-  </div>
+    <CiteThis citation={c} />
+
+  </article>
 </RootLayout>
+
+<style is:global>
+  /* One knob for every in-page jump, so nothing lands under the sticky header. */
+  :root {
+    --anchor-offset: 7.5rem;
+  }
+
+  .versions .version-link {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-haze, #ddd8cf);
+    border-radius: 2px;
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.6);
+    text-decoration: none;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .versions a.version-link:hover,
+  .versions a.version-link:focus-visible {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+  }
+  .versions .version-link--current {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+    background: rgb(from #9c5b3f r g b / 0.06);
+  }
+
+  @media print {
+    :root {
+      --anchor-offset: 0;
+    }
+    nav,
+    .versions,
+    a[href="/publications"],
+    a[download] {
+      display: none !important;
+    }
+    .prose-article {
+      max-width: none;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: #000;
+    }
+    h1 {
+      font-size: 18pt;
+    }
+    .prose-article a[href^="http"]::after {
+      content: " (" attr(href) ")";
+      font-size: 8pt;
+      word-break: break-all;
+    }
+    p {
+      orphans: 3;
+      widows: 3;
+    }
+  }
+</style>

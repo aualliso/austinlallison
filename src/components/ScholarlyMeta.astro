@@ -19,6 +19,7 @@ const c = Astro.props.citation;
 const base = Astro.site ?? Astro.url;
 const canonical = new URL(c.canonicalPath, base).toString();
 const isRecord = c.status === 'record';
+const isChapter = c.status === 'chapter';
 const relatedUrl = c.publishedAs
   ? new URL(c.publishedAs.url, base).toString()
   : '';
@@ -37,7 +38,22 @@ const jsonLd: Record<string, unknown> = {
   inLanguage: c.language,
 };
 
-if (isRecord) {
+if (isChapter) {
+  // A chapter is scholarship, so it gets metadata — but it belongs to a Book,
+  // not a Periodical, and Scholar reads citation_inbook_title for this.
+  jsonLd.datePublished = String(c.year);
+  jsonLd.isPartOf = {
+    '@type': 'Book',
+    name: c.bookTitle,
+    ...(c.editors?.length
+      ? { editor: c.editors.map((name) => ({ '@type': 'Person', name })) }
+      : {}),
+    ...(c.publisher ? { publisher: { '@type': 'Organization', name: c.publisher } } : {}),
+    ...(c.isbn ? { isbn: c.isbn } : {}),
+  };
+  if (c.firstPage != null) jsonLd.pageStart = c.firstPage;
+  if (c.lastPage != null) jsonLd.pageEnd = c.lastPage;
+} else if (isRecord) {
   jsonLd.datePublished = `${c.year}-01`;
   jsonLd.isPartOf = {
     '@type': 'PublicationIssue',
@@ -104,11 +120,30 @@ if (isRecord) {
   )
 }
 
-{!isRecord && <meta name="citation_online_date" content={`${c.year}`} />}
+{
+  isChapter && (
+    <>
+      <meta name="citation_inbook_title" content={c.bookTitle} />
+      {c.editors?.map((e) => <meta name="citation_editor" content={e} />)}
+      {c.publisher && <meta name="citation_publisher" content={c.publisher} />}
+      <meta name="citation_publication_date" content={String(c.year)} />
+      {c.firstPage != null && (
+        <meta name="citation_firstpage" content={String(c.firstPage)} />
+      )}
+      {c.lastPage != null && (
+        <meta name="citation_lastpage" content={String(c.lastPage)} />
+      )}
+      {c.isbn && <meta name="citation_isbn" content={c.isbn} />}
+    </>
+  )
+}
+
+{!isRecord && !isChapter && <meta name="citation_online_date" content={`${c.year}`} />}
 
 <meta name="dc.title" content={c.title} />
 {c.authors.map((a) => <meta name="dc.creator" content={a} />)}
 <meta name="dc.type" content="Text.Article" />
+{isChapter && c.bookTitle && <meta name="dc.source" content={c.bookTitle} />}
 <meta
   name="dc.identifier"
   content={isRecord ? doiLink(c.doi) : canonical}

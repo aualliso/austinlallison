@@ -15,12 +15,19 @@ interface Props {
   id: string;
   /** the lead figure sits above the article and is eagerly loaded */
   lead?: boolean;
+  /**
+   * Numbering earns its place at seven or eleven images with cross-
+   * references in the prose. On a single photo in a short piece it reads
+   * like a journal affectation, so pass numbered={false} there — you keep
+   * the srcset, the lazy loading and the caption/credit split.
+   */
+  numbered?: boolean;
   class?: string;
 }
 
-const { set, id, lead = false, class: className } = Astro.props;
+const { set, id, lead = false, numbered = true, class: className } = Astro.props;
 const f = figure(set, id);
-const n = figureNumber(set, id);
+const n = numbered ? figureNumber(set, id) : 0;
 
 // One static glob covers every article; the lookup key is built per set.
 const assets = import.meta.glob<{ default: ImageMetadata }>(
@@ -28,8 +35,14 @@ const assets = import.meta.glob<{ default: ImageMetadata }>(
   { eager: true }
 );
 
+// An empty `dir` means the images sit directly in /images/ (or in
+// src/assets/publications/) rather than a per-article folder — which is how
+// the older short pieces are organised. Without this the path would come out
+// with a double slash.
+const seg = set.dir ? `${set.dir}/` : '';
+
 const resolve = (file: string) =>
-  assets[`/src/assets/publications/${set.dir}/${file}`]?.default;
+  assets[`/src/assets/publications/${seg}${file}`]?.default;
 
 const sizeClass = {
   xs: 'max-w-xs',
@@ -40,6 +53,10 @@ const sizeClass = {
   '2xl': 'max-w-2xl',
   '3xl': 'max-w-3xl',
 }[f.size];
+
+// With no caption, no credit and no number there is nothing to render, and
+// an empty <figcaption> would still take up space.
+const hasCaption = Boolean(f.caption || f.credit || numbered);
 
 const multi = f.plates.length > 1;
 const sizes = multi
@@ -76,7 +93,7 @@ const widths = multi ? [320, 480, 720] : [480, 800, 1200];
               />
             ) : (
               <img
-                src={`/images/${set.dir}/${plate.file}`}
+                src={`/images/${seg}${plate.file}`}
                 alt={plate.alt ?? ''}
                 loading={lead ? 'eager' : 'lazy'}
                 decoding="async"
@@ -94,12 +111,17 @@ const widths = multi ? [320, 480, 720] : [480, 800, 1200];
     }
   </div>
 
-  <figcaption class="text-xs font-serif text-iron/60 italic text-center mt-2 leading-snug">
-    <span class="not-italic font-medium text-iron/70">Fig.&nbsp;{n}.</span>{' '}
-    <span set:html={f.caption} />
-    {f.credit && <br />}
-    {f.credit && <span class="not-italic" set:html={f.credit} />}
-  </figcaption>
+  {
+    hasCaption && (
+      <figcaption class="text-xs font-serif text-iron/60 italic text-center mt-2 leading-snug">
+        {numbered && <span class="not-italic font-medium text-iron/70">Fig.&nbsp;{n}.</span>}
+        {numbered && ' '}
+        {f.caption && <span set:html={f.caption} />}
+        {f.caption && f.credit && <br />}
+        {f.credit && <span class="not-italic" set:html={f.credit} />}
+      </figcaption>
+    )
+  }
 </figure>
 
 <style>

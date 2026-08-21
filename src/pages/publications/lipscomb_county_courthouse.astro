@@ -1,10 +1,34 @@
 ---
-// src/pages/publications/lipscomb-county-courthouse.astro
+// src/pages/publications/lipscomb_county_courthouse.astro
+// Pattern page for the SHORT PIECES: no endnotes, no cross-references, one
+// unnumbered figure, and no citation_* journal metadata.
 import RootLayout from '../../layouts/RootLayout.astro';
+import ScholarlyMeta from '../../components/ScholarlyMeta.astro';
+import PublicationHeader from '../../components/PublicationHeader.astro';
+import Figure from '../../components/Figure.astro';
+import CiteThis from '../../components/CiteThis.astro';
+import { CITATION, FIGURES } from '../../data/publications/lipscomb-county-courthouse';
+
+const c = CITATION;
+
+// The opening pull-quote doubles as the standfirst, so it feeds the meta
+// description and the link preview rather than being repeated as an abstract.
+const SUMMARY =
+  'In the sparsely populated span of the northeast Texas Panhandle, the Lipscomb County ' +
+  'Courthouse stands as an enduring symbol of civic pride, architectural heritage, and the ' +
+  'unwavering spirit of a close-knit community located truly at the Top of Texas.';
 ---
 
-<RootLayout title="Lipscomb County Courthouse | Austin Allison">
-  <div class="max-w-4xl mx-auto py-6 text-iron">
+<RootLayout
+  title={`${c.displayTitle ?? c.title} | ${c.authors[0]}`}
+  description={SUMMARY}
+  image="/images/lipscomb_county.jpg"
+>
+  <Fragment slot="head">
+    <ScholarlyMeta citation={c} />
+  </Fragment>
+
+  <article class="max-w-4xl mx-auto py-6 text-iron" itemscope itemtype="https://schema.org/Article">
 
     <!-- Breadcrumb Anchor Navigation -->
     <div class="mb-8">
@@ -13,35 +37,16 @@ import RootLayout from '../../layouts/RootLayout.astro';
       </a>
     </div>
 
-    <!-- Masthead -->
-    <header class="space-y-6 mb-12">
-      <div class="space-y-2">
-        <span class="text-sm font-serif text-caprock font-semibold uppercase tracking-wider block">Magazine Feature</span>
-        <h1 class="font-serif text-2xl md:text-4xl font-medium tracking-tight text-iron leading-tight">
-          Lipscomb County Courthouse
-        </h1>
-        <p class="font-serif text-lg md:text-xl text-iron/70 italic leading-snug max-w-2xl">
-          A Prairie Landmark with Enduring Presence
-        </p>
-        <p class="text-sm font-serif text-iron/60 pt-1">
-          Published in <span class="italic font-serif text-iron font-medium">Authentic Texas</span> &bull; Summer 2025
-        </p>
-      </div>
-    </header>
+    <PublicationHeader citation={c} eyebrow="Magazine Feature" />
 
     <!-- Article Body -->
-    <article class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6">
+    <div class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6" itemprop="articleBody">
 
       <blockquote class="border-l-2 border-caprock pl-5 italic text-iron/70 text-lg leading-relaxed">
         In the sparsely populated span of the northeast Texas Panhandle, the Lipscomb County Courthouse stands as an enduring symbol of civic pride, architectural heritage, and the unwavering spirit of a close-knit community located truly at the Top of Texas. Situated in the diminutive county seat bearing the same name as the county itself, the 1916 Classical Revival courthouse in Lipscomb is more than just a government building; it is the heart of a county and a persistent testament to a town of fewer than 100 residents and a county that possess a charming remoteness fitting for the Texas Panhandle.
       </blockquote>
 
-      <figure class="not-prose">
-        <img src="/images/lipscomb_county.jpg" alt="The Classical Revival facade of the Lipscomb County Courthouse" class="w-full rounded-sm border border-haze shadow-sm" />
-        <figcaption class="text-xs font-serif text-iron/50 mt-2 italic">
-          Lipscomb County Courthouse &mdash; Lipscomb, Texas &mdash; Photo Credit: Austin Allison
-        </figcaption>
-      </figure>
+      <Figure set={FIGURES} id="courthouse-facade" numbered={false} lead />
 
       <p>
         Established in 1876 and organized in 1887, early residents of the county initially conducted affairs in an unassuming one-story wooden courthouse erected in 1888. Designed by E. M. Fennell and C. C. Elybs and constructed by contractors Goff and Condon, this first structure served the burgeoning county as its population steadily grew. As the 20th century came and with a subsequent increase in population from expanding farms and ranching operations, the need and desire for a more substantial and symbolic seat of the county&rsquo;s government became apparent.
@@ -75,7 +80,66 @@ import RootLayout from '../../layouts/RootLayout.astro';
         Today, the fully restored Lipscomb County Courthouse stands proud as a beacon of the northeast Texas Panhandle. The imposing courthouse serves as a powerful reminder of civic continuity and the enduring strength of its residents. It remains the most prominent historic building in one of Texas&rsquo;s least populated county seats, continuing to function as the active center of government and politics and a steadfast witness watching over the plains and the people it serves.
       </p>
 
-    </article>
+    </div>
 
-  </div>
+    <CiteThis citation={c} />
+
+  </article>
 </RootLayout>
+
+<style is:global>
+  /* One knob for every in-page jump, so nothing lands under the sticky header. */
+  :root {
+    --anchor-offset: 7.5rem;
+  }
+
+  .versions .version-link {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-haze, #ddd8cf);
+    border-radius: 2px;
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.6);
+    text-decoration: none;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .versions a.version-link:hover,
+  .versions a.version-link:focus-visible {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+  }
+  .versions .version-link--current {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+    background: rgb(from #9c5b3f r g b / 0.06);
+  }
+
+  @media print {
+    :root {
+      --anchor-offset: 0;
+    }
+    nav,
+    .versions,
+    a[href="/publications"],
+    a[download] {
+      display: none !important;
+    }
+    .prose-article {
+      max-width: none;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: #000;
+    }
+    h1 {
+      font-size: 18pt;
+    }
+    .prose-article a[href^="http"]::after {
+      content: " (" attr(href) ")";
+      font-size: 8pt;
+      word-break: break-all;
+    }
+    p {
+      orphans: 3;
+      widows: 3;
+    }
+  }
+</style>

@@ -1,10 +1,35 @@
 ---
-// src/pages/publications/sharps-rifle-buffalo-hunting.astro
+// src/pages/publications/sharps_rifle.astro
+// Short piece: no endnotes, no cross-references, one unnumbered figure, and
+// no citation_* journal metadata. Same pattern as albert_pike.
 import RootLayout from '../../layouts/RootLayout.astro';
+import ScholarlyMeta from '../../components/ScholarlyMeta.astro';
+import PublicationHeader from '../../components/PublicationHeader.astro';
+import Figure from '../../components/Figure.astro';
+import CiteThis from '../../components/CiteThis.astro';
+import { CITATION, FIGURES } from '../../data/publications/sharps-rifle';
+
+const c = CITATION;
+
+// The opening pull-quote doubles as the standfirst, so it feeds the meta
+// description and the link preview rather than being repeated as an abstract.
+const SUMMARY =
+  'Dating to 1848, the Sharps rifle and its patented breech-loading, falling block design was a ' +
+  'go-to firearm for snipers and long-distance shooters due to its accuracy and ease of use. ' +
+  'Christian Sharps left the enterprise in the 1850s, but the Sharps Rifle Company carried on ' +
+  'using his name to market rifles for the next several decades.';
 ---
 
-<RootLayout title="The Sharps Rifle, Buffalo Hunting, and the South Plains | Austin Allison">
-  <div class="max-w-4xl mx-auto py-6 text-iron">
+<RootLayout
+  title={`${c.title} | ${c.authors[0]}`}
+  description={SUMMARY}
+  image="/images/judia_buffalo_stand.jpg"
+>
+  <Fragment slot="head">
+    <ScholarlyMeta citation={c} />
+  </Fragment>
+
+  <article class="max-w-4xl mx-auto py-6 text-iron" itemscope itemtype="https://schema.org/Article">
 
     <!-- Breadcrumb Anchor Navigation -->
     <div class="mb-8">
@@ -13,32 +38,16 @@ import RootLayout from '../../layouts/RootLayout.astro';
       </a>
     </div>
 
-    <!-- Masthead -->
-    <header class="space-y-6 mb-12">
-      <div class="space-y-2">
-        <span class="text-sm font-serif text-caprock font-semibold uppercase tracking-wider block">Magazine Feature</span>
-        <h1 class="font-serif text-2xl md:text-4xl font-medium tracking-tight text-iron leading-tight">
-          The Sharps Rifle, Buffalo Hunting, and the South Plains
-        </h1>
-        <p class="text-sm font-serif text-iron/60 pt-1">
-          Published in <span class="italic font-serif text-iron font-medium">Lubbock Avalanche-Journal</span> &bull; January 28, 2024
-        </p>
-      </div>
-    </header>
+    <PublicationHeader citation={c} eyebrow="Caprock Chronicles Feature" />
 
     <!-- Article Body -->
-    <article class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6">
+    <div class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6" itemprop="articleBody">
 
       <blockquote class="border-l-2 border-caprock pl-5 italic text-iron/70 text-lg leading-relaxed">
         Several prominent names are associated with American firearm development during the 19th century: Oliver Winchester, Eliphalet Remington, Jacob and Samuel Hawken, Melchior Fordney, Christian Sharps, etc. A lesser known of these gunsmiths is Christian Sharps. Dating to 1848, the Sharps rifle and its patented breech-loading, falling block design was a go-to firearm for snipers and long-distance shooters due to its accuracy and ease of use. Christian Sharps left the enterprise in the 1850s and the company moved to Connecticut, but the Sharps Rifle Company carried on using his name to market rifles for the next several decades.
       </blockquote>
 
-      <figure class="not-prose">
-        <img src="/images/judia_buffalo_stand.jpg" alt="Illustration of a buffalo stand by Bert Judia" class="w-full rounded-sm border border-haze shadow-sm" />
-        <figcaption class="text-xs font-serif text-iron/50 mt-2 italic">
-          1911 illustration of a buffalo stand &mdash; Credit: Bert Judia
-        </figcaption>
-      </figure>
+      <Figure set={FIGURES} id="buffalo-stand" numbered={false} />
 
       <p>
         Texas Senator Thomas Jefferson Rusk touted the new style rifle in an 1848 newspaper article noting that the rifle was &ldquo;the most convenient and fatal weapon ever used.&rdquo; This early model was capable of carrying 50 percussion caps at a time, which made it possible for a rifleman to shoot at a much more rapid pace than previously possible. It was the most popular carbine rifle during the Civil War, and it saw use for a significant amount of time following the war.
@@ -72,7 +81,66 @@ import RootLayout from '../../layouts/RootLayout.astro';
         The company went out of business in the early 1880s, but the legacy of the rifle company persists with modern replicas that are available through a variety of gunsmiths with even more custom options available than were available in the 19th century. These rifles remain a mainstay at shooting competitions and gun ranges.
       </p>
 
-    </article>
+    </div>
 
-  </div>
+    <CiteThis citation={c} />
+
+  </article>
 </RootLayout>
+
+<style is:global>
+  /* One knob for every in-page jump, so nothing lands under the sticky header. */
+  :root {
+    --anchor-offset: 7.5rem;
+  }
+
+  .versions .version-link {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-haze, #ddd8cf);
+    border-radius: 2px;
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.6);
+    text-decoration: none;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .versions a.version-link:hover,
+  .versions a.version-link:focus-visible {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+  }
+  .versions .version-link--current {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+    background: rgb(from #9c5b3f r g b / 0.06);
+  }
+
+  @media print {
+    :root {
+      --anchor-offset: 0;
+    }
+    nav,
+    .versions,
+    a[href="/publications"],
+    a[download] {
+      display: none !important;
+    }
+    .prose-article {
+      max-width: none;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: #000;
+    }
+    h1 {
+      font-size: 18pt;
+    }
+    .prose-article a[href^="http"]::after {
+      content: " (" attr(href) ")";
+      font-size: 8pt;
+      word-break: break-all;
+    }
+    p {
+      orphans: 3;
+      widows: 3;
+    }
+  }
+</style>

@@ -1,40 +1,50 @@
 ---
 // src/pages/publications/albert_pike.astro
+// Short piece: no endnotes, no cross-references, unnumbered figures, and no
+// citation_* journal metadata. Same pattern as lipscomb_county_courthouse.
 import RootLayout from '../../layouts/RootLayout.astro';
+import ScholarlyMeta from '../../components/ScholarlyMeta.astro';
+import PublicationHeader from '../../components/PublicationHeader.astro';
+import Figure from '../../components/Figure.astro';
+import CiteThis from '../../components/CiteThis.astro';
+import { CITATION, FIGURES } from '../../data/publications/albert-pike';
+
+const c = CITATION;
+
+// Two sentences taken verbatim from the opening paragraph. There is no
+// abstract and no pull-quote on this piece, so rather than write a summary
+// in someone else's voice, this reuses Austin's own opening for the meta
+// description and the link preview.
+const SUMMARY =
+  'Pre-Civil War depictions of the Llano Estacado are rare, with pre-Texas Revolution versions ' +
+  'even more scarce. A map of the Texan-Santa Fe Expedition notes an even earlier trail used by ' +
+  'Albert Pike during his 1832 trek across the Llano Estacado to points further in Texas.';
 ---
 
-<RootLayout title="Albert Pike and His Journey to Ransom Canyon | Austin Allison">
-  <div class="max-w-4xl mx-auto py-6 text-iron">
+<RootLayout
+  title={`${c.title} | ${c.authors[0]}`}
+  description={SUMMARY}
+  image="/images/albert_pike/albert_pike.jpg"
+>
+  <Fragment slot="head">
+    <ScholarlyMeta citation={c} />
+  </Fragment>
+
+  <article class="max-w-4xl mx-auto py-6 text-iron" itemscope itemtype="https://schema.org/Article">
 
     <!-- Breadcrumb Anchor Navigation -->
     <div class="mb-8">
-      <a href="/publications" class="text-xs font-serif text-sage hover:text-caprock transition-colors lowercase tracking-wide">
+      <a href="/publications" class="text-sm font-serif text-sage hover:text-caprock transition-colors lowercase tracking-wide">
         &larr; return to repository index
       </a>
     </div>
 
-    <!-- Masthead -->
-    <header class="space-y-6 mb-12">
-      <div class="space-y-2">
-        <span class="text-sm font-serif text-caprock font-semibold uppercase tracking-wider block">Magazine Feature</span>
-        <h1 class="font-serif text-2xl md:text-4xl font-medium tracking-tight text-iron leading-tight">
-          Albert Pike and His Journey to Ransom Canyon
-        </h1>
-        <p class="text-sm font-serif text-iron/60 pt-1">
-          Published in <span class="italic font-serif text-iron font-medium">Lubbock Avalanche-Journal</span> &bull; November 29, 2024
-        </p>
-      </div>
-    </header>
+    <PublicationHeader citation={c} eyebrow="Caprock Chronicles Feature" />
 
     <!-- Article Body -->
-    <article class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6">
+    <div class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6" itemprop="articleBody">
 
-      <figure class="not-prose">
-        <img src="/images/albert_pike/albert_pike.jpg" alt="Portrait of Albert Pike" class="w-full rounded-sm border border-haze shadow-sm" />
-        <figcaption class="text-xs font-serif text-iron/50 mt-2 italic">
-          Albert Pike, undated portrait
-        </figcaption>
-      </figure>
+      <Figure set={FIGURES} id="pike-portrait" numbered={false} lead />
 
       <p>
         Pre-Civil War depictions of the Llano Estacado are rare, with pre-Texas Revolution versions even more scarce. Randolph Marcy&rsquo;s Red River Expedition skirted the edges of the Llano Estacado in the early 1850s, while the Texan-Santa Fe Expedition of 1841 penetrated the escarpment and crossed it in a northwesterly track until ultimately being captured shortly after arriving in New Mexico. Of interest, a subsequent map showing this expedition&rsquo;s route notes an even earlier trail used by Albert Pike during his 1832 trek across the Llano Estacado to points further in Texas. This foray is detailed in his 1834 book titled &ldquo;Prose sketches and poems: written in the western country.&rdquo;
@@ -72,18 +82,72 @@ import RootLayout from '../../layouts/RootLayout.astro';
         Although they were invited to stay an additional day, the group unilaterally decided to depart the Comanche camp and continue towards Ransom Canyon. The leader informed them that they were nine day&rsquo;s time from beaver trapping territory. They continued in a southeasterly direction eventually coming upon a broad and shallow valley at the end of September 28th. This was likely the ravine of the modern Blackwater Draw, a headwaters of the Ransom Canyon. They followed this valley throughout the day on the 29th and came upon another small Comanche camp that treated them in a friendly manner.
       </p>
 
-      <figure class="not-prose">
-        <img src="/images/albert_pike/albert_pike_map.jpg" alt="Map of Albert Pike's route from the Pecos River to Lubbock" class="w-full rounded-sm border border-haze shadow-sm" />
-        <figcaption class="text-xs font-serif text-iron/50 mt-2 italic">
-          Pike&rsquo;s route from the Pecos River across the Llano Estacado toward modern Lubbock
-        </figcaption>
-      </figure>
+      <Figure set={FIGURES} id="pike-route-map" numbered={false} />
 
       <p>
         They followed this valley and the trail further south and east over the next few days before finding running water in the valley on October 3rd near modern Lubbock. This area was marked by a creek 20 yards wide, many small hills, and numerous mesquite bushes. It is unclear if the group located beaver in this vicinity, but their arrival here did mark the end of their successful trek across the Llano Estacado. From here, Pike and his crew continued their mission throughout the rolling plains of Texas before ultimately pursuing a trail to Fort Smith, Arkansas.
       </p>
 
-    </article>
+    </div>
 
-  </div>
+    <CiteThis citation={c} />
+
+  </article>
 </RootLayout>
+
+<style is:global>
+  /* One knob for every in-page jump, so nothing lands under the sticky header. */
+  :root {
+    --anchor-offset: 7.5rem;
+  }
+
+  .versions .version-link {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-haze, #ddd8cf);
+    border-radius: 2px;
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.6);
+    text-decoration: none;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .versions a.version-link:hover,
+  .versions a.version-link:focus-visible {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+  }
+  .versions .version-link--current {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+    background: rgb(from #9c5b3f r g b / 0.06);
+  }
+
+  @media print {
+    :root {
+      --anchor-offset: 0;
+    }
+    nav,
+    .versions,
+    a[href="/publications"],
+    a[download] {
+      display: none !important;
+    }
+    .prose-article {
+      max-width: none;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: #000;
+    }
+    h1 {
+      font-size: 18pt;
+    }
+    .prose-article a[href^="http"]::after {
+      content: " (" attr(href) ")";
+      font-size: 8pt;
+      word-break: break-all;
+    }
+    p {
+      orphans: 3;
+      widows: 3;
+    }
+  }
+</style>

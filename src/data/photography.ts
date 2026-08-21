@@ -310,6 +310,24 @@ const galleryData: GalleryInput[] = [
         x: 2140, y: 880, w: 300,
         caption: 'As with Plate 13, this view shows the shallow descent into an intermittent lake at the Muleshoe Wildlife Refuge.',
       },
+      {
+        file: 'escarpments/escarpment15.jpg',
+        title: 'House on the Edge',
+        place: 'Deaf Smith County, Texas',
+        lat: 34.747511, lng: -102.883659,
+        specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/640s',
+        x: 2170, y: 430, w: 300,
+        caption: 'This home sits on the edge of a shallow escarpment in Deaf Smith County, Texas. The house is perched at the edge of a small escarpment that descends toward Tierra Blanca Creek, with the flat plains of the Llano Estacado extending north.',
+      },
+      {
+        file: 'escarpments/escarpment16.jpg',
+        title: 'Glacier County Harvest',
+        place: 'Glacier County, Montana',
+        lat: 48.861767, lng: -112.643927,
+        specs: '12mm \u00B7 \u0192/2.2 \u00B7 1/3700s',
+        x: 2130, y: 1030, w: 300,
+        caption: 'Looking out from a rocky escarpment over the vast, golden fields and scattered hay bales of Glacier County, Montana, with a solitary butte rising in the distance.',
+      }
     ],
   },
   {
@@ -346,20 +364,20 @@ const galleryData: GalleryInput[] = [
         place: 'Parmer County, Texas',
         lat: 34.471036, lng: -102.720865,
         specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/640s',
-        x: 1100, y: 180, w: 400,
+        x: 1020, y: 180, w: 400,
         caption: 'Running Water Draw after a heavy rain in Parmer County, Texas. After head precipitation upstream, intermittent draws and creeks on the Llano Estacado can flow for periods before returning to their dry state.',
       },
       {
-        file: 'water/water4.jpg',
-        title: 'Winter Oasis',
-        place: 'Bailey County, Texas',
+        file: 'water/water30.jpg',
+        title: 'Collector Stream',
+        place: 'Lubbock County, Texas',
         // was lng: -1102.702870 — the extra 1 put this plate three
         // times around the globe. Out-of-range coordinates now fail
         // the build rather than reaching schema.org and the map link.
-        lat: 33.990590, lng: -102.702870,
+        lat: 33.494794, lng: -101.629374,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
-        x: 1080, y: 480, w: 400,
-        caption: 'Remnant water in a lake basin as the season evolves to winter. Winter months on the Llano Estacado are its driest period, but remnant autumn precipitation and occasional fall and winter rain can fill these basins water for a short time.',
+        x: 1020, y: 490, w: 300,
+        caption: 'Water from the Yellow House Draw and Blackwater Draw flows southeast from the Llano Estacado on its way to the Gulf of America.',
       },
       {
         file: 'water/water5.jpg',
@@ -376,6 +394,7 @@ const galleryData: GalleryInput[] = [
         lat: 33.928283, lng: -102.767109,
         specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/160s',
         caption: 'The springs that occasionally feed White Lake in Bailey County generate these narrow meanders of living water that temporarily sustain life at the lake.',
+        x: 1310, y: 900, w: 300,
       },
       // ── untitled below: an empty title marks a plate as in
       // preparation. The coordinates and specs here are still the
@@ -385,7 +404,7 @@ const galleryData: GalleryInput[] = [
         title: 'Dry Portales Spring', place: 'Roosevelt County, NM',
         lat: 34.136934, lng: -103.264933,
         specs: '5mm \u00B7 \u0192/2.8 \u00B7 1/1800s',
-        x: 1510, y: 550, w: 400,
+        x: 1330, y: 560, w: 350,
         caption: 'One of the consistent water sources on the old Fort Sumner Trail, Portales Spring stands dry today, but the location along Yellow House Draw is marked by white caliche deposits and a small depression in the surrounding terrain. Billy the Kid stayed at the spring in 1880.',
       },
       {
@@ -393,7 +412,7 @@ const galleryData: GalleryInput[] = [
         title: 'Coyote Lake', place: 'Bailey County, Texas',
         lat: 34.084710, lng: -102.906476,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/2000s',
-        x: 460, y: 720, w: 300,
+        x: 560, y: 720, w: 300,
         caption: 'Coyote Lake, originally named Agua Negra, is one of the largest salt lakes on the Llano Estacado. Ranald Mackenzie camped here in the 1870s on his foray across the plains. Another plate in this series shows the water coloration, a potential indication of how its original name was derived.'
       },
       {
@@ -402,7 +421,8 @@ const galleryData: GalleryInput[] = [
         lat: 33.991164, lng: -102.708448,
         specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/800s',
         w: 300,
-        caption:'The rust-colored water bleeds into the vibrant green shoreline, separated by chalky white salt flats that look like brushstrokes from above, showcasing the raw, abstract beauty of a receding playa lake.'
+        caption:'The rust-colored water bleeds into the vibrant green shoreline, separated by chalky white salt flats that look like brushstrokes from above, showcasing the raw, abstract beauty of a receding playa lake.',
+        x: 1640, y: 930, w: 300,
       },
       {
         file: 'water/water12.jpg',
@@ -417,7 +437,7 @@ const galleryData: GalleryInput[] = [
         title: 'Evaporating Hues', place: 'Bailey County, Texas',
         lat: 33.979772, lng: -102.720094,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/2150s',
-        x: 395, y: 990, w: 300,
+        x: 475, y: 930, w: 300,
         caption:'As water evaporates out of Pauls Lake, it leaves behind a sprawling, cracked expanse of pink and reddish salt deposits, ringed by a bright white mineral shoreline that cuts sharply into the surrounding dry plains.'
       },
       {
@@ -434,7 +454,33 @@ const galleryData: GalleryInput[] = [
         lat: 33.991164, lng: -102.708448,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/1250s',
         w: 300,
-        caption: 'Windmills mark water on the Llano Estacado in a different way. The Aermotor windmill, a common sight across the plains, extracts water from underground aquifers to the surface, providing vital water for both livestock and agriculture in this arid region.'
+        caption: 'Windmills mark water on the Llano Estacado in a different way. The Aermotor windmill, a common sight across the plains, extracts water from underground aquifers to the surface, providing vital water for both livestock and agriculture in this arid region.',
+        x: 1450, y: 220, w: 400,
+      },
+      {
+        file: 'water/water32.jpg',
+        title: 'Sources for the Pastores', place: 'Potter County, Texas',
+        lat: 33, lng: -102,
+        specs: '12mm \u00B7 \u0192/2.2 \u00B7 1/750s',
+        w: 300,
+        caption: 'Deep in the rugged expanse of the Canadian River Valley bordering the northern extent of the Llano Estacado, remnant springs and water holes are reminders of the water needed to support early pastore settlement in the Panhandle in the 1870s.',
+        x: 740, y: 50, w: 220,
+      },
+      {
+        file: 'water/water33.jpg',
+        title: 'Headwaters Scales', place: 'Lynn County, Texas',
+        lat: 33.077788, lng: -101.535817,
+        specs: '14mm \u00B7 \u0192/5.6 \u00B7 1/50s',
+        caption: 'Deep in the rugged expanse of the Canadian River Valley bordering the northern extent of the Llano Estacado, remnant springs and water holes are reminders of the water needed to support early pastore settlement in the Panhandle in the 1870s.',
+        x: 330, y: 730, w: 220,
+      },
+      {
+        file: 'water/water17.jpg',
+        title: 'Shallow Pools of Agua Negra ', place: 'Bailey County, Texas',
+        lat: 34.102829, lng: -102.892902,
+        specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/800s',
+        caption: 'Coyote Lake has been a consistent water source for wildlife, livestock, indigenous peoples, and settlers for centuries. Its waters are brackish and shallow, and they assume various colors due to high mineral content.',
+        x: 1700, y: 680, w: 320,
       }
     ],
   },

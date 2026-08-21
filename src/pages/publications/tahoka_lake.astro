@@ -1,10 +1,36 @@
 ---
-// src/pages/publications/tahoka-lake.astro
+// src/pages/publications/tahoka_lake.astro
+// A book chapter: no endnotes, no cross-references, one unnumbered figure.
+// Unlike the magazine pieces this DOES emit scholarly metadata, as
+// citation_inbook_title rather than citation_journal_title.
 import RootLayout from '../../layouts/RootLayout.astro';
+import ScholarlyMeta from '../../components/ScholarlyMeta.astro';
+import PublicationHeader from '../../components/PublicationHeader.astro';
+import Figure from '../../components/Figure.astro';
+import CiteThis from '../../components/CiteThis.astro';
+import { CITATION, FIGURES } from '../../data/publications/tahoka-lake';
+
+const c = CITATION;
+
+// The opening pull-quote doubles as the standfirst, so it feeds the meta
+// description and the link preview rather than being repeated as an abstract.
+const SUMMARY =
+  'Located in the northeastern quadrant of Lynn County, Tahoka Lake and the springs surrounding ' +
+  'it was a common watering hole for different populations throughout recorded history. Part of ' +
+  'the lake\u2019s attraction was that it was a freshwater lake, usually full year-round in an area ' +
+  'where alkali lakes and playas annually dried up in the summer.';
 ---
 
-<RootLayout title="Tahoka Lake | Austin Allison">
-  <div class="max-w-4xl mx-auto py-6 text-iron">
+<RootLayout
+  title={`${c.title} | ${c.authors[0]}`}
+  description={SUMMARY}
+  image="/images/tahoka_lake.jpg"
+>
+  <Fragment slot="head">
+    <ScholarlyMeta citation={c} />
+  </Fragment>
+
+  <article class="max-w-4xl mx-auto py-6 text-iron" itemscope itemtype="https://schema.org/ScholarlyArticle">
 
     <!-- Breadcrumb Anchor Navigation -->
     <div class="mb-8">
@@ -13,32 +39,16 @@ import RootLayout from '../../layouts/RootLayout.astro';
       </a>
     </div>
 
-    <!-- Masthead -->
-    <header class="space-y-6 mb-12">
-      <div class="space-y-2">
-        <span class="text-sm font-serif text-caprock font-semibold uppercase tracking-wider block">Chapter in Scholarly Book</span>
-        <h1 class="font-serif text-2xl md:text-4xl font-medium tracking-tight text-iron leading-tight">
-          Tahoka Lake
-        </h1>
-        <p class="text-sm font-serif text-iron/60 pt-1">
-          Published in <span class="italic font-serif text-iron font-medium">Caprock Chronicles: More Tales of the Llano Estacado</span> &bull; 2021
-        </p>
-      </div>
-    </header>
+    <PublicationHeader citation={c} eyebrow="Chapter in Scholarly Book" />
 
     <!-- Article Body -->
-    <article class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6">
+    <div class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6" itemprop="articleBody">
 
       <blockquote class="border-l-2 border-caprock pl-5 italic text-iron/70 text-lg leading-relaxed">
         Lynn County and the lakes within its boundaries comprise one of the seminal locations on the Llano Estacado. Located in the northeastern quadrant of the county, Tahoka Lake and the springs surrounding it was a common watering hole for different populations throughout recorded history. Part of the lake&rsquo;s attraction was that it was a freshwater lake, usually full year-round in an area where alkali lakes and playas annually dried up in the summer.
       </blockquote>
 
-      <figure class="not-prose">
-        <img src="/images/tahoka_lake.jpg" alt="Aerial photograph of Tahoka Lake" class="w-full rounded-sm border border-haze shadow-sm" />
-        <figcaption class="text-xs font-serif text-iron/50 mt-2 italic">
-          Tahoka Lake, 2016 &mdash; Lynn County, Texas &mdash; Photo Credit: Austin Allison
-        </figcaption>
-      </figure>
+      <Figure set={FIGURES} id="tahoka-lake-aerial" numbered={false} />
 
       <p>
         Although the exact origin of Tahoka Lake&rsquo;s name is unclear, the last native inhabitants of the South Plains, the Comanche Indians, often visited the lake and may offer a clue about the name&rsquo;s origin. Baldwin Parker, son of Quanah Parker, recalled hearing elders speaking about the lake and its fresh, drinkable water, and Colonel Martin Crimmings, a cavalryman who was in the area in the 1870s, produced research detailing Great Plains place names that corroborated this. The Comanche word tohoko reportedly means &ldquo;fresh water.&rdquo;
@@ -80,7 +90,66 @@ import RootLayout from '../../layouts/RootLayout.astro';
         Today, conservation efforts exist to preserve the Tahoka Lake pasture and the history around the lake. Texas Tech University has conducted archaeological studies of specific sites around the lake, including remnants of sheepherder fences located near the lake. The land immediately surrounding the lake has never been plowed and still offers a unique look into native plant life in the region.
       </p>
 
-    </article>
+    </div>
 
-  </div>
+    <CiteThis citation={c} />
+
+  </article>
 </RootLayout>
+
+<style is:global>
+  /* One knob for every in-page jump, so nothing lands under the sticky header. */
+  :root {
+    --anchor-offset: 7.5rem;
+  }
+
+  .versions .version-link {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-haze, #ddd8cf);
+    border-radius: 2px;
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.6);
+    text-decoration: none;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .versions a.version-link:hover,
+  .versions a.version-link:focus-visible {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+  }
+  .versions .version-link--current {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+    background: rgb(from #9c5b3f r g b / 0.06);
+  }
+
+  @media print {
+    :root {
+      --anchor-offset: 0;
+    }
+    nav,
+    .versions,
+    a[href="/publications"],
+    a[download] {
+      display: none !important;
+    }
+    .prose-article {
+      max-width: none;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: #000;
+    }
+    h1 {
+      font-size: 18pt;
+    }
+    .prose-article a[href^="http"]::after {
+      content: " (" attr(href) ")";
+      font-size: 8pt;
+      word-break: break-all;
+    }
+    p {
+      orphans: 3;
+      widows: 3;
+    }
+  }
+</style>

@@ -1,10 +1,36 @@
 ---
-// src/pages/publications/southwest-conference.astro
+// src/pages/publications/southwest_conference.astro
+// Short piece: no endnotes, no cross-references, unnumbered figures, and no
+// citation_* journal metadata. Same pattern as comfortably_lodged.
 import RootLayout from '../../layouts/RootLayout.astro';
+import ScholarlyMeta from '../../components/ScholarlyMeta.astro';
+import PublicationHeader from '../../components/PublicationHeader.astro';
+import Figure from '../../components/Figure.astro';
+import CiteThis from '../../components/CiteThis.astro';
+import { CITATION, FIGURES } from '../../data/publications/southwest-conference';
+
+const c = CITATION;
+
+// Drawn from the opening pull-quote, which doubles as the standfirst. Feeds
+// the meta description and the link preview rather than being repeated on
+// the page as an abstract.
+const SUMMARY =
+  'A previously well-known entity in Texas, the Southwest Conference dominated college sports ' +
+  'in Texas for the better part of a century, but its stature quickly dissolved in a matter of ' +
+  'months as schools sought to keep up with a changing landscape that revolved more around ' +
+  'television contracts than traditional conference foes.';
 ---
 
-<RootLayout title="The Remnants of the Southwest Conference | Austin Allison">
-  <div class="max-w-4xl mx-auto py-6 text-iron">
+<RootLayout
+  title={`${c.displayTitle ?? c.title} | ${c.authors[0]}`}
+  description={SUMMARY}
+  image="/images/southwest_conference1.jpg"
+>
+  <Fragment slot="head">
+    <ScholarlyMeta citation={c} />
+  </Fragment>
+
+  <article class="max-w-4xl mx-auto py-6 text-iron" itemscope itemtype="https://schema.org/Article">
 
     <!-- Breadcrumb Anchor Navigation -->
     <div class="mb-8">
@@ -13,35 +39,16 @@ import RootLayout from '../../layouts/RootLayout.astro';
       </a>
     </div>
 
-    <!-- Masthead -->
-    <header class="space-y-6 mb-12">
-      <div class="space-y-2">
-        <span class="text-sm font-serif text-caprock font-semibold uppercase tracking-wider block">Magazine Feature</span>
-        <h1 class="font-serif text-2xl md:text-4xl font-medium tracking-tight text-iron leading-tight">
-          The Remnants of the Southwest Conference
-        </h1>
-        <p class="font-serif text-lg md:text-xl text-iron/70 italic leading-snug max-w-2xl">
-          The Story of a Landmark Archival Collection
-        </p>
-        <p class="text-sm font-serif text-iron/60 pt-1">
-          Published in <span class="italic font-serif text-iron font-medium">Authentic Texas</span> &bull; Winter 2024
-        </p>
-      </div>
-    </header>
+    <PublicationHeader citation={c} eyebrow="Magazine Feature" />
 
     <!-- Article Body -->
-    <article class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6">
+    <div class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6" itemprop="articleBody">
 
       <blockquote class="border-l-2 border-caprock pl-5 italic text-iron/70 text-lg leading-relaxed">
         Conference realignment. It is the periodic buzzword that makes the rounds of college athletics for the past three or more decades as schools and conferences aim to sweeten their television contracts. The history of college athletics runs mostly parallel to the history of college athletic conferences, and with that history comes the stories of conference realignment. Conference realignment over the past decade has been front and center as schools like Texas A&amp;M University and the University of Texas left their previously comfortable homes in the Big 12 Conference to try their luck in the Southeastern Conference (SEC). This was not the first time such moves rattled college athletics. A previously well-known entity in Texas, the Southwest Conference (SWC), dominated college sports in Texas for the better part of a century, but its stature quickly dissolved in a matter of months as schools sought to keep up with a changing landscape that revolved more around television contracts rather than traditional conference foes.
       </blockquote>
 
-      <figure class="not-prose">
-        <img src="/images/southwest_collection1.jpg" alt="Aerial image of the Southwest Collection/Special Collections Library" class="w-full rounded-sm border border-haze shadow-sm" />
-        <figcaption class="text-xs font-serif text-iron/50 mt-2 italic">
-          Southwest Collection/Special Collections Library &mdash; Lubbock, Texas &mdash; Photo Credit: Austin Allison
-        </figcaption>
-      </figure>
+      <Figure set={FIGURES} id="swc-library-aerial" numbered={false} />
 
       <p>
         The first major blow to the SWC was the departure of the University of Arkansas in 1990. This left the conference as a Texas-only affair that was on the outside looking in as other leagues signed large and long-term collaborative contracts with television groups to broadcast games on cable and network television. The conference trudged along for a time, but the dominoes were already falling out of favor for the old SWC. Four schools, Baylor University, Texas A&amp;M University, Texas Tech University, and the University of Texas were on their way out by late 1993. Schools from the Big 8 and the four departing SWC schools joined forces to create the Big 12 Conference. Rice University, Southern Methodist University and Texas Christian University joined the Western Athletic Conference, while the University of Houston joined Conference USA.
@@ -59,12 +66,7 @@ import RootLayout from '../../layouts/RootLayout.astro';
         Transfer of the materials began in early 1996, and by June of that year more than 300 boxes of material had been collected by the crew from Texas Tech. One of the selling points that Texas Tech touted was the expansion and opening of their new building which was slated to occur in 1996. Not only did Tech have the facilities to house the monstrous collection, but they had the permanent exhibit space to highlight the acquisition in perpetuity as one of the cornerstone collections housed at the facility. This exhibit still stands today.
       </p>
 
-      <figure class="not-prose">
-        <img src="/images/southwest_conference1.jpg" alt="Image of Southwest Conference exhibit" class="w-full rounded-sm border border-haze shadow-sm" />
-        <figcaption class="text-xs font-serif text-iron/50 mt-2 italic">
-          Southwest Conference exhibit at Southwest Collection/Special Collections Library &mdash; Lubbock, Texas &mdash; Photo Credit: Austin Allison
-        </figcaption>
-      </figure>
+      <Figure set={FIGURES} id="swc-exhibit" numbered={false} />
 
       <p>
         The collection contains a breadth of information about not only the everyday business of the Southwest Conference, but also a wide-ranging view of athletics from the early 20th century up through a portion of its last decade. The most comprehensive series of documents is the meeting minutes records, which is complete and comprehensive. In fact, these records have been digitized and are available for researchers on the Southwest Collection&rsquo;s digital repository. For those interested in historic game and season statistics, there are records folder after folder dating back to the 1960s and beyond.
@@ -78,7 +80,66 @@ import RootLayout from '../../layouts/RootLayout.astro';
         The Southwest Conference has a rich history that documents college athletics during the 20th century. This history can be accessed by researchers at Texas Tech University&rsquo;s Southwest Collection/Special Collections Library. A box-by-box, folder-by-folder breakdown of the collection can be accessed online. Texas Tech is also home to the Southwest Conference Circle, a unique octagon-shaped marker that was constructed in 1956 to commemorate Texas Tech&rsquo;s entry into the conference in 1956. The marker can be viewed just east of the Bob L. Herd Department of Petroleum Engineering on Texas Tech&rsquo;s campus in Lubbock.
       </p>
 
-    </article>
+    </div>
 
-  </div>
+    <CiteThis citation={c} />
+
+  </article>
 </RootLayout>
+
+<style is:global>
+  /* One knob for every in-page jump, so nothing lands under the sticky header. */
+  :root {
+    --anchor-offset: 7.5rem;
+  }
+
+  .versions .version-link {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-haze, #ddd8cf);
+    border-radius: 2px;
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.6);
+    text-decoration: none;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .versions a.version-link:hover,
+  .versions a.version-link:focus-visible {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+  }
+  .versions .version-link--current {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+    background: rgb(from #9c5b3f r g b / 0.06);
+  }
+
+  @media print {
+    :root {
+      --anchor-offset: 0;
+    }
+    nav,
+    .versions,
+    a[href="/publications"],
+    a[download] {
+      display: none !important;
+    }
+    .prose-article {
+      max-width: none;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: #000;
+    }
+    h1 {
+      font-size: 18pt;
+    }
+    .prose-article a[href^="http"]::after {
+      content: " (" attr(href) ")";
+      font-size: 8pt;
+      word-break: break-all;
+    }
+    p {
+      orphans: 3;
+      widows: 3;
+    }
+  }
+</style>
