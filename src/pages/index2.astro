@@ -158,7 +158,8 @@
 // spot gradients that used to live there are gone, replaced by the
 // per-leaf textures above.
 import RootLayout from '../layouts/RootLayout.astro';
-import { photoFeatures, PUBLICATION_FEATURES } from '../data/register-features';
+import { Image } from 'astro:assets';
+import montana2022 from '../assets/montana2022/137.jpg';
 
 const leaves = [
   { code: 'Ex Libris', label: '01 · Ex Libris' },
@@ -176,32 +177,6 @@ const leaves = [
 // client script strips the same prefix off the tab text at runtime for
 // exactly the same reason.
 const shortLabels = leaves.map((l) => l.label.replace(/^\s*\d+\s*\u00B7\s*/, ''));
-
-// ── Rotating features (leaves 03 and 05) ────────────────────────
-// See src/data/register-features.ts for the lists and for why this
-// rotates on page turn rather than on a timer.
-//
-// Photography DERIVES from src/data/photography.ts and reuses the
-// board derivatives the light table already builds — 700w, plus
-// 1400w at 2x. getGalleries() is memoized, so the home page adds
-// nothing to build time that the photography routes were not already
-// paying. photoFeatures() throws on its own if no usable plate is
-// available, so there is no length check for it here.
-const photoVariants = await photoFeatures();
-const publicationVariants = PUBLICATION_FEATURES;
-
-if (!publicationVariants.length) {
-  throw new Error(
-    'register-features.ts: PUBLICATION_FEATURES needs at least one entry — leaf 05 server-renders the first one.'
-  );
-}
-
-// `<` escaped so a stray "</script>" inside a title can't close the
-// data island early
-const featureJson = JSON.stringify({
-  photos: photoVariants,
-  publications: publicationVariants,
-}).replace(/</g, '\\u003c');
 
 // ── Foxing textures (see v10 note above) ─────────────────────────
 //
@@ -320,79 +295,25 @@ const SIGNATURE_PATHS = `
             </g>
           `;
 
-const SIGNATURE_PEWTER_SVG = `
+const SIGNATURE_GOLD_SVG = `
   <defs>
-    <!-- PEWTER, not gold. gradientUnits is userSpaceOnUse and NOT the
-         objectBoundingBox default, which was the real bug: the mark is
-         nine separate <path>s ranging from 1084x860 down to 25x29, and
-         objectBoundingBox resolves per filled element, so each tiny dot
-         ran the entire light-to-dark ramp inside 29 units while the long
-         strokes ran the same ramp across 860. The lighting contradicted
-         itself between the big strokes and the small marks. In user
-         space the ramp is one continuous wash across the whole
-         signature, which is what a single light source actually does.
-
-         Four stops, not three, and a much wider value range than the old
-         #c9a227/#b08d24/#8b6a1f band: what makes a mark read as METAL is
-         a bright specular and a deep low sitting close together. A narrow
-         mid-tone ramp reads as paint at any hue.
-
-         DUSTY GILT, not bright gold. Every stop sits at the same gold
-         hue (about 43deg) and differs only in value and saturation, so
-         the mark reads as one metal catching one light rather than as
-         a colour blend. Saturation is about 0.30 at the mid — roughly
-         a third of the old #b08d24, which was near 0.79 and read as
-         mustard. It is also scaled DOWN at the two ends: the specular
-         is nearly bleached and the deep shadow nearly neutral, which is
-         what keeps the pewter character underneath the gold instead of
-         swinging all the way back to brass.
-
-         THE HUE DIAL is saturation, not hue. Pushing toward orange is
-         what made the original look cheap; more chroma at this same hue
-         just makes it more obviously gilt.
-
-         THE VALUE FLOOR is the bottom stop, and it is deliberately much
-         higher than it first was: the leather behind this is #231712,
-         so a dark bottom stop does not read as shadow, it reads as the
-         mark disappearing. #877a56 keeps the low end clearly above the
-         cover at the cost of a narrower range in the fill. The metal's
-         real contrast lives in the CSS bevel below, which is where a
-         near-white specular and a near-black shadow sit a pixel apart;
-         the fill only has to carry form shading. Drop the last stop
-         toward #6a5f42 for a moodier mark, but check it on leather
-         rather than on white. -->
-    <!-- RAMP GEOMETRY. In user space the ramp LENGTH is the length of
-         the (x1,y1)->(x2,y2) vector, and anything past the far end
-         clamps to the last stop. An earlier pass carried the old
-         objectBoundingBox direction over literally as (330, 900) — a
-         959-unit ramp on artwork 2609 units wide — so the whole right
-         and lower right of the mark sat pinned at the darkest stop:
-         below y=700 everything right of x=821 was solid #4c473c. That
-         is why the signature faded out toward "Allison".
-
-         The vector is now PURELY VERTICAL and spans the full height of
-         the artwork, so t depends only on y. Nothing clamps, and the
-         shading reads as one light from above rather than as the mark
-         dimming from left to right. Keep x1 === x2 unless you re-derive
-         the length: any horizontal component needs the vector to span
-         2609+ units or the right side starts clamping again. -->
-    <linearGradient id="cover-signature-pewter" gradientUnits="userSpaceOnUse"
-                    x1="0" y1="-20" x2="0" y2="880">
-      <stop offset="0%"   stop-color="#efe7d2" />
-      <stop offset="30%"  stop-color="#cdbc90" />
-      <stop offset="65%"  stop-color="#a8996c" />
-      <stop offset="100%" stop-color="#877a56" />
+    <!-- Simple, mostly-solid gold with a very slight ramp -->
+    <linearGradient id="cover-signature-gold" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0%"   stop-color="#c9a227" />
+      <stop offset="50%"  stop-color="#b08d24" />
+      <stop offset="100%" stop-color="#8b6a1f" />
     </linearGradient>
-
-    <!-- The bevel is NOT here. There used to be a #cover-signature-emboss
-         filter defined at this point that nothing ever referenced, and
-         which would have been invisible anyway: its offsets were in
-         viewBox units on a 2650-wide box rendered at 224-320px, so
-         dx of 0.8 resolved to about 0.07 rendered pixels. The bevel lives
-         in the .cover-signature CSS filter, in real pixels, where it can
-         stay a constant physical width at every size. -->
+ 
+    <!-- Bevel filter: light highlight up-left + soft dark shadow down-right,
+         simulating gold foil pressed into leather -->
+    <filter id="cover-signature-emboss" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="-0.6" dy="-0.6" stdDeviation="0.5"
+                    flood-color="#fff6d8" flood-opacity="0.55" />
+      <feDropShadow dx="0.8" dy="0.8" stdDeviation="0.6"
+                    flood-color="#2a1d05" flood-opacity="0.45" />
+    </filter>
   </defs>
-  ${SIGNATURE_PATHS.replace(/currentColor/g, 'url(#cover-signature-pewter)')}
+  ${SIGNATURE_PATHS.replace(/currentColor/g, 'url(#cover-signature-gold)')}
 `;
 ---
 
@@ -494,7 +415,7 @@ const SIGNATURE_PEWTER_SVG = `
               </svg>
             </div>
             <div class="cover-title-block">
-              <svg class="cover-signature" viewBox="-20 -20 2650 900" set:html={SIGNATURE_PEWTER_SVG}></svg>
+              <svg class="cover-signature" viewBox="0 0 2800 800" set:html={SIGNATURE_GOLD_SVG}></svg>
               <div class="cover-subtitle-group">
                 <span class="cover-subtitle">Cataloging &amp; Metadata Librarian</span>
                 <span class="cover-subtitle">Historian &middot; Photographer</span>
@@ -609,19 +530,12 @@ const SIGNATURE_PEWTER_SVG = `
                 <a href="/photography" class="cta">Galleries</a>
               </div>
               <figure class="photo-frame" id="photo-frame">
-                <img
-                  id="feature-photo"
-                  src={photoVariants[0].src}
-                  srcset={photoVariants[0].srcset}
-                  width={photoVariants[0].width}
-                  height={photoVariants[0].height}
-                  alt={photoVariants[0].alt}
-                  decoding="async"
+                <Image
+                  src={montana2022}
+                  alt="Eroded red clay and rugged canyon formations, Toole County, Montana"
                   class="photo photo--develop"
                 />
-                <figcaption class="photo-caption" id="feature-photo-caption">
-                  {photoVariants[0].caption}
-                </figcaption>
+                <figcaption class="photo-caption">Little Jerusalem, Toole County, Montana</figcaption>
               </figure>
             </div>
             </div>
@@ -666,21 +580,19 @@ const SIGNATURE_PEWTER_SVG = `
                 <h1 class="title title--sm">
                   Featured Publication
                 </h1>
-                <h2 class="heading heading--sm pub-title" id="feature-pub-title">
-                  {publicationVariants[0].title}
+                <h2 class="heading heading--sm">
+                  'Opportunity Knocking': The Vaughan Land Company and Early Bailey County
+                  Development
                 </h2>
-                <p class="cite pub-cite" id="feature-pub-cite">{publicationVariants[0].cite}</p>
-                <a href={publicationVariants[0].href} class="cta" id="feature-pub-link">Read the Full Text</a>
+                <p class="cite">Panhandle-Plains Historical Review &bull; 2025</p>
+                <a href="/publications/opportunity_knocking" class="cta">Read the Full Text</a>
                 <br>
                 <a href="/publications" class="cta">All Publications</a>
               </div>
               <div class="photo-frame photo-frame--gray">
                 <img
-                  id="feature-pub-image"
-                  src={publicationVariants[0].image}
-                  alt={publicationVariants[0].alt}
-                  loading="lazy"
-                  decoding="async"
+                  src="/images/vaughan_land_company.jpg"
+                  alt="Vaughan Land Company development archival photo"
                   class="photo photo--gray"
                 />
               </div>
@@ -770,8 +682,6 @@ const SIGNATURE_PEWTER_SVG = `
     </div>
 
   </section>
-
-  <script type="application/json" id="register-features" is:inline set:html={featureJson}></script>
 
   <script is:inline>
     // The ledger's initial `inert` state is applied HERE rather than
@@ -1315,33 +1225,10 @@ const SIGNATURE_PEWTER_SVG = `
   .cover-signature {
     width: clamp(14rem, 42vw, 20rem);
     height: auto;
-
-    /* DEBOSSED, not raised. The highlight falls on the LOWER-RIGHT
-       inner edge and the shadow on the UPPER-LEFT — the inverse of
-       something sitting proud of the cover. Foil and blind stamps are
-       pressed INTO leather, so this is the honest reading, and it is
-       the one that matches the deckled edges and the per-leaf foxing
-       the rest of the page bothers with. Swap the two offset pairs to
-       put it back on the surface.
-
-       TWO passes, not three. The old chain ended with an ambient cast
-       shadow, which sells a raised object and is wrong for a groove —
-       a recess does not cast onto the surface it is cut into. Dropping
-       it also removes a full raster pass from an element that lives
-       inside a 0.9s 3D transform.
-
-       0.5px of blur rather than the old hard 0: at the 224px low end
-       these strokes are about a pixel wide, so a zero-blur offset copy
-       fattened and ghosted them instead of beveling them.
-
-       Highlight is a near-white carrying only a trace of warmth, not
-       the old #fff8dc cream. It has to agree with the gilt without
-       adding chroma of its own: a properly yellow glint is the fastest
-       way to make metal look like paint, and it would fight the
-       deliberately bleached top of the gradient. */
     filter:
-      drop-shadow(-1px -1px 0.5px rgba(20, 18, 15, 0.75))
-      drop-shadow(1px 1px 0.5px rgba(246, 242, 232, 0.42));
+      drop-shadow(-1px -1px 0 rgba(255, 248, 220, 0.35))
+      drop-shadow(1px 2px 1px rgba(0, 0, 0, 0.6))
+      drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3));
   }
   .cover-subtitle {
     font-family: theme('fontFamily.mono', ui-monospace, Menlo, monospace);
@@ -1874,85 +1761,6 @@ const SIGNATURE_PEWTER_SVG = `
     margin: 0 0 1.35rem;
   }
 
-    /* ── Reserved boxes for the rotating publication (leaf 05) ──────
-     The photography leaf is height-safe for free: .photo-frame is a
-     fixed 4/3 box and its caption is absolutely positioned, so no
-     plate can change the leaf's height. This leaf is not — the title
-     and citation are real text in normal flow, and .pages' height is
-     measured ONCE at load from whichever leaf is tallest. A longer
-     title arriving after that would overflow the measurement (.pages
-     is overflow:hidden), not reflow it.
-
-     So both fields get a fixed reserve: short entries pad up to it,
-     long ones clamp at it. --pub-title-lines is the dial. Raising it
-     costs height only on phones — above 800px .pages' min-height
-     floor already leaves ~100px of slack under the content. */
-  .pub-title {
-    --pub-title-lines: 4;
-    display: -webkit-box;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: var(--pub-title-lines);
-    line-clamp: var(--pub-title-lines);
-    overflow: hidden;
-    min-height: calc(var(--pub-title-lines) * 1.1em);
-  }
-  .pub-cite {
-    line-height: 1.4;
-    min-height: 2.8em;
-  }
-  /* ── Mobile height pass ───────────────────────────────
-     Every leaf is inset:0 inside .pages, and measureLeavesHeight()
-     sizes .pages to the TALLEST one — so the book is as tall as its
-     worst page and trimming a short leaf buys nothing. On phones the
-     tall ones are the two --split leaves: above 800px they are a
-     1.1fr/0.9fr pair, but below it the grid collapses to one column
-     and a full-width 4:3 frame stacks UNDER a full text block. That
-     stack, plus the running head every leaf carries, is where the
-     height is, so that is all this block touches.
-
-     Nothing here is a font-size cut for its own sake: the frames get
-     shorter ratios, the reserved boxes get retuned for the narrower
-     measure they actually wrap at, and the vertical rhythm tightens.
-     Body line-height is deliberately left alone — it is already 1.1,
-     which is tight, and buying pixels there would cost legibility. */
-  @media (max-width: 799px) {
-    /* The running head is on all five leaves, so this is the only trim
-       here that pays five times over. The folio drives the header's
-       height (it is the tallest line box in a baseline-aligned row),
-       so it comes down furthest; the doubled rule thins to match. */
-    .leaf-header {
-      padding: 0.55rem var(--page-margin) 0.5rem;
-      border-bottom-width: 4px;
-    }
-    .leaf-header-page { font-size: 1.1rem; }
-
-    .leaf-inner--split { gap: 1rem; }
-
-    /* The frames are the single biggest block of height on these two
-       leaves, and object-fit:cover means a shorter box is a crop, not
-       a squash — so the ratio is chosen by what the image is FOR.
-       On Photography the plate is the point and gets the gentler 3:2.
-       On Publications the archival photo is supporting material, so it
-       can take the harder 16:9 band. Both are dials: 4/3 restores the
-       old height exactly. */
-    .leaf--rake .photo-frame { aspect-ratio: 3 / 2; }
-    .photo-frame--gray { aspect-ratio: 16 / 9; }
-
-    /* Four lines, not five: at 1.15rem in this measure a ~110-char
-       title wraps to about four, so the fifth line was reserved height
-       that nothing ever filled. Check a long title here if you raise
-       the size back up. */
-    .pub-title {
-      --pub-title-lines: 4;
-      font-size: 1.15rem;
-      margin-bottom: 0.6rem;
-    }
-    .pub-cite { margin-bottom: 0.75rem; }
-
-    .title--sm, .heading--sm { margin-bottom: 0.6rem; }
-    .body { margin-bottom: 0.9rem; }
-  }
-
   .cta {
     display: inline-flex;
     align-items: center;
@@ -2173,106 +1981,6 @@ const SIGNATURE_PEWTER_SVG = `
     const TURN_MS = 600; // keep in sync with the .leaf transition/keyframe durations in CSS
     let current = 0;
 
-        // ── Rotating features (leaves 03 and 05) ───────────────────────
-    // Reselected at the START of a page turn, never on a timer. At
-    // that instant the incoming leaf is still fully covered by the
-    // outgoing one, so the new plate is already in place in the first
-    // strip the turn uncovers — no fade needed, no flash, and no
-    // self-updating region that would need a pause control.
-    //
-    // Variant 0 of each list is what the server rendered. A random
-    // start offset per visit means the book opens on a different
-    // plate each time; from there each return to the leaf steps
-    // forward, so nothing repeats until the list has been through.
-    interface PhotoVariant {
-      src: string; srcset?: string; width: number; height: number;
-      alt: string; caption: string;
-    }
-    interface PubVariant {
-      title: string; cite: string; href: string; image: string; alt: string;
-    }
-
-    let featurePhotos: PhotoVariant[] = [];
-    let featurePubs: PubVariant[] = [];
-    try {
-      const parsed = JSON.parse(
-        document.getElementById('register-features')?.textContent || '{}'
-      );
-      featurePhotos = parsed.photos ?? [];
-      featurePubs = parsed.publications ?? [];
-    } catch {}
-
-    const photoImg = document.getElementById('feature-photo') as HTMLImageElement | null;
-    const photoCap = document.getElementById('feature-photo-caption');
-    const pubTitle = document.getElementById('feature-pub-title');
-    const pubCite = document.getElementById('feature-pub-cite');
-    const pubLink = document.getElementById('feature-pub-link') as HTMLAnchorElement | null;
-    const pubImg = document.getElementById('feature-pub-image') as HTMLImageElement | null;
-
-    const startAt = (n: number) => (n > 1 ? Math.floor(Math.random() * n) : 0);
-    let photoNext = startAt(featurePhotos.length);
-    let pubNext = startAt(featurePubs.length);
-    let photoShown = 0;
-    let pubShown = 0;
-
-    // The swap is instant and hidden, which only works if the bytes
-    // are already there — an uncached image would leave the frame
-    // blank in the strip the turn is uncovering. So the NEXT pick is
-    // fetched as soon as the current one lands, and both are fetched
-    // when the cover opens (see initCover), not on page load: no
-    // reason to spend a reader's bandwidth on leaf 03 before they've
-    // shown any intent to open the ledger at all.
-    function preloadPhoto(i: number) {
-      const v = featurePhotos[i];
-      if (!v) return;
-      const im = new window.Image();
-      if (v.srcset) im.srcset = v.srcset;
-      im.src = v.src;
-    }
-    function preloadPub(i: number) {
-      const v = featurePubs[i];
-      if (v) new window.Image().src = v.image;
-    }
-
-    function showPhoto(i: number) {
-      const v = featurePhotos[i];
-      if (!v || !photoImg || i === photoShown) return;
-      // srcset first, and CLEARED when absent — it outranks src, so a
-      // leftover one would keep the previous plate on screen
-      if (v.srcset) photoImg.srcset = v.srcset;
-      else photoImg.removeAttribute('srcset');
-      photoImg.src = v.src;
-      photoImg.width = v.width;
-      photoImg.height = v.height;
-      photoImg.alt = v.alt;
-      if (photoCap) photoCap.textContent = v.caption;
-      photoShown = i;
-    }
-
-    function showPublication(i: number) {
-      const v = featurePubs[i];
-      if (!v || i === pubShown) return;
-      if (pubTitle) pubTitle.textContent = v.title;
-      if (pubCite) pubCite.textContent = v.cite;
-      if (pubLink) pubLink.href = v.href;
-      if (pubImg) { pubImg.src = v.image; pubImg.alt = v.alt; }
-      pubShown = i;
-    }
-
-    // A single-entry list is a deliberate no-op, not an error — that
-    // leaf simply never changes, exactly as it behaved before.
-    function rotateFeature(index: number) {
-      if (index === 2 && featurePhotos.length > 1) {
-        showPhoto(photoNext);
-        photoNext = (photoNext + 1) % featurePhotos.length;
-        preloadPhoto(photoNext);
-      } else if (index === 4 && featurePubs.length > 1) {
-        showPublication(pubNext);
-        pubNext = (pubNext + 1) % featurePubs.length;
-        preloadPub(pubNext);
-      }
-    }
-
     // The catchwords name their destination. Their text is read off the
     // tab row's own labels minus the "NN · " numbering rather than kept
     // as a second copy of the titles — renaming a leaf in the
@@ -2323,11 +2031,6 @@ const SIGNATURE_PEWTER_SVG = `
       const outgoing = leafEls[current];
       const incoming = leafEls[index];
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-      // Before either leaf moves — the incoming one is still [inert],
-      // rotated edge-on and visibility:hidden, so this is the one
-      // moment in the turn where its content can change unobserved.
-      rotateFeature(index);
 
       if (reduced || dir === -1) {
         // Backward navigation is an instant appearance, no flip —
@@ -2518,8 +2221,6 @@ const SIGNATURE_PEWTER_SVG = `
         pages?.removeAttribute('inert');
         maybeShowSwipeHint();
         maybeShowArrowPulse();
-        preloadPhoto(photoNext);
-        preloadPub(pubNext);
         const activeHeading = leafEls[current]?.querySelector<HTMLElement>('h1, h2');
         if (activeHeading) {
           if (!activeHeading.hasAttribute('tabindex')) {
