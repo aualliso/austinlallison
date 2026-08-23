@@ -1985,6 +1985,13 @@ const isDev = import.meta.env.DEV;
      SUN_HIDDEN_BELOW_DEG, scaled for an 11px moon. */
   const MOON_HIDDEN_BELOW_DEG = -2.5;
 
+  /* The moon's rendered diameter, and the unit the terminator ellipse's
+     width is expressed in. Must match #horizon-moon's width/height in the
+     stylesheet, and the background-size on its ::after - the ellipse
+     borrows the disc's own gradient and has to resolve it against a box
+     the same size, or the lit half won't match across the terminator. */
+  const MOON_PX = 11;
+
   /* The tilt is an atan2 result, so it wraps at +/-180 — and a bare wrap would
      send the 1.5s transform transition spinning the long way round the circle.
      Unwrapped against the last applied value so successive updates always take
@@ -2047,9 +2054,42 @@ const isDev = import.meta.env.DEV;
     // tilt's premise for every phase; the real left/right/up/down direction
     // comes entirely from the rotation below, which already uses the real
     // sun bearing and needs no phase-dependent branch to get it right.
+    //
+    // REPLACED 2026-08-22 (third pass). Everything above describes tuning the
+    // OFFSET of a same-size shadow disc, and that construction is now gone -
+    // kept here because the two bugs it records are easy to reintroduce.
+    // The offset disc was never the right shape: the edge of an offset
+    // circle is a circular arc, and a real terminator is an ELLIPSE, the
+    // projection of a great circle onto the disc. The two agree at exactly
+    // one point - where the terminator crosses the centre line, at
+    // -(2k-1)R - which is why it survived this long. Everywhere else the
+    // arc pulled back toward the middle faster than the ellipse, and the
+    // two constructions' cusps landed in different places: an offset disc
+    // pinches to two points that sit SIDE BY SIDE on one half of the disc,
+    // where a real terminator's cusps are always the two ends of a
+    // DIAMETER. Measured off a screenshot at a real 73% gibbous, it drew
+    // 87%. The error is zero at new and full, and peaks at +11 points at
+    // the quarters - where it also drew a curve, when a quarter moon's
+    // terminator is the one that is genuinely straight.
+    //
+    // The ellipse form needs one number: c = 2*illum - 1, the cosine of the
+    // phase angle, which is the terminator ellipse's horizontal semi-axis
+    // in units of the moon's radius. Its SIGN is the phase's whole
+    // character - positive is gibbous (the ellipse carries light INTO the
+    // shadowed half), negative is crescent (it eats shadow INTO the lit
+    // half) - so the two cases differ only in what the ellipse is painted
+    // with, never in geometry. At c = 0 the width is zero and the
+    // terminator is a straight line, for free.
+    //
+    // Still unrotated-lit-right, so the tilt below is untouched.
     const phase = moonPhaseFraction(now);
     const illum = (1 - Math.cos(2 * Math.PI * phase)) / 2;
-    header.style.setProperty('--moon-shadow-x', `${(-illum * 100).toFixed(1)}%`);
+    const c = 2 * illum - 1;
+    header.style.setProperty('--moon-term-w', `${(Math.abs(c) * MOON_PX).toFixed(2)}px`);
+    header.style.setProperty(
+      '--moon-term-fill',
+      c >= 0 ? 'var(--moon-lit)' : 'var(--moon-shadow-flat)'
+    );
 
     /* THE TERMINATOR'S TILT. The mask offsets purely horizontally, so without
        this the crescent always had a vertical edge — but the illuminated limb
@@ -2620,15 +2660,12 @@ const isDev = import.meta.env.DEV;
        wind_direction_10m and is correct, but a mill whose wheel sits on its
        mast and only narrows gives the eye nothing to read the direction
        from; the vane does all of it, on the side opposite the one map habit
-       expects. This line is the check. "WSW" under a wheel aimed screen-right
-       resolves the ambiguity in three characters, and without it the yaw is
-       unfalsifiable to anyone looking at it — which is how it stayed mirrored
-       for several passes.
+       expects. This line is the check.
 
-       `wind` was computed and then dropped from the join below, so the plate
-       has read LBB + time since it was added. The note above and the one in
-       the stylesheet both describe it as carrying the wind. They described
-       the intent, not the code. */
+       `wind` was computed and then dropped from the join, so the plate has
+       read LBB + time since it was added. The note above and the one in the
+       stylesheet both describe it as carrying the wind. They described the
+       intent, not the code. */
     el.textContent = ['LBB', time, wind].filter(Boolean).join(' · ');
 
     const shortEl = document.getElementById('station-readout-wind');
@@ -2697,6 +2734,91 @@ const isDev = import.meta.env.DEV;
     }
   };
 
+  /* ---- the plate stands on the ground that is actually under it --------
+     On wide screens the terrain climbed over the station plate. Not a
+     drawing fault — a coordinate-space mismatch. The horizon svg is viewBox
+     0 0 1440 22 with preserveAspectRatio="none", so its units stretch across
+     the FULL viewport: the flat outer runs (H250 on the left, H1440 from
+     1020) are pinned at 17.4% and 70.8% of the width, forever. The content
+     row is max-w-7xl px-6 — clamped at 1280px and CENTRED. So the type
+     occupies a shrinking fraction of the viewBox as the window grows, and
+     walks inward off the flats onto the landform. Content inner-left sits at
+     0.5 - 616/W of the width, crossing x=250 at about 1890px. At 2560 the
+     plate lands around x 373-470, where publications and photography both
+     stand 7+ units above the baseline — into the bottom third of a 9px
+     readout. home only grazes it and cv never does (its whole relief is
+     under 0.4 units), which is why it read as intermittent rather than as a
+     layout bug.
+
+     THE FIX IS TO STAND ON THE LAND, NOT TO MOVE IT. The alternative was
+     remapping the silhouette's x so the landform tracked the content column.
+     That works, but it compresses the profile at wide widths and adds a
+     second coordinate system that has to stay in step with both constant
+     tables. This is smaller and truer to the conceit: the name is a
+     benchmark standing ON the line, so when the line rises under it, the
+     benchmark rises with it.
+
+     THE NEAR SILHOUETTE ONLY — deliberately NOT horizonLiftPx(). That helper
+     takes the higher of both profiles because the SUN has to clear whatever
+     is in front of it, but the far plane sits 0.65 units above the baseline
+     at every x including the flat runs, so borrowing it here would have
+     lifted the plate by a constant at every width on every route — phones
+     included. The far plane also physically cannot reach the plate: 0.65
+     units is 0.65px, against 7px of clearance. The name stands on the near
+     ground; that is the only profile that can bury it.
+
+     ONLY WHEN IT WOULD ACTUALLY OVERLAP. The lift is the DEFICIT, not the
+     terrain height: land top plus clearance minus where the plate already
+     sits, floored at zero. So at 1440, where home's land reaches 4.1px under
+     a plate already at 7px, nothing moves at all. Only a genuine collision
+     produces a number.
+
+     GATED TO THE WIDE LAYOUT, on the same threshold measureSkyWindow uses to
+     decide whether the type constrains the sky. Below it the content spans
+     nearly the full width and the land is high under the name by design —
+     that is the layout where the sky is deliberately allowed to pass behind
+     the type, and it is not the case that was reported. Phones are
+     untouched.
+
+     Nine samples across the landmark's span rather than one, because the
+     plate is a wide object and a single reading at its left edge would let a
+     slope rise through its right end.
+
+     MUST RUN AFTER setHorizon() — it reads the `d` that function writes. */
+  const HORIZON_BASELINE_PX = 3;          // 22-unit viewBox, baseline at y=19
+  const PLATE_BASE_PX = 7;                // row's pb-[3px] + .station-meta's 0.25rem
+  const PLATE_LIFT_CLEARANCE_PX = 2;
+  const PLATE_LIFT_MAX_PX = 13;
+  const PLATE_LIFT_SAMPLES = 9;
+
+  const setPlateLift = () => {
+    if (!header) return;
+    const landmark = header.querySelector<HTMLElement>('.landmark');
+    const total = header.offsetWidth;
+    if (!landmark || !total) return;
+
+    if (total < WIDE_LAYOUT_PX) {
+      header.style.setProperty('--plate-lift', '0px');
+      return;
+    }
+
+    const d = document.querySelector('.horizon-path')?.getAttribute('d');
+    if (!d) return;
+
+    const left = landmark.offsetLeft;
+    const width = landmark.offsetWidth;
+    let highest = HORIZON_BASELINE_Y;
+    for (let i = 0; i < PLATE_LIFT_SAMPLES; i++) {
+      const px = left + (i / (PLATE_LIFT_SAMPLES - 1)) * width;
+      highest = Math.min(highest, terrainYAt(d, (px / total) * HORIZON_VIEWBOX_W));
+    }
+
+    const landTopPx = HORIZON_BASELINE_PX + (HORIZON_BASELINE_Y - highest);
+    const deficit = landTopPx + PLATE_LIFT_CLEARANCE_PX - PLATE_BASE_PX;
+    const lift = Math.max(0, Math.min(PLATE_LIFT_MAX_PX, deficit));
+    header.style.setProperty('--plate-lift', `${lift.toFixed(1)}px`);
+  };
+
   /* ---- active states (the persisted header goes stale without this) ----- */
   const refreshActive = () => {
     if (!header) return;
@@ -2748,6 +2870,7 @@ const isDev = import.meta.env.DEV;
 
   /* ---- lifecycle -------------------------------------------------------- */
   setHorizon();       // must precede applyPhase AND applyStars — both consume .horizon-path's `d`
+  setPlateLift();     // same dependency: it samples the `d` setHorizon just wrote
   measureSkyWindow(); // must precede both — they consume skyLeftPct/skyRightPct
   applyPhase();
   applyMoon();
@@ -2778,6 +2901,10 @@ const isDev = import.meta.env.DEV;
     window.requestAnimationFrame(() => {
       skyWindowQueued = false;
       measureSkyWindow();
+      /* The landmark's position within the viewBox is what changes on
+         resize, not the silhouette — so the ground under the plate changes
+         even though `d` does not. */
+      setPlateLift();
       applyPhase();
       applyStars();
     });
@@ -2785,6 +2912,7 @@ const isDev = import.meta.env.DEV;
 
   document.fonts?.ready.then(() => {
     measureSkyWindow();
+    setPlateLift(); // the serif landing changes .landmark's width
     applyPhase();
     applyStars();
   });
@@ -2792,6 +2920,7 @@ const isDev = import.meta.env.DEV;
   document.addEventListener('astro:after-swap', () => {
     setHorizon();       // the new route's silhouette, before applyPhase/applyStars sample it
     measureSkyWindow(); // nav width changes with the active route's marker
+    setPlateLift();     // the new route's land may be a different height under the name
     applyPhase();
     applyMoon();
     applyStars();
@@ -2831,7 +2960,11 @@ const isDev = import.meta.env.DEV;
     --sun-az: 50%;
     --evening-tint: #C98F4E;
     --windmill-speed: 22s;
-    --moon-shadow-x: 0%;
+    /* Pre-hydration only. A zero-width terminator with a shadowed left half
+       is a quarter moon — the least wrong thing to show for the few ms
+       before applyMoon() writes the real phase, since it is the midpoint of
+       the cycle and never more than half a disc away from the truth. */
+    --moon-term-w: 0px;
     --moon-tilt: 0deg;
     --moon-az: 61%;   /* pre-hydration only; JS overwrites from real position */
     --moon-elev: 30%;
@@ -2856,6 +2989,22 @@ const isDev = import.meta.env.DEV;
     /* Pre-fetch fallback, and the value a failed fetch settles on: a clean
        sky. Inventing a dust storm that isn't happening is the worse error. */
     --haze-strength: 0.08;
+
+    /* THE MOON'S TWO FILLS, declared HERE and not on #horizon-moon, and the
+       reason is a var() substitution rule that is easy to get wrong.
+       applyMoon() writes --moon-term-fill as the literal text
+       `var(--moon-lit)` or `var(--moon-shadow-flat)`, and a custom
+       property's var() references resolve against the element the property
+       is DECLARED on - the header, since that is where the JS writes - not
+       the element that finally uses it. Declared on #horizon-moon these
+       would resolve to nothing and the ellipse would vanish.
+
+       --moon-shadow-flat is a gradient rather than a plain colour because
+       the two have to be interchangeable in one background-image slot. It
+       tracks --sky-horizon for the same reason ::after always has: a
+       night-blue bite out of a daytime moon reads as a hole. */
+    --moon-lit: radial-gradient(circle at 38% 32%, #F4F6F8 0%, #C3CDDA 100%);
+    --moon-shadow-flat: linear-gradient(var(--sky-horizon), var(--sky-horizon));
     /* Milky, faintly tan — dust brightens the distance rather than shading
        it, so this leans on caliche with just enough dust for the colour. */
     --haze-tint: color-mix(in oklch, var(--color-caliche, #E8E1D1) 74%, var(--color-dust, #B3A38F));
@@ -3371,18 +3520,17 @@ const isDev = import.meta.env.DEV;
     width: 11px;
     height: 11px;
     border-radius: 9999px;
-    background: radial-gradient(circle at 38% 32%, #F4F6F8 0%, #C3CDDA 100%);
+    background: var(--moon-lit);
     box-shadow:
       0 0 10px 3px rgba(195, 205, 218, 0.4),
       0 0 24px 9px rgba(195, 205, 218, 0.14);
-    overflow: hidden; /* the masking disc below is clipped to this circle */
+    overflow: hidden; /* clips both pseudo-elements below to this circle */
   }
 
-  /* The real phase: a second disc, same size, offset horizontally by
-     --moon-shadow-x and colored to match the surrounding night sky, so it
-     reads as shadow eating into (or retreating from) the lit disc. Waxing
-     moves the mask off to one side as the month progresses; waning the
-     other. Static — the shift only ever happens on an hourly re-check.
+  /* SUPERSEDED 2026-08-22, kept for the history it carries. This used to be
+     a second disc, same size, offset horizontally by --moon-shadow-x. See
+     the long comment in applyMoon() for why an offset circle is the wrong
+     curve and what replaced it.
 
      2026-08-07: a dangling `#horizon-header[data-phase="dawn"] #horizon-moon,`
      used to sit at the head of this selector list — a leftover from the
@@ -3391,16 +3539,63 @@ const isDev = import.meta.env.DEV;
      `inset: 0`, this flat `background`, and this `transform` in place of its
      rotation: a sky-coloured disc pinned to the top-left corner with its glow
      still attached. It read as "the moon has set." See note 14. */
+  /* THE SHADOWED HALF. A plain rectangle over the left half of the box,
+     which the parent's border-radius + overflow:hidden clip into a clean
+     semicircle. Unrotated the lit limb points right (see the tilt comment
+     in applyMoon), so the shadow is always the LEFT half here and the real
+     direction comes entirely from --moon-tilt. Matches the current sky
+     rather than a hardcoded night blue — the moon is visible in daylight
+     now, and a night-coloured bite out of a daytime moon reads as a hole. */
+  #horizon-moon::before {
+    content: "";
+    position: absolute;
+    inset: 0 50% 0 0;
+    background: var(--sky-horizon);
+  }
+
+  /* THE TERMINATOR. An ellipse centred on the disc, full height, width
+     2R|c| — which is the real thing: the terminator is a great circle seen
+     at the phase angle, so it projects to an ellipse sharing the disc's
+     vertical axis, and its cusps land on the ends of a diameter the way a
+     real moon's always do. Painting it decides the phase's character:
+     the lit gradient over the shadowed half gives a GIBBOUS, flat sky over
+     the lit half gives a CRESCENT. Same geometry either way, so there is
+     no branch here — applyMoon just hands over a different fill.
+
+     Paints after ::before, which is what both cases need: the gibbous
+     ellipse must sit ON the shadow, and the crescent's must sit on the
+     lit side it is eating into.
+
+     background-size is the FULL disc, not this box, and centred — so the
+     borrowed gradient lines up seam-free with the parent's own across the
+     terminator instead of being squeezed into a narrow ellipse. Harmless
+     for the flat crescent fill.
+
+     At c = 0 the width is 0 and the terminator is straight, which is
+     exactly right for a quarter moon and the one case the old offset-disc
+     construction could never draw.
+
+     2026-08-07: a dangling `#horizon-header[data-phase="dawn"] #horizon-moon,`
+     used to sit at the head of this selector list — a leftover from the
+     phase-scoped opacity rules deleted in the dark-sky pass. At (2,1,0) it
+     outranked #horizon-moon's own rule, so through every dawn the moon took
+     `inset: 0`, a flat `background`, and this `transform` in place of its
+     rotation: a sky-coloured disc pinned to the top-left corner with its
+     glow still attached. It read as "the moon has set." See note 14. */
   #horizon-moon::after {
     content: "";
     position: absolute;
-    inset: 0;
-    border-radius: 9999px;
-    /* Matches the current sky rather than a hardcoded night blue — the moon
-       is visible in daylight now, and a night-coloured bite out of a daytime
-       moon would read as a hole. */
-    background: var(--sky-horizon);
-    transform: translateX(var(--moon-shadow-x, 0%));
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    width: var(--moon-term-w, 0px);
+    transform: translateX(-50%);
+    border-radius: 50%;
+    background-image: var(--moon-term-fill, var(--moon-shadow-flat));
+    background-size: 11px 11px;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: width 1.5s linear;
   }
 
   #night-stars {
@@ -3785,16 +3980,22 @@ const isDev = import.meta.env.DEV;
      the current wind, which is the only thing telling a visitor that any of
      the sky above it is computed rather than drawn. Tabular figures so the
      minute ticking over doesn't shift the line. */
+  /* --plate-lift is the height of the skyline under the landmark, in px,
+     written by setPlateLift(). 0 wherever the land is flat — which is every
+     width below about 1890px, and every width at all on the cv route — so
+     this resolves to the 0.25rem that shipped and the layout is untouched
+     there. The transition matches the `d` morph exactly, so on a route
+     change the plate rises with the land rather than after it. */
   .station-meta {
     font-family: theme('fontFamily.mono', ui-monospace, Menlo, monospace);
     font-size: 8.5px;
     letter-spacing: 0.14em;
     line-height: 1;
-    padding-bottom: 0.25rem;
+    padding-bottom: calc(0.25rem + var(--plate-lift, 0px));
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     color: var(--ink-muted);
-    transition: color 0.6s linear;
+    transition: color 0.6s linear, padding-bottom 0.8s cubic-bezier(0.25, 1, 0.5, 1);
   }
 
   /* The narrow-width form of the plate. Hidden by default; the block at
