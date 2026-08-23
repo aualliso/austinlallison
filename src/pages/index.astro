@@ -99,23 +99,64 @@
 // worked before — going back is meant to read as the page simply
 // being there again, not as a flip in reverse.
 //
-// v10/v11: FOXING made per-leaf and organic instead of one fixed set of
+// v10: FOXING made per-leaf and organic instead of one fixed set of
 // hand-placed circles shared by every page. The old approach painted
-// five identical radial-gradient dots on `.book::after`, visible behind
-// whichever leaf happened to be showing — every leaf looked like the
-// same amount and shape of "aged," which is what made it read as a
-// decal rather than real spotting. Real foxing is irregular, clusters
-// unevenly, and varies leaf to leaf even within one book.
+// five identical radial-gradient dots on `.book::after`, visible
+// behind whichever leaf happened to be showing — so every leaf looked
+// exactly the same amount and shape of "aged," which is what made it
+// read as a decal rather than real spotting. Real foxing is irregular
+// (mineral/fungal blooms, not circles), clusters unevenly, and varies
+// leaf to leaf even within one book.
 //
-// v12: the generator moved OUT of this file. It was producing SVG
-// filter graphs the browser had to re-execute at every raster scale,
-// and that was the confirmed cause of pinch-zoom lag on mobile. The
-// tiles are now baked raster — see the note above the foxingFront
-// arrays below, and scripts/generate-foxing.py for the algorithm.
+// v11: reworked again — v10's spots came out fuzzy-edged, more like
+// stains bleeding into the paper than the sharply-bounded specks real
+// foxing actually has. Two causes, both fixed here: the noise was run
+// at a very low frequency (so the field changed value slowly across
+// space, spreading each spot's edge over dozens of pixels no matter
+// how the threshold was shaped), and the halo was a heavy Gaussian
+// blur, which is soft by definition. Now the threshold is a steep
+// LINEAR transfer over higher-frequency noise, compressing each edge
+// into about a pixel, and the halo is a second hard threshold at a
+// slightly lower cut minus the first — a defined concentric ring
+// rather than a blur.
 //
+// New approach: foxingTexture() below generates one SVG data-URI per
+// leaf from TWO spot layers at different scales — fine specks (high
+// frequency) and a few larger blooms (lower frequency) — because a
+// single layer only ever produces one characteristic blob size, which
+// reads as camouflage rather than age. Both layers are biased by a
+// shared low-frequency "cluster" field before thresholding, so specks
+// and blooms concentrate in the same regions and leave other parts of
+// the page nearly clean, the way real foxing colonizes unevenly.
+// Each spot gets a rust core and a paler bloom ring around it
+// (pigment migrating outward as moisture dried).
+//
+// Density was tuned by simulating the exact feTurbulence algorithm
+// and measuring what fraction of the page the spots actually cover —
+// the cuts in FOXING_SPECK_CUT / FOXING_BLOOM_CUT are percentile
+// thresholds, not guesses. See the note above those constants for
+// which direction to move them.
+//
+// Each of the 5 leaves gets its own `seed` (so the blob layout is
+// different per leaf, not shifted copies of one pattern) and its own
+// opacity (heavier on the leaves nearest the covers — Ex Libris and
+// Publications — since those are the most handled/exposed pages,
+// lighter toward the middle). The versos (leaf-face--back) reuse the
+// same seeds, so a sheet's front and back feel like the same physical
+// page, but flatter/fainter — blank pages show more even toning and
+// fewer crisp spots than a printed/handled face.
+//
+// The texture is applied via a CSS custom property (--foxing-image)
+// set inline per leaf-face, read by a shared `.leaf-face--front::after,
+// .leaf-face--back::after` rule — so there's one CSS rule, not five
+// duplicated ones, and the per-leaf variation lives entirely in the
+// frontmatter data. A two-layer mask-image biases the texture toward
+// the page edges and the spine gutter (where handling/moisture damage
+// concentrates in a real book) and thins it out toward the center.
 // `.book::after` keeps only the broad soft vignette that was already
-// doing double duty as ambient page-block shading.
-
+// doing double duty as ambient page-block shading — the five discrete
+// spot gradients that used to live there are gone, replaced by the
+// per-leaf textures above.
 import RootLayout from '../layouts/RootLayout.astro';
 import { photoFeatures, PUBLICATION_FEATURES } from '../data/register-features';
 
@@ -162,36 +203,106 @@ const featureJson = JSON.stringify({
   publications: publicationVariants,
 }).replace(/</g, '\\u003c');
 
-// ── Foxing (BAKED, was a live SVG filter) ───────────────────
+// ── Foxing textures (see v10 note above) ─────────────────────────
 //
-// These tiles used to be generated here as SVG data-URIs and rendered
-// by the browser as a LIVE FILTER GRAPH: three feTurbulence passes per
-// tile plus four thresholds and six composites, times ten tiles.
+// TILE GEOMETRY: 900x600, and every baseFrequency below is a multiple
+// of 1/300 — the greatest common divisor of the tile's two dimensions.
+// That means each frequency lands an exact whole number of noise
+// lattice cells across BOTH axes of the tile, so stitchTiles='stitch'
+// has nothing to round off and the pattern repeats seamlessly. Change
+// the tile size or a frequency and you have to re-satisfy that
+// relationship, or the browser will nudge the frequency itself and
+// shift the thresholds below out from under you.
 //
-// A filter graph is re-executed every time the browser needs a new
-// raster scale — which is exactly what pinch-zoom asks for. One
-// 900x600 tile on a 3x-DPR phone is 4.9 Mpx at rest, 19.4 Mpx at 2x
-// pinch and 43.7 Mpx at 3x. Bisecting confirmed this was THE cause of
-// pinch lag on mobile: blanking these backgrounds alone fixed it.
-//
-// The output was always deterministic (fixed seeds, fixed percentile
-// cuts), so this was static content being recomputed on every load for
-// no reason. It is now baked to WebP and zoom just resamples pixels.
-//
-// The algorithm, the seeds and the density targets now live in
-// scripts/generate-foxing.py — run it to regenerate. Conventions are
-// unchanged: two spot scales (fine specks + sparser blooms) biased by a
-// shared low-frequency cluster field so they colonise the same regions
-// and leave other parts clean; a rust core with a paler bloom ring;
-// cover-adjacent leaves (Ex Libris, Publications) heavier and interior
-// leaves lighter; versos sparser and fainter than the printed faces.
-// The tiles are periodic, so `background-repeat: repeat` is seamless —
-// verified by comparing the wrap edges against interior columns.
-//
-// Still applied through the --foxing-image custom property, so there is
-// exactly one CSS rule and the per-leaf variation stays in the data.
-const foxingFront = [0, 1, 2, 3, 4].map((i) => `/images/foxing/foxing-${i}-front.webp`);
-const foxingBack  = [0, 1, 2, 3, 4].map((i) => `/images/foxing/foxing-${i}-back.webp`);
+// THRESHOLD SLOPE: the linear feFuncA transfer is what gives the
+// spots their defined boundary. Alpha ramps from 0 to 1 across a band
+// only 1/FOX_SLOPE wide in value space — at slope 60 that's a
+// transition compressed into roughly one pixel, so the edge reads
+// crisp but still anti-aliases instead of stair-stepping. (The
+// previous version used a gamma curve over a very low-frequency noise
+// field, which spread that same transition across dozens of pixels —
+// that was the fuzziness.)
+const FOX_SLOPE = 60;
+// intercept placing the 50% crossing exactly at `cut`
+const foxIntercept = (cut: number) => (0.5 - FOX_SLOPE * cut).toFixed(3);
+const ALPHA_FROM_RED = '0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  1 0 0 0 0';
+
+function foxingTexture(
+  seed: number,
+  speckCut: number,
+  bloomCut: number,
+  coreOpacity: number,
+  haloOpacity: number
+) {
+  // One spot layer: noise -> bias by the shared cluster field -> two
+  // hard thresholds. The higher cut is the spot itself; the slightly
+  // lower cut is the same shape grown a little, and subtracting the
+  // first from the second (operator='out') leaves a thin concentric
+  // band — the paler bloom ring a real foxing spot leaves behind as
+  // pigment migrates outward while drying. Both edges stay hard.
+  const spots = (id: string, s: number, freq: string, cut: number, ringWidth: number) => `
+      <feTurbulence type='fractalNoise' baseFrequency='${freq}' numOctaves='1' seed='${s}' stitchTiles='stitch' result='${id}n'/>
+      <feColorMatrix in='${id}n' type='matrix' values='${ALPHA_FROM_RED}' result='${id}a'/>
+      <feComposite in='${id}a' in2='cluster' operator='arithmetic' k1='0' k2='0.78' k3='0.34' k4='-0.06' result='${id}f'/>
+      <feComponentTransfer in='${id}f' result='${id}Core'>
+        <feFuncA type='linear' slope='${FOX_SLOPE}' intercept='${foxIntercept(cut)}'/>
+      </feComponentTransfer>
+      <feComponentTransfer in='${id}f' result='${id}Grown'>
+        <feFuncA type='linear' slope='${FOX_SLOPE}' intercept='${foxIntercept(cut - ringWidth)}'/>
+      </feComponentTransfer>
+      <feComposite in='${id}Grown' in2='${id}Core' operator='out' result='${id}Ring'/>`;
+
+  // color-interpolation-filters='sRGB' matters: the default
+  // (linearRGB) would wash the flood colors out unpredictably.
+  const svg = `<svg xmlns='http://www.w3.org/2000/svg' width='900' height='600'>
+    <filter id='f' x='0' y='0' width='100%' height='100%' color-interpolation-filters='sRGB'>
+      <feTurbulence type='fractalNoise' baseFrequency='0.0033333' numOctaves='1' seed='${seed + 7}' stitchTiles='stitch' result='cn'/>
+      <feColorMatrix in='cn' type='matrix' values='${ALPHA_FROM_RED}' result='cluster'/>
+      ${spots('s', seed, '0.09', speckCut, 0.02)}
+      ${spots('b', seed + 3, '0.03', bloomCut, 0.035)}
+      <feFlood flood-color='#7d4a24' flood-opacity='${coreOpacity}' result='rust'/>
+      <feFlood flood-color='#b98a5c' flood-opacity='${haloOpacity}' result='pale'/>
+      <feComposite in='pale' in2='sRing' operator='in' result='sRingPaint'/>
+      <feComposite in='pale' in2='bRing' operator='in' result='bRingPaint'/>
+      <feComposite in='rust' in2='sCore' operator='in' result='sCorePaint'/>
+      <feComposite in='rust' in2='bCore' operator='in' result='bCorePaint'/>
+      <feMerge>
+        <feMergeNode in='sRingPaint'/>
+        <feMergeNode in='bRingPaint'/>
+        <feMergeNode in='sCorePaint'/>
+        <feMergeNode in='bCorePaint'/>
+      </feMerge>
+    </filter>
+    <rect width='100%' height='100%' filter='url(#f)'/>
+  </svg>`;
+  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+}
+
+// DENSITY DIAL. These cuts are the one thing to touch if the amount of
+// foxing looks wrong — they're percentile thresholds against the noise
+// field, so small changes move coverage a lot. Measured coverage of
+// the spot cores at these values: 0.70 -> ~2.4% of the page, 0.712 ->
+// ~1.7%, 0.724 -> ~1.0%. LOWER = MORE FOXING. Anything much below
+// 0.69 tips over into looking like mold rather than age.
+// Cover-adjacent leaves (Ex Libris, Publications) run heavier; the
+// interior leaves lighter, since the outer pages of a real book take
+// the most handling and humidity.
+const FOXING_SEEDS = [3, 11, 27, 42, 58];
+const FOXING_SPECK_CUT = [0.704, 0.718, 0.724, 0.718, 0.706];
+const FOXING_BLOOM_CUT = [0.708, 0.723, 0.730, 0.723, 0.710];
+const FOX_CORE_OPACITY = 0.52;
+const FOX_HALO_OPACITY = 0.28;
+
+const foxingFront = FOXING_SEEDS.map((seed, i) =>
+  foxingTexture(seed, FOXING_SPECK_CUT[i], FOXING_BLOOM_CUT[i], FOX_CORE_OPACITY, FOX_HALO_OPACITY)
+);
+// Versos: offset seeds (the back of a sheet isn't a mirror of its
+// front) and uniformly sparser + fainter, since a blank page shows
+// broad even toning rather than the crisp spotting a handled,
+// printed face collects.
+const foxingBack = FOXING_SEEDS.map((seed) =>
+  foxingTexture(seed + 100, 0.726, 0.732, 0.34, 0.18)
+);
 
 const SIGNATURE_PATHS = `
             <g fill="currentColor">
@@ -558,7 +669,7 @@ const SIGNATURE_PEWTER_SVG = `
                 <h2 class="heading heading--sm pub-title" id="feature-pub-title">
                   {publicationVariants[0].title}
                 </h2>
-                <p class="cite pub-cite" id="feature-pub-cite">{publicationVariants[0].cite}</p>
+                
                 <a href={publicationVariants[0].href} class="cta" id="feature-pub-link">Read the Full Text</a>
                 <br>
                 <a href="/publications" class="cta">All Publications</a>
