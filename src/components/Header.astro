@@ -2948,6 +2948,35 @@ const isDev = import.meta.env.DEV;
   /* solar position) — the values below are only pre-hydration fallbacks.     */
   /* ======================================================================== */
   #horizon-header {
+    /* BELT TO overflow-hidden's BRACES (2026-08-23). On at least one mobile
+       layout the sun's disc and rays paint BELOW the header's bottom edge,
+       over the page — measured at ~11px of disc past the edge at sunset,
+       with a ray crossing the white well away from it.
+
+       Nothing in this file can produce that. #sun-wrap is an absolutely
+       positioned child of a position:relative header that already carries
+       overflow-hidden, so this element IS its containing block and should
+       be clipping it; there is no position:fixed anywhere here and nothing
+       overrides overflow. Something in the SURROUNDING layout — a wrapper
+       with a transform, filter, contain, or its own overflow — is moving
+       where that clip actually lands. Which is also why sweeping
+       ?debugTime through sunset never reproduced it: solar position was
+       never the variable.
+
+       clip-path does not care. It clips the whole subtree at paint time
+       rather than depending on the containing-block chain, so it holds
+       whatever the ancestors are doing, and costs nothing on layouts where
+       overflow was already working. inset(0) is exactly the padding box —
+       the same rectangle overflow:hidden was meant to enforce — so nothing
+       that renders correctly today moves.
+
+       This is a backstop, not a diagnosis. The real culprit is upstream of
+       this component and worth finding; walk up from #sun-wrap looking for
+       the first ancestor with a non-visible overflow, a transform, a
+       filter, contain, or will-change. If that is not this header, the
+       thing before it is the answer. */
+    clip-path: inset(0);
+
     padding-top: 2.5rem; /* sky height; collapsing = lowering the sky */
     /* Pre-hydration fallback only; JS overwrites from real solar altitude.
        Under the current mapping 0% is the horizon and ~30% is a high sun, so

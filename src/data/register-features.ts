@@ -159,7 +159,7 @@ export const PUBLICATION_FEATURES: PublicationFeature[] = [
      title: 'Surveying the Capitol Land Reservation in Texas.',
      cite: 'Southwestern Historical Quarterly 129, no.3 \u2022 January 2026',
      href: '/publications/capitol_land_shq',
-     image: '/images/capitol_land_shq/02-wiley-field-notes-p1.png',
+     image: '/images/wiley_notes.jpg',
      alt: 'Image of field notes from the survey of the Capitol Land Reservation in Texas',
    },
    {
@@ -208,7 +208,7 @@ export const PUBLICATION_FEATURES: PublicationFeature[] = [
      title: 'Unusual Annotations in Stephen F. Austin’s 1835 Map of Texas Tell Early Texas History',
      cite: 'Southwestern Archivist 42, No.1 \u2022 February 2019',
      href: '/publications/unusual_annotations',
-     image: '/images/unusual_annotations/unusual_annotations2.png',
+     image: '/images/unusual_annotations/unusual_annotations1.png',
      alt: 'Image of Stephen F. Austin’s 1835 Map of Texas with annotations',
    }
 ];
