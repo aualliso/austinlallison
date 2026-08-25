@@ -1,0 +1,813 @@
+---
+/**
+ * src/pages/about.astro
+ * ---------------------------------------------------------------------------
+ * "The Finding Aid" — the About page as a DACS-style collection description.
+ *
+ * The prose is Austin's. The structure and the CSS are Claude's. The two
+ * narrative sections follow the order a real finding aid uses:
+ *
+ *   Abstract           short, third person, copyable — the thing a conference
+ *                      program or a contributor's note actually wants
+ *   Biographical note  the long first-person narrative
+ *
+ * There is deliberately NO "Scope and content" section: Related materials
+ * already describes what is on the site, item by item and with links, and
+ * Extent already gives the quantities. Add one back only if material ever
+ * lands here that the nav does not reach — datasets, a talks archive, the
+ * OCR corpus itself.
+ *
+ * REMAINING TODOs are marked inline. One thing worth knowing: the PLATE and
+ * PUBLICATION counts in EXTENT are hand-maintained. See the note by the
+ * constants for how to derive them if that becomes annoying.
+ *
+ * Palette tokens are read through fallback chains (the Footer.astro lesson:
+ * one undefined custom property invalidates the WHOLE declaration, so a bad
+ * token name means no background rather than a wrong colour). The fallback
+ * hexes for canvas/dust/sage/iron are still GUESSES — if the real --color-*
+ * tokens resolve, the literals are never reached.
+ */
+
+import RootLayout from "../layouts/RootLayout.astro";
+
+// Flip to false to drop the portrait entirely; the summary block reflows to
+// full width on its own.
+const SHOW_PORTRAIT = true;
+
+const NAME_AUTHORIZED = "Allison, Austin Lamar, 1989-";
+const NAME_NATURAL = "Austin Allison";
+const BIRTH_YEAR = "1989";
+const ORCID = "0000-0001-6787-9636";
+
+// One address, printed once. Split this back into two constants only if
+// licensing ever moves to its own inbox.
+const CONTACT_EMAIL = "hello@austinlallison.com";
+
+// Hand-maintained. To derive the plate count instead, import the same
+// memoized gallery loader the photography index uses and sum the plates of
+// the built galleries — left as a constant here so this page can never break
+// the build over a rename in that module.
+
+const PORTRAIT_ALT =
+  "Austin and Jaymie Allison standing together outdoors, photographed in March 2025.";
+
+/**
+ * The descriptive summary. Order is deliberate: who, what they do, where they
+ * are, what they work on, how much of it there is.
+ *
+ * Case convention, on purpose rather than by accident: Occupation is Title
+ * Case because those are job titles; Field of activity is sentence case
+ * because those are subjects, which is how subject headings are formed.
+ */
+const SUMMARY: { label: string; value: string; href?: string }[] = [
+  {
+    label: "Creator",
+    value: NAME_AUTHORIZED,
+  },
+  {
+    label: "Occupation",
+    value: "Cataloging and Metadata Librarian · Historian · Photographer",
+  },
+  {
+    label: "Repository",
+    value: "Southwest Collection / Special Collections Library",
+  },
+  {
+    label: "Affiliation",
+    value:
+      "Texas Tech University · West Texas Historical Association, associate director · Texas Plains Trail Region, board chair",
+  },
+  {
+    label: "Field of activity",
+    value:
+      "Early settlement on the Llano Estacado · Landscape photography · History of water in the American West",
+  },
+  { label: "Language", value: "English" },
+  {
+    label: "Identifier",
+    value: `ORCID ${ORCID}`,
+    href: `https://orcid.org/${ORCID}`,
+  },
+];
+
+/**
+ * ABSTRACT — third person, ~150 words, written to be copied whole into a
+ * conference program or a contributor's note without editing. This is the
+ * single most-used thing on a page like this, which is why it gets its own
+ * copy control and why it is the only block here written in third person.
+ *
+ * Keep it free of words that expire ("current", "forthcoming", "recently").
+ */
+const ABSTRACT_PARAGRAPHS = [
+  "Austin Allison is a cataloging and metadata librarian at the Southwest Collection/Special Collections Library at Texas Tech University. His main work focus is newspaper digitization, bibliographic description, cataloging, and metadata. He serves as an associate director of the West Texas Historical Association and as board chair of the Texas Plains Trail Region.",
+  "His research concerns land, survey, water, and settlement in the American West. His work has appeared in the Southwestern Historical Quarterly, the Journal of the West, and the Panhandle-Plains Historical Review. He has written feature articles for the Caprock Chronicles column in the Lubbock Avalanche-Journal and the heritage tourism magazine Authentic Texas.",
+  "He photographs the same country he writes about. The plates are issued as visual monographs: American Escarpments and Water on the Llano Estacado, with Cotton Gins of Texas in preparation.",
+];
+
+const RELATED: { label: string; note: string; href: string }[] = [
+  {
+    label: "Curriculum vitae",
+    note: "Appointments, publications, papers, and service, in full.",
+    href: "/cv",
+  },
+  {
+    label: "Publications",
+    note: "Articles and short pieces, each with its citation and endnotes.",
+    href: "/publications",
+  },
+  {
+    label: "Photography — Visual Monographs",
+    note: "The plates, on the light table.",
+    href: "/photography",
+  },
+  {
+    label: "Current work",
+    note: "Optical character recognition for West Texas newspapers.",
+    href: "/projects/ocr_project/",
+  },
+  {
+    label: "ORCID record",
+    note: `${ORCID} — the authority record for the scholarship.`,
+    href: `https://orcid.org/${ORCID}`,
+  },
+];
+
+const pageDescription = `${NAME_NATURAL} — cataloging and metadata librarian, historian of the Llano Estacado, and photographer of the American West.`;
+
+/**
+ * schema.org/Person. Deliberately in the BODY, not the head: JSON-LD is valid
+ * anywhere in the document (unlike the citation_* meta tags, which Scholar
+ * only reads from <head>), so this does not wait on the RootLayout head slot.
+ *
+ * alternateName carries the inverted form WITHOUT the date; the date is its
+ * own birthDate property, which is what consumers actually read.
+ */
+const personLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: NAME_NATURAL,
+  alternateName: "Allison, Austin Lamar",
+  birthDate: BIRTH_YEAR,
+  url: "https://austinlallison.com/about",
+  email: `mailto:${CONTACT_EMAIL}`,
+  jobTitle: "Cataloging and Metadata Librarian",
+  worksFor: {
+    "@type": "Organization",
+    name: "Southwest Collection / Special Collections Library",
+    parentOrganization: {
+      "@type": "CollegeOrUniversity",
+      name: "Texas Tech University",
+    },
+  },
+  memberOf: [
+    {
+      "@type": "Organization",
+      name: "West Texas Historical Association",
+    },
+    {
+      "@type": "Organization",
+      name: "Texas Plains Trail Region",
+    },
+  ],
+  knowsAbout: [
+    "Llano Estacado",
+    "Texas land survey history",
+    "Archival description",
+    "Landscape photography",
+  ],
+  sameAs: [`https://orcid.org/${ORCID}`],
+};
+---
+
+<RootLayout
+  title="About — Austin Allison"
+  description={pageDescription}
+>
+  <main class="record" id="main">
+    <!-- ===================================================================
+         MASTHEAD — the authorized access point, set as the heading.
+         The inverted form is the thesis of the page: this is a person
+         described by someone who describes things for a living.
+    ==================================================================== -->
+    <header class="masthead">
+      <p class="eyebrow">Finding aid</p>
+      <h1 class="authorized">{NAME_AUTHORIZED}</h1>
+      <p class="variant">
+        <span class="variant-label">Variant form</span>
+        {NAME_NATURAL}
+      </p>
+    </header>
+
+    <div class="upper">
+      <!-- =================================================================
+           DESCRIPTIVE SUMMARY — hanging mono labels, hairline per row.
+      ================================================================== -->
+      <section class="summary" aria-labelledby="h-summary">
+        <h2 class="section-head" id="h-summary">Descriptive summary</h2>
+        <dl class="fields">
+          {
+            SUMMARY.map((f) => (
+              <div class="field">
+                <dt>{f.label}</dt>
+                <dd>
+                  {f.href ? (
+                    <a class="link" href={f.href}>
+                      {f.value}
+                    </a>
+                  ) : (
+                    f.value
+                  )}
+                </dd>
+              </div>
+            ))
+          }
+        </dl>
+      </section>
+
+      {
+        SHOW_PORTRAIT && (
+          <figure class="reference">
+            {/* TODO — move the file to src/assets/about/portrait.jpg and swap
+                this for astro:assets <Image> to get a hashed, resized,
+                width/height-correct asset. Left as a plain <img> for now so a
+                missing file is a broken image, not a failed build.
+
+                If the original is landscape and the crop clips one of you,
+                change --ref-ratio and --ref-focus in the style block below —
+                both are single-value edits. */}
+            <div class="reference-frame">
+              <img
+                src="/images/portrait.jpg"
+                alt={PORTRAIT_ALT}
+                width="900"
+                height="1125"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+            <figcaption>
+              <span class="ref-line">Austin and Jaymie Allison.</span>
+              <span class="ref-line">March 2025.</span>
+            </figcaption>
+          </figure>
+        )
+      }
+    </div>
+
+    <!-- ===================================================================
+         ABSTRACT — the short third-person note, with the copy control.
+         A finding aid's abstract summarises the collection in a paragraph;
+         here the collection is a person, so the abstract is the bio.
+    ==================================================================== -->
+    <section class="block" aria-labelledby="h-abstract">
+      <div class="block-head">
+        <h2 class="section-head" id="h-abstract">Abstract</h2>
+        <button class="copy" type="button" data-copy-abstract>
+          <span data-copy-label>Copy bio</span>
+        </button>
+      </div>
+      <div class="body" data-abstract>
+        {ABSTRACT_PARAGRAPHS.map((p) => <p>{p}</p>)}
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         BIOGRAPHICAL NOTE — the long first-person narrative. Austin's prose.
+    ==================================================================== -->
+    <section class="block" aria-labelledby="h-biography">
+      <h2 class="section-head" id="h-biography">Biographical note</h2>
+      <div class="body">
+        <p>
+          I am a cataloging and metadata librarian, a historian, and a
+          photographer of the American West. The work on this site is my own: I
+          wrote the articles, took the photographs, and built the site.
+        </p>
+        <p>
+          I was born in Lubbock, Texas. I lived the first eleven years of my
+          life in the small town of Muleshoe, which is just east of the
+          Texas–New Mexico border. In July 2001, my family moved to Des Moines,
+          Iowa, and we lived there through my middle school years until March
+          2004. I attended Waukee Middle School. From there we moved to Spokane,
+          Washington, where I finished high school at Central Valley High School
+          in June 2008.
+        </p>
+        <p>
+          I decided to attend Texas Tech University in January 2008 so that I
+          could be closer to somewhere I considered home. My grandmother still
+          lived in Muleshoe, and I always had a unique and close relationship
+          with her that drew me back to Texas. She is one of the main reasons I
+          love history, government, and politics. She was one of the original
+          founders of the Muleshoe Heritage Center and Foundation in the
+          mid-1980s. Students in her high school government classes organized an
+          effort to save the Muleshoe Santa Fe Depot, and she sponsored the
+          early work to save that structure in 1985. Twenty years later, I
+          remember her telling me about a new effort to save the Virginia City
+          Hotel. The story of that venture is what eventually sent me into
+          researching Virginia City and the early settlement of Bailey County.
+        </p>
+        <p>
+          I started classes at Texas Tech in August 2008. The college experience
+          was completely foreign to me. I was not a typical student; I would
+          much rather have spent my spare time in Muleshoe visiting my
+          grandmother than participating in the usual college activities. I came
+          to Texas Tech as a student interested in Ancient Greek and Roman
+          history, and I took twelve hours of Ancient Greek. Midway between my
+          sophomore and junior years, in June 2010, I was hired at the Southwest
+          Collection/Special Collections Library as a student assistant at the
+          reference desk. Little did I know I would still be working there more
+          than fifteen years later.
+        </p>
+        <p>
+          Working with rare and historically significant records from West Texas
+          and the American Southwest generated an enduring interest in pursuing
+          librarianship as a career. After so many years, I still turn up items
+          I have the privilege of describing for the next person who comes
+          looking.
+        </p>
+        <p>
+          I am nothing without the love and affection of my wife, Jaymie. We
+          were married in March 2025. Having her in my life has been the biggest
+          positive change in it.
+        </p>
+      </div>
+    </section>
+
+    <!-- ===================================================================
+         RELATED MATERIALS — where the rest of the site is.
+    ==================================================================== -->
+    <section class="block" aria-labelledby="h-related">
+      <h2 class="section-head" id="h-related">Related materials</h2>
+      <ul class="related">
+        {
+          RELATED.map((r) => (
+            <li>
+              <a
+                class="related-link"
+                href={r.href}
+                rel={r.href.startsWith("http") ? "me noopener" : undefined}
+              >
+                <span class="related-label">{r.label}</span>
+                <span class="related-note">{r.note}</span>
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </section>
+
+    <!-- ===================================================================
+         CONDITIONS GOVERNING USE — rights, prints, licensing, contact.
+         The address is printed ONCE, in the last row.
+    ==================================================================== -->
+    <section class="block" aria-labelledby="h-use">
+      <h2 class="section-head" id="h-use">Conditions governing use</h2>
+      <dl class="fields fields--use">
+        <div class="field">
+          <dt>Text</dt>
+          <dd>
+            Copyright is held by the original publishers where noted. Anything
+            republished here appears with permission.
+          </dd>
+        </div>
+        <div class="field">
+          <dt>Photographs</dt>
+          <dd>
+            Prints and reproduction licensing are handled per plate. Write with
+            the plate number.
+          </dd>
+        </div>
+        <div class="field">
+          <dt>Correspondence</dt>
+          <dd>
+            <a class="link" href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- ===================================================================
+         PROCESSING INFORMATION — the colophon, folded into the finding aid
+         where it actually belongs. A finding aid says who described the
+         collection and how; this says who built the site and how.
+    ==================================================================== -->
+    <section class="block block--colophon" aria-labelledby="h-processing">
+      <h2 class="section-head" id="h-processing">Processing information</h2>
+      <div class="body body--fine">
+        <p>
+          {/* TODO — update the month when you next revise the page. */}
+          Described by the creator, August 2026. The design of this site is a
+          finding aid for the work it holds.
+        </p>
+        <p>
+          The site is built with Astro and Tailwind. Display and running text
+          are set in Cormorant Garamond; labels, folios, and plate data are set
+          in a monospace face. The header is a drawn horizon, complete with an
+          accurate sun, moon, and star pattern; the footer is a measured
+          stratigraphic section of the Llano Estacado.
+        </p>
+        <p>
+          The home page is a bound ledger. Its paper is a scan of a real account
+          book. The foxing on the leaves is generated noise, and the deckled
+          fore-edge is a clip path swapped per leaf. The catchwords at the foot
+          of each page name the leaf that follows. Nothing on the page is a
+          stock texture except the paper.
+        </p>
+      </div>
+    </section>
+
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(personLd)} />
+  </main>
+</RootLayout>
+
+<script>
+  // Copy control for the abstract. Functional feedback only — the label is the
+  // state, there is no toast and no animation.
+  const btn = document.querySelector<HTMLButtonElement>("[data-copy-abstract]");
+  const src = document.querySelector<HTMLElement>("[data-abstract]");
+  const label = document.querySelector<HTMLElement>("[data-copy-label]");
+
+  if (btn && src && label) {
+    let timer: number | undefined;
+    btn.addEventListener("click", async () => {
+      const text = Array.from(src.querySelectorAll("p"))
+        .map((p) => (p.textContent ?? "").trim())
+        .filter(Boolean)
+        .join("\n\n");
+      try {
+        await navigator.clipboard.writeText(text);
+        label.textContent = "Copied";
+      } catch {
+        label.textContent = "Press \u2318C to copy";
+        const range = document.createRange();
+        range.selectNodeContents(src);
+        const sel = window.getSelection();
+        sel?.removeAllRanges();
+        sel?.addRange(range);
+      }
+      btn.setAttribute("data-state", "done");
+      window.clearTimeout(timer);
+      timer = window.setTimeout(() => {
+        label.textContent = "Copy bio";
+        btn.removeAttribute("data-state");
+      }, 2400);
+    });
+  }
+</script>
+
+<style>
+  /* ---------------------------------------------------------------------
+     PALETTE — every external token read through a fallback chain.
+     Confirm the four site tokens; the literals are guesses.
+  --------------------------------------------------------------------- */
+  .record {
+    --ink: var(--color-iron, #2e2b26);
+    --page: var(--color-canvas, #f5f1e8);
+    --dust: var(--color-dust, #e2dac9);
+    --sage: var(--color-sage, #77836f);
+    --caprock: var(--color-caprock-accent, #9c5b3f);
+
+    /* Ink ladder. One value to lift for higher contrast. */
+    --ink-body: var(--ink);
+    --ink-fine: color-mix(in srgb, var(--ink) 78%, var(--page));
+    --ink-mark: color-mix(in srgb, var(--ink) 70%, var(--page));
+    --rule: color-mix(in srgb, var(--ink) 26%, var(--page));
+    --rule-soft: color-mix(in srgb, var(--ink) 13%, var(--page));
+
+    --serif: var(--font-serif, "Cormorant Garamond", "EB Garamond", Georgia, serif);
+    --mono: var(--font-mono, ui-monospace, "SFMono-Regular", "Menlo", monospace);
+
+    --measure: 34rem;
+    --label-col: 9.5rem;
+    --gap: clamp(2.25rem, 5vw, 3.5rem);
+
+    /* Portrait crop. Change these two if the original is landscape and the
+       frame clips someone: --ref-ratio to 3 / 2, --ref-focus to taste. */
+    --ref-ratio: 4 / 5;
+    --ref-focus: 50% 38%;
+
+    max-width: 62rem;
+    margin-inline: auto;
+    padding: clamp(2.5rem, 7vw, 5rem) clamp(1.25rem, 5vw, 2.5rem) clamp(4rem, 9vw, 7rem);
+    color: var(--ink-body);
+    font-family: var(--serif);
+  }
+
+  /* ---------------------------------------------------------------------
+     MASTHEAD
+  --------------------------------------------------------------------- */
+  .eyebrow {
+    margin: 0 0 clamp(1rem, 2.5vw, 1.6rem);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-mark);
+  }
+
+  .authorized {
+    margin: 0;
+    font-family: var(--serif);
+    font-weight: 400;
+    font-size: clamp(2.35rem, 8.5vw, 4.5rem);
+    line-height: 0.95;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  .variant {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.65rem;
+    margin: 1rem 0 0;
+    font-family: var(--mono);
+    font-size: 0.82rem;
+    color: var(--ink-mark);
+  }
+
+  .variant-label {
+    font-size: 0.68rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-mark);
+  }
+
+  /* ---------------------------------------------------------------------
+     UPPER — summary beside the reference photograph.
+  --------------------------------------------------------------------- */
+  .upper {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--gap);
+    margin-top: clamp(2.5rem, 6vw, 4rem);
+  }
+
+  @media (min-width: 860px) {
+    .upper {
+      grid-template-columns: minmax(0, 1fr) 16rem;
+      align-items: start;
+    }
+  }
+
+  /* ---------------------------------------------------------------------
+     SECTION HEADS — the one repeating structural device. Mono, ruled above,
+     hanging in the label column on wide screens so every section aligns to
+     the same axis as the field labels.
+  --------------------------------------------------------------------- */
+  .section-head {
+    margin: 0 0 1.1rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--rule);
+    font-family: var(--mono);
+    font-size: 0.7rem;
+    font-weight: 400;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--caprock);
+  }
+
+  /* ---------------------------------------------------------------------
+     FIELDS — hanging labels, hairline per row.
+  --------------------------------------------------------------------- */
+  .fields {
+    margin: 0;
+  }
+
+  .field {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.2rem 1.25rem;
+    padding: 0.7rem 0;
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .field:first-child {
+    border-top: 0;
+    padding-top: 0;
+  }
+
+  .field dt {
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-mark);
+    padding-top: 0.22em;
+  }
+
+  .field dd {
+    margin: 0;
+    font-size: 1.02rem;
+    line-height: 1.45;
+    color: var(--ink-body);
+    text-wrap: pretty;
+  }
+
+  @media (min-width: 560px) {
+    .field {
+      grid-template-columns: var(--label-col) minmax(0, 1fr);
+    }
+  }
+
+  .fields--use .field dd {
+    font-size: 0.98rem;
+    color: var(--ink-fine);
+    max-width: var(--measure);
+  }
+
+  /* ---------------------------------------------------------------------
+     REFERENCE PHOTOGRAPH — borrows the plate vocabulary rather than
+     inventing a new one: fixed ratio frame, mono caption beneath.
+  --------------------------------------------------------------------- */
+  .reference {
+    margin: 0;
+  }
+
+  .reference-frame {
+    aspect-ratio: var(--ref-ratio);
+    overflow: hidden;
+    background: var(--dust);
+    box-shadow: 0 1px 0 var(--rule);
+  }
+
+  .reference-frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: var(--ref-focus);
+  }
+
+  .reference figcaption {
+    margin-top: 0.6rem;
+    font-family: var(--mono);
+    font-size: 0.68rem;
+    line-height: 1.5;
+    letter-spacing: 0.04em;
+    color: var(--ink-mark);
+  }
+
+  .ref-line {
+    display: block;
+  }
+
+  /* ---------------------------------------------------------------------
+     BLOCKS
+  --------------------------------------------------------------------- */
+  .block {
+    margin-top: var(--gap);
+  }
+
+  .block-head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .block-head .section-head {
+    flex: 1 1 auto;
+  }
+
+  .body {
+    max-width: var(--measure);
+  }
+
+  .body p {
+    margin: 0 0 0.95em;
+    font-size: 1.06rem;
+    line-height: 1.62;
+    text-wrap: pretty;
+  }
+
+  .body p:last-child {
+    margin-bottom: 0;
+  }
+
+  .body--fine p {
+    font-size: 0.94rem;
+    line-height: 1.7;
+    color: var(--ink-fine);
+  }
+
+  .block--colophon {
+    margin-top: clamp(3.5rem, 8vw, 5.5rem);
+  }
+
+  /* ---------------------------------------------------------------------
+     COPY CONTROL
+  --------------------------------------------------------------------- */
+  .copy {
+    flex: 0 0 auto;
+    margin-top: 0.7rem;
+    padding: 0.32rem 0.7rem;
+    border: 1px solid var(--rule);
+    border-radius: 0;
+    background: transparent;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-mark);
+    cursor: pointer;
+    transition: color 120ms linear, border-color 120ms linear;
+  }
+
+  .copy:hover {
+    color: var(--caprock);
+    border-color: var(--caprock);
+  }
+
+  .copy[data-state="done"] {
+    color: var(--sage);
+    border-color: var(--sage);
+  }
+
+  /* ---------------------------------------------------------------------
+     RELATED MATERIALS — a ruled list, not cards. Each row is one crossing.
+  --------------------------------------------------------------------- */
+  .related {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .related li + li {
+    border-top: 1px solid var(--rule-soft);
+  }
+
+  .related-link {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.15rem 1.25rem;
+    padding: 0.85rem 0;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  @media (min-width: 700px) {
+    .related-link {
+      grid-template-columns: minmax(0, 20rem) minmax(0, 1fr);
+      align-items: baseline;
+    }
+  }
+
+  .related-label {
+    font-size: 1.06rem;
+    color: var(--ink-body);
+    text-decoration: underline;
+    text-decoration-color: var(--rule);
+    text-underline-offset: 0.22em;
+    text-decoration-thickness: 1px;
+    transition: text-decoration-color 120ms linear, color 120ms linear;
+  }
+
+  .related-note {
+    font-size: 0.9rem;
+    line-height: 1.5;
+    color: var(--ink-mark);
+  }
+
+  .related-link:hover .related-label {
+    color: var(--caprock);
+    text-decoration-color: var(--caprock);
+  }
+
+  /* ---------------------------------------------------------------------
+     INLINE LINKS
+  --------------------------------------------------------------------- */
+  .link {
+    color: var(--caprock);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+    text-decoration-thickness: 1px;
+    text-decoration-color: color-mix(in srgb, var(--caprock) 45%, transparent);
+  }
+
+  .link:hover {
+    text-decoration-color: var(--caprock);
+  }
+
+  /* ---------------------------------------------------------------------
+     QUALITY FLOOR
+  --------------------------------------------------------------------- */
+  .record :focus-visible {
+    outline: 2px solid var(--caprock);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-contrast: more) {
+    .record {
+      --ink-fine: var(--ink);
+      --ink-mark: color-mix(in srgb, var(--ink) 85%, var(--page));
+      --rule: color-mix(in srgb, var(--ink) 45%, var(--page));
+      --rule-soft: color-mix(in srgb, var(--ink) 28%, var(--page));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .record * {
+      transition-duration: 1ms !important;
+    }
+  }
+</style>
