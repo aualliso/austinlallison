@@ -567,7 +567,24 @@ const navItems = [
   { href: '/cv', label: 'cv' },
   { href: '/publications', label: 'publications' },
   { href: '/photography', label: 'photography' },
+  { href: '/about', label: 'about' },
 ];
+
+// THE CONTROL'S LABEL. Below 768px the marker set collapses to a single
+// control (see "THE SECTION" in the stylesheet), and what it says is the
+// station you are standing at rather than a generic word for a menu. On
+// home no marker is active — the landmark itself is the home link — so it
+// names the list instead. The module script rewrites this on every
+// client-side navigation, since the header persists and this ran once.
+const MENU_FALLBACK_LABEL = 'index';
+const currentNavLabel =
+  navItems.find((item) => isActive(item.href))?.label ?? MENU_FALLBACK_LABEL;
+
+// NOTE: routeKey() below deliberately does NOT have an '/about' branch, so
+// /about draws the home caprock mesa. That is the intended default, not an
+// oversight: a fifth landform would have to be built on the same 38-point,
+// 20-unit x grid every other route shares, because the CSS `d` morph
+// interpolates command-for-command.
 
 // ROUTE GEOGRAPHY (rebuilt 2026-08-18 — see the note on landforms below).
 //
@@ -719,7 +736,7 @@ const farPlanePath = `${farPlane} V22 H0 Z`;
 const isDev = import.meta.env.DEV;
 ---
 
-<div class="w-full sticky top-0 z-50 select-none pointer-events-none" transition:persist="horizon-header">
+<div id="horizon-sticky" class="w-full sticky top-0 z-50 select-none pointer-events-none" transition:persist="horizon-header">
   <header id="horizon-header" class="relative w-full pointer-events-auto overflow-hidden" data-debug-time={isDev ? '1' : undefined}>
 
     <!-- SKY: base layer, tinted per phase of day -->
@@ -1081,6 +1098,39 @@ const isDev = import.meta.env.DEV;
           </a>
         ))}
       </nav>
+
+      <!-- THE STATION CONTROL — the narrow-width form of the mile markers.
+           Carries .marker, so it inherits the rise-in entrance, the heat
+           shimmer and the label's colour ramp for free; only the graduation
+           stack and the display switching are its own. It is a marker and
+           not an icon on purpose: the header's iconography is SURVEY, and a
+           control that names the station you are standing at keeps the
+           active-page indication a hamburger throws away.
+           display is left entirely to the stylesheet (no Tailwind `hidden`
+           utilities) because the html[data-js] gate has to be able to win. -->
+      <button
+        id="horizon-menu-btn"
+        type="button"
+        aria-expanded="false"
+        aria-controls="horizon-menu"
+        aria-label="Site navigation"
+        class="marker shrink-0 font-serif lowercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A]"
+      >
+        <span class="plate-frame">
+          <span class="marker-label" id="horizon-menu-label">{currentNavLabel}</span>
+          <!-- The same benchmark station the active mile marker flies, at
+               plate scale. It points DOWN at the section while closed and
+               turns to point back at the plate once it is open. -->
+          <svg class="plate-mark" width="9" height="7" viewBox="0 0 11 9" aria-hidden="true">
+            <path d="M5.5 0.8 L10.2 8.2 L0.8 8.2 Z" fill="none" stroke="currentColor" stroke-width="1" />
+            <circle cx="5.5" cy="6" r="0.9" fill="currentColor" />
+          </svg>
+        </span>
+        <!-- The tie line. Zero height while closed; on open it drops the same
+             9px a mile marker's tick stands, so the plate is visibly pinned to
+             the ground it just opened. -->
+        <span class="plate-tie" aria-hidden="true"></span>
+      </button>
     </div>
 
     <!-- THE HORIZON — the line is the land, and the land depends on the page -->
@@ -1124,6 +1174,59 @@ const isDev = import.meta.env.DEV;
     </svg>
   </header>
 
+  <!-- THE SECTION — the narrow-width navigation, drawn as a shallow cut
+       into the ground below the horizon line.
+
+       IT LIVES OUTSIDE <header> BY NECESSITY. #horizon-header carries
+       `clip-path: inset(0)` (the 2026-08-23 backstop for the sun leaking
+       past the bottom edge), and clip-path clips the entire subtree at
+       paint time regardless of the containing-block chain — which is
+       exactly why that backstop works, and exactly why a panel drawn from
+       inside the header would be guillotined at the horizon. The sticky
+       wrapper is position:sticky, which is a positioned value, so it is
+       already a containing block for this element's absolute positioning;
+       no new stacking context was introduced to host it.
+
+       IT IS A CUT, NOT A DROPDOWN. The land is at the bottom of the
+       header, so anything below it is underground, and the Caprock footer
+       already established this site's vocabulary for underground: a
+       measured stratigraphic section. The -3px pull puts the panel's top
+       edge on the DRAWN horizon line rather than the header's box edge —
+       3px is where the line sits inside the 22px horizon svg, the same
+       constant #windmill's `bottom` uses. -->
+  <!-- NO aria-hidden. `inert` (applied by script, see setMenu) already takes
+       the subtree out of the accessibility tree AND prevents focus, and the
+       closed state's `visibility: hidden` does the same once its delay
+       elapses. Carrying aria-hidden as well did nothing except conflict:
+       during the 0.42s collapse the panel is still visible, so a focused
+       link is still legitimately focused while its ancestor claims to be
+       hidden — which is exactly what Chrome refuses to honour, and rightly.
+       If this ever needs re-adding, move focus out FIRST. -->
+  <div id="horizon-menu" class="absolute left-0 top-full w-full">
+    <div class="menu-cut">
+      <nav class="menu-strata mx-auto max-w-7xl px-4 font-serif lowercase" aria-label="Sections">
+        <span class="menu-route">
+          {navItems.map((item) => (
+            <a
+              href={item.href}
+              aria-current={isActive(item.href) ? 'page' : undefined}
+              class={`stratum ${isActive(item.href) ? 'is-active' : ''}`}
+            >
+              <!-- Same benchmark station the active mile marker flies. The
+                   inactive stations carry a plain tick drawn in CSS, exactly
+                   as they do standing on the horizon above. -->
+              <svg class="stratum-station" width="11" height="9" viewBox="0 0 11 9" aria-hidden="true">
+                <path d="M5.5 0.8 L10.2 8.2 L0.8 8.2 Z" fill="none" stroke="currentColor" stroke-width="1" />
+                <circle cx="5.5" cy="6" r="0.9" fill="currentColor" />
+              </svg>
+              <span class="stratum-label">{item.label}</span>
+            </a>
+          ))}
+        </span>
+      </nav>
+    </div>
+  </div>
+
   <!-- Set the phase AND the sky's darkness before first paint so a night
        visitor never sees a daytime flash. Uses the same real-sunrise/sunset
        math as the module script below (kept minimal here — this copy just
@@ -1142,6 +1245,16 @@ const isDev = import.meta.env.DEV;
        stopped preventing the very flash this script exists for. See note 14. -->
   <script is:inline>
     (function () {
+      /* THE JS GATE (2026-08-25). The narrow-width navigation collapses the
+         mile markers behind a control, and a control is worthless without
+         script. Rather than bake `inert` or `hidden` into the panel — which
+         can only be REMOVED by script, the trap the home page's register
+         walked into — the collapse itself is gated on this attribute, so a
+         visitor without JS simply keeps the full marker set. It goes on
+         <html>, which survives Astro's client-side DOM swap, and it is set
+         here rather than in the module so it lands before first paint. */
+      document.documentElement.setAttribute('data-js', '');
+
       var LAT = 33.5779, LON = -101.8552;
       var el = document.getElementById('horizon-header');
       // is:inline scripts aren't Vite-processed, so import.meta.env isn't
@@ -2823,12 +2936,157 @@ const isDev = import.meta.env.DEV;
   const refreshActive = () => {
     if (!header) return;
     const current = location.pathname.replace(/\/$/, '') || '/';
-    header.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((a) => {
+    /* Scope is the STICKY WRAPPER, not the header. The narrow-width panel is
+       a sibling of <header> rather than a child of it (it has to be — see
+       the clip-path note on #horizon-menu in the markup), so its links would
+       otherwise never pick up .is-active or aria-current. */
+    const scope: ParentNode =
+      document.getElementById('horizon-sticky') ?? header;
+    scope.querySelectorAll<HTMLAnchorElement>('a[href]').forEach((a) => {
       const target = (a.getAttribute('href') ?? '').replace(/\/$/, '') || '/';
       const active = target === current;
       a.classList.toggle('is-active', active);
       if (active) a.setAttribute('aria-current', 'page');
       else a.removeAttribute('aria-current');
+    });
+  };
+
+  /* ---- narrow-width navigation (2026-08-25) ------------------------------
+     Below 768px the four mile markers collapse to one control and the list
+     opens as a cut below the horizon. Three things this has to survive, all
+     of them consequences of transition:persist on the sticky wrapper:
+
+       1. The header is NOT re-created on a client-side navigation, so an
+          open panel would still be open on the far side of a route change.
+       2. The control's label is the CURRENT route's, and the frontmatter
+          that computed it ran once, at build time.
+       3. This module runs once per site load, so the listeners below are
+          bound once and must never be re-bound on swap.
+
+     Points 1 and 2 are handled from astro:after-swap; point 3 is why the
+     binding lives in initMenu(), called from the lifecycle block below and
+     nowhere else. */
+  const menuBtn = document.getElementById('horizon-menu-btn');
+  const menuPanel = document.getElementById('horizon-menu');
+  const menuLabel = document.getElementById('horizon-menu-label');
+  const MENU_FALLBACK_LABEL = 'index';
+
+  /* THE GATE HAS TO BE RE-STAMPED ON EVERY SWAP (2026-08-25, fix).
+     Astro's client-side navigation does not merge <html>'s attributes — it
+     strips every one off the live documentElement and copies the incoming
+     document's back, keeping only data-astro-*. The pre-paint is:inline
+     script that first set data-js sits inside a transition:persist island,
+     so it never runs again: one navigation wiped the gate, the CSS fell
+     back to the full marker set, and only a hard reload restored it.
+     This is note-13's lesson one level up — a parse-time script is
+     invisible to client-side navigation, and here so is the attribute it
+     wrote. The is:inline copy stays: it is what gets the gate up before
+     FIRST paint, which this module is too late to do. */
+  const markJsAvailable = () => document.documentElement.setAttribute('data-js', '');
+
+  /* THE PANEL'S SURFACE IS DERIVED FROM THE SKY, AND HAS TO BE MIRRORED.
+     Every colour in this header keys off --night, --ink-flip, --sky-horizon
+     and the grazing pair, and all five live on #horizon-header. The panel is
+     a SIBLING of that element, not a child, so it inherits none of them —
+     the one real cost of moving it outside the clip-path.
+
+     This copies the header's RESOLVED values across. It is a mirror and
+     never a second definition: the phase blocks, the nightness ramp and the
+     ink flip stay the single source of truth, and nothing here needs
+     retuning when they are. Adding a token to the list is the only change
+     this function should ever need.
+
+     Called on open rather than on the 60s applyPhase tick, because that is
+     the only moment the values can be seen — the panel is display:none at
+     every width where it isn't the navigation, and --night moves by about
+     0.02 across a whole minute, so a panel held open cannot visibly drift. */
+  const SKY_TOKENS = ['--night', '--ink-flip', '--sky-horizon', '--ink',
+                      '--grazing-effective', '--grazing-color', '--landmark-ink'];
+
+  const syncMenuSurface = () => {
+    if (!menuPanel || !header) return;
+    const resolved = getComputedStyle(header);
+    for (const token of SKY_TOKENS) {
+      const value = resolved.getPropertyValue(token).trim();
+      if (value) menuPanel.style.setProperty(token, value);
+    }
+  };
+
+  const menuIsOpen = () => menuPanel?.dataset.open === 'true';
+
+  const setMenu = (open: boolean, moveFocus = false) => {
+    if (!menuBtn || !menuPanel) return;
+    if (open) syncMenuSurface();  // before it can paint, not after
+
+    /* FOCUS LEAVES BEFORE THE PANEL DOES, and unconditionally — not only on
+       the moveFocus paths. Closing is what makes the subtree inert, and
+       making a subtree inert while something inside it holds focus is the
+       error the browser reports; the closed state's `visibility: hidden`
+       carries a 0.42s delay so the panel is still genuinely visible and
+       focusable at that moment. Sending focus to the control is also the
+       right destination on its own terms: it is where the panel came from,
+       and where a keyboard user expects to land. */
+    if (!open && menuPanel.contains(document.activeElement)) {
+      menuBtn.focus({ preventScroll: true }); // the header is sticky — never scroll to it
+    }
+
+    menuPanel.dataset.open = open ? 'true' : 'false';
+    /* `inert` is applied by script rather than authored into the markup,
+       for the same reason it is on the home page's register: it can only be
+       REMOVED by script, so a hard-coded attribute would hand a visitor
+       without JS a panel whose every link is dead. Without JS the markers
+       never collapse in the first place — see the html[data-js] gate.
+       It is also the ONLY hiding attribute here: see the note in the
+       markup for why aria-hidden was removed rather than kept alongside. */
+    menuPanel.toggleAttribute('inert', !open);
+    menuBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open && moveFocus) menuPanel.querySelector<HTMLAnchorElement>('a[href]')?.focus();
+  };
+
+  /* Reads the label off the panel's own active row rather than keeping a
+     second copy of navItems in the script — one source of truth, and it is
+     already correct by the time refreshActive() has run. */
+  const syncMenuLabel = () => {
+    if (!menuLabel || !menuPanel) return;
+    const active = menuPanel.querySelector('.stratum.is-active .stratum-label');
+    menuLabel.textContent = active?.textContent?.trim() || MENU_FALLBACK_LABEL;
+  };
+
+  const initMenu = () => {
+    markJsAvailable();   // idempotent; the is:inline copy already ran
+    if (!menuBtn || !menuPanel) return;
+    setMenu(false);
+    syncMenuLabel();
+    syncMenuSurface();
+
+    menuBtn.addEventListener('click', () => setMenu(!menuIsOpen(), true));
+
+    document.addEventListener('keydown', (e) => {
+      /* setMenu already returns focus to the control whenever it is inside
+         the panel; the second argument is now only about where focus goes on
+         OPEN, so Escape needs nothing extra. */
+      if (e.key === 'Escape' && menuIsOpen()) setMenu(false);
+    });
+
+    document.addEventListener('pointerdown', (e) => {
+      if (!menuIsOpen()) return;
+      const t = e.target as Node;
+      if (menuPanel.contains(t) || menuBtn.contains(t)) return;
+      setMenu(false);
+    });
+
+    /* A tap on a link navigates, and after-swap closes the panel anyway —
+       but doing it here as well means the section is already collapsing
+       while the next page loads, instead of snapping shut behind it. */
+    menuPanel.addEventListener('click', (e) => {
+      if ((e.target as Element).closest('a[href]')) setMenu(false);
+    });
+
+    /* The control only exists below 768px. If the viewport crosses that line
+       while the panel is open, both it and the control go display:none —
+       which would strand focus inside an undisplayed subtree. */
+    window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => {
+      if (e.matches && menuIsOpen()) setMenu(false);
     });
   };
 
@@ -2877,6 +3135,7 @@ const isDev = import.meta.env.DEV;
   applyStars();
   applySeasonalMarker();
   refreshActive();
+  initMenu();         // must follow refreshActive: it reads the active row's label
   applyWeather();
   setInterval(applyPhase, 60_000); // long-lived tabs cross phase/elevation/azimuth boundaries
   // Was 15 min back when the moon was pinned to a fixed spot and only its
@@ -2918,6 +3177,7 @@ const isDev = import.meta.env.DEV;
   });
 
   document.addEventListener('astro:after-swap', () => {
+    markJsAvailable();  // FIRST: the swap just stripped it off <html>
     setHorizon();       // the new route's silhouette, before applyPhase/applyStars sample it
     measureSkyWindow(); // nav width changes with the active route's marker
     setPlateLift();     // the new route's land may be a different height under the name
@@ -2926,6 +3186,11 @@ const isDev = import.meta.env.DEV;
     applyStars();
     applySeasonalMarker();
     refreshActive();
+    /* The header persists across the swap, so the panel does too — it has to
+       be told to close, and the control has to be told the new route's name.
+       Both must follow refreshActive(), which is what moves .is-active. */
+    setMenu(false);
+    syncMenuLabel();
     applyWeather();
   });
 </script>
@@ -4107,6 +4372,281 @@ const isDev = import.meta.env.DEV;
     .station-meta-wind { display: block; }
   }
 
+
+  /* ======================================================================== */
+  /* THE SECTION — narrow-width navigation (2026-08-25)                       */
+  /*                                                                          */
+  /* Below 768px the mile markers collapse to one control and the list opens  */
+  /* BELOW the horizon line: the land is at the bottom of this header, so     */
+  /* anything under it is ground. It is drawn from the header's own parts —   */
+  /* the surface derives from the sky, the stations are the mile markers      */
+  /* turned ninety degrees onto a roadside. It deliberately does NOT borrow   */
+  /* the Caprock footer's stratigraphy, which an earlier pass did: the        */
+  /* footer was built to INVERT this header, and repeating its gesture up     */
+  /* here collapsed the distinction the two were designed around. The one     */
+  /* thing kept is the ember seam, as a detail rather than the whole idea.    */
+  /*                                                                          */
+  /* WHY 768 AND NOT 640: at 640-767 the four full markers leave about 28px   */
+  /* of slack on the line, which is positive but not room. 768 is also        */
+  /* already a real breakpoint here (the type step below), so the control     */
+  /* lives exactly where the wide composition begins.                         */
+  /*                                                                          */
+  /* THE html[data-js] GATE: set by the pre-paint is:inline script AND re-set */
+  /* from astro:after-swap, because Astro's swap strips every attribute off   */
+  /* <html> and the pre-paint script never runs again. A control              */
+  /* is worthless without script, so without it the markers never collapse    */
+  /* and nothing is hidden behind a button that cannot open. Note that the    */
+  /* station readout is empty until JS fills it, so in that state the         */
+  /* landmark is only as wide as the name and four markers still fit down to  */
+  /* ~381px. (That is the READOUT plate under the name — not the control's    */
+  /* frame below, which is a different plate on the other side of the line.)  */
+  /* ======================================================================== */
+
+  /* ---- THE STATION PLATE (the control) ------------------------------------
+     It is a mile marker, so it keeps .marker and inherits the rise-in
+     entrance, the heat shimmer and the ink ramp. What makes it a PLATE is
+     the hairline frame — the only enclosed object anywhere in this header,
+     which is the whole reason it reads instead of receding.
+
+     The frame's colour is var(--landmark-ink), NOT a second warmth
+     expression: that token already carries the ink flip and the grazing
+     tint the name and the signature use, so the plate warms at sunrise and
+     sunset by exactly the amount they do and --landmark-warmth stays the
+     one dial. Mixed toward the sky so it stays a hairline and never a box. */
+
+  #horizon-menu-btn {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    /* Top padding only. The row is items-end and the landmark beside it is
+       taller, so this buys tap-target height for free without growing the
+       header — and it must not sit BELOW the plate, or the tie line would
+       have to cross it. */
+    padding: 10px 4px 0;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    color: inherit;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .plate-frame {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.42rem;
+    padding: 0.26rem 0.5rem 0.28rem;
+    min-height: 24px;                     /* WCAG 2.2 AA target size */
+    border: 1px solid color-mix(in oklab, var(--landmark-ink, var(--ink)) 58%, var(--sky-horizon));
+    border-radius: 1px;                   /* a stamped plate, not a pill */
+    transition: border-color 0.6s linear;
+  }
+
+  /* The label loses .marker-label's tick spacing and its hover lift: inside
+     a frame the rise would carry it out of its own box. The shimmer stays —
+     that part is opacity and blur, and it still reads. */
+  #horizon-menu-btn .marker-label { padding-bottom: 0; }
+  #horizon-menu-btn:hover .marker-label,
+  #horizon-menu-btn:focus-visible .marker-label { transform: none; }
+
+  #horizon-menu-btn:hover .plate-frame,
+  #horizon-menu-btn:focus-visible .plate-frame {
+    border-color: color-mix(in oklab, var(--landmark-ink, var(--ink)) 82%, var(--sky-horizon));
+  }
+
+  .plate-mark {
+    color: #C1AD8A;                        /* the benchmark colour, as .marker-station */
+    transition: transform 0.32s cubic-bezier(0.25, 1, 0.5, 1);
+  }
+
+  .plate-tie {
+    width: 1px;
+    height: 0;
+    background-color: var(--ink-muted);
+    transition: height 0.32s cubic-bezier(0.25, 1, 0.5, 1),
+                background-color 0.6s linear;
+  }
+
+  /* OPEN. Three things, all line-work: the frame's bottom edge dissolves so
+     the plate is no longer a closed object, the station turns to point back
+     at it, and the tie drops the 9px a mile marker's tick stands. */
+  #horizon-menu-btn[aria-expanded="true"] .plate-frame { border-bottom-color: transparent; }
+  #horizon-menu-btn[aria-expanded="true"] .plate-mark  { transform: rotate(180deg); }
+  #horizon-menu-btn[aria-expanded="true"] .plate-tie   { height: 9px; }
+  #horizon-menu-btn[aria-expanded="true"] .marker-label { color: var(--ink); }
+
+  @media (max-width: 767px) {
+    html[data-js] #horizon-nav      { display: none; }
+    html[data-js] #horizon-menu-btn { display: flex; }
+    html[data-js] #horizon-menu     { display: grid; }
+  }
+
+  /* ---- THE SECTION'S SURFACE ----------------------------------------------
+     Derived from the sky, like everything else in this header. --sky-horizon
+     and the rest are MIRRORED onto this element by syncMenuSurface(),
+     because the panel is a sibling of <header> and inherits nothing from it.
+
+     THE EARTH FRACTION FALLS AS THE SKY DARKENS, deliberately. The panel is
+     ground, so under a bright sky it wants a real ground tone — but the ink
+     flip is calibrated against the SKY, and any surface darker than the sky
+     spends the margin the flip was solved for. Scaling the mix by
+     (1 - --night) puts the ground tone exactly where there is headroom for
+     it (26% at noon, contrast 6.9:1) and lets the panel converge on the sky
+     itself through the twilight band, where the margin is thinnest. Modelled
+     over the file's own colour chain across every reachable sun position:
+     the panel's floor is 3.55:1 at dusk against 3.65:1 for the nav labels
+     four pixels above it — within a tenth of the type it sits under, rather
+     than a fixed slab that ignored the sky entirely. */
+  #horizon-menu {
+    --panel-earth: #6E5A48;
+    --panel-earth-pct: calc((1 - var(--night, 0)) * 26%);
+    --panel-surface: color-mix(in oklab,
+      var(--panel-earth) var(--panel-earth-pct),
+      var(--sky-horizon, #F6F4ED));
+    /* Same construction as --ink-muted, mixed toward the PANEL rather than
+       the sky — the whole point of which is that it tracks the surface the
+       type is actually standing on. */
+    --panel-ink-muted: color-mix(in oklab,
+      var(--ink, #1A1919) calc((0.75 + 0.25 * min(1, var(--night, 0) / 0.625)) * 100%),
+      var(--panel-surface));
+    --panel-rule: color-mix(in oklab, var(--panel-ink-muted) 26%, var(--panel-surface));
+    /* The ember seam, the one thing kept from the Caprock's stratigraphy —
+       a detail borrowed, not the whole gesture. Softens into the surface as
+       the sky goes out, so it never glows at midnight. */
+    --panel-seam: color-mix(in oklab,
+      #9C5B3F calc((1 - var(--night, 0) * 0.55) * 100%),
+      var(--panel-surface));
+
+    display: none;               /* the media query above turns it on */
+    margin-top: -3px;            /* onto the DRAWN line, not the box edge */
+    grid-template-rows: 0fr;     /* 0fr -> 1fr is the collapse; see .menu-cut */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: grid-template-rows 0.42s cubic-bezier(0.25, 1, 0.5, 1),
+                opacity 0.24s linear,
+                visibility 0s linear 0.42s;
+  }
+
+  #horizon-menu[data-open="true"] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: grid-template-rows 0.42s cubic-bezier(0.25, 1, 0.5, 1),
+                opacity 0.18s linear,
+                visibility 0s;
+  }
+
+  .menu-cut {
+    /* min-height:0 is load-bearing, not defensive: a grid item's automatic
+       minimum size is its content, so without it the 0fr row cannot
+       actually collapse and the panel never closes. */
+    min-height: 0;
+    overflow: hidden;
+    /* ONE flat surface, no gradient. The three-stop rock gradient this
+       replaced was the Caprock footer's gesture, and the footer was built
+       to INVERT this header rather than echo it — saying the same thing at
+       both ends of the page collapsed the distinction they were designed
+       around. Separation from the sky above comes from the drawn horizon
+       and the shadow, not from a tonal slab. */
+    /* Every var() here carries a literal. The mirror in syncMenuSurface()
+       depends on custom properties substituting at computed-value time; if a
+       token ever failed to arrive, --panel-surface would be
+       guaranteed-invalid and this declaration would die outright — a
+       transparent panel over live page text. A fallback is taken in exactly
+       that case, so it can't. The literals are the noon values. */
+    background-color: var(--panel-surface, #D1C9BF);
+    transition: background-color 0.6s linear;
+    /* DELIBERATELY NO border-top. The -3px pull puts this edge just under
+       the horizon's own 1px stroke (the line's centre sits ~3.65px above
+       the header's bottom edge inside the 22px svg), so the drawn line IS
+       the cap. Where the route's terrain rises, the line lifts off the cut
+       and the header's ground band shows between: that band is the ground
+       this section is cut through. */
+    box-shadow: 0 12px 20px -12px rgba(0, 0, 0, 0.45);
+  }
+
+  .menu-strata { display: block; padding-block: 0.5rem 0.9rem; }
+
+  /* THE ROUTE. On the horizon the markers stand in a row; here they run down
+     the roadside — the same objects turned ninety degrees, which is why this
+     panel needs no vocabulary of its own. The line spans exactly the rows,
+     which is what the wrapper is for. */
+  .menu-route {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+  .menu-route::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background-color: var(--panel-rule, #B8AFA2);
+    transition: background-color 0.6s linear;
+  }
+
+  .stratum {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-height: 46px;            /* WCAG 2.2 AA asks 24px; a thumb asks this */
+    padding: 0.35rem 0 0.35rem 1.6rem;
+    color: var(--panel-ink-muted, #45403A);
+    text-decoration: none;
+    transition: color 0.25s linear;
+  }
+  /* The tick each inactive station carries, drawn rather than marked up —
+     it is the same 9px the mile markers' ticks stand, laid on its side. */
+  .stratum::before {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 50%;
+    width: 9px;
+    height: 1px;
+    background-color: var(--panel-ink-muted, #45403A);
+    opacity: 0.55;
+    transition: width 0.25s cubic-bezier(0.25, 1, 0.5, 1),
+                background-color 0.6s linear;
+  }
+  .stratum:hover::before,
+  .stratum:focus-visible::before { width: 13px; }
+  .stratum:hover, .stratum:focus-visible { color: var(--ink, #1A1919); }
+  .stratum:focus-visible {
+    outline: 1px solid #C1AD8A;
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
+  .stratum-label { font-size: 1.15rem; letter-spacing: 0.02em; line-height: 1; }
+
+  .stratum-station {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    display: none;
+    color: #C1AD8A;
+  }
+  .stratum.is-active { color: var(--ink, #1A1919); }
+  .stratum.is-active::before { display: none; }
+  .stratum.is-active .stratum-station { display: block; }
+
+  /* The seam sits below the last station's padding, so no type stands on it. */
+  .menu-strata::after {
+    content: "";
+    display: block;
+    height: 1.5px;
+    margin-top: 0.7rem;
+    background: linear-gradient(to right,
+      transparent 0%, var(--panel-seam, #9C5B3F) 16%,
+      var(--panel-seam, #9C5B3F) 84%, transparent 100%);
+  }
+
   /* ======================================================================== */
   /* ENTRANCE CHOREOGRAPHY (first load only — transition:persist keeps the    */
   /* header alive across view transitions, so this never replays on nav)      */
@@ -4146,6 +4686,11 @@ const isDev = import.meta.env.DEV;
   #horizon-nav .marker:nth-child(1) { animation-delay: 0.55s; }
   #horizon-nav .marker:nth-child(2) { animation-delay: 0.67s; }
   #horizon-nav .marker:nth-child(3) { animation-delay: 0.79s; }
+  #horizon-nav .marker:nth-child(4) { animation-delay: 0.91s; }
+  /* The control REPLACES the marker set below 768px rather than joining it,
+     so it takes the first marker's beat. Without this it would inherit the
+     undelayed `both` from .marker's shorthand and rise in before the name. */
+  #horizon-menu-btn { animation-delay: 0.55s; }
 
   /* The 1.1s delay here is load-bearing beyond pacing: applyPhase() writes
      the real --sun-az within milliseconds of module execution, and
@@ -4376,7 +4921,8 @@ const isDev = import.meta.env.DEV;
     #night-sky, #horizon-moon, .star-point, #windmill, #windmill-rotor, #crane-flock,
     #horizon-haze, #the-horizon, .horizon-path, .horizon-ground, .far-plane,
     .signature-img, .landmark-name, .landmark, .station-plate, .station-meta,
-    .marker, .marker-label, .marker-tick {
+    .marker, .marker-label, .marker-tick, .plate-frame, .plate-mark, .plate-tie,
+    #horizon-menu, .menu-cut, .menu-route::before, .stratum, .stratum::before {
       transition: none !important;
       animation: none !important;
     }

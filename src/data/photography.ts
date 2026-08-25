@@ -166,6 +166,15 @@ export const SERIES: SeriesEntry[] = [
     cover: 'cotton_gins/dumont.jpg',
     coverLabel: 'Plate 3.01 \u00B7 Dumont',
   },
+  {
+    slug: 'courthouses',
+    number: 'IV',
+    title: 'The County Courthouse',
+    built: false,
+    lede: 'An in-depth photographic account of courthouses of the Great Plains from Texas to Montana.',
+    cover: 'courthouses/teton-cover.jpg',
+    coverLabel: 'Plate 4.x \u00B7 Teton County, Montana',
+  },
 ];
 
 const galleryData: GalleryInput[] = [
@@ -317,7 +326,7 @@ const galleryData: GalleryInput[] = [
         lat: 34.747511, lng: -102.883659,
         specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/640s',
         x: 2170, y: 430, w: 300,
-        caption: 'This home sits on the edge of a shallow escarpment in Deaf Smith County, Texas. The house is perched at the edge of a small escarpment that descends toward Tierra Blanca Creek, with the flat plains of the Llano Estacado extending north.',
+        caption: 'This abandoned homestead sits on the edge of a shallow escarpment in Deaf Smith County, Texas. The house is perched at the edge of a small escarpment that descends toward Tierra Blanca Creek, with the flat plains of the Llano Estacado extending north.',
       },
       {
         file: 'escarpments/escarpment16.jpg',

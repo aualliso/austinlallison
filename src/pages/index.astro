@@ -555,9 +555,11 @@ const SIGNATURE_PEWTER_SVG = `
               <span class="exlibris-label">Ex Libris</span>
               <h1 class="exlibris-name">Austin Allison</h1>
               <p class="body">
-                Welcome to my personal website! You may swipe or click your way through this digital ledger by swiping left or right or by using the navigation controls below. Each page contains a brief description of my work, including my academic research, photography, and current projects.
+                Navigate this digital ledger by swiping or using the controls below. Each section 
+                provides a brief look into my academic research, photography, and ongoing historical 
+                projects. Explore further by clicking links throughout the page.
               </p>
-              <a href="/about" class="cta">About the author</a>
+              <a href="/about" class="cta">About Me</a>
             </div>
             </div>
             </div>
@@ -574,13 +576,12 @@ const SIGNATURE_PEWTER_SVG = `
             <div class="leaf-body">
             <div class="leaf-inner">
               <h1 class="heading">
-                Cataloging, Preserving, and Capturing the <span>History of the American West</span>
+                Capturing the Heritage of the <span>South Plains, Texas, and the American West.</span>
               </h1>
               <p class="body">
-                Specializing in structural metadata schemas, digital preservation, and the
-                physical cataloging of regionally important items, this workspace highlights
-                my academic work alongside my photographic studies of regional landscapes of
-                Texas and the American West.
+                Exploring the intersection of library/archival science and regional heritage, 
+                this workspace highlights my academic research in history and digital preservation alongside 
+                photographic studies of the Texas South Plains and the broader American West.
               </p>
               <a href="/cv" class="cta">Curriculum vitae</a>
             </div>
@@ -601,7 +602,7 @@ const SIGNATURE_PEWTER_SVG = `
             <div class="leaf-inner leaf-inner--split">
               <div class="leaf-text">
                 <h1 class="title title--sm">
-                  Series I - III
+                  Series I - IV
                 </h1>
                 <h2 class="heading heading--sm">Visual Monographs of the American West</h2>
                 <p class="body">
@@ -1153,6 +1154,7 @@ const SIGNATURE_PEWTER_SVG = `
     font-variant-numeric: tabular-nums;
     color: var(--color-sage, #5A6B5A);
     flex-shrink: 0;
+    font-weight: 800;
   }
 
   .cover {
@@ -1854,18 +1856,16 @@ const SIGNATURE_PEWTER_SVG = `
     color: var(--color-sage, #5A6B5A);
     margin: 0 0 0.85rem;
     max-width: 42rem;
-    border-bottom: #5A6B5A 1px solid;
   }
 
   .title--sm { font-size: clamp(1.3rem, 2.2vw, 1.75rem); }
 
   .heading {
     font-family: cormorant-garamond, serif;
-    font-weight: 500;
     font-size: clamp(1.6rem, 3.2vw, 2.5rem);
     line-height: 1.1;
     letter-spacing: -0.01em;
-    color: var(--color-iron, #1A1919);
+    color:  var(--color-iron, #1A1919);
     margin: 0 0 0.85rem;
     max-width: 42rem;
   }
@@ -2014,7 +2014,8 @@ const SIGNATURE_PEWTER_SVG = `
   }
 
   .heading span {
-    color: var(--color-caprock, #B85A38);
+    font-weight: 800;
+    color: var(--color-caprock)
   }
 
   .body {
