@@ -145,7 +145,7 @@ export const SERIES: SeriesEntry[] = [
     title: 'American Escarpments',
     built: true,
     lede: "A gallery of the vertical escarpments outlining the edges of our country's plateaus. This collection captures the jarring drops of these areas under natural light. Encompassing three states, this gallery only captures a small portion of our nation's plateaus and escarpments.",
-    cover: 'escarpments/escarpment5.jpg',
+    cover: 'escarpments/escarpment20.jpg',
     coverLabel: 'Plate 1.05 \u00B7 Little Jerusalem',
   },
   {
@@ -201,7 +201,7 @@ const galleryData: GalleryInput[] = [
         place: 'Garza County, Texas',
         lat: 33.090300, lng: -101.500369,
         specs: '14mm \u00B7 \u0192/8 \u00B7 1/320s',
-        x: 1640, y: 370, w: 400,
+        x: 1640, y: 290, w: 400,
         caption: 'Terra cotta soil, pale caliche cliffs, bright yellow wildflowers, and deep green mesquite. Watching the high plains of the Llano Estacado drop off into the Double Mountain Fork Brazos River basin in Garza County.',
       },
       {
@@ -240,7 +240,7 @@ const galleryData: GalleryInput[] = [
         place: 'Bailey County, Texas',
         lat: 33.851419, lng: -102.700752,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/2000s',
-        x: 1720, y: 570, w: 300,
+        x: 1720, y: 480, w: 300,
         caption: 'An aerial perspective of the Upper Yellow House Draw in Bailey County, Texas. Unlike the near-vertical cliffs further east, this escarpment shows a gentler break in the Llano Estacado, a shallow valley carved into the tableland where caliche ledges, winter native grasses, and a quiet stock pond break up the endless, flat horizon.',
       },
       {
@@ -249,7 +249,7 @@ const galleryData: GalleryInput[] = [
         place: 'Toole County, Montana',
         lat: 48.966829, lng: -111.965596,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/200s',
-        x: 1720, y: 780, w: 400,
+        x: 1730, y: 700, w: 300,
         caption: 'An aerial view along the coulee rim near Sweetgrass, Montana as evening sets in. The rugged sandstone escarpment and golden wheat fields drop away into the coulee floor, framed perfectly by the distant, rising peaks of the Sweet Grass Hills glowing under a soft twilight sky.',
       },
       {
@@ -270,7 +270,7 @@ const galleryData: GalleryInput[] = [
         place: 'Lubbock County, Texas',
         lat: 33.494000, lng: -101.635000,
         specs: '12mm \u00B7 \u0192/2.2 \u00B7 1/4000s',
-        x: 1680, y: 1050, w: 300,
+        x: 1680, y: 910, w: 300,
         caption: 'An aerial look over Yellowhouse Canyon near Lubbock after a West Texas snowfall. The dark, meandering waters of the North Fork Double Mountain Fork River curl through a blanket of white, highlighting the rugged mesa bluffs and dormant mesquite brush.',
       },
       {
@@ -307,7 +307,7 @@ const galleryData: GalleryInput[] = [
         place: 'Bailey County, Texas',
         lat: 33.957391, lng: -102.753125,
         specs: '20mm \u00B7 \u0192/5.6 \u00B7 1/60s',
-        x: 2150, y: 680, w: 300,
+        x: 2050, y: 680, w: 300,
         caption: 'Some shallower escarpments drop into intermittent lakes. This view shows the autumn sun rising over the Muleshoe Wildlife Refuge. The summer view can be seen in Plate 14.',
       },
       {
@@ -316,7 +316,7 @@ const galleryData: GalleryInput[] = [
         place: 'Bailey County, Texas',
         lat: 33.957391, lng: -102.753125,
         specs: '20mm \u00B7 \u0192/5.6 \u00B7 1/60s',
-        x: 2140, y: 920, w: 300,
+        x: 2010, y: 920, w: 300,
         caption: 'As with Plate 13, this view shows the shallow descent into an intermittent lake at the Muleshoe Wildlife Refuge.',
       },
       {
@@ -367,11 +367,11 @@ const galleryData: GalleryInput[] = [
       {
         file: 'escarpments/escarpment20.jpg',
         title: 'In the Coulee',
-        place: 'Toole County, Texas',
-        lat: 33.6, lng: -101.1,
+        place: 'Toole County, Montana',
+        lat: 48.953794, lng: -111.954469,
         specs: '12mm \u00B7 \u0192/8 \u00B7 1/200s',
         x: 2090, y: 250, w: 310,
-        caption: 'A lone Dempster windmill stands in the foreground of the escarpment that outlines Buckley Coulee in Toole County, Montana. The stark contrast of the rocky escarpment, the freshley harvested wheat, and the native grassland frames a classic scene of the American West.',
+        caption: 'A lone Dempster windmill stands in the foreground of the escarpment that outlines Buckley Coulee in Toole County, Montana. The stark contrast of the rocky escarpment, the freshley harvested wheat, and the native grassland frames a classic view of the American West.',
       }
     ],
   },

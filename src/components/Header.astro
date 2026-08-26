@@ -1931,6 +1931,37 @@ const isDev = import.meta.env.DEV;
      REFRACTION_FLATTEN_DEG. Eased through the same easeGrazing() curve as the
      light itself so the disc holds its flattened shape right at the horizon
      rather than starting to relax the instant it touches down. */
+  /* ---- the sun whitens as it climbs (2026-08-26) --------------------------
+     grazingColorRGB clamps at GRAZING_TOP_DEG, so from 12deg up to this
+     latitude's 79.9deg maximum the disc held ONE fixed gold — while a real
+     sun keeps whitening the whole way, because the slant path through the
+     atmosphere keeps shortening and less blue is scattered out of it.
+     Modelled against Rayleigh extinction (tau = 0.008735 * lambda^-4.08 at
+     600/550/450nm, Kasten-Young airmass) the disc's normalised blue channel
+     should run 0.48 at 12deg to 0.85 at the zenith; the file was pinned at
+     0.40 all day, i.e. roughly twice as saturated as it should be at noon.
+
+     Expressed as an AIRMASS REDUCTION rather than an altitude, because that
+     is the quantity actually doing the work: u is 0 where the grazing ramp
+     hands over and 1 at the zenith, and the exponent fits the Rayleigh
+     curve to within about 0.03 of normalised blue across the range. Below
+     GRAZING_TOP_DEG u goes negative and clamps to 0, so this and the
+     grazing colour never fight over the same degrees. */
+  const SUN_WHITE_MAX = 0.66;
+  const SUN_WHITE_CURVE = 1.45;
+
+  /* Kasten-Young (1989). Stays finite below the horizon, where it is unused. */
+  function airmass(altitudeDeg: number): number {
+    const h = Math.max(altitudeDeg, -1);
+    return 1 / (Math.sin((h * Math.PI) / 180) + 0.50572 * Math.pow(h + 6.07995, -1.6364));
+  }
+
+  function sunWhiteFromAltitude(altitudeDeg: number): number {
+    const top = airmass(GRAZING_TOP_DEG);
+    const u = (top - airmass(altitudeDeg)) / (top - 1);
+    return SUN_WHITE_MAX * Math.pow(Math.max(0, Math.min(1, u)), SUN_WHITE_CURVE);
+  }
+
   function refractionFlatten(altitudeDeg: number): number {
     return Math.max(0, Math.min(1, 1 - altitudeDeg / REFRACTION_FLATTEN_DEG));
   }
@@ -2050,6 +2081,7 @@ const isDev = import.meta.env.DEV;
     const grazing = easeGrazing(rawGrazingFromAltitude(altitudeDeg));
     header.style.setProperty('--grazing-light', grazing.toFixed(3));
     header.style.setProperty('--grazing-color', grazingColorRGB(altitudeDeg));
+    header.style.setProperty('--sun-white', sunWhiteFromAltitude(altitudeDeg).toFixed(3));
     applyStationReadout(); // the clock ticks with the same 60s cadence
     header.style.setProperty('--horizon-flatten', easeGrazing(refractionFlatten(altitudeDeg)).toFixed(3));
   };
@@ -2727,15 +2759,39 @@ const isDev = import.meta.env.DEV;
         const cosPsi = Math.abs(Math.cos(psi));
         const sinPsi = Math.abs(Math.sin(psi));
         const rimScale = Math.max(ROTOR_MIN_SCALE, cosPsi);
+
+        /* WHICH FACE OF THE WHEEL YOU ARE LOOKING AT (fixed 2026-08-26).
+           The viewer faces south, so cos(psi) < 0 means the mill has turned
+           to meet a wind with a northerly component and is showing you its
+           BACK. |cos psi| threw that away: the head was never mirrored, so
+           the sail skew stayed drawn as a front view and windmill-turn kept
+           running clockwise — the wheel span backwards for roughly a third
+           of the year in Lubbock, whenever a norther blew.
+
+           Signing the rim's scaleX fixes both symptoms at once, because
+           #windmill-rotor nests INSIDE #windmill-head: mirroring the head
+           reverses the sail skew AND the apparent direction of rotation in
+           one change. --hub-offset must divide by the SIGNED rim for the
+           same nesting reason it divided by the unsigned one, or the
+           parallax flips to the wrong side of the mast when the back shows.
+           --sail-spread stays unsigned: it is a ratio of widths, not a
+           direction.
+
+           STILL NOT DONE: when the back shows, the hub should paint in
+           FRONT of the sails rather than behind them. That is a paint-order
+           change in the markup, not a sign. */
+        const facing = Math.cos(psi) < 0 ? -1 : 1;
+        const signedRim = rimScale * facing;
+
         const sailScale = Math.max(
           SAIL_MIN_SPREAD,
           (RIM_R * cosPsi + SAIL_AXIAL_HALF * sinPsi) / RIM_R
         );
-        svg.style.setProperty('--rotor-scale-x', rimScale.toFixed(3));
+        svg.style.setProperty('--rotor-scale-x', signedRim.toFixed(3));
         svg.style.setProperty('--sail-spread', (sailScale / rimScale).toFixed(3));
         svg.style.setProperty(
           '--hub-offset',
-          `${(-WHEEL_DISH * Math.sin(psi) / rimScale).toFixed(2)}px`
+          `${(-WHEEL_DISH * Math.sin(psi) / signedRim).toFixed(2)}px`
         );
         svg.style.setProperty('--tail-scale-x', Math.max(0.12, sinPsi).toFixed(3));
         svg.style.setProperty('--head-flip', Math.sin(psi) <= 0 ? '1' : '-1');
@@ -3750,10 +3806,35 @@ const isDev = import.meta.env.DEV;
     width: 12px;
     height: 12px;
     border-radius: 9999px;
+    /* CENTRED, NOT `at 40% 35%` (fixed 2026-08-26). An off-centre bright
+       spot is a SPECULAR HIGHLIGHT — it reads as a sphere lit from the upper
+       left. The sun is self-luminous; what it actually shows is LIMB
+       DARKENING, which is radially symmetric about the disc centre and runs
+       brighter and paler at the middle to darker and warmer at the edge.
+       The two stops already had that right; only the origin was wrong.
+
+       --sun-white mixes both stops toward white as the sun climbs, off the
+       airmass reduction (see sunWhiteFromAltitude). It is 0 below
+       GRAZING_TOP_DEG, so it never argues with --grazing-color over the
+       same degrees.
+
+       THE WHITE MIX IS `in oklab`, NOT oklch, deliberately: white is fully
+       achromatic, and oklch interpolates hue as an ANGLE, so mixing gold
+       (hue ~80deg) toward white (hue 0) would arc the hue toward red as the
+       disc paled. That is exactly the bug that turned the distant ridge
+       olive at dusk. Rectangular space, no hue arc. The gold-to-grazing
+       mixes stay in oklch: both ends are saturated warms, no near-neutral
+       involved. */
     background: radial-gradient(
-      circle at 40% 35%,
-      color-mix(in oklch, color-mix(in oklch, #E8B45C 80%, white) calc((1 - var(--grazing-light, 0)) * 100%), var(--grazing-color, #E8A85C) calc(var(--grazing-light, 0) * 35%)) 0%,
-      color-mix(in oklch, color-mix(in oklch, var(--color-dust, #B3A38F) 55%, #D9913F) calc((1 - var(--grazing-light, 0)) * 100%), var(--grazing-color, #E8A85C) calc(var(--grazing-light, 0) * 100%)) 100%
+      circle at 50% 50%,
+      color-mix(in oklab,
+        color-mix(in oklch, color-mix(in oklch, #E8B45C 80%, white) calc((1 - var(--grazing-light, 0)) * 100%), var(--grazing-color, #E8A85C) calc(var(--grazing-light, 0) * 35%))
+        calc((1 - var(--sun-white, 0)) * 100%),
+        white calc(var(--sun-white, 0) * 100%)) 0%,
+      color-mix(in oklab,
+        color-mix(in oklch, color-mix(in oklch, var(--color-dust, #B3A38F) 55%, #D9913F) calc((1 - var(--grazing-light, 0)) * 100%), var(--grazing-color, #E8A85C) calc(var(--grazing-light, 0) * 100%))
+        calc((1 - var(--sun-white, 0)) * 100%),
+        white calc(var(--sun-white, 0) * 100%)) 100%
     );
     box-shadow:
       0 0 0 3px color-mix(in oklch, #D9913F 10%, transparent),
@@ -4112,8 +4193,27 @@ const isDev = import.meta.env.DEV;
      night blue, and the plane is opaque in every phase, so the generic rule
      above resolves correctly on its own. */
 
+  /* THE STROKE STOPPING SHORT ON WIDE SCREENS (candidate fix, 2026-08-26 —
+     diagnosed by reading, NOT yet confirmed in a browser).
+     The path carries pathLength="1", so a dash of 1 is meant to be exactly
+     one path-length and the line reads as solid. But this svg is
+     preserveAspectRatio="none" with a viewBox 1440 wide inside a full-width
+     box and a FIXED 22px height, so the horizontal scale is viewport/1440
+     while the vertical scale stays 1. If the dash length is normalised
+     against the USER-space path length but then stepped off along the
+     RENDERED path, one dash covers only 1440/viewport of the way across:
+     complete at exactly 1440px, and ~56% at 2560px. That matches the report
+     — the fill spans (it is a filled region, no dashes involved) and only
+     the outline stops.
+     Raising the dash to 4 path-lengths costs nothing if the diagnosis is
+     wrong (at offset 0 a single dash already covers everything either way)
+     and covers stretch up to 4x, i.e. viewports to ~5760px.
+     TO CONFIRM IN 10 SECONDS: at a wide window, set `stroke-dasharray:
+     none` on .horizon-path in devtools. If the line completes, this is it.
+     THE REAL FIX IF SO is to drop the dash once the entrance has run,
+     rather than to keep raising the ceiling. */
   .horizon-path {
-    stroke-dasharray: 1;
+    stroke-dasharray: 4;
     stroke-dashoffset: 0;
   }
   /* Per-page geography: navigation morphs the land where `d` is a CSS
@@ -4270,7 +4370,8 @@ const isDev = import.meta.env.DEV;
   }
   .landmark.is-active .station-mark,
   .landmark:hover .station-mark {
-    color: #C1AD8A;
+    /* Same correction as .marker-station above, and for the same reason. */
+    color: var(--landmark-ink, var(--ink));
   }
 
   /* Live station readout. This selector was dead for several passes after the
@@ -4311,6 +4412,15 @@ const isDev = import.meta.env.DEV;
     transition: transform 0.25s cubic-bezier(0.25, 1, 0.5, 1), color 0.6s linear;
   }
 
+  /* WCAG 2.2 AA (2.5.8 Target Size, Minimum) wants 24x24 CSS px. `cv` is
+     the shortest label on the site: 8.9px of type plus px-1.5 gives a 20.9px
+     target under 380px, and 23.4px between 380 and 640. Every other marker
+     clears it on its own, so this only ever widens `cv`, and only below the
+     sm breakpoint where the padding steps up to px-4. Scoped to #horizon-nav
+     so it cannot reach the elevator control, which has its own padding.
+     Height is already fine: label + 0.35rem + a 9px tick is about 26px. */
+  #horizon-nav .marker { min-width: 24px; }
+
   .marker-tick {
     width: 1.5px;
     height: 9px;
@@ -4318,8 +4428,19 @@ const isDev = import.meta.env.DEV;
     transition: height 0.25s cubic-bezier(0.25, 1, 0.5, 1), background-color 0.6s linear;
   }
 
-  /* Active page: a benchmark station, same mark as the name */
-  .marker-station { display: none; color: #C1AD8A; }
+  /* Active page: a benchmark station, same mark as the name.
+     NOT #C1AD8A, which this used until 2026-08-26. That tan is a NIGHT
+     colour: 5.87:1 against the night sky, but 1.98:1 at noon and 1.01:1 at
+     dusk, where it is the same luminance as the sky it sits on — so the
+     ACTIVE page's mark was effectively invisible for most of the day.
+     Two fixes were tried and rejected before this one: ramping tan→umber on
+     --night floors at 1.52 (the sky passes through the same luminance band
+     any tan does), and mixing --ink toward tan at 80% still floors at 2.78.
+     --landmark-ink is the token the name and the signature already use, so
+     it FLIPS with the type instead of fighting it: floor 3.46:1 against the
+     sky, and it takes the grazing warmth for free. Never a second warmth
+     expression — --landmark-warmth stays the one dial. */
+  .marker-station { display: none; color: var(--landmark-ink, var(--ink)); }
   .marker.is-active .marker-tick { display: none; }
   .marker.is-active .marker-station { display: block; }
   .marker.is-active .marker-label {
@@ -4447,6 +4568,16 @@ const isDev = import.meta.env.DEV;
   .elev-divs { transition: transform 0.62s cubic-bezier(0.25, 1, 0.5, 1),
                            opacity 0.5s linear; }
 
+  /* THE ORIGIN LIVES HERE, NOT IN THE OPEN RULE. transform-origin is not a
+     transitioned property, so if it were declared only under
+     [aria-expanded="true"] it would vanish the instant the menu closed and
+     the walls would swing back about the default instead — transform-box
+     defaults to view-box, so that default is 50% 50% of the 22x28 viewBox,
+     i.e. (11, 14) rather than (10, 18.5). Opening looked right; closing
+     drifted. Declared unconditionally, both directions turn about the same
+     point. */
+  .elev-divs { transform-origin: 10px 18.5px; }
+
   /* OPEN. The three bin walls rotate a quarter turn about the block's
      centre (10, 18.5) and land as rules at y 14.5 / 18.5 / 22.5, spanning
      wider than the block itself — which is what makes them read as the
@@ -4454,10 +4585,7 @@ const isDev = import.meta.env.DEV;
      a third rather than disappearing, so the elevator is still standing
      behind its own menu. Both are transforms: no animated `d` anywhere, so
      Firefox behaves. */
-  #horizon-menu-btn[aria-expanded="true"] .elev-divs {
-    transform: rotate(90deg);
-    transform-origin: 10px 18.5px;
-  }
+  #horizon-menu-btn[aria-expanded="true"] .elev-divs { transform: rotate(90deg); }
   #horizon-menu-btn[aria-expanded="true"] .elev-shell { opacity: 0.34; }
 
   @media (max-width: 767px) {
@@ -4644,8 +4772,10 @@ const isDev = import.meta.env.DEV;
   /* Keyframes define only `from`; base styles are the resting state.         */
   /* Entrance animations live on different elements than scroll animations.   */
   /* ======================================================================== */
+  /* Matches .horizon-path's stroke-dasharray — if that ceiling moves, this
+     must move with it, or the line starts the entrance partly drawn. */
   @keyframes draw-in {
-    from { stroke-dashoffset: 1; }
+    from { stroke-dashoffset: 4; }
   }
   .horizon-path {
     animation: draw-in 0.9s cubic-bezier(0.25, 1, 0.5, 1) 0.1s both;
@@ -4817,9 +4947,19 @@ const isDev = import.meta.env.DEV;
   /* 4. The sun sets (from wherever the hour placed it — now horizontally
      as well as vertically; this only ever touches transform/opacity, so
      #sun-wrap's own left/bottom placement is unaffected) */
+  /* THE 0% KEYFRAME IS LOAD-BEARING. Without it the animation's first
+     keyframe for `transform` is synthesised from the UNDERLYING value —
+     #horizon-sun's own scaleY(1 - --horizon-flatten * 0.45) — and then
+     interpolated toward translateY(500%) by matrix decomposition. The
+     refraction squash therefore unwound silently as you scrolled, and was
+     only fully honoured at scrollY exactly 0. Both keyframes now carry the
+     squash explicitly, so it is held for the whole range and only the
+     translate and the opacity actually move. Keep --horizon-flatten in
+     BOTH: dropping it from either end reintroduces the same interpolation. */
   @keyframes sun-set {
+    0%   { transform: scaleY(calc(1 - var(--horizon-flatten, 0) * 0.45)); opacity: 0.9; }
     70%  { opacity: 0.9; }
-    100% { transform: translateY(500%); opacity: 0; }
+    100% { transform: translateY(500%) scaleY(calc(1 - var(--horizon-flatten, 0) * 0.45)); opacity: 0; }
   }
   #horizon-header.scroll-driven #horizon-sun {
     animation: sun-set linear both;
