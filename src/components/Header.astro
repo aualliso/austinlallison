@@ -570,15 +570,12 @@ const navItems = [
   { href: '/about', label: 'about' },
 ];
 
-// THE CONTROL'S LABEL. Below 768px the marker set collapses to a single
-// control (see "THE SECTION" in the stylesheet), and what it says is the
-// station you are standing at rather than a generic word for a menu. On
-// home no marker is active — the landmark itself is the home link — so it
-// names the list instead. The module script rewrites this on every
-// client-side navigation, since the header persists and this ran once.
-const MENU_FALLBACK_LABEL = 'index';
-const currentNavLabel =
-  navItems.find((item) => isActive(item.href))?.label ?? MENU_FALLBACK_LABEL;
+// NOTE: the control carries no label. It was the current route's name until
+// 2026-08-26; it is now a drawn mark (see THE ELEVATOR in the stylesheet),
+// so the header no longer states which page you are on — the panel's active
+// station does that instead. If a label ever comes back, it needs
+// `navItems.find((item) => isActive(item.href))?.label` here AND a re-write
+// from astro:after-swap, because this frontmatter runs once at build time.
 
 // NOTE: routeKey() below deliberately does NOT have an '/about' branch, so
 // /about draws the home caprock mesa. That is the intended default, not an
@@ -1102,34 +1099,54 @@ const isDev = import.meta.env.DEV;
       <!-- THE STATION CONTROL — the narrow-width form of the mile markers.
            Carries .marker, so it inherits the rise-in entrance, the heat
            shimmer and the label's colour ramp for free; only the graduation
-           stack and the display switching are its own. It is a marker and
-           not an icon on purpose: the header's iconography is SURVEY, and a
-           control that names the station you are standing at keeps the
-           active-page indication a hamburger throws away.
-           display is left entirely to the stylesheet (no Tailwind `hidden`
-           utilities) because the html[data-js] gate has to be able to win. -->
+           display switching is its own. It carries no label: the mark does
+           the work, and the panel's active station says which page you are
+           on. Display is left entirely to the stylesheet (no Tailwind
+           `hidden` utilities) because the html[data-js] gate has to win.
+
+           THE 22x28 BOX IS THE POINT. A real elevator is a vertical slab —
+           drawn square it reads as a farm shed. Rendered at 26x33.
+
+           THE JUNCTION RULE: every vertical in this drawing lands on a bin
+           junction — x = 2, 6, 10, 14 or 18, where two roof arcs meet at
+           y=11 — and never between them. The headhouse wall sat at x=8, the
+           APEX of an arc, and drove straight through the dome and 1.2 units
+           out the other side. Same discipline as the terrain's shared x
+           grid: if you move the headhouse, move it a whole bin. -->
       <button
         id="horizon-menu-btn"
         type="button"
         aria-expanded="false"
         aria-controls="horizon-menu"
         aria-label="Site navigation"
-        class="marker shrink-0 font-serif lowercase focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A]"
+        class="marker shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A]"
       >
-        <span class="plate-frame">
-          <span class="marker-label" id="horizon-menu-label">{currentNavLabel}</span>
-          <!-- The same benchmark station the active mile marker flies, at
-               plate scale. It points DOWN at the section while closed and
-               turns to point back at the plate once it is open. -->
-          <svg class="plate-mark" width="9" height="7" viewBox="0 0 11 9" aria-hidden="true">
-            <path d="M5.5 0.8 L10.2 8.2 L0.8 8.2 Z" fill="none" stroke="currentColor" stroke-width="1" />
-            <circle cx="5.5" cy="6" r="0.9" fill="currentColor" />
-          </svg>
-        </span>
-        <!-- The tie line. Zero height while closed; on open it drops the same
-             9px a mile marker's tick stands, so the plate is visibly pinned to
-             the ground it just opened. -->
-        <span class="plate-tie" aria-hidden="true"></span>
+        <svg
+          class="elevator"
+          width="26"
+          height="33"
+          viewBox="0 0 22 28"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="0.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <!-- Bins, headhouse, leg monitor, grade. Everything except the bin
+               walls, which are the only thing that moves. -->
+          <g class="elev-shell">
+            <path d="M2 26 V11 A2 1.2 0 0 1 6 11 A2 1.2 0 0 1 10 11 A2 1.2 0 0 1 14 11 A2 1.2 0 0 1 18 11 V26" />
+            <path d="M10 11 V3.4 H18 V11 M9.4 3.4 H18.6" />
+            <path d="M14.6 3.4 V0.9 H17.6 V3.4" />
+            <path d="M0.6 26.6 H21.4" />
+          </g>
+          <!-- The three bin walls. On open they rotate a quarter turn about
+               the block's centre and land as the panel's three rules. -->
+          <g class="elev-divs">
+            <path d="M6 11 V26 M10 11 V26 M14 11 V26" />
+          </g>
+        </svg>
       </button>
     </div>
 
@@ -2968,8 +2985,6 @@ const isDev = import.meta.env.DEV;
      nowhere else. */
   const menuBtn = document.getElementById('horizon-menu-btn');
   const menuPanel = document.getElementById('horizon-menu');
-  const menuLabel = document.getElementById('horizon-menu-label');
-  const MENU_FALLBACK_LABEL = 'index';
 
   /* THE GATE HAS TO BE RE-STAMPED ON EVERY SWAP (2026-08-25, fix).
      Astro's client-side navigation does not merge <html>'s attributes — it
@@ -3043,20 +3058,10 @@ const isDev = import.meta.env.DEV;
     if (open && moveFocus) menuPanel.querySelector<HTMLAnchorElement>('a[href]')?.focus();
   };
 
-  /* Reads the label off the panel's own active row rather than keeping a
-     second copy of navItems in the script — one source of truth, and it is
-     already correct by the time refreshActive() has run. */
-  const syncMenuLabel = () => {
-    if (!menuLabel || !menuPanel) return;
-    const active = menuPanel.querySelector('.stratum.is-active .stratum-label');
-    menuLabel.textContent = active?.textContent?.trim() || MENU_FALLBACK_LABEL;
-  };
-
   const initMenu = () => {
     markJsAvailable();   // idempotent; the is:inline copy already ran
     if (!menuBtn || !menuPanel) return;
     setMenu(false);
-    syncMenuLabel();
     syncMenuSurface();
 
     menuBtn.addEventListener('click', () => setMenu(!menuIsOpen(), true));
@@ -3186,11 +3191,10 @@ const isDev = import.meta.env.DEV;
     applyStars();
     applySeasonalMarker();
     refreshActive();
-    /* The header persists across the swap, so the panel does too — it has to
-       be told to close, and the control has to be told the new route's name.
-       Both must follow refreshActive(), which is what moves .is-active. */
+    /* The header persists across the swap, so the panel does too — it has
+       to be told to close. Must follow refreshActive(), which is what moves
+       .is-active onto the new route's station. */
     setMenu(false);
-    syncMenuLabel();
     applyWeather();
   });
 </script>
@@ -4402,78 +4406,59 @@ const isDev = import.meta.env.DEV;
   /* frame below, which is a different plate on the other side of the line.)  */
   /* ======================================================================== */
 
-  /* ---- THE STATION PLATE (the control) ------------------------------------
-     It is a mile marker, so it keeps .marker and inherits the rise-in
-     entrance, the heat shimmer and the ink ramp. What makes it a PLATE is
-     the hairline frame — the only enclosed object anywhere in this header,
-     which is the whole reason it reads instead of receding.
+  /* ---- THE ELEVATOR (the control) -----------------------------------------
+     A grain elevator: the landmark you navigate by on the Llano, the thing
+     you see from twenty miles out that tells you which town you are coming
+     to. Chosen over a pump jack and a sotol for three reasons worth keeping
+     on record, because they will decide any future replacement too:
 
-     The frame's colour is var(--landmark-ink), NOT a second warmth
-     expression: that token already carries the ink flip and the grazing
-     tint the name and the signature use, so the plate warms at sunrise and
-     sunset by exactly the amount they do and --landmark-warmth stays the
-     one dial. Mixed toward the sky so it stays a hairline and never a box. */
+       1. It is a BUILDING, not a machine. The windmill is already a
+          line-work machine standing on this land and it is not tappable, so
+          it teaches every visitor within a second that skeletal machines
+          here are scenery. A machine-shaped control inherits that lesson.
+       2. Its morph IS the disclosure rather than decoration on top of it —
+          the bin walls become the panel's rules. The symbol turns into the
+          thing it opens.
+       3. Fewest fine strokes, so it survives 26px under up to 1.2px of dust
+          blur. A sotol's nine leaves would be the first thing to go.
+
+     It keeps .marker, so it inherits the rise-in entrance for free.
+     Stroke colour is var(--landmark-ink) — the token the name and the
+     signature already use — so it flips with the ink and warms at sunrise
+     and sunset by exactly the amount they do, and --landmark-warmth stays
+     the one dial. Never a second warmth expression. */
 
   #horizon-menu-btn {
     display: none;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-    /* Top padding only. The row is items-end and the landmark beside it is
-       taller, so this buys tap-target height for free without growing the
-       header — and it must not sit BELOW the plate, or the tie line would
-       have to cross it. */
+    align-items: flex-end;
+    /* Padding buys tap-target area without growing the header: the row is
+       items-end and the landmark beside it is taller than this glyph. */
     padding: 10px 4px 0;
     background: none;
     border: 0;
     cursor: pointer;
-    color: inherit;
+    color: var(--landmark-ink, var(--ink));
     -webkit-tap-highlight-color: transparent;
+    transition: color 0.6s linear;
   }
 
-  .plate-frame {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.42rem;
-    padding: 0.26rem 0.5rem 0.28rem;
-    min-height: 24px;                     /* WCAG 2.2 AA target size */
-    border: 1px solid color-mix(in oklab, var(--landmark-ink, var(--ink)) 58%, var(--sky-horizon));
-    border-radius: 1px;                   /* a stamped plate, not a pill */
-    transition: border-color 0.6s linear;
+  .elevator { display: block; }
+  .elev-shell,
+  .elev-divs { transition: transform 0.62s cubic-bezier(0.25, 1, 0.5, 1),
+                           opacity 0.5s linear; }
+
+  /* OPEN. The three bin walls rotate a quarter turn about the block's
+     centre (10, 18.5) and land as rules at y 14.5 / 18.5 / 22.5, spanning
+     wider than the block itself — which is what makes them read as the
+     panel's rules rather than as a tipped-over building. The shell holds at
+     a third rather than disappearing, so the elevator is still standing
+     behind its own menu. Both are transforms: no animated `d` anywhere, so
+     Firefox behaves. */
+  #horizon-menu-btn[aria-expanded="true"] .elev-divs {
+    transform: rotate(90deg);
+    transform-origin: 10px 18.5px;
   }
-
-  /* The label loses .marker-label's tick spacing and its hover lift: inside
-     a frame the rise would carry it out of its own box. The shimmer stays —
-     that part is opacity and blur, and it still reads. */
-  #horizon-menu-btn .marker-label { padding-bottom: 0; }
-  #horizon-menu-btn:hover .marker-label,
-  #horizon-menu-btn:focus-visible .marker-label { transform: none; }
-
-  #horizon-menu-btn:hover .plate-frame,
-  #horizon-menu-btn:focus-visible .plate-frame {
-    border-color: color-mix(in oklab, var(--landmark-ink, var(--ink)) 82%, var(--sky-horizon));
-  }
-
-  .plate-mark {
-    color: #C1AD8A;                        /* the benchmark colour, as .marker-station */
-    transition: transform 0.32s cubic-bezier(0.25, 1, 0.5, 1);
-  }
-
-  .plate-tie {
-    width: 1px;
-    height: 0;
-    background-color: var(--ink-muted);
-    transition: height 0.32s cubic-bezier(0.25, 1, 0.5, 1),
-                background-color 0.6s linear;
-  }
-
-  /* OPEN. Three things, all line-work: the frame's bottom edge dissolves so
-     the plate is no longer a closed object, the station turns to point back
-     at it, and the tie drops the 9px a mile marker's tick stands. */
-  #horizon-menu-btn[aria-expanded="true"] .plate-frame { border-bottom-color: transparent; }
-  #horizon-menu-btn[aria-expanded="true"] .plate-mark  { transform: rotate(180deg); }
-  #horizon-menu-btn[aria-expanded="true"] .plate-tie   { height: 9px; }
-  #horizon-menu-btn[aria-expanded="true"] .marker-label { color: var(--ink); }
+  #horizon-menu-btn[aria-expanded="true"] .elev-shell { opacity: 0.34; }
 
   @media (max-width: 767px) {
     html[data-js] #horizon-nav      { display: none; }
@@ -4630,7 +4615,13 @@ const isDev = import.meta.env.DEV;
     top: 50%;
     transform: translateY(-50%);
     display: none;
-    color: #C1AD8A;
+    /* NOT #C1AD8A, which .marker-station uses. Measured against this panel's
+       own surface that tan runs 1.34:1 at noon and 1.01:1 at dusk — it is a
+       night colour, and the active station was invisible for most of the
+       day. --landmark-ink flips with the type and floors at 3.33:1 here.
+       STILL OPEN: .marker-station on the desktop mile markers has the same
+       fault and the same one-line fix, not applied without his say-so. */
+    color: var(--landmark-ink, var(--ink, #1A1919));
   }
   .stratum.is-active { color: var(--ink, #1A1919); }
   .stratum.is-active::before { display: none; }
@@ -4921,7 +4912,7 @@ const isDev = import.meta.env.DEV;
     #night-sky, #horizon-moon, .star-point, #windmill, #windmill-rotor, #crane-flock,
     #horizon-haze, #the-horizon, .horizon-path, .horizon-ground, .far-plane,
     .signature-img, .landmark-name, .landmark, .station-plate, .station-meta,
-    .marker, .marker-label, .marker-tick, .plate-frame, .plate-mark, .plate-tie,
+    .marker, .marker-label, .marker-tick, .elev-shell, .elev-divs,
     #horizon-menu, .menu-cut, .menu-route::before, .stratum, .stratum::before {
       transition: none !important;
       animation: none !important;
