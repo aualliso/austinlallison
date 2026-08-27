@@ -158,8 +158,7 @@
 // spot gradients that used to live there are gone, replaced by the
 // per-leaf textures above.
 import RootLayout from '../layouts/RootLayout.astro';
-import { Image } from 'astro:assets';
-import montana2022 from '../assets/montana2022/137.jpg';
+import { photoFeatures, PUBLICATION_FEATURES } from '../data/register-features';
 
 const leaves = [
   { code: 'Ex Libris', label: '01 · Ex Libris' },
@@ -177,6 +176,32 @@ const leaves = [
 // client script strips the same prefix off the tab text at runtime for
 // exactly the same reason.
 const shortLabels = leaves.map((l) => l.label.replace(/^\s*\d+\s*\u00B7\s*/, ''));
+
+// ── Rotating features (leaves 03 and 05) ────────────────────────
+// See src/data/register-features.ts for the lists and for why this
+// rotates on page turn rather than on a timer.
+//
+// Photography DERIVES from src/data/photography.ts and reuses the
+// board derivatives the light table already builds — 700w, plus
+// 1400w at 2x. getGalleries() is memoized, so the home page adds
+// nothing to build time that the photography routes were not already
+// paying. photoFeatures() throws on its own if no usable plate is
+// available, so there is no length check for it here.
+const photoVariants = await photoFeatures();
+const publicationVariants = PUBLICATION_FEATURES;
+
+if (!publicationVariants.length) {
+  throw new Error(
+    'register-features.ts: PUBLICATION_FEATURES needs at least one entry — leaf 05 server-renders the first one.'
+  );
+}
+
+// `<` escaped so a stray "</script>" inside a title can't close the
+// data island early
+const featureJson = JSON.stringify({
+  photos: photoVariants,
+  publications: publicationVariants,
+}).replace(/</g, '\\u003c');
 
 // ── Foxing textures (see v10 note above) ─────────────────────────
 //
@@ -295,25 +320,79 @@ const SIGNATURE_PATHS = `
             </g>
           `;
 
-const SIGNATURE_GOLD_SVG = `
+const SIGNATURE_PEWTER_SVG = `
   <defs>
-    <!-- Simple, mostly-solid gold with a very slight ramp -->
-    <linearGradient id="cover-signature-gold" x1="0" y1="0" x2="0.2" y2="1">
-      <stop offset="0%"   stop-color="#c9a227" />
-      <stop offset="50%"  stop-color="#b08d24" />
-      <stop offset="100%" stop-color="#8b6a1f" />
+    <!-- PEWTER, not gold. gradientUnits is userSpaceOnUse and NOT the
+         objectBoundingBox default, which was the real bug: the mark is
+         nine separate <path>s ranging from 1084x860 down to 25x29, and
+         objectBoundingBox resolves per filled element, so each tiny dot
+         ran the entire light-to-dark ramp inside 29 units while the long
+         strokes ran the same ramp across 860. The lighting contradicted
+         itself between the big strokes and the small marks. In user
+         space the ramp is one continuous wash across the whole
+         signature, which is what a single light source actually does.
+
+         Four stops, not three, and a much wider value range than the old
+         #c9a227/#b08d24/#8b6a1f band: what makes a mark read as METAL is
+         a bright specular and a deep low sitting close together. A narrow
+         mid-tone ramp reads as paint at any hue.
+
+         DUSTY GILT, not bright gold. Every stop sits at the same gold
+         hue (about 43deg) and differs only in value and saturation, so
+         the mark reads as one metal catching one light rather than as
+         a colour blend. Saturation is about 0.30 at the mid — roughly
+         a third of the old #b08d24, which was near 0.79 and read as
+         mustard. It is also scaled DOWN at the two ends: the specular
+         is nearly bleached and the deep shadow nearly neutral, which is
+         what keeps the pewter character underneath the gold instead of
+         swinging all the way back to brass.
+
+         THE HUE DIAL is saturation, not hue. Pushing toward orange is
+         what made the original look cheap; more chroma at this same hue
+         just makes it more obviously gilt.
+
+         THE VALUE FLOOR is the bottom stop, and it is deliberately much
+         higher than it first was: the leather behind this is #231712,
+         so a dark bottom stop does not read as shadow, it reads as the
+         mark disappearing. #877a56 keeps the low end clearly above the
+         cover at the cost of a narrower range in the fill. The metal's
+         real contrast lives in the CSS bevel below, which is where a
+         near-white specular and a near-black shadow sit a pixel apart;
+         the fill only has to carry form shading. Drop the last stop
+         toward #6a5f42 for a moodier mark, but check it on leather
+         rather than on white. -->
+    <!-- RAMP GEOMETRY. In user space the ramp LENGTH is the length of
+         the (x1,y1)->(x2,y2) vector, and anything past the far end
+         clamps to the last stop. An earlier pass carried the old
+         objectBoundingBox direction over literally as (330, 900) — a
+         959-unit ramp on artwork 2609 units wide — so the whole right
+         and lower right of the mark sat pinned at the darkest stop:
+         below y=700 everything right of x=821 was solid #4c473c. That
+         is why the signature faded out toward "Allison".
+
+         The vector is now PURELY VERTICAL and spans the full height of
+         the artwork, so t depends only on y. Nothing clamps, and the
+         shading reads as one light from above rather than as the mark
+         dimming from left to right. Keep x1 === x2 unless you re-derive
+         the length: any horizontal component needs the vector to span
+         2609+ units or the right side starts clamping again. -->
+    <linearGradient id="cover-signature-pewter" gradientUnits="userSpaceOnUse"
+                    x1="0" y1="-20" x2="0" y2="880">
+      <stop offset="0%"   stop-color="#efe7d2" />
+      <stop offset="30%"  stop-color="#cdbc90" />
+      <stop offset="65%"  stop-color="#a8996c" />
+      <stop offset="100%" stop-color="#877a56" />
     </linearGradient>
- 
-    <!-- Bevel filter: light highlight up-left + soft dark shadow down-right,
-         simulating gold foil pressed into leather -->
-    <filter id="cover-signature-emboss" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="-0.6" dy="-0.6" stdDeviation="0.5"
-                    flood-color="#fff6d8" flood-opacity="0.55" />
-      <feDropShadow dx="0.8" dy="0.8" stdDeviation="0.6"
-                    flood-color="#2a1d05" flood-opacity="0.45" />
-    </filter>
+
+    <!-- The bevel is NOT here. There used to be a #cover-signature-emboss
+         filter defined at this point that nothing ever referenced, and
+         which would have been invisible anyway: its offsets were in
+         viewBox units on a 2650-wide box rendered at 224-320px, so
+         dx of 0.8 resolved to about 0.07 rendered pixels. The bevel lives
+         in the .cover-signature CSS filter, in real pixels, where it can
+         stay a constant physical width at every size. -->
   </defs>
-  ${SIGNATURE_PATHS.replace(/currentColor/g, 'url(#cover-signature-gold)')}
+  ${SIGNATURE_PATHS.replace(/currentColor/g, 'url(#cover-signature-pewter)')}
 `;
 ---
 
@@ -415,7 +494,7 @@ const SIGNATURE_GOLD_SVG = `
               </svg>
             </div>
             <div class="cover-title-block">
-              <svg class="cover-signature" viewBox="0 0 2800 800" set:html={SIGNATURE_GOLD_SVG}></svg>
+              <svg class="cover-signature" viewBox="-20 -20 2650 900" set:html={SIGNATURE_PEWTER_SVG}></svg>
               <div class="cover-subtitle-group">
                 <span class="cover-subtitle">Cataloging &amp; Metadata Librarian</span>
                 <span class="cover-subtitle">Historian &middot; Photographer</span>
@@ -457,7 +536,7 @@ const SIGNATURE_GOLD_SVG = `
           <div class="pages" id="pages">
 
           <!-- ── 01 — Ex Libris ─────────────────────────────── -->
-          <div class="leaf leaf--exlibris" data-leaf="0" data-code={leaves[0].code} role="tabpanel" id="leaf-0" aria-labelledby="tab-0">
+          <div class="leaf leaf--exlibris leaf--grid" data-leaf="0" data-code={leaves[0].code} role="tabpanel" id="leaf-0" aria-labelledby="tab-0">
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[0]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title">Introduction</span>
@@ -476,8 +555,11 @@ const SIGNATURE_GOLD_SVG = `
               <span class="exlibris-label">Ex Libris</span>
               <h1 class="exlibris-name">Austin Allison</h1>
               <p class="body">
-                Welcome to my personal website! You may swipe or click your way through this digital ledger by swiping left or right or by using the navigation controls below. Each page contains a brief description of my work, including my academic research, photography, and current projects.
+                Navigate this digital ledger by swiping or using the controls below. Each section 
+                provides a brief look into my academic research, photography, and ongoing historical 
+                projects. Explore further by clicking links throughout the page.
               </p>
+              <a href="/about" class="cta">About Me</a>
             </div>
             </div>
             </div>
@@ -485,7 +567,7 @@ const SIGNATURE_GOLD_SVG = `
           </div>
 
           <!-- ── 02 — Statement of Purpose ─────────────────── -->
-          <div class="leaf" data-leaf="1" data-code={leaves[1].code} role="tabpanel" id="leaf-1" aria-labelledby="tab-1">
+          <div class="leaf leaf--grid" data-leaf="1" data-code={leaves[1].code} role="tabpanel" id="leaf-1" aria-labelledby="tab-1">
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[1]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title">{leaves[1].code}</span>
@@ -494,13 +576,12 @@ const SIGNATURE_GOLD_SVG = `
             <div class="leaf-body">
             <div class="leaf-inner">
               <h1 class="heading">
-                Cataloging, Preserving, and Capturing the <span>History of the American West</span>
+                Capturing the Heritage of the <span>South Plains, Texas, and the American West.</span>
               </h1>
               <p class="body">
-                Specializing in structural metadata schemas, digital preservation, and the
-                physical cataloging of regionally important items, this workspace highlights
-                my academic work alongside my photographic studies of regional landscapes of
-                Texas and the American West.
+                Exploring the intersection of library/archival science and regional heritage, 
+                this workspace highlights my academic research in history and digital preservation alongside 
+                photographic studies of the Texas South Plains and the broader American West.
               </p>
               <a href="/cv" class="cta">Curriculum vitae</a>
             </div>
@@ -510,7 +591,7 @@ const SIGNATURE_GOLD_SVG = `
           </div>
 
           <!-- ── 03 — Photography ──────────────────────────── -->
-          <div class="leaf leaf--rake" data-leaf="2" data-code={leaves[2].code} data-rake role="tabpanel" id="leaf-2" aria-labelledby="tab-2">
+          <div class="leaf leaf--rake leaf--grid" data-leaf="2" data-code={leaves[2].code} data-rake role="tabpanel" id="leaf-2" aria-labelledby="tab-2">
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[2]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title">{leaves[2].code}</span>
@@ -521,7 +602,7 @@ const SIGNATURE_GOLD_SVG = `
             <div class="leaf-inner leaf-inner--split">
               <div class="leaf-text">
                 <h1 class="title title--sm">
-                  Series I - III
+                  Series I - IV
                 </h1>
                 <h2 class="heading heading--sm">Visual Monographs of the American West</h2>
                 <p class="body">
@@ -530,12 +611,19 @@ const SIGNATURE_GOLD_SVG = `
                 <a href="/photography" class="cta">Galleries</a>
               </div>
               <figure class="photo-frame" id="photo-frame">
-                <Image
-                  src={montana2022}
-                  alt="Eroded red clay and rugged canyon formations, Toole County, Montana"
+                <img
+                  id="feature-photo"
+                  src={photoVariants[0].src}
+                  srcset={photoVariants[0].srcset}
+                  width={photoVariants[0].width}
+                  height={photoVariants[0].height}
+                  alt={photoVariants[0].alt}
+                  decoding="async"
                   class="photo photo--develop"
                 />
-                <figcaption class="photo-caption">Little Jerusalem, Toole County, Montana</figcaption>
+                <figcaption class="photo-caption" id="feature-photo-caption">
+                  {photoVariants[0].caption}
+                </figcaption>
               </figure>
             </div>
             </div>
@@ -544,7 +632,7 @@ const SIGNATURE_GOLD_SVG = `
           </div>
 
           <!-- ── 04 — Current Work ─────────────────────────── -->
-          <div class="leaf" data-leaf="3" data-code={leaves[3].code} role="tabpanel" id="leaf-3" aria-labelledby="tab-3">
+          <div class="leaf leaf--grid" data-leaf="3" data-code={leaves[3].code} role="tabpanel" id="leaf-3" aria-labelledby="tab-3">
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[3]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title">{leaves[3].code}</span>
@@ -568,7 +656,7 @@ const SIGNATURE_GOLD_SVG = `
           </div>
 
           <!-- ── 05 — Publication ──────────────────────────── -->
-          <div class="leaf" data-leaf="4" data-code={leaves[4].code} role="tabpanel" id="leaf-4" aria-labelledby="tab-4">
+          <div class="leaf leaf--grid" data-leaf="4" data-code={leaves[4].code} role="tabpanel" id="leaf-4" aria-labelledby="tab-4">
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[4]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title">{leaves[4].code}</span>
@@ -580,19 +668,21 @@ const SIGNATURE_GOLD_SVG = `
                 <h1 class="title title--sm">
                   Featured Publication
                 </h1>
-                <h2 class="heading heading--sm">
-                  'Opportunity Knocking': The Vaughan Land Company and Early Bailey County
-                  Development
+                <h2 class="heading heading--sm pub-title" id="feature-pub-title">
+                  {publicationVariants[0].title}
                 </h2>
-                <p class="cite">Panhandle-Plains Historical Review &bull; 2025</p>
-                <a href="/publications/opportunity_knocking" class="cta">Read the Full Text</a>
+                
+                <a href={publicationVariants[0].href} class="cta" id="feature-pub-link">Read the Full Text</a>
                 <br>
                 <a href="/publications" class="cta">All Publications</a>
               </div>
               <div class="photo-frame photo-frame--gray">
                 <img
-                  src="/images/vaughan_land_company.jpg"
-                  alt="Vaughan Land Company development archival photo"
+                  id="feature-pub-image"
+                  src={publicationVariants[0].image}
+                  alt={publicationVariants[0].alt}
+                  loading="lazy"
+                  decoding="async"
                   class="photo photo--gray"
                 />
               </div>
@@ -683,6 +773,8 @@ const SIGNATURE_GOLD_SVG = `
 
   </section>
 
+  <script type="application/json" id="register-features" is:inline set:html={featureJson}></script>
+
   <script is:inline>
     // The ledger's initial `inert` state is applied HERE rather than
     // being written into the markup above, and this is a bug fix, not a
@@ -701,6 +793,14 @@ const SIGNATURE_GOLD_SVG = `
     //
     // .cover is not in this list: it takes `inert` only once it has been
     // opened, and the noscript stylesheet hides it outright.
+    //
+    // NOT THE ONLY PLACE THIS HAPPENS, and the duplication is load
+    // bearing: this script runs once per document PARSE, and Astro's
+    // client-side navigation swaps the DOM without re-parsing, so on a
+    // return visit it never runs. initRegister() applies the same
+    // resting state again for that path. Keep both — this one is what
+    // makes it happen before first paint, that one is what makes it
+    // happen at all on a swapped-in DOM.
     (function () {
       document.getElementById('pages')?.setAttribute('inert', '');
       document.getElementById('register-controls')?.setAttribute('inert', '');
@@ -1054,6 +1154,7 @@ const SIGNATURE_GOLD_SVG = `
     font-variant-numeric: tabular-nums;
     color: var(--color-sage, #5A6B5A);
     flex-shrink: 0;
+    font-weight: 800;
   }
 
   .cover {
@@ -1225,10 +1326,33 @@ const SIGNATURE_GOLD_SVG = `
   .cover-signature {
     width: clamp(14rem, 42vw, 20rem);
     height: auto;
+
+    /* DEBOSSED, not raised. The highlight falls on the LOWER-RIGHT
+       inner edge and the shadow on the UPPER-LEFT — the inverse of
+       something sitting proud of the cover. Foil and blind stamps are
+       pressed INTO leather, so this is the honest reading, and it is
+       the one that matches the deckled edges and the per-leaf foxing
+       the rest of the page bothers with. Swap the two offset pairs to
+       put it back on the surface.
+
+       TWO passes, not three. The old chain ended with an ambient cast
+       shadow, which sells a raised object and is wrong for a groove —
+       a recess does not cast onto the surface it is cut into. Dropping
+       it also removes a full raster pass from an element that lives
+       inside a 0.9s 3D transform.
+
+       0.5px of blur rather than the old hard 0: at the 224px low end
+       these strokes are about a pixel wide, so a zero-blur offset copy
+       fattened and ghosted them instead of beveling them.
+
+       Highlight is a near-white carrying only a trace of warmth, not
+       the old #fff8dc cream. It has to agree with the gilt without
+       adding chroma of its own: a properly yellow glint is the fastest
+       way to make metal look like paint, and it would fight the
+       deliberately bleached top of the gradient. */
     filter:
-      drop-shadow(-1px -1px 0 rgba(255, 248, 220, 0.35))
-      drop-shadow(1px 2px 1px rgba(0, 0, 0, 0.6))
-      drop-shadow(0 3px 4px rgba(0, 0, 0, 0.3));
+      drop-shadow(-1px -1px 0.5px rgba(20, 18, 15, 0.75))
+      drop-shadow(1px 1px 0.5px rgba(246, 242, 232, 0.42));
   }
   .cover-subtitle {
     font-family: theme('fontFamily.mono', ui-monospace, Menlo, monospace);
@@ -1284,6 +1408,26 @@ const SIGNATURE_GOLD_SVG = `
     overflow: hidden;
     perspective: 1600px;
 
+    /* BASELINE GRID. --rule-pitch is the single value the ruled paper
+       and every gridded text element are both driven from: one rule
+       per line of running text. --rule-phase slides the ruling up or
+       down to meet the text's first baseline; it is written per leaf
+       face by gridPhase() in the script below, and defaults to 0 so
+       the paper still renders correctly with JS off.
+
+       HEIGHT BUDGET. Leaf 02's text block is exactly 11 pitches tall
+       (2 heading lines × 2, + 1 gap, + 4 body lines, + 1 gap, + 1 for
+       the link), so every 0.05rem of pitch is ~8.8px off the leaf —
+       and .pages is sized to the TALLEST leaf, so that is ~8.8px off
+       the whole ledger whenever leaf 02 is the one driving it.
+
+       1.6rem was the first pass. 1.5rem = 24px is a true quarter-inch
+       ruling and still gives the body 1.30 leading, up from the 1.1 it
+       had before any of this. Below about 1.4rem you start handing
+       back the legibility this was supposed to buy. */
+    --rule-pitch: 1.5rem;
+    --rule-phase: 0px;
+
     /* the margin the page's FURNITURE hangs off — the running head at
        the top and the catchwords at the foot. Deliberately not the same
        as .leaf-body's own padding-left: body text respects the ruled
@@ -1307,12 +1451,24 @@ const SIGNATURE_GOLD_SVG = `
   .leaf-face--front {
     background-color: var(--color-caliche, #E8E1D1);
     background-image:
-      repeating-linear-gradient(
+      /* ONE tile, one rule at its foot, repeated by background-repeat
+         rather than by repeating-linear-gradient. That swap is what
+         makes --rule-phase possible: a repeating gradient sized
+         100% 100% with no-repeat leaves a bald strip at the top the
+         moment you shift background-position, whereas a real tile
+         repeats in both directions from wherever it is placed.
+
+         The rule sits at the TOP of the tile, not the foot. gridPhase()
+         puts the text's baseline at the tile boundary, so a rule drawn
+         at the foot would occupy the 1px directly ABOVE the baseline --
+         cutting through the bottom of the letterforms. Drawn at the
+         top, its upper edge meets the baseline and the letters sit ON
+         the line, which is how writing meets ruled paper. */
+      linear-gradient(
         to bottom,
-        transparent 0,
-        transparent 1.85rem,
-        var(--ledger-rule) 1.85rem,
-        var(--ledger-rule) calc(1.85rem + 1px)
+        var(--ledger-rule) 0,
+        var(--ledger-rule) 1px,
+        transparent 1px
       ),
       linear-gradient(var(--ledger-accent), var(--ledger-accent)),
       linear-gradient(var(--ledger-accent), var(--ledger-accent)),
@@ -1320,9 +1476,9 @@ const SIGNATURE_GOLD_SVG = `
       linear-gradient(var(--ledger-rule), var(--ledger-rule)),
       linear-gradient(var(--ledger-accent), var(--ledger-accent)),
       linear-gradient(var(--ledger-accent), var(--ledger-accent));
-    background-repeat: no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
-    background-position: 0 0, 9% 0, 14% 0, 63% 0, 67% 0, 84% 0, 89% 0;
-    background-size: 100% 100%, 1px 100%, 1px 100%, 1px 100%, 1px 100%, 1px 100%, 1px 100%;
+    background-repeat: repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat, no-repeat;
+    background-position: 0 var(--rule-phase, 0px), 9% 0, 14% 0, 63% 0, 67% 0, 84% 0, 89% 0;
+    background-size: 100% var(--rule-pitch), 1px 100%, 1px 100%, 1px 100%, 1px 100%, 1px 100%, 1px 100%;
   }
 
   /* v10: per-leaf foxing. --foxing-image is set inline per leaf-face
@@ -1700,20 +1856,148 @@ const SIGNATURE_GOLD_SVG = `
     color: var(--color-sage, #5A6B5A);
     margin: 0 0 0.85rem;
     max-width: 42rem;
-    border-bottom: #5A6B5A 1px solid;
   }
 
   .title--sm { font-size: clamp(1.3rem, 2.2vw, 1.75rem); }
 
   .heading {
     font-family: cormorant-garamond, serif;
-    font-weight: 500;
     font-size: clamp(1.6rem, 3.2vw, 2.5rem);
     line-height: 1.1;
     letter-spacing: -0.01em;
-    color: var(--color-iron, #1A1919);
+    color:  var(--color-iron, #1A1919);
     margin: 0 0 0.85rem;
     max-width: 42rem;
+  }
+
+  /* ══ BASELINE GRID SPIKE — leaf 02 only ═══════════════════════════
+     Everything here is scoped to .leaf--grid. Delete that one class
+     from the markup and the leaf reverts exactly; nothing below
+     touches the other four leaves.
+
+     The rule: every line box and every vertical margin is a whole
+     number of --rule-pitch. Line-heights are ABSOLUTE (calc on the
+     pitch) rather than unitless ratios — that is what lets the
+     clamp() font sizes stay fluid while the boxes stay on grid.
+
+     Making the boxes multiples is not by itself enough: half-leading
+     inside a line box scales with font-size, so a 40px heading and an
+     18px paragraph still put their baselines at different offsets
+     within their own boxes. gridShims() in the script corrects that
+     residue per element. This block does the structural half.        */
+  /* THE THREE DIALS. Each is a whole number of pitches, so any of them
+     can change without leaving the grid — 0 is legal. Together with
+     --rule-pitch these are the entire height budget for this leaf.
+
+     --grid-heading-gap: 0 is the cheapest single pitch available if
+     the leaf is still too tall. A 2-pitch heading line already carries
+     separation below its last baseline, so it may not read as cramped
+     — but check it at a WIDE window, where the heading sits at its
+     clamp ceiling and has the least half-leading to spare. */
+  .leaf--grid {
+    --grid-heading-lead: 2; /* pitches per heading LINE */
+    --grid-heading-gap: 1;  /* pitches after the heading */
+    --grid-body-gap: 1;     /* pitches after the paragraph */
+  }
+
+  /* .leaf-text has no rule of its own, so it is a plain block — which
+     makes .cta inside it INLINE-level, and margin-top does not move an
+     inline box. A column flex container blockifies every child so the
+     shims work there exactly as they do in .leaf-inner. Default
+     align-items (stretch) is kept deliberately: flex-start would
+     shrink the headings to fit-content and change where they wrap.
+     .cta carries its own width: fit-content, so it still shrinks. */
+  .leaf--grid .leaf-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* a line break between two stacked flex items is a zero-size item */
+  .leaf--grid .leaf-text > br {
+    display: none;
+  }
+
+  /* TWO RULES PER LINE ONLY WORKS IF THE LETTERS FILL THE SPACE.
+     A line box is fixed at N pitches, so the RATIO is set by the font
+     size alone — and fluid type therefore changes the apparent leading
+     as the window moves. This clamp used to run 1.6rem–2.5rem, which
+     inside a 48px box is 1.87 at the floor and 1.20 at the ceiling:
+     correct on a wide screen and visibly double-spaced on a narrow
+     one. Raising the FLOOR holds it between 1.40 and 1.20 at every
+     width. On a grid, display type wants a NARROW clamp. */
+  .leaf--grid .title,
+  .leaf--grid .heading {
+    line-height: calc(var(--grid-heading-lead) * var(--rule-pitch));
+    margin: 0 0 calc(var(--grid-heading-gap) * var(--rule-pitch));
+    font-size: clamp(2.15rem, 3.2vw, 2.5rem);
+  }
+
+  /* The --sm variants had NO size that works at two rules. At their old
+     1.3–1.75rem they ran 2.31 to 1.71 inside a 48px box — doubled at
+     every width, which is what the split leaves’ titles and the
+     publication titles were showing. Filling a 48px box needs ~34px,
+     which is the main heading’s size and collapses the hierarchy
+     instead. So they drop to ONE rule, at a size that fits it: 1.25 to
+     1.15.
+
+     THE TRADE, and it is why this is one token: at one rule the --sm
+     titles are 19–21px against 18.4px body, so the step down from a
+     full leaf title is much bigger than it was. If that reads too flat,
+     set --grid-heading-lead: 2 here and raise the clamp to about
+     1.9–2.15rem — that buys presence back at the cost of the
+     title/subtitle distinction on the split leaves.
+
+     Bonus: .pub-title’s reserve is lines x lead x pitch, so halving the
+     lead halves it — 96px rather than 192px on leaf 05. */
+  .leaf--grid .title--sm,
+  .leaf--grid .heading--sm {
+    --grid-heading-lead: 1;
+    font-size: clamp(1.2rem, 1.7vw, 1.3rem);
+  }
+
+  .leaf--grid .quote {
+    line-height: calc(2 * var(--rule-pitch));
+    margin: 0 0 calc(var(--grid-body-gap) * var(--rule-pitch));
+  }
+
+  /* the reserve that stops the rotating publication from changing the
+     book's height becomes EXACT rather than approximate: the clamp is
+     N lines and each line is now a known number of pitches */
+  .leaf--grid .pub-title {
+    min-height: calc(
+      var(--pub-title-lines) * var(--grid-heading-lead) * var(--rule-pitch)
+    );
+  }
+
+  .leaf--grid .pub-cite {
+    line-height: var(--rule-pitch);
+    min-height: calc(2 * var(--rule-pitch));
+  }
+
+  /* DELIBERATELY NOT GRIDDED: .photo-caption and .plate. They belong to
+     the photograph, not to the sheet — a caption on a tipped-in plate
+     is printed on the plate, and ruling it to the ledger beneath would
+     be claiming something that was never true of the object.
+     .exlibris-mark and .photo-frame are left intrinsically sized for
+     the same reason; neither carries a baseline, and the shim on the
+     element after them absorbs whatever height they happen to take. */
+
+  .leaf--grid .body {
+    /* 1.15rem text in a 1.5rem box = 1.30, up from the old 1.1.
+       Looser AND on grid — the leading was tight for a serif. */
+    line-height: var(--rule-pitch);
+    margin: 0 0 calc(var(--grid-body-gap) * var(--rule-pitch));
+  }
+
+  .leaf--grid .cta {
+    line-height: var(--rule-pitch);
+    /* the 2px reserved for the underline is 2px off the grid; give
+       the rule negative offset instead of padding the box out */
+    padding-bottom: 0;
+  }
+
+  .leaf--grid .cta::before {
+    bottom: -2px;
   }
 
   .heading--sm { font-size: clamp(1.3rem, 2.2vw, 1.75rem); }
@@ -1730,7 +2014,8 @@ const SIGNATURE_GOLD_SVG = `
   }
 
   .heading span {
-    color: var(--color-caprock, #B85A38);
+    font-weight: 800;
+    color: var(--color-caprock)
   }
 
   .body {
@@ -1759,6 +2044,116 @@ const SIGNATURE_GOLD_SVG = `
     letter-spacing: 0.05em;
     color: rgba(26, 25, 25, 0.5);
     margin: 0 0 1.35rem;
+  }
+
+    /* ── Reserved boxes for the rotating publication (leaf 05) ──────
+     The photography leaf is height-safe for free: .photo-frame is a
+     fixed 4/3 box and its caption is absolutely positioned, so no
+     plate can change the leaf's height. This leaf is not — the title
+     and citation are real text in normal flow, and .pages' height is
+     measured ONCE at load from whichever leaf is tallest. A longer
+     title arriving after that would overflow the measurement (.pages
+     is overflow:hidden), not reflow it.
+
+     So both fields get a fixed reserve: short entries pad up to it,
+     long ones clamp at it. --pub-title-lines is the dial. Raising it
+     costs height only on phones — above 800px .pages' min-height
+     floor already leaves ~100px of slack under the content. */
+  .pub-title {
+    --pub-title-lines: 4;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--pub-title-lines);
+    line-clamp: var(--pub-title-lines);
+    overflow: hidden;
+    min-height: calc(var(--pub-title-lines) * 1.1em);
+  }
+  .pub-cite {
+    line-height: 1.4;
+    min-height: 2.8em;
+  }
+  /* ── Mobile height pass ───────────────────────────────
+     Every leaf is inset:0 inside .pages, and measureLeavesHeight()
+     sizes .pages to the TALLEST one — so the book is as tall as its
+     worst page and trimming a short leaf buys nothing. On phones the
+     tall ones are the two --split leaves: above 800px they are a
+     1.1fr/0.9fr pair, but below it the grid collapses to one column
+     and a full-width 4:3 frame stacks UNDER a full text block. That
+     stack, plus the running head every leaf carries, is where the
+     height is, so that is all this block touches.
+
+     Nothing here is a font-size cut for its own sake: the frames get
+     shorter ratios, the reserved boxes get retuned for the narrower
+     measure they actually wrap at, and the vertical rhythm tightens.
+     Body line-height is deliberately left alone — it is already 1.1,
+     which is tight, and buying pixels there would cost legibility. */
+  @media (max-width: 799px) {
+    /* The running head is on all five leaves, so this is the only trim
+       here that pays five times over. The folio drives the header's
+       height (it is the tallest line box in a baseline-aligned row),
+       so it comes down furthest; the doubled rule thins to match. */
+    .leaf-header {
+      padding: 0.55rem var(--page-margin) 0.5rem;
+      border-bottom-width: 4px;
+    }
+    .leaf-header-page { font-size: 1.1rem; }
+
+    .leaf-inner--split { gap: 1rem; }
+
+    /* The frames are the single biggest block of height on these two
+       leaves, and object-fit:cover means a shorter box is a crop, not
+       a squash — so the ratio is chosen by what the image is FOR.
+       On Photography the plate is the point and gets the gentler 3:2.
+       On Publications the archival photo is supporting material, so it
+       can take the harder 16:9 band. Both are dials: 4/3 restores the
+       old height exactly. */
+    .leaf--rake .photo-frame { aspect-ratio: 3 / 2; }
+    .photo-frame--gray { aspect-ratio: 16 / 9; }
+
+    /* Four lines, not five: at 1.15rem in this measure a ~110-char
+       title wraps to about four, so the fifth line was reserved height
+       that nothing ever filled. Check a long title here if you raise
+       the size back up. */
+    .pub-title {
+      --pub-title-lines: 4;
+      font-size: 1.15rem;
+      margin-bottom: 0.6rem;
+    }
+    .pub-cite { margin-bottom: 0.75rem; }
+
+    /* A GRID LINE BOX IS FIXED, so the only way to fix loose leading
+       is to change the SIZE -- and on a phone the right direction is
+       DOWN A RULE, not up in size.
+
+       The desktop fix raised .heading's clamp FLOOR to 2.15rem so the
+       letters would fill a two-rule box. But a floor is exactly what
+       applies at 375px, so the mobile heading became 34.4px in a 48px
+       box -- about 20 characters a line, four lines, 192px. One rule at
+       1.25rem fits ~34 characters, wraps the same string to three, and
+       holds the ratio at 1.20. That is ~120px off leaf 02 for a change
+       that makes the type MORE correct, not less.
+
+       --grid-heading-gap stays at 1 deliberately: at one rule the
+       heading has almost no half-leading of its own, so 0 here would
+       run it straight into the paragraph. */
+    .leaf--grid {
+      --grid-heading-lead: 1;
+    }
+    .leaf--grid .title,
+    .leaf--grid .heading {
+      font-size: clamp(1.25rem, 4vw, 1.35rem);
+    }
+
+    /* restated at grid weight: `.leaf--grid .heading--sm` (0,2,0)
+       outranks the bare `.pub-title` (0,1,0) above, so his deliberate
+       1.15rem was being overridden -- and since the reserve is
+       lines x lead x pitch, a size that wraps to five lines would
+       silently under-reserve and let the leaf change height when the
+       feature rotates. */
+    .leaf--grid .pub-title { font-size: 1.15rem; }
+
+    .title--sm, .heading--sm { margin-bottom: 0.6rem; }
+    .body { margin-bottom: 0.9rem; }
   }
 
   .cta {
@@ -1834,7 +2229,7 @@ const SIGNATURE_GOLD_SVG = `
     color: var(--color-caliche, #E8E1D1);
   }
   .photo-frame--gray .photo--gray {
-    filter: grayscale(1);
+    filter: grayscale(0);
     transition: filter 0.5s ease;
   }
   .photo-frame--gray:hover .photo--gray,
@@ -1921,16 +2316,23 @@ const SIGNATURE_GOLD_SVG = `
       --cover-open-deg: 148deg;
       --cover-open-width: clamp(3.25rem, 30vw, 6rem);
     }
+    /* drops to a single margin pair on phones. The ruling layer must
+       stay the SAME tile recipe as the base rule above — an old
+       repeating-gradient here would put .pages on a different pitch
+       from the leaf faces sitting on top of it. */
     .pages {
       background-image:
-        repeating-linear-gradient(
-          to bottom, transparent 0, transparent 1.85rem,
-          var(--ledger-rule) 1.85rem, var(--ledger-rule) calc(1.85rem + 1px)
+        linear-gradient(
+          to bottom,
+          var(--ledger-rule) 0,
+          var(--ledger-rule) 1px,
+          transparent 1px
         ),
         linear-gradient(var(--ledger-accent), var(--ledger-accent)),
         linear-gradient(var(--ledger-accent), var(--ledger-accent));
-      background-position: 0 0, 8% 0, 13% 0;
-      background-size: 100% 100%, 1px 100%, 1px 100%;
+      background-repeat: repeat, no-repeat, no-repeat;
+      background-position: 0 var(--rule-phase, 0px), 8% 0, 13% 0;
+      background-size: 100% var(--rule-pitch), 1px 100%, 1px 100%;
     }
   }
 
@@ -1977,9 +2379,147 @@ const SIGNATURE_GOLD_SVG = `
     if (register.dataset.registerReady === 'true') return;
     register.dataset.registerReady = 'true';
 
+    /* RESTING STATE — applied here as well as in the parse-time inline
+       bootstrap near the markup.
+
+       That bootstrap is a parser-blocking <script is:inline>, so it
+       runs exactly once per document PARSE. Astro's client-side
+       navigation swaps the DOM without re-parsing, so on a return to
+       this page it never runs again. The markup deliberately carries no
+       `inert` of its own (inert can only be REMOVED by script, so
+       baking it in would leave a JS-less visitor with a register whose
+       every link was dead), and the result is that the leaves come back
+       with none of them inert — so the LAST one in document order,
+       Publications, paints on top, while `current = 0` below points the
+       tabs, counter and catchwords at leaf 01. Nav says Ex Libris, the
+       visible sheet says Publications.
+
+       Doing it here as well costs nothing on a first load, where the
+       bootstrap has already done it and every write below is
+       idempotent. What it buys is that the ledger's state is a function
+       of initRegister() rather than of how the document happened to
+       arrive — fresh parse, client-side swap, or bfcache restore. The
+       readiness guard above means this only ever runs against a DOM
+       that has not been set up yet, so it cannot stamp on a reader who
+       is midway through the book. */
+    if (cover && !cover.hasAttribute('inert')) {
+      // cover still closed: the pages behind it stay out of reach
+      pages.setAttribute('inert', '');
+      controls?.setAttribute('inert', '');
+    }
+    leafEls.forEach((leaf, i) => {
+      leaf.toggleAttribute('inert', i !== 0);
+      // a swapped-in DOM has no inline transform, but a restored one
+      // may still be holding the last turn's rotation
+      leaf.style.transform = '';
+    });
+    tabs.forEach((tab, i) =>
+      tab.setAttribute('aria-selected', i === 0 ? 'true' : 'false')
+    );
+
     const EXIT_DEG = 100;
     const TURN_MS = 600; // keep in sync with the .leaf transition/keyframe durations in CSS
     let current = 0;
+
+        // ── Rotating features (leaves 03 and 05) ───────────────────────
+    // Reselected at the START of a page turn, never on a timer. At
+    // that instant the incoming leaf is still fully covered by the
+    // outgoing one, so the new plate is already in place in the first
+    // strip the turn uncovers — no fade needed, no flash, and no
+    // self-updating region that would need a pause control.
+    //
+    // Variant 0 of each list is what the server rendered. A random
+    // start offset per visit means the book opens on a different
+    // plate each time; from there each return to the leaf steps
+    // forward, so nothing repeats until the list has been through.
+    interface PhotoVariant {
+      src: string; srcset?: string; width: number; height: number;
+      alt: string; caption: string;
+    }
+    interface PubVariant {
+      title: string; cite: string; href: string; image: string; alt: string;
+    }
+
+    let featurePhotos: PhotoVariant[] = [];
+    let featurePubs: PubVariant[] = [];
+    try {
+      const parsed = JSON.parse(
+        document.getElementById('register-features')?.textContent || '{}'
+      );
+      featurePhotos = parsed.photos ?? [];
+      featurePubs = parsed.publications ?? [];
+    } catch {}
+
+    const photoImg = document.getElementById('feature-photo') as HTMLImageElement | null;
+    const photoCap = document.getElementById('feature-photo-caption');
+    const pubTitle = document.getElementById('feature-pub-title');
+    const pubCite = document.getElementById('feature-pub-cite');
+    const pubLink = document.getElementById('feature-pub-link') as HTMLAnchorElement | null;
+    const pubImg = document.getElementById('feature-pub-image') as HTMLImageElement | null;
+
+    const startAt = (n: number) => (n > 1 ? Math.floor(Math.random() * n) : 0);
+    let photoNext = startAt(featurePhotos.length);
+    let pubNext = startAt(featurePubs.length);
+    let photoShown = 0;
+    let pubShown = 0;
+
+    // The swap is instant and hidden, which only works if the bytes
+    // are already there — an uncached image would leave the frame
+    // blank in the strip the turn is uncovering. So the NEXT pick is
+    // fetched as soon as the current one lands, and both are fetched
+    // when the cover opens (see initCover), not on page load: no
+    // reason to spend a reader's bandwidth on leaf 03 before they've
+    // shown any intent to open the ledger at all.
+    function preloadPhoto(i: number) {
+      const v = featurePhotos[i];
+      if (!v) return;
+      const im = new window.Image();
+      if (v.srcset) im.srcset = v.srcset;
+      im.src = v.src;
+    }
+    function preloadPub(i: number) {
+      const v = featurePubs[i];
+      if (v) new window.Image().src = v.image;
+    }
+
+    function showPhoto(i: number) {
+      const v = featurePhotos[i];
+      if (!v || !photoImg || i === photoShown) return;
+      // srcset first, and CLEARED when absent — it outranks src, so a
+      // leftover one would keep the previous plate on screen
+      if (v.srcset) photoImg.srcset = v.srcset;
+      else photoImg.removeAttribute('srcset');
+      photoImg.src = v.src;
+      photoImg.width = v.width;
+      photoImg.height = v.height;
+      photoImg.alt = v.alt;
+      if (photoCap) photoCap.textContent = v.caption;
+      photoShown = i;
+    }
+
+    function showPublication(i: number) {
+      const v = featurePubs[i];
+      if (!v || i === pubShown) return;
+      if (pubTitle) pubTitle.textContent = v.title;
+      if (pubCite) pubCite.textContent = v.cite;
+      if (pubLink) pubLink.href = v.href;
+      if (pubImg) { pubImg.src = v.image; pubImg.alt = v.alt; }
+      pubShown = i;
+    }
+
+    // A single-entry list is a deliberate no-op, not an error — that
+    // leaf simply never changes, exactly as it behaved before.
+    function rotateFeature(index: number) {
+      if (index === 2 && featurePhotos.length > 1) {
+        showPhoto(photoNext);
+        photoNext = (photoNext + 1) % featurePhotos.length;
+        preloadPhoto(photoNext);
+      } else if (index === 4 && featurePubs.length > 1) {
+        showPublication(pubNext);
+        pubNext = (pubNext + 1) % featurePubs.length;
+        preloadPub(pubNext);
+      }
+    }
 
     // The catchwords name their destination. Their text is read off the
     // tab row's own labels minus the "NN · " numbering rather than kept
@@ -2001,8 +2541,15 @@ const SIGNATURE_GOLD_SVG = `
       }
     }
 
+    // filled by measureLeavesHeight(), read by gridReport(). The book is
+    // exactly as tall as its tallest leaf, so knowing WHICH leaf is the
+    // max is the whole of any height question -- trimming any other leaf
+    // buys nothing at all.
+    const leafHeights: number[] = [];
+
     function measureLeavesHeight() {
       let max = 0;
+      leafHeights.length = 0;
       leafEls.forEach((leaf) => {
         const wasInert = leaf.hasAttribute('inert');
         if (wasInert) leaf.removeAttribute('inert');
@@ -2015,12 +2562,408 @@ const SIGNATURE_GOLD_SVG = `
         const front = leaf.querySelector<HTMLElement>('.leaf-face--front');
         const prevFrontPosition = front?.style.position;
         if (front) front.style.position = 'static';
+        leafHeights.push(leaf.offsetHeight);
         max = Math.max(max, leaf.offsetHeight);
         leaf.style.position = prevPosition;
         if (front) front.style.position = prevFrontPosition ?? '';
         if (wasInert) leaf.setAttribute('inert', '');
       });
       leavesWrap!.style.setProperty('--leaves-h', `${max}px`);
+    }
+
+    /* ══ BASELINE GRID — measurement ══════════════════════════════════
+       Two passes, solving two different problems.
+
+       gridShims() fixes HALF-LEADING. Every gridded box is already a
+       whole number of pitches (see the .leaf--grid CSS), but the
+       baseline's offset INSIDE its own box depends on font-size, so
+       the heading and the paragraph land on different lattices. This
+       measures each element and pads the top by up to one pitch so
+       they share one. It changes layout, so it runs before the final
+       height measurement.
+
+       gridPhase() fixes WHERE that lattice sits, which is arbitrary
+       because .leaf-inner centres its content. It slides the ruling to
+       meet the text instead of moving the text. Setting a background
+       position costs no layout, so this can never feed back into the
+       shims — which is the whole reason the ordering terminates.
+
+       Baselines are measured with a zero-height inline-block probe:
+       per CSS inline layout an inline-block with hidden overflow
+       aligns its bottom margin edge to the parent's baseline, so the
+       probe's rect bottom IS the baseline. No font metrics required,
+       correct for any face at any size.                              */
+    function baselineOf(el: HTMLElement): number {
+      // a flex or grid parent would treat the probe as an item and
+      // centre it instead of baseline-aligning it; block it briefly.
+      const display = getComputedStyle(el).display;
+      const prevDisplay = el.style.display;
+      if (display.includes('flex') || display.includes('grid')) {
+        el.style.display = 'block';
+      }
+      const probe = document.createElement('span');
+      probe.style.cssText =
+        'display:inline-block;width:0;height:0;overflow:hidden;vertical-align:baseline;';
+      el.insertBefore(probe, el.firstChild);
+      const y = probe.getBoundingClientRect().bottom;
+      probe.remove();
+      el.style.display = prevDisplay;
+      return y;
+    }
+
+    // Same probe, appended rather than prepended: the baseline of the
+    // element's LAST line. The difference between the two is what
+    // catches a line-height that is not a whole number of pitches —
+    // the first line is always shimmed onto a rule, so a broken
+    // line-height only shows from line two onward.
+    function lastBaselineOf(el: HTMLElement): number {
+      const display = getComputedStyle(el).display;
+      const prevDisplay = el.style.display;
+      if (display.includes('flex') || display.includes('grid')) {
+        el.style.display = 'block';
+      }
+      const probe = document.createElement('span');
+      probe.style.cssText =
+        'display:inline-block;width:0;height:0;overflow:hidden;vertical-align:baseline;';
+      el.appendChild(probe);
+      const y = probe.getBoundingClientRect().bottom;
+      probe.remove();
+      el.style.display = prevDisplay;
+      return y;
+    }
+
+    // resolves --rule-pitch to px. Custom properties are not computed
+    // to a length, so this measures a real box rather than parsing.
+    function pitchOf(scope: HTMLElement): number {
+      const probe = document.createElement('div');
+      probe.style.cssText =
+        'position:absolute;visibility:hidden;width:0;height:var(--rule-pitch);';
+      scope.appendChild(probe);
+      const h = probe.getBoundingClientRect().height;
+      probe.remove();
+      return h;
+    }
+
+    function gridLeaves(): HTMLElement[] {
+      return Array.from(document.querySelectorAll<HTMLElement>('.leaf--grid'));
+    }
+
+    // leaves carry a rotateY for the page turn; a transform would
+    // scale every rect we read. Neutralise it for the measurement the
+    // same way measureLeavesHeight() neutralises position.
+    function unturned<T>(leaf: HTMLElement, fn: () => T): T {
+      /* THE TRANSITION HAS TO GO FIRST, and this was a real bug.
+
+         .leaf carries `transition: transform 0.6s`, so assigning
+         transform:'none' does not set the transform — it STARTS an
+         animation toward none, and the computed value at the moment we
+         measure is still the old one. An [inert] leaf sits at
+         rotateY(-100deg) under .pages' 1600px perspective, so every
+         baseline AND the pitch probe were being read off an edge-on,
+         perspective-projected sheet. Garbage in, garbage grid.
+
+         measureLeavesHeight() never hit this because `position` is not
+         a transitioned property. Anything that touches `transform` is.
+
+         Suppress the transition, force a style flush so the suppression
+         is in effect before the transform lands, measure, then restore
+         in the reverse order with a second flush so restoring cannot
+         animate either. */
+      const prevTransition = leaf.style.transition;
+      const prevTransform = leaf.style.transform;
+      const prevDisplay = leaf.style.display;
+      leaf.style.transition = 'none';
+      void leaf.offsetHeight;
+      leaf.style.transform = 'none';
+      // Under prefers-reduced-motion the stylesheet gives .leaf[inert]
+      // display:none, and a display:none element has no geometry at
+      // all — pitchOf() returns 0 and the whole leaf silently skips
+      // gridding until it is first visited. Force it back for the
+      // measurement; it is still visibility:hidden either way.
+      if (getComputedStyle(leaf).display === 'none') {
+        leaf.style.display = 'block';
+      }
+      const out = fn();
+      leaf.style.display = prevDisplay;
+      leaf.style.transform = prevTransform;
+      void leaf.offsetHeight;
+      leaf.style.transition = prevTransition;
+      return out;
+    }
+
+    // How close to a rule counts as on it. Half a device pixel at 2x.
+    const GRID_TOLERANCE = 0.25;
+    // 3 passes settles a 3-element leaf; a 5-element leaf needs 5. Each
+    // pass is a handful of rect reads on one leaf, so the ceiling is set
+    // for the busiest leaf, not the one on screen.
+    const GRID_MAX_PASSES = 8;
+
+    /* THE REFERENCE IS THE RUNNING HEAD, not the content, and that one
+       choice does three things at once.
+
+       It is IDENTICAL on all five sheets, so the ruling ends up in the
+       same phase on every leaf. Sheets from one press run are ruled
+       alike; per-leaf phase would be visible the moment a turn puts two
+       of them in the same eye-line.
+
+       It puts the head and the folio ON the rules for free, which is
+       right — the running head is printed with the sheet, not written
+       on it afterwards.
+
+       And it CANNOT MOVE. .leaf-header is flex-shrink:0 at the top of a
+       fixed-height face, so no content shim can shift it. The earlier
+       version referenced the first content element, which .leaf-inner
+       centres — so every shim moved the very thing the other shims were
+       measured against. */
+    function gridRef(leaf: HTMLElement): HTMLElement | null {
+      return leaf.querySelector<HTMLElement>('.leaf-header-title');
+    }
+
+    /* Split leaves nest their prose in .leaf-text inside a two-column
+       .leaf-inner--split, so the column — not the grid — is the flow to
+       align. Elements carrying no baseline (the Ex Libris mark, a <br>)
+       are skipped: there is nothing to put on a line, and the shim on
+       whatever follows absorbs the height they took. */
+    function gridItems(leaf: HTMLElement): HTMLElement[] {
+      const flow =
+        leaf.querySelector<HTMLElement>('.leaf-text') ??
+        leaf.querySelector<HTMLElement>('.leaf-inner');
+      if (!flow) return [];
+      return Array.from(flow.children).filter(
+        (el): el is HTMLElement =>
+          el instanceof HTMLElement && (el.textContent ?? '').trim().length > 0
+      );
+    }
+
+    /* THE HEIGHT IS PINNED, WHICH IS WHY THE MATH IS SIMPLE.
+
+       Two separate feedback loops used to make this hard. .leaf-inner
+       CENTRES its children, so any shim that changed the block's height
+       moved every element by half of it. And measureLeavesHeight()
+       reads these same leaves to set --leaves-h, so a height change
+       also resized .pages afterwards and slid the whole block again --
+       which is what left the content uniformly 8px (and 3.9px on the
+       split leaves) below the running head while being perfectly
+       aligned to itself.
+
+       Both vanish if the flow's height never changes. compensate()
+       below cancels the sum of the margin-tops with a matching negative
+       margin-bottom on the last item, so the correction is purely
+       cumulative: item i must move by d_i, and its move is the sum of
+       every margin above it, giving s_0 = d_0 and s_i = d_i - d_{i-1}.
+
+       An earlier version instead SOLVED the centring feedback
+       (s_0 = d_0 + d_{n-1}, from C_i = d_i + T/2). That was correct for
+       one loop and blind to the other. Removing the cause beats
+       modelling it. */
+    function gridShims() {
+      gridLeaves().forEach((leaf) => {
+        const items = gridItems(leaf);
+        const refEl = gridRef(leaf);
+        if (!refEl || !items.length) return;
+        const last = items[items.length - 1];
+        items.forEach((el) => { el.style.marginTop = ''; });
+        last.style.marginBottom = '';
+
+        unturned(leaf, () => {
+          const pitch = pitchOf(leaf);
+          if (!pitch) return;
+
+          // the last item's own CSS margin-bottom, before we add to it
+          const baseBottom = parseFloat(getComputedStyle(last).marginBottom) || 0;
+
+          /* Hold the block's HEIGHT constant while moving its contents.
+             Every margin-top we add is cancelled by an equal negative
+             margin-bottom on the last item, so the flow's total size
+             never changes. That is what stops the two feedback loops:
+             .leaf-inner centres, so a height change would move the text
+             — and measureLeavesHeight() reads these leaves to set
+             --leaves-h, so a height change would resize .pages and move
+             the text AGAIN, after the shims had already been applied.
+             (That second one is the 8px and 3.9px uniform offsets: the
+             content was correct relative to itself and had slid as a
+             block away from the head.) */
+          const compensate = () => {
+            const total = items.reduce(
+              (sum, el) => sum + (parseFloat(el.style.marginTop) || 0), 0
+            );
+            last.style.marginBottom = `${baseBottom - total}px`;
+          };
+
+          const driftOf = (el: HTMLElement, ref: number) => {
+            let d = (((ref - baselineOf(el)) % pitch) + pitch) % pitch;
+            // Snap to the NEAREST rule, not always the next one down. A
+            // shim is a margin, so it can pull an element UP as readily
+            // as push it down, and taking the nearer direction bounds
+            // the cost at half a pitch instead of a whole one.
+            return d > pitch / 2 ? d - pitch : d;
+          };
+
+          /* With the height pinned, the cross-talk disappears and the
+             correction is simply cumulative: item i must move by d_i,
+             and its move is the sum of every margin above it. So
+             s_0 = d_0 and s_i = d_i - d_{i-1}. Measure every drift
+             FIRST, without mutating, then apply in one shot. */
+          const ref0 = baselineOf(refEl);
+          const d = items.map((el) => driftOf(el, ref0));
+          items.forEach((el, i) => {
+            // margin, not padding: padding cannot go negative, and flex
+            // items never collapse margins.
+            const add = i === 0 ? d[0] : d[i] - d[i - 1];
+            const held = parseFloat(el.style.marginTop) || 0;
+            el.style.marginTop = `${held + add}px`;
+          });
+          compensate();
+
+          /* Mop-up. Should exit on its first check — it exists because
+             the closed form assumes the flow is laid out the way these
+             leaves are, and if one ever is not, this self-corrects
+             instead of being quietly wrong. */
+          for (let pass = 0; pass < GRID_MAX_PASSES; pass++) {
+            const ref = baselineOf(refEl);
+            let worst = 0;
+            items.forEach((el) => {
+              const drift = driftOf(el, ref);
+              worst = Math.max(worst, Math.abs(drift));
+              if (Math.abs(drift) <= GRID_TOLERANCE) return;
+              const held = parseFloat(el.style.marginTop) || 0;
+              el.style.marginTop = `${held + drift}px`;
+            });
+            compensate();
+            if (worst <= GRID_TOLERANCE) break;
+          }
+        });
+      });
+    }
+
+
+    function gridPhase() {
+      gridLeaves().forEach((leaf) => {
+        const front = leaf.querySelector<HTMLElement>('.leaf-face--front');
+        const refEl = gridRef(leaf);
+        if (!front || !refEl) return;
+        unturned(leaf, () => {
+          const pitch = pitchOf(leaf);
+          if (!pitch) return;
+          // .leaf-face--front has no padding, so its border-box top is
+          // the background-origin the ruling is laid out from
+          const y = baselineOf(refEl) - front.getBoundingClientRect().top;
+          front.style.setProperty('--rule-phase', `${((y % pitch) + pitch) % pitch}px`);
+        });
+      });
+    }
+
+    /* Diagnostic. Add ?grid to the URL and every gridded element's
+       distance from its nearest rule is printed, in px, after the
+       passes have settled. Nothing renders and nothing is measured
+       unless the parameter is present. If alignment ever looks wrong
+       again, read these numbers rather than guessing at the cause:
+       anything under a pixel is correct and the eye is seeing
+       something else. Every leaf should report the SAME phase. */
+    function gridReport() {
+      if (!location.search.includes('grid')) return;
+      const phases: Record<string, number> = {};
+
+      gridLeaves().forEach((leaf) => {
+        const front = leaf.querySelector<HTMLElement>('.leaf-face--front');
+        const refEl = gridRef(leaf);
+        if (!front || !refEl) return;
+        const items = [refEl, ...gridItems(leaf)];
+        unturned(leaf, () => {
+          const pitch = pitchOf(leaf);
+          if (!pitch) return;
+          const top = front.getBoundingClientRect().top;
+          const phase =
+            parseFloat(front.style.getPropertyValue('--rule-phase')) || 0;
+          phases[leaf.dataset.leaf ?? '?'] = Math.round(phase * 100) / 100;
+
+          const signed = (v: number) => {
+            const m = ((v % pitch) + pitch) % pitch;
+            return Math.round((m > pitch / 2 ? m - pitch : m) * 100) / 100;
+          };
+
+          const rows = items.map((el) => {
+            const cs = getComputedStyle(el);
+            const lh = parseFloat(cs.lineHeight) || 0;
+            const fs = parseFloat(cs.fontSize) || 0;
+            const first = baselineOf(el);
+            const last = lastBaselineOf(el);
+            const lines = lh ? Math.round((last - first) / lh) + 1 : 1;
+
+            const notes: string[] = [];
+            // a line-height that is not a whole number of pitches only
+            // shows from line 2, which is why the first-line number
+            // alone was never enough to trust
+            const leadMult = lh / pitch;
+            if (lh && Math.abs(leadMult - Math.round(leadMult)) > 0.02) {
+              notes.push(`line-height is ${leadMult.toFixed(2)} pitches, not a whole number`);
+            }
+            // fill ratio: the letters have to occupy the box or the
+            // line reads as double-spaced; too high and they collide
+            const fill = lh ? fs / lh : 0;
+            if (lh && fill < 0.55) notes.push(`only ${(fill * 100) | 0}% of its box — reads double-spaced`);
+            if (lh && fill > 0.95) notes.push(`${(fill * 100) | 0}% of its box — lines may collide`);
+
+            return {
+              element: `${el.tagName.toLowerCase()}.${el.className}`,
+              lines,
+              'first off': signed(first - top - phase),
+              'last off': signed(last - top - phase),
+              'shim': el.style.marginTop || '0',
+              note: notes.join('; ') || '',
+            };
+          });
+
+          console.log(
+            `[grid] leaf ${leaf.dataset.leaf} — pitch ${pitch.toFixed(2)}px, phase ${phase.toFixed(2)}px`
+          );
+          console.table(rows);
+          rows
+            .filter((r) => r.note || Math.abs(r['last off']) > 1)
+            .forEach((r) =>
+              console.warn(`[grid] leaf ${leaf.dataset.leaf} ${r.element}: ${r.note || `last line ${r['last off']}px off the rule`}`)
+            );
+        });
+      });
+
+      /* WHICH LEAF IS THE BOOK'S HEIGHT. .pages is sized to the tallest
+         leaf, so every height question reduces to this table: only the
+         leaf marked DRIVES can make the ledger shorter, and the gap to
+         the runner-up is how much can come off it before another leaf
+         becomes the ceiling. */
+      if (leafHeights.length) {
+        const tallest = Math.max(...leafHeights);
+        const rest = leafHeights.filter((h) => h !== tallest);
+        const slack = rest.length ? tallest - Math.max(...rest) : 0;
+        console.log(
+          '[grid] book height ' + tallest + 'px \u2014 ' + slack +
+            'px of slack on the tallest leaf before another takes over'
+        );
+        console.table(
+          leafHeights.map((h, i) => ({
+            leaf: i,
+            'height (px)': h,
+            'vs tallest': h === tallest ? 'DRIVES' : '-' + (tallest - h),
+          }))
+        );
+      }
+
+      // Every sheet in one book is ruled alike. A leaf whose phase has
+      // drifted from the others means its running head is no longer
+      // built the same way — that is the reference, so it is the one
+      // thing that must stay identical across leaves.
+      const vals = Object.values(phases);
+      if (vals.length > 1 && Math.max(...vals) - Math.min(...vals) > 0.5) {
+        console.warn('[grid] phases DIVERGE between leaves:', phases);
+      }
+    }
+
+    function layoutLeaves() {
+      measureLeavesHeight();
+      gridShims();          // may change a leaf's height...
+      measureLeavesHeight(); // ...so settle --leaves-h again
+      gridPhase();           // background only — cannot move the text
+      gridReport();          // no-op unless ?grid is in the URL
     }
 
     function goTo(index: number, focusTab = false) {
@@ -2031,6 +2974,11 @@ const SIGNATURE_GOLD_SVG = `
       const outgoing = leafEls[current];
       const incoming = leafEls[index];
       const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Before either leaf moves — the incoming one is still [inert],
+      // rotated edge-on and visibility:hidden, so this is the one
+      // moment in the turn where its content can change unobserved.
+      rotateFeature(index);
 
       if (reduced || dir === -1) {
         // Backward navigation is an instant appearance, no flip —
@@ -2110,6 +3058,16 @@ const SIGNATURE_GOLD_SVG = `
       } else {
         window.setTimeout(applyContent, TURN_MS * 0.4);
       }
+
+      // Re-grid once the turn has settled. Not during it: the leaf is
+      // mid-rotation, and although unturned() now suppresses the
+      // transition it would still fight the animation in progress.
+      // No-ops entirely when no .leaf--grid leaf is on the page.
+      window.setTimeout(() => {
+        gridShims();
+        gridPhase();
+        gridReport();
+      }, reduced || dir === -1 ? 0 : TURN_MS + 20);
 
       current = index;
     }
@@ -2221,6 +3179,8 @@ const SIGNATURE_GOLD_SVG = `
         pages?.removeAttribute('inert');
         maybeShowSwipeHint();
         maybeShowArrowPulse();
+        preloadPhoto(photoNext);
+        preloadPub(pubNext);
         const activeHeading = leafEls[current]?.querySelector<HTMLElement>('h1, h2');
         if (activeHeading) {
           if (!activeHeading.hasAttribute('tabindex')) {
@@ -2234,8 +3194,35 @@ const SIGNATURE_GOLD_SVG = `
     }
 
     syncCatchwords(current);
-    measureLeavesHeight();
-    window.addEventListener('resize', measureLeavesHeight);
+    layoutLeaves();
+    /* RESIZE IS EXPENSIVE HERE AND MOBILE FIRES IT DURING SCROLL.
+
+       layoutLeaves() forces roughly a hundred synchronous layouts --
+       every baseline probe writes to the DOM and then reads a rect,
+       times five leaves. That is fine once; it is not fine repeatedly.
+
+       Two guards, and the first matters far more than the second.
+       Mobile browsers fire `resize` when the URL bar collapses and
+       expands as you scroll, so an unguarded handler runs the whole
+       measurement mid-scroll on exactly the devices least able to
+       afford it. Nothing here depends on viewport HEIGHT -- leaves are
+       sized by their content -- so a height-only change is ignored
+       outright. Then a trailing debounce, because a frame-coalesced
+       handler still runs sixty times a second through a desktop drag;
+       what we want is once, when the dragging stops. */
+    let relayoutTimer = 0;
+    let lastLayoutWidth = window.innerWidth;
+    window.addEventListener('resize', () => {
+      if (window.innerWidth === lastLayoutWidth) return; // URL bar, not a resize
+      lastLayoutWidth = window.innerWidth;
+      window.clearTimeout(relayoutTimer);
+      relayoutTimer = window.setTimeout(layoutLeaves, 150);
+    });
+    // Cormorant Garamond swapping in late moves every baseline, which
+    // would silently undo both passes. Re-run once it has landed.
+    if (document.fonts?.ready) {
+      document.fonts.ready.then(layoutLeaves);
+    }
     initRake();
     initCover();
   }
