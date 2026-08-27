@@ -2083,6 +2083,54 @@ const isDev = import.meta.env.DEV;
     header.style.setProperty('--sun-white', sunWhiteFromAltitude(altitudeDeg).toFixed(3));
     applyStationReadout(); // the clock ticks with the same 60s cadence
     header.style.setProperty('--horizon-flatten', easeGrazing(refractionFlatten(altitudeDeg)).toFixed(3));
+    applyThemeColor(); // the address bar takes the zenith — must follow --sky-top
+  };
+
+  /* ---- THE ADDRESS BAR TAKES THE SKY -------------------------------------
+     <meta name="theme-color"> tints the browser chrome on Chrome and Firefox
+     for Android and on Safari 15+ for iOS. Pointing it at --sky-top makes the
+     bar a continuation of the zenith: pale straw at noon, near-black at
+     midnight, and the browser picks its own icon contrast from the value.
+     Desktop browsers ignore it entirely.
+
+     THE PROBE IS THE WHOLE TRICK. --sky-top resolves to a color-mix() chain,
+     and getComputedStyle on an UNREGISTERED custom property hands back that
+     expression as a string, not an rgb triple — theme-color cannot use it.
+     A computed `background-color`, by contrast, is always resolved. So a
+     zero-size element inside the header carries `background-color:
+     var(--sky-top)` purely to be read. That keeps the stylesheet the single
+     source of truth; recomputing the mix in JS would be a second definition
+     of the sky, which is the failure this file keeps having to avoid.
+
+     Costs one style recalc per 60s phase tick. */
+  let skyProbe: HTMLElement | null = null;
+
+  const applyThemeColor = () => {
+    if (!header) return;
+    if (!skyProbe) {
+      skyProbe = document.createElement('span');
+      skyProbe.setAttribute('aria-hidden', 'true');
+      skyProbe.style.cssText =
+        'position:absolute;width:0;height:0;overflow:hidden;' +
+        'pointer-events:none;background-color:var(--sky-top)';
+      header.appendChild(skyProbe);
+    }
+    const colour = getComputedStyle(skyProbe).backgroundColor;
+    // A transparent read means --sky-top has not landed yet (pre-hydration,
+    // or the probe was just inserted). Leave whatever is there rather than
+    // writing a colour that would flash.
+    if (!colour || colour === 'rgba(0, 0, 0, 0)' || colour === 'transparent') return;
+
+    /* Deliberately `:not([media])`. If the site ever adds scheme-scoped
+       theme-colors, those win for a matching scheme and this one is the
+       fallback — overwriting them here would silently defeat them. */
+    let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]:not([media])');
+    if (!meta) {
+      meta = document.createElement('meta');
+      meta.setAttribute('name', 'theme-color');
+      document.head.appendChild(meta);
+    }
+    meta.setAttribute('content', colour);
   };
 
 
@@ -3225,6 +3273,11 @@ const isDev = import.meta.env.DEV;
        .is-active onto the new route's station. */
     setMenu(false);
     applyWeather();
+    /* Astro swaps the whole <head>, so the meta tag applyPhase wrote is gone
+       — same class of loss as the data-js attribute above, and it needs the
+       same re-stamp. applyPhase() ran earlier in this handler, but it ran
+       against the OLD head. */
+    applyThemeColor();
   });
 </script>
 

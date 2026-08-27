@@ -399,15 +399,77 @@ const SIGNATURE_PEWTER_SVG = `
 <RootLayout title="Home | Austin Allison">
   <section class="register not-prose" id="register" aria-roledescription="paged sections">
 
-    <!-- The five deckle silhouettes used to be SVG <clipPath> defs here,
-         referenced as clip-path: url(#deckle-N). Every one was pure
-         straight segments in objectBoundingBox units, i.e. already a
-         polygon -- and a url() reference puts Gecko on its slow clip-MASK
-         path (it builds and rasterizes a mask surface), where a basic
-         shape is a cheap geometry clip. The mask was also rebuilt on
-         every page turn, since data-active-leaf swaps the shape. They are
-         now inline polygon() in the .book rules: identical shape, verified
-         point for point, no surface. -->
+    <!-- Deckle-edge clip shapes for .book's right edge — one per leaf,
+         swapped via the data-active-leaf attribute JS sets in goTo().
+         objectBoundingBox units so each jagged silhouette scales with
+         the box instead of distorting across breakpoints. Left/top/
+         bottom stay flush rectangle edges; only the right boundary is
+         irregular, tapering back to flush at the very top and bottom
+         corners so it reads as a torn edge rather than a saw blade. -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+      <defs>
+        <clipPath id="deckle-0" clipPathUnits="objectBoundingBox">
+          <path d="M 0,0 L 1,0
+            L 0.9975,0.02 L 0.9955,0.04 L 0.9990,0.06 L 0.9945,0.08 L 0.9970,0.10 L 0.9950,0.12
+            L 0.9985,0.14 L 0.9940,0.16 L 0.9965,0.18 L 0.9992,0.20 L 0.9948,0.22 L 0.9972,0.24
+            L 0.9958,0.26 L 0.9988,0.28 L 0.9945,0.30 L 0.9968,0.32 L 0.9994,0.34 L 0.9952,0.36
+            L 0.9978,0.38 L 0.9942,0.40 L 0.9986,0.42 L 0.9960,0.44 L 0.9948,0.46 L 0.9990,0.48
+            L 0.9955,0.50 L 0.9975,0.52 L 0.9946,0.54 L 0.9988,0.56 L 0.9962,0.58 L 0.9950,0.60
+            L 0.9992,0.62 L 0.9970,0.64 L 0.9944,0.66 L 0.9982,0.68 L 0.9958,0.70 L 0.9948,0.72
+            L 0.9986,0.74 L 0.9964,0.76 L 0.9945,0.78 L 0.9990,0.80 L 0.9972,0.82 L 0.9950,0.84
+            L 0.9982,0.86 L 0.9958,0.88 L 0.9946,0.90 L 0.9988,0.92 L 0.9968,0.94 L 0.9952,0.96 L 0.9978,0.98
+            L 1,1 L 0,1 Z" />
+        </clipPath>
+        <clipPath id="deckle-1" clipPathUnits="objectBoundingBox">
+          <path d="M 0,0 L 1,0
+            L 0.9958,0.02 L 0.9988,0.04 L 0.9948,0.06 L 0.9972,0.08 L 0.9945,0.10 L 0.9990,0.12
+            L 0.9962,0.14 L 0.9950,0.16 L 0.9986,0.18 L 0.9944,0.20 L 0.9970,0.22 L 0.9994,0.24
+            L 0.9952,0.26 L 0.9978,0.28 L 0.9946,0.30 L 0.9984,0.32 L 0.9958,0.34 L 0.9948,0.36
+            L 0.9992,0.38 L 0.9964,0.40 L 0.9950,0.42 L 0.9982,0.44 L 0.9945,0.46 L 0.9975,0.48
+            L 0.9990,0.50 L 0.9955,0.52 L 0.9968,0.54 L 0.9944,0.56 L 0.9986,0.58 L 0.9960,0.60
+            L 0.9948,0.62 L 0.9988,0.64 L 0.9972,0.66 L 0.9950,0.68 L 0.9994,0.70 L 0.9958,0.72
+            L 0.9945,0.74 L 0.9982,0.76 L 0.9966,0.78 L 0.9948,0.80 L 0.9990,0.82 L 0.9962,0.84
+            L 0.9952,0.86 L 0.9986,0.88 L 0.9970,0.90 L 0.9946,0.92 L 0.9978,0.94 L 0.9958,0.96 L 0.9988,0.98
+            L 1,1 L 0,1 Z" />
+        </clipPath>
+        <clipPath id="deckle-2" clipPathUnits="objectBoundingBox">
+          <path d="M 0,0 L 1,0
+            L 0.9988,0.02 L 0.9950,0.04 L 0.9972,0.06 L 0.9944,0.08 L 0.9992,0.10 L 0.9958,0.12
+            L 0.9946,0.14 L 0.9986,0.16 L 0.9964,0.18 L 0.9948,0.20 L 0.9990,0.22 L 0.9970,0.24
+            L 0.9945,0.26 L 0.9982,0.28 L 0.9956,0.30 L 0.9994,0.32 L 0.9962,0.34 L 0.9948,0.36
+            L 0.9978,0.38 L 0.9950,0.40 L 0.9988,0.42 L 0.9944,0.44 L 0.9968,0.46 L 0.9990,0.48
+            L 0.9958,0.50 L 0.9946,0.52 L 0.9984,0.54 L 0.9960,0.56 L 0.9948,0.58 L 0.9992,0.60
+            L 0.9972,0.62 L 0.9950,0.64 L 0.9986,0.66 L 0.9945,0.68 L 0.9975,0.70 L 0.9958,0.72
+            L 0.9990,0.74 L 0.9964,0.76 L 0.9948,0.78 L 0.9982,0.80 L 0.9955,0.82 L 0.9946,0.84
+            L 0.9988,0.86 L 0.9968,0.88 L 0.9950,0.90 L 0.9978,0.92 L 0.9958,0.94 L 0.9944,0.96 L 0.9986,0.98
+            L 1,1 L 0,1 Z" />
+        </clipPath>
+        <clipPath id="deckle-3" clipPathUnits="objectBoundingBox">
+          <path d="M 0,0 L 1,0
+            L 0.9946,0.02 L 0.9982,0.04 L 0.9958,0.06 L 0.9990,0.08 L 0.9950,0.10 L 0.9972,0.12
+            L 0.9944,0.14 L 0.9988,0.16 L 0.9962,0.18 L 0.9948,0.20 L 0.9994,0.22 L 0.9958,0.24
+            L 0.9975,0.26 L 0.9945,0.28 L 0.9986,0.30 L 0.9964,0.32 L 0.9950,0.34 L 0.9992,0.36
+            L 0.9970,0.38 L 0.9946,0.40 L 0.9982,0.42 L 0.9956,0.44 L 0.9948,0.46 L 0.9988,0.48
+            L 0.9968,0.50 L 0.9944,0.52 L 0.9978,0.54 L 0.9958,0.56 L 0.9950,0.58 L 0.9990,0.60
+            L 0.9962,0.62 L 0.9945,0.64 L 0.9986,0.66 L 0.9972,0.68 L 0.9948,0.70 L 0.9994,0.72
+            L 0.9958,0.74 L 0.9950,0.76 L 0.9982,0.78 L 0.9964,0.80 L 0.9946,0.82 L 0.9988,0.84
+            L 0.9970,0.86 L 0.9948,0.88 L 0.9976,0.90 L 0.9958,0.92 L 0.9990,0.94 L 0.9950,0.96 L 0.9980,0.98
+            L 1,1 L 0,1 Z" />
+        </clipPath>
+        <clipPath id="deckle-4" clipPathUnits="objectBoundingBox">
+          <path d="M 0,0 L 1,0
+            L 0.9990,0.02 L 0.9958,0.04 L 0.9978,0.06 L 0.9946,0.08 L 0.9970,0.10 L 0.9944,0.12
+            L 0.9988,0.14 L 0.9962,0.16 L 0.9950,0.18 L 0.9992,0.20 L 0.9958,0.22 L 0.9945,0.24
+            L 0.9984,0.26 L 0.9968,0.28 L 0.9948,0.30 L 0.9986,0.32 L 0.9958,0.34 L 0.9950,0.36
+            L 0.9994,0.38 L 0.9964,0.40 L 0.9946,0.42 L 0.9982,0.44 L 0.9960,0.46 L 0.9948,0.48
+            L 0.9990,0.50 L 0.9972,0.52 L 0.9945,0.54 L 0.9978,0.56 L 0.9958,0.58 L 0.9950,0.60
+            L 0.9988,0.62 L 0.9944,0.64 L 0.9968,0.66 L 0.9990,0.68 L 0.9956,0.70 L 0.9948,0.72
+            L 0.9982,0.74 L 0.9962,0.76 L 0.9946,0.78 L 0.9994,0.80 L 0.9958,0.82 L 0.9950,0.84
+            L 0.9986,0.86 L 0.9970,0.88 L 0.9948,0.90 L 0.9976,0.92 L 0.9958,0.94 L 0.9944,0.96 L 0.9988,0.98
+            L 1,1 L 0,1 Z" />
+        </clipPath>
+      </defs>
+    </svg>
 
     <div class="leaves" id="leaves">
 
@@ -1005,19 +1067,7 @@ const SIGNATURE_PEWTER_SVG = `
     /* deckled right edge — swapped per active leaf via the
        data-active-leaf attribute (set in goTo()); defaults to leaf 0
        (Ex Libris) to match the initial static markup */
-    clip-path: polygon(
-      0% 0%, 100% 0%, 99.75% 2%, 99.55% 4%, 99.9% 6%,
-      99.45% 8%, 99.7% 10%, 99.5% 12%, 99.85% 14%, 99.4% 16%,
-      99.65% 18%, 99.92% 20%, 99.48% 22%, 99.72% 24%, 99.58% 26%,
-      99.88% 28%, 99.45% 30%, 99.68% 32%, 99.94% 34%, 99.52% 36%,
-      99.78% 38%, 99.42% 40%, 99.86% 42%, 99.6% 44%, 99.48% 46%,
-      99.9% 48%, 99.55% 50%, 99.75% 52%, 99.46% 54%, 99.88% 56%,
-      99.62% 58%, 99.5% 60%, 99.92% 62%, 99.7% 64%, 99.44% 66%,
-      99.82% 68%, 99.58% 70%, 99.48% 72%, 99.86% 74%, 99.64% 76%,
-      99.45% 78%, 99.9% 80%, 99.72% 82%, 99.5% 84%, 99.82% 86%,
-      99.58% 88%, 99.46% 90%, 99.88% 92%, 99.68% 94%, 99.52% 96%,
-      99.78% 98%, 100% 100%, 0% 100%
-    );
+    clip-path: url(#deckle-0);
     /* drop-shadow (unlike box-shadow) follows the actual clipped
        silhouette, so these hug the torn edge itself rather than the
        book's original rectangular box. Two layers: a tight, same-
@@ -1034,66 +1084,10 @@ const SIGNATURE_PEWTER_SVG = `
       drop-shadow(1px 1px 2px rgba(20, 14, 8, 0.2));
   }
 
-  .book[data-active-leaf="1"] {
-    clip-path: polygon(
-      0% 0%, 100% 0%, 99.58% 2%, 99.88% 4%, 99.48% 6%,
-      99.72% 8%, 99.45% 10%, 99.9% 12%, 99.62% 14%, 99.5% 16%,
-      99.86% 18%, 99.44% 20%, 99.7% 22%, 99.94% 24%, 99.52% 26%,
-      99.78% 28%, 99.46% 30%, 99.84% 32%, 99.58% 34%, 99.48% 36%,
-      99.92% 38%, 99.64% 40%, 99.5% 42%, 99.82% 44%, 99.45% 46%,
-      99.75% 48%, 99.9% 50%, 99.55% 52%, 99.68% 54%, 99.44% 56%,
-      99.86% 58%, 99.6% 60%, 99.48% 62%, 99.88% 64%, 99.72% 66%,
-      99.5% 68%, 99.94% 70%, 99.58% 72%, 99.45% 74%, 99.82% 76%,
-      99.66% 78%, 99.48% 80%, 99.9% 82%, 99.62% 84%, 99.52% 86%,
-      99.86% 88%, 99.7% 90%, 99.46% 92%, 99.78% 94%, 99.58% 96%,
-      99.88% 98%, 100% 100%, 0% 100%
-    );
-  }
-  .book[data-active-leaf="2"] {
-    clip-path: polygon(
-      0% 0%, 100% 0%, 99.88% 2%, 99.5% 4%, 99.72% 6%,
-      99.44% 8%, 99.92% 10%, 99.58% 12%, 99.46% 14%, 99.86% 16%,
-      99.64% 18%, 99.48% 20%, 99.9% 22%, 99.7% 24%, 99.45% 26%,
-      99.82% 28%, 99.56% 30%, 99.94% 32%, 99.62% 34%, 99.48% 36%,
-      99.78% 38%, 99.5% 40%, 99.88% 42%, 99.44% 44%, 99.68% 46%,
-      99.9% 48%, 99.58% 50%, 99.46% 52%, 99.84% 54%, 99.6% 56%,
-      99.48% 58%, 99.92% 60%, 99.72% 62%, 99.5% 64%, 99.86% 66%,
-      99.45% 68%, 99.75% 70%, 99.58% 72%, 99.9% 74%, 99.64% 76%,
-      99.48% 78%, 99.82% 80%, 99.55% 82%, 99.46% 84%, 99.88% 86%,
-      99.68% 88%, 99.5% 90%, 99.78% 92%, 99.58% 94%, 99.44% 96%,
-      99.86% 98%, 100% 100%, 0% 100%
-    );
-  }
-  .book[data-active-leaf="3"] {
-    clip-path: polygon(
-      0% 0%, 100% 0%, 99.46% 2%, 99.82% 4%, 99.58% 6%,
-      99.9% 8%, 99.5% 10%, 99.72% 12%, 99.44% 14%, 99.88% 16%,
-      99.62% 18%, 99.48% 20%, 99.94% 22%, 99.58% 24%, 99.75% 26%,
-      99.45% 28%, 99.86% 30%, 99.64% 32%, 99.5% 34%, 99.92% 36%,
-      99.7% 38%, 99.46% 40%, 99.82% 42%, 99.56% 44%, 99.48% 46%,
-      99.88% 48%, 99.68% 50%, 99.44% 52%, 99.78% 54%, 99.58% 56%,
-      99.5% 58%, 99.9% 60%, 99.62% 62%, 99.45% 64%, 99.86% 66%,
-      99.72% 68%, 99.48% 70%, 99.94% 72%, 99.58% 74%, 99.5% 76%,
-      99.82% 78%, 99.64% 80%, 99.46% 82%, 99.88% 84%, 99.7% 86%,
-      99.48% 88%, 99.76% 90%, 99.58% 92%, 99.9% 94%, 99.5% 96%,
-      99.8% 98%, 100% 100%, 0% 100%
-    );
-  }
-  .book[data-active-leaf="4"] {
-    clip-path: polygon(
-      0% 0%, 100% 0%, 99.9% 2%, 99.58% 4%, 99.78% 6%,
-      99.46% 8%, 99.7% 10%, 99.44% 12%, 99.88% 14%, 99.62% 16%,
-      99.5% 18%, 99.92% 20%, 99.58% 22%, 99.45% 24%, 99.84% 26%,
-      99.68% 28%, 99.48% 30%, 99.86% 32%, 99.58% 34%, 99.5% 36%,
-      99.94% 38%, 99.64% 40%, 99.46% 42%, 99.82% 44%, 99.6% 46%,
-      99.48% 48%, 99.9% 50%, 99.72% 52%, 99.45% 54%, 99.78% 56%,
-      99.58% 58%, 99.5% 60%, 99.88% 62%, 99.44% 64%, 99.68% 66%,
-      99.9% 68%, 99.56% 70%, 99.48% 72%, 99.82% 74%, 99.62% 76%,
-      99.46% 78%, 99.94% 80%, 99.58% 82%, 99.5% 84%, 99.86% 86%,
-      99.7% 88%, 99.48% 90%, 99.76% 92%, 99.58% 94%, 99.44% 96%,
-      99.88% 98%, 100% 100%, 0% 100%
-    );
-  }
+  .book[data-active-leaf="1"] { clip-path: url(#deckle-1); }
+  .book[data-active-leaf="2"] { clip-path: url(#deckle-2); }
+  .book[data-active-leaf="3"] { clip-path: url(#deckle-3); }
+  .book[data-active-leaf="4"] { clip-path: url(#deckle-4); }
 
   .book::before {
     content: '';
@@ -2160,57 +2154,6 @@ const SIGNATURE_PEWTER_SVG = `
 
     .title--sm, .heading--sm { margin-bottom: 0.6rem; }
     .body { margin-bottom: 0.9rem; }
-
-    /* ── Effect-nesting relief (Firefox for Android) ────────────
-       Every one of these effects is cheap on its own. The cost is that
-       they NEST: a filter wrapping a clip-path wrapping a perspective
-       context full of preserve-3d leaves with masked, blended pseudo-
-       elements forces an intermediate surface at every level, and those
-       multiply rather than add. Blink collapses most of them onto the
-       GPU; Gecko materialises more, and its Android path more still.
-       That is why removing any single property moved nothing.
-
-       So this doesn't remove a property, it removes LEVELS — and it
-       spends them where a phone can least see them.
-
-       .book is the important one. `filter` is a grouping property, so
-       its drop-shadow chain was flattening the whole page-turn 3D scene
-       into an offscreen surface, and clip-path was a second surface on
-       the same element, rebuilt on every turn. Both go, which collapses
-       two levels from above .pages in one move. What is lost is the
-       deckled edge, which bites about 0.55% of the book's width — under
-       two CSS pixels at this size — and the fibrous halo faking its
-       bleed, which is a 0.6px and a 0.25px shadow. The existing
-       box-shadow already carries the depth; the right corners just need
-       their radius back, since the deckle was defining that edge. */
-    .book,
-    .book[data-active-leaf="1"],
-    .book[data-active-leaf="2"],
-    .book[data-active-leaf="3"],
-    .book[data-active-leaf="4"] {
-      clip-path: none;
-      filter: none;
-      border-radius: 2px 8px 8px 2px;
-    }
-
-    /* `filter` is never compositor-animatable, so this repainted the
-       whole leaf — ruled paper, foxing, mask, blend — every frame for
-       600ms, inside the surface .book was flattening. It is a shadow
-       pulse under a page mid-flip; on a phone it is not what anyone is
-       looking at. */
-    .leaf.is-turning { animation: none; }
-
-    /* The verso's foxing is a masked, blended layer that exists to be
-       seen for the ~200ms a sheet is edge-on. That is exactly the moment
-       the turn is trying to stay smooth. The verso keeps its vignette. */
-    .leaf-face--back::after { display: none; }
-
-    /* Two more always-present blend layers that a phone cannot resolve:
-       a 1px-in-9px ruling at 0.028 alpha across the whole section, and
-       book noise at 0.06. Each forces its backdrop to be read back and
-       recomposited; neither is visible at this size. */
-    .register::before,
-    .book::before { display: none; }
   }
 
   .cta {
