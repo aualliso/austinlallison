@@ -738,10 +738,6 @@ const isDev = import.meta.env.DEV;
 
     <!-- SKY: base layer, tinted per phase of day -->
     <div id="sky-base" class="absolute inset-0 -z-10 pointer-events-none"></div>
-    <!-- SKY: frost layer — its opacity/blur animate; gradients never snap -->
-    <div id="sky-frost" class="absolute inset-0 -z-10 pointer-events-none"></div>
-    <!-- SKY: evening layer (rises with scroll depth; tint depends on phase) -->
-    <div id="sky-dusk" class="absolute inset-0 -z-10 pointer-events-none"></div>
     <!-- SKY: dust haze hugging the line -->
     <div id="horizon-haze" class="absolute bottom-0 left-0 w-full -z-10 pointer-events-none"></div>
     <!-- SKY: THE TWILIGHT ARCH — the warm glow standing on the horizon at
@@ -1542,8 +1538,10 @@ const isDev = import.meta.env.DEV;
      everything else — the dial to turn if the whole arc should sit higher or
      lower. There is headroom above it (the disc doesn't approach the
      header's top edge until roughly 90%), but the practical limit is lower:
-     past about 55% the sun starts crowding the top of the sky band on a
-     collapsed, scrolled header, where padding-top drops from 3.5rem to 1rem.
+     past about 55% the sun starts crowding the top of the sky band. (Until
+     2026-08-26 the limit was tighter still, because the header collapsed
+     padding-top from 3.5rem to 1rem on scroll; it no longer does, so there
+     is more room here than this number assumes.)
 
      Below the horizon the same curve continues negative, and its steepness
      right at zero is a feature, not an artifact: the disc goes from bisected
@@ -1691,9 +1689,10 @@ const isDev = import.meta.env.DEV;
      percentages survives all of that across every viewport.
 
      offsetLeft/offsetWidth deliberately, NOT getBoundingClientRect(): the
-     landmark name and signature are scaled by transforms as the header
-     collapses on scroll, and rect() would shrink with them — making the sky
-     window silently breathe in and out while you scroll. Offsets are layout
+     landmark name and signature are still scaled by transforms on scroll
+     (the header's own padding collapse was removed, those were not), and
+     rect() would shrink with them — making the sky window silently breathe
+     in and out while you scroll. Offsets are layout
      values and ignore transforms, so the window depends on viewport width
      alone, which is the only thing that should move it.
 
@@ -3151,41 +3150,15 @@ const isDev = import.meta.env.DEV;
     });
   };
 
-  /* ---- scroll fallback -------------------------------------------------- */
-  // Only where CSS scroll-timelines can't do the job: Safari/Firefox, or
-  // any browser with reduced motion (animations are off, so states must
-  // come from the class). Chrome with motion enabled never attaches this.
-  const supportsScrollTimeline = CSS.supports('animation-timeline: scroll()');
-  const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-  // Belt-and-suspenders: the scroll-driven CSS below is also wrapped in
-  // @supports (animation-timeline: scroll()), but some build-time CSS
-  // minifiers (Lightning CSS among them, as of some versions) have been
-  // known to mis-handle @supports queries for this specific, newer syntax
-  // — dropping a block the browser actually supports. Since JS already
-  // has the correct answer via CSS.supports(), it also sets a plain class
-  // here so the scroll-driven rules don't depend on the CSS engine
-  // re-deriving the same answer from a query a minifier might mangle.
-  if (header && supportsScrollTimeline && !prefersReducedMotion) {
-    header.classList.add('scroll-driven');
-  }
-
-  if (header && (!supportsScrollTimeline || prefersReducedMotion)) {
-    let ticking = false;
-    const updateHeaderState = () => {
-      const scrollPos = window.scrollY;
-      if (scrollPos > 60) header.classList.add('is-scrolled');
-      else if (scrollPos < 15) header.classList.remove('is-scrolled');
-      ticking = false;
-    };
-    window.addEventListener('scroll', () => {
-      if (!ticking) {
-        window.requestAnimationFrame(updateHeaderState);
-        ticking = true;
-      }
-    }, { passive: true });
-    updateHeaderState();
-  }
+  /* ---- no scroll listener --------------------------------------------------
+     Removed 2026-08-26 with the rest of the scroll system. What stood here
+     was a CSS.supports() probe that added `.scroll-driven` for Chrome's
+     scroll-timelines, and a rAF-throttled scroll listener that toggled
+     `.is-scrolled` above 60px (off below 15px) for Safari, Firefox and
+     reduced motion. Both classes are gone from the stylesheet, so this
+     header now attaches NO scroll listener at all.
+     Note if any of it ever returns: prefersReducedMotion was declared here
+     and used only by this block, so it went too. -------------------------- */
 
   /* ---- lifecycle -------------------------------------------------------- */
   setHorizon();       // must precede applyPhase AND applyStars — both consume .horizon-path's `d`
@@ -3256,19 +3229,9 @@ const isDev = import.meta.env.DEV;
 </script>
 
 <style is:global>
-  /* Registered so this custom property actually interpolates smoothly
-     under a scroll-timeline animation instead of snapping partway through
-     (unregistered custom properties are treated as discrete values). Only
-     needed by the sun-rays scroll-fade below. */
-  @property --sun-rays-scroll-fade {
-    syntax: '<number>';
-    inherits: true;
-    initial-value: 1;
-  }
-
   /* ======================================================================== */
   /* BASELINE — the wide-open state. Base values are DAY; the other phases    */
-  /* override below. `--evening-tint` is what scrolling mixes into the sky.   */
+  /* override below.                                                          */
   /* `--sun-elev` and `--sun-az` are now both set continuously from JS (real  */
   /* solar position) — the values below are only pre-hydration fallbacks.     */
   /* ======================================================================== */
@@ -3302,7 +3265,7 @@ const isDev = import.meta.env.DEV;
        thing before it is the answer. */
     clip-path: inset(0);
 
-    padding-top: 2.5rem; /* sky height; collapsing = lowering the sky */
+    padding-top: 2.5rem; /* sky height — fixed; the scroll collapse was removed 2026-08-26 */
     /* Pre-hydration fallback only; JS overwrites from real solar altitude.
        Under the current mapping 0% is the horizon and ~30% is a high sun, so
        the pre-JS frame shows daytime rather than something impossible. */
@@ -3312,7 +3275,6 @@ const isDev = import.meta.env.DEV;
        an arbitrary placeholder — the worst case before JS lands is a sun
        that's briefly at noon's bearing, not one somewhere impossible. */
     --sun-az: 50%;
-    --evening-tint: #C98F4E;
     --windmill-speed: 22s;
     /* Pre-hydration only. A zero-width terminator with a shadowed left half
        is a quarter moon — the least wrong thing to show for the few ms
@@ -3506,7 +3468,6 @@ const isDev = import.meta.env.DEV;
        multiplier on the raw elevation-driven --grazing-light, so bloom/
        streak/rays/rim-light are never a static "on near horizon" effect. */
     --grazing-effective: calc(var(--grazing-light, 0) * (0.55 + var(--haze-strength, 0.08) * 0.45));
-    --sun-rays-scroll-fade: 1; /* only driven down by scroll on .scroll-driven; 1 = no reduction */
   }
 
   /* ONE gradient for every hour of the day now. The four phase-specific
@@ -3534,23 +3495,6 @@ const isDev = import.meta.env.DEV;
       color-mix(in oklab, var(--sky-top) 30%, var(--sky-horizon)) 78%,
       var(--sky-horizon) 100%
     );
-  }
-
-  #sky-frost {
-    /* Follows --sky-top: a near-white frost over a night sky would have lit
-       the whole header back up the moment you scrolled. */
-    background: color-mix(in oklab, var(--sky-top) 82%, transparent);
-    backdrop-filter: blur(0px);
-    opacity: 0;
-  }
-
-  #sky-dusk {
-    background: linear-gradient(
-      to top,
-      color-mix(in oklch, var(--color-canvas, #FBFBF9) 68%, var(--evening-tint)) 0%,
-      transparent 70%
-    );
-    opacity: 0;
   }
 
   /* BLOWING DUST — the Llano's own atmosphere, driven by real current wind
@@ -3645,7 +3589,7 @@ const isDev = import.meta.env.DEV;
         color-mix(in oklch, var(--grazing-color, #E8A85C) 34%, transparent) 0%,
         transparent 82%
       );
-    opacity: calc(var(--grazing-effective, 0) * var(--sun-rays-scroll-fade, 1) * 0.55);
+    opacity: calc(var(--grazing-effective, 0) * 0.55);
     transition: opacity 1.5s linear, height 1.2s ease-out;
   }
 
@@ -3697,7 +3641,7 @@ const isDev = import.meta.env.DEV;
     border-radius: 9999px;
     background: radial-gradient(ellipse at center, var(--grazing-color, #E8A85C) 0%, transparent 75%);
     filter: blur(4px);
-    opacity: calc(var(--grazing-effective, 0) * var(--sun-rays-scroll-fade, 1) * 0.6);
+    opacity: calc(var(--grazing-effective, 0) * 0.6);
     transition: opacity 1.5s linear, left 1s linear;
   }
 
@@ -3783,7 +3727,7 @@ const isDev = import.meta.env.DEV;
       transparent 74%
     );
     filter: blur(calc(5px + var(--haze-strength, 0.23) * 4px));
-    opacity: calc(var(--grazing-effective, 0) * var(--sun-rays-scroll-fade, 1) * 0.85);
+    opacity: calc(var(--grazing-effective, 0) * 0.85);
     transition: opacity 1.5s linear, width 1.2s ease-out, height 1.2s ease-out,
                 transform 0.6s ease-out;
   }
@@ -3854,18 +3798,21 @@ const isDev = import.meta.env.DEV;
      on the sun by resolving 50%/50% against #sun-wrap's own shrink-to-fit
      12x12 box (its position:absolute already makes it the containing
      block for this child), so the horizontal travel comes along for free.
-     Final opacity is a PRODUCT of --grazing-effective (elevation × real
-     haze strength — see the base custom properties above) and
-     --sun-rays-scroll-fade (scroll depth — see the scroll-driven-
-     animations section below). Without the scroll term, scrolling far
-     enough could fade the sun disc itself out while leaving the rays
-     floating in place with nothing under them. */
+     Opacity is --grazing-effective alone (elevation × real haze strength —
+     see the base custom properties above). It used to be a PRODUCT of that
+     and --sun-rays-scroll-fade, a scroll-depth term that existed so
+     scrolling could not fade the sun disc out from under the rays and
+     leave them floating. With the whole scroll system gone (2026-08-26)
+     the disc no longer moves on scroll, so the second term had nothing
+     left to guard against and went with it — along with its @property
+     registration, which existed only to make it interpolate smoothly under
+     a scroll timeline. */
   #sun-rays {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
     color: var(--grazing-color, #E8A85C);
-    opacity: calc(var(--grazing-effective, 0) * var(--sun-rays-scroll-fade, 1));
+    opacity: calc(var(--grazing-effective, 0));
     transition: opacity 1.5s linear;
   }
 
@@ -4233,17 +4180,14 @@ const isDev = import.meta.env.DEV;
   /* --sun-az handles dawn-in-the-east vs dusk-in-the-west continuously.      */
   /* ======================================================================== */
   #horizon-header[data-phase="dawn"] {
-    --evening-tint: #C97E5C; /* scrolling at dawn warms toward rose-gold */
     --sky-tint: #D9917A;
   }
 
   #horizon-header[data-phase="dusk"] {
-    --evening-tint: #6B5B7A; /* scrolling at dusk cools toward violet night */
     --sky-tint: #C98F4E;
   }
 
   #horizon-header[data-phase="night"] {
-    --evening-tint: #33415C; /* scrolling at night only deepens the dark */
     --sky-tint: #33415C;
   }
   #horizon-header[data-phase="night"] #sun-wrap { display: none; }
@@ -4332,13 +4276,12 @@ const isDev = import.meta.env.DEV;
      simply moves right by about 9px on wide layouts, well inside
      SKY_EDGE_GAP_PX's own clearance. Nothing to tune.
 
-     NOTE ON THE TRANSITION: the blanket `transition: all 0.5s` block
-     further down (the Safari/Firefox fallback list) names .landmark-name
-     at equal specificity and later in source order, so it wins — and
-     under .scroll-driven the transition is killed outright. Both are
-     fine: --grazing-effective moves at most a few hundredths per 60s
-     tick, so a 24% mix steps by an imperceptible amount either way. The
-     declaration is kept for the case where neither rule applies. */
+     NOTE ON THE TRANSITION: this declaration used to be overridden by a
+     blanket `transition: all 0.5s` in the Safari/Firefox scroll fallback,
+     and killed outright under .scroll-driven. Both of those are gone as of
+     2026-08-26, so this is now the only rule that applies. It barely
+     matters either way — --grazing-effective moves at most a few
+     hundredths per 60s tick, so a 24% mix steps imperceptibly. */
   .landmark-name {
     font-size: 1.1rem;
     color: var(--landmark-ink);
@@ -4832,201 +4775,49 @@ const isDev = import.meta.env.DEV;
   }
 
   /* ======================================================================== */
-  /* FALLBACK TRANSITIONS (Safari / Firefox / reduced motion — driven by      */
-  /* .is-scrolled, which JS only toggles where scroll-timeline can't run)     */
-  /* ======================================================================== */
-  #horizon-header, #sky-frost, #sky-dusk, #horizon-sun, #the-horizon,
-  .signature-img, .landmark-name, .station-meta {
-    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-  }
-
-  #horizon-header.is-scrolled {
-    padding-top: 0.8rem;
-  }
-  @media (min-width: 768px) {
-    #horizon-header.is-scrolled { padding-top: 1rem; }
-  }
-
-  #horizon-header.is-scrolled #sky-frost {
-    opacity: 1;
-    backdrop-filter: blur(10px);
-  }
-
-  #horizon-header.is-scrolled #sky-dusk {
-    opacity: 0.85;
-  }
-
-  #horizon-header.is-scrolled #horizon-sun {
-    transform: translateY(500%);
-    opacity: 0;
-  }
-
-  #horizon-header.is-scrolled #the-horizon {
-    color: var(--color-iron, #1A1919);
-  }
-
-  #horizon-header.is-scrolled .signature-img {
-    transform: scale(0.8);
-  }
-
-  #horizon-header.is-scrolled .landmark-name {
-    transform: scale(0.88);
-  }
-
-  #horizon-header.is-scrolled .station-meta {
-    opacity: 0;
-  }
-
-  /* ======================================================================== */
-  /* SCROLL-DRIVEN ANIMATIONS (Chrome / Edge)                                 */
-  /* Gated by .scroll-driven, a class JS adds only when CSS.supports()        */
-  /* confirms animation-timeline: scroll() really works — not by @supports    */
-  /* here, since that at-rule was found to silently drop in production       */
-  /* (Lightning CSS, via the Tailwind v4 Vite plugin, mishandling this        */
-  /* specific newer syntax during the build) even on browsers that do        */
-  /* support the feature. JS already has the right answer; this just stops   */
-  /* depending on the CSS build tool re-deriving it correctly.                */
+  /* NO SCROLL-LINKED BEHAVIOUR (whole system removed 2026-08-26)             */
+  /*                                                                          */
+  /* THE HEADER IS NOW COMPLETELY INDIFFERENT TO SCROLL POSITION. Six effects */
+  /* stood here and went in two passes at his request — the padding collapse  */
+  /* (which had never worked in Chrome in production), the landmark recede,   */
+  /* the rising dusk wash, the frost settling, the horizon line deepening to  */
+  /* iron, the sun setting with its rays fading, and the readout fading.      */
+  /* Two whole delivery paths went with them: `.scroll-driven` (Chrome        */
+  /* scroll-timelines) and `.is-scrolled` (a rAF-throttled scroll listener    */
+  /* for Safari/Firefox/reduced motion), plus the transition lists that kept  */
+  /* the two from fighting and the @property registration for the rays.       */
+  /*                                                                          */
+  /* WHAT STILL MOVES, and why it is unaffected: everything here is TIME- or  */
+  /* DATA-driven, never scroll-driven. The sun and moon by real position, the */
+  /* sky by --night, the windmill by wind bearing, the dust by wind speed,    */
+  /* the silhouette `d` morph by route, the entrance animations on first      */
+  /* load. Those never shared a property with the scroll system, which is     */
+  /* why removing it leaves them untouched.                                   */
+  /*                                                                          */
+  /* THE TWO SCROLL-ERA SKY LAYERS WENT WITH IT (2026-08-26). #sky-frost was  */
+  /* a legibility scrim meant to settle in as the pinned header passed over   */
+  /* page content — but that job was never real: #sky-base is an OPAQUE       */
+  /* gradient painted as an earlier sibling, so #sky-frost's                  */
+  /* `backdrop-filter: blur()` was filtering that gradient, not the page. It  */
+  /* blurred an already-smooth gradient, i.e. a no-op, and all the element    */
+  /* ever did was wash the header toward the zenith colour on scroll.         */
+  /* #sky-dusk was a warm bottom wash rising with page depth, tinted per      */
+  /* phase through --evening-tint (rose-gold / violet / deep blue). Both divs */
+  /* and the token are now deleted.                                          */
+  /*                                                                          */
+  /* DON'T RE-ADD EITHER. The bottom band is already occupied by better-      */
+  /* derived elements: #haze-warm-overlay is the twilight arch off real solar */
+  /* altitude, #belt-of-venus covers the anti-solar violet --evening-tint was */
+  /* gesturing at, and #horizon-haze is dust off real wind. THE ONE SCENARIO  */
+  /* that would revive #sky-frost is making this header TRANSLUCENT over the  */
+  /* page — give #sky-base alpha and the frost becomes the mechanism and its  */
+  /* blur becomes a real effect. That is a design choice, not a rescue.       */
   /* ======================================================================== */
 
-  /* Disable fallback transitions so the two systems don't fight.
-     Entrance animations and the `d` morph live on other elements/props.
-     #sun-wrap is deliberately NOT in this list: its left/bottom transitions
-     are time-driven (real solar motion), not scroll-driven, so the two
-     never contend for the same property. */
-  #horizon-header.scroll-driven,
-  #horizon-header.scroll-driven #sky-frost,
-  #horizon-header.scroll-driven #sky-dusk,
-  #horizon-header.scroll-driven #horizon-sun,
-  #horizon-header.scroll-driven #sun-rays,
-  #horizon-header.scroll-driven #the-horizon,
-  #horizon-header.scroll-driven .signature-img,
-  #horizon-header.scroll-driven .landmark-name,
-  #horizon-header.scroll-driven .station-meta {
-    transition: none;
-  }
-
-  /* 1. The sky lowers */
-  @keyframes lower-sky {
-    to { padding-top: 0.8rem; }
-  }
-  @media (min-width: 768px) {
-    @keyframes lower-sky {
-      to { padding-top: 1rem; }
-    }
-  }
-  #horizon-header.scroll-driven {
-    animation: lower-sky linear both;
-    animation-timeline: scroll(root block);
-    animation-range: 0px 120px;
-  }
-
-  /* 2. The frost settles for pinned legibility (opacity + blur only —
-     both interpolate; the sky gradient itself never animates) */
-  @keyframes frost-sky {
-    to {
-      opacity: 1;
-      backdrop-filter: blur(10px);
-    }
-  }
-  #horizon-header.scroll-driven #sky-frost {
-    animation: frost-sky linear both;
-    animation-timeline: scroll(root block);
-    animation-range: 0px 120px;
-  }
-
-  /* 3. Evening rises slowly — a full-page-depth effect, not a threshold */
-  @keyframes dusk-rise {
-    to { opacity: 1; }
-  }
-  #horizon-header.scroll-driven #sky-dusk {
-    animation: dusk-rise linear both;
-    animation-timeline: scroll(root block);
-    animation-range: 0px 600px;
-  }
-
-  /* 4. The sun sets (from wherever the hour placed it — now horizontally
-     as well as vertically; this only ever touches transform/opacity, so
-     #sun-wrap's own left/bottom placement is unaffected) */
-  /* THE 0% KEYFRAME IS LOAD-BEARING. Without it the animation's first
-     keyframe for `transform` is synthesised from the UNDERLYING value —
-     #horizon-sun's own scaleY(1 - --horizon-flatten * 0.45) — and then
-     interpolated toward translateY(500%) by matrix decomposition. The
-     refraction squash therefore unwound silently as you scrolled, and was
-     only fully honoured at scrollY exactly 0. Both keyframes now carry the
-     squash explicitly, so it is held for the whole range and only the
-     translate and the opacity actually move. Keep --horizon-flatten in
-     BOTH: dropping it from either end reintroduces the same interpolation. */
-  @keyframes sun-set {
-    0%   { transform: scaleY(calc(1 - var(--horizon-flatten, 0) * 0.45)); opacity: 0.9; }
-    70%  { opacity: 0.9; }
-    100% { transform: translateY(500%) scaleY(calc(1 - var(--horizon-flatten, 0) * 0.45)); opacity: 0; }
-  }
-  #horizon-header.scroll-driven #horizon-sun {
-    animation: sun-set linear both;
-    animation-timeline: scroll(root block);
-    animation-range: 0px 400px;
-  }
-
-  /* 4b. The grazing-light rays fade out on the SAME range as the sun disc
-     above, so they never outlive it. This animates a registered custom
-     property (not opacity directly), which #sun-rays' own opacity then
-     multiplies against --grazing-light — composing "is the sun actually
-     low right now" with "has scroll carried it below the horizon" rather
-     than letting either one alone decide visibility. */
-  @keyframes sun-rays-fade {
-    to { --sun-rays-scroll-fade: 0; }
-  }
-  #horizon-header.scroll-driven #sun-rays {
-    animation: sun-rays-fade linear both;
-    animation-timeline: scroll(root block);
-    animation-range: 0px 400px;
-  }
-
-  /* 5. The horizon deepens against the evening (composes with the
-     phase baseline — night starts darker and still deepens to iron) */
-  @keyframes deepen-horizon {
-    to { color: var(--color-iron, #1A1919); }
-  }
-  #horizon-header.scroll-driven #the-horizon {
-    animation: deepen-horizon linear both;
-    animation-timeline: scroll(root block);
-    animation-range: 0px 300px;
-  }
-
-  /* 6. The landmark recedes slightly, feet still on the line */
-  @keyframes recede-signature {
-    to { transform: scale(0.8); }
-  }
-  #horizon-header.scroll-driven .signature-img {
-    animation: recede-signature linear both;
-    animation-timeline: scroll(root block);
-    animation-range: 0px 120px;
-  }
-  @keyframes recede-name {
-    to { transform: scale(0.88); }
-  }
-  #horizon-header.scroll-driven .landmark-name {
-    animation: recede-name linear both;
-    animation-timeline: scroll(root block);
-    animation-range: 0px 120px;
-  }
-
-  /* 7. The readout fades out as the header collapses — it's the finest type
-     on the plate and the first thing to become noise once you're reading the
-     page rather than the sky. (This was a dead selector for several passes
-     while the plate had no text; it is live again.) */
-  @keyframes fade-meta {
-    to { opacity: 0; }
-  }
-  #horizon-header.scroll-driven .station-meta {
-    animation: fade-meta linear both;
-    animation-timeline: scroll(root block);
-    animation-range: 0px 100px;
-  }
-
   /* ======================================================================== */
-  /* REDUCED MOTION — states still change (via .is-scrolled, which JS always  */
-  /* drives here), but nothing glides, draws, spins, morphs, or shimmers.     */
+  /* REDUCED MOTION — nothing glides, draws, spins, morphs, or shimmers.      */
+  /* (This used to note that states still changed via .is-scrolled; there is  */
+  /* no scroll state left to change as of 2026-08-26.)                        */
   /* Sun elevation AND azimuth transitions turn off too — the minute-to-      */
   /* minute step becomes an instant snap rather than a 1s glide, which at     */
   /* real solar rates is at most ~1.8px and usually far less.                 */
@@ -5046,7 +4837,7 @@ const isDev = import.meta.env.DEV;
   /* `from { opacity: 0 }`.                                                   */
   /* ======================================================================== */
   @media (prefers-reduced-motion: reduce) {
-    #horizon-header, #sky-base, #sky-frost, #sky-dusk, #sun-wrap, #horizon-sun,
+    #horizon-header, #sky-base, #sun-wrap, #horizon-sun,
     #sun-rays, #sun-bloom, #horizon-rim-light, #haze-warm-overlay, #belt-of-venus,
     #windmill-head, #windmill-tail, #windmill-hub, #windmill-sail-plane,
     #night-sky, #horizon-moon, .star-point, #windmill, #windmill-rotor, #crane-flock,

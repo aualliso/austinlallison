@@ -144,16 +144,16 @@ export const SERIES: SeriesEntry[] = [
     number: 'I',
     title: 'American Escarpments',
     built: true,
-    lede: "A gallery of the vertical escarpments outlining the edges of our country's plateaus. This collection captures the jarring drops of these areas under natural light. Encompassing three states, this gallery only captures a small portion of our nation's plateaus and escarpments.",
+    lede: "A gallery of the precipitous escarpments outlining the edges of our country's plateaus. This collection captures the sudden and jarring drops of these areas under natural light. Encompassing several states, this gallery only captures a small portion of our nation's plateaus and escarpments.",
     cover: 'escarpments/escarpment20.jpg',
-    coverLabel: 'Plate 1.05 \u00B7 Little Jerusalem',
+    coverLabel: 'Plate 1.20 \u00B7 Buckley Coulee',
   },
   {
-    slug: 'water_on_the_llano_estacado',
+    slug: 'water_of_the_llano_estacado',
     number: 'II',
-    title: 'Water on the Llano Estacado',
+    title: 'Water of the Llano Estacado',
     built: true,
-    lede: 'A documentary index isolating the diminutive water sources of the Llano Estacado.',
+    lede: 'A documentary index featuring the increasingly diminutive water sources of the Llano Estacado. From intermittent lake basins to draws and springs, the water sources of the Llano Estacado represent signifiers of life, activity, and history.',
     cover: 'water/water1.jpg',
     coverLabel: 'Plate 2.01 \u00B7 Tule Creek',
   },
@@ -162,7 +162,7 @@ export const SERIES: SeriesEntry[] = [
     number: 'III',
     title: 'Cotton Gins of Texas',
     built: false,
-    lede: 'An intentional survey of the remnant legacy cotton gins in West Texas. No longer in use, these sentinels of the plains register stories of economic prosperity dating back more than a century.',
+    lede: 'An intentional survey of the remnant legacy cotton gins in Texas. Most no longer in use, these sentinels of the plains register stories of economic prosperity dating back more than a century.',
     cover: 'cotton_gins/dumont.jpg',
     coverLabel: 'Plate 3.01 \u00B7 Dumont',
   },
@@ -376,7 +376,7 @@ const galleryData: GalleryInput[] = [
     ],
   },
   {
-    slug: 'water_on_the_llano_estacado',
+    slug: 'water_of_the_llano_estacado',
     // Set to false while seven of these twelve plates are untitled. A
     // licensing inquiry for "Plate 06, in preparation" is not one you
     // want to receive. Flip to true once the metadata is filled in.
@@ -391,7 +391,7 @@ const galleryData: GalleryInput[] = [
         place: 'Briscoe County, Texas',
         lat: 34.546670, lng: -101.429921,
         specs: '12mm \u00B7 \u0192/8 \u00B7 1/320s',
-        x: 750, y: 250, w: 250,
+        x: 950, y: 330, w: 250,
         caption: 'Tule Creek originates on the Llano Estacado and descends the caprock carving a broad canyon through Briscoe and Swisher counties. The creek assumes the rust color as it flows east.',
       },
       {
@@ -400,7 +400,7 @@ const galleryData: GalleryInput[] = [
         place: 'Hemphill County, Texas',
         lat: 35.937055, lng: -100.369943,
         specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/500s',
-        x: 320, y: 200, w: 400,
+        x: 580, y: 150, w: 320,
         caption: 'The Canadian River signifies the northern extent of the Llano Estacado for much of its northern extent. This view in Hemphill County shows the meandering river at sunset.',
       },
       {
@@ -409,11 +409,11 @@ const galleryData: GalleryInput[] = [
         place: 'Parmer County, Texas',
         lat: 34.471036, lng: -102.720865,
         specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/640s',
-        x: 1020, y: 180, w: 400,
+        x: 1480, y: 80, w: 350,
         caption: 'Running Water Draw after a heavy rain in Parmer County, Texas. After head precipitation upstream, intermittent draws and creeks on the Llano Estacado can flow for periods before returning to their dry state.',
       },
       {
-        file: 'water/water30.jpg',
+        file: 'water/water4.jpg',
         title: 'Collector Stream',
         place: 'Lubbock County, Texas',
         // was lng: -1102.702870 — the extra 1 put this plate three
@@ -421,7 +421,7 @@ const galleryData: GalleryInput[] = [
         // the build rather than reaching schema.org and the map link.
         lat: 33.494794, lng: -101.629374,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
-        x: 1020, y: 490, w: 300,
+        x: 1220, y: 330, w: 300,
         caption: 'Water from the Yellow House Draw and Blackwater Draw flows southeast from the Llano Estacado on its way to the Gulf of America.',
       },
       {
@@ -430,7 +430,7 @@ const galleryData: GalleryInput[] = [
         place: 'Bailey County, Texas',
         lat: 33.990590, lng: -102.702870, // same correction as Plate 04
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
-        x: 880, y: 750, w: 400,
+        x: 1240, y: 590, w: 320,
         caption: 'Water in intermittently dry lake basins offer clear reflections of the sky above, while revealing fractures in the lake\'s underlying surface, a reminder of the Llano Estacado\'s arid climate and the ephemeral nature of these water sources.',
       },
       {
@@ -439,7 +439,7 @@ const galleryData: GalleryInput[] = [
         lat: 33.928283, lng: -102.767109,
         specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/160s',
         caption: 'The springs that occasionally feed White Lake in Bailey County generate these narrow meanders of living water that temporarily sustain life at the lake.',
-        x: 1310, y: 900, w: 300,
+        x: 630, y: 380, w: 300,
       },
       // ── untitled below: an empty title marks a plate as in
       // preparation. The coordinates and specs here are still the
@@ -449,7 +449,7 @@ const galleryData: GalleryInput[] = [
         title: 'Dry Portales Spring', place: 'Roosevelt County, NM',
         lat: 34.136934, lng: -103.264933,
         specs: '5mm \u00B7 \u0192/2.8 \u00B7 1/1800s',
-        x: 1330, y: 560, w: 350,
+        x: 920, y: 70, w: 300,
         caption: 'One of the consistent water sources on the old Fort Sumner Trail, Portales Spring stands dry today, but the location along Yellow House Draw is marked by white caliche deposits and a small depression in the surrounding terrain. Billy the Kid stayed at the spring in 1880.',
       },
       {
@@ -457,7 +457,7 @@ const galleryData: GalleryInput[] = [
         title: 'Coyote Lake', place: 'Bailey County, Texas',
         lat: 34.084710, lng: -102.906476,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/2000s',
-        x: 560, y: 720, w: 300,
+        x: 610, y: 850, w: 300,
         caption: 'Coyote Lake, originally named Agua Negra, is one of the largest salt lakes on the Llano Estacado. Ranald Mackenzie camped here in the 1870s on his foray across the plains. Another plate in this series shows the water coloration, a potential indication of how its original name was derived.'
       },
       {
@@ -467,65 +467,79 @@ const galleryData: GalleryInput[] = [
         specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/800s',
         w: 300,
         caption:'The rust-colored water bleeds into the vibrant green shoreline, separated by chalky white salt flats that look like brushstrokes from above, showcasing the raw, abstract beauty of a receding playa lake.',
-        x: 1640, y: 930, w: 300,
+        x: 1920, y: 600, w: 300,
       },
       {
-        file: 'water/water12.jpg',
+        file: 'water/water10.jpg',
         title: 'Above the Draw', place: 'Bailey County, Texas',
         lat: 33.991164, lng: -102.708448,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/3200s',
-        x: 395, y: 470, w: 300,
+        x: 625, y: 610, w: 300,
         caption:'The vast agricultural landscape of Texas is illustrated here showcasing the distinct, muddy path of the Blackwater Draw. Although flow is highly irregular, still collects in the draw, creating a temporary water source for wildlife and livestock.'
       },
       {
-        file: 'water/water13.jpg',
+        file: 'water/water11.jpg',
         title: 'Evaporating Hues', place: 'Bailey County, Texas',
         lat: 33.979772, lng: -102.720094,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/2150s',
-        x: 475, y: 930, w: 300,
+        x: 950, y: 810, w: 300,
         caption:'As water evaporates out of Pauls Lake, it leaves behind a sprawling, cracked expanse of pink and reddish salt deposits, ringed by a bright white mineral shoreline that cuts sharply into the surrounding dry plains.'
       },
       {
-        file: 'water/water14.jpg',
+        file: 'water/water12.jpg',
         title: 'Tierra Blanca Crossing', place: 'Parmer County, Texas',
         lat: 33.991164, lng: -102.708448,
         specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/400s',
-        x: 795, y: 1020, w: 300,
+        x: 1265, y: 810, w: 300,
         caption: 'Tierra Blanca Creek after a rain. A lone tree stands as a sentinel beside the muddy, receded creek bed, highlighting the seasonal, ephemeral nature of these vital historical waterways.'
       },
       {
-        file: 'water/water31.jpg',
+        file: 'water/water13.jpg',
         title: 'Aermotor on the Plains', place: 'Lamb County, Texas',
         lat: 33.991164, lng: -102.708448,
         specs: '12mm \u00B7 \u0192/2.8 \u00B7 1/1250s',
-        w: 300,
         caption: 'Windmills mark water on the Llano Estacado in a different way. The Aermotor windmill, a common sight across the plains, extracts water from underground aquifers to the surface, providing vital water for both livestock and agriculture in this arid region.',
-        x: 1450, y: 220, w: 400,
+        x: 1850, y: 80, w: 300,
       },
       {
-        file: 'water/water32.jpg',
+        file: 'water/water14.jpg',
         title: 'Sources for the Pastores', place: 'Potter County, Texas',
         lat: 33, lng: -102,
         specs: '12mm \u00B7 \u0192/2.2 \u00B7 1/750s',
-        w: 300,
         caption: 'Deep in the rugged expanse of the Canadian River Valley bordering the northern extent of the Llano Estacado, remnant springs and water holes are reminders of the water needed to support early pastore settlement in the Panhandle in the 1870s.',
-        x: 740, y: 50, w: 220,
+        x: 1240, y: 120, w: 220,
       },
       {
-        file: 'water/water33.jpg',
+        file: 'water/water15.jpg',
         title: 'Headwaters Scales', place: 'Lynn County, Texas',
         lat: 33.077788, lng: -101.535817,
         specs: '14mm \u00B7 \u0192/5.6 \u00B7 1/50s',
-        caption: 'Deep in the rugged expanse of the Canadian River Valley bordering the northern extent of the Llano Estacado, remnant springs and water holes are reminders of the water needed to support early pastore settlement in the Panhandle in the 1870s.',
-        x: 330, y: 730, w: 220,
+        caption: 'Receding waters of the Double Mountain Fork Brazos River create a scaly texture that illustrates the rolling movement of water along this course.',
+        x: 1530, y: 320, w: 220,
       },
       {
-        file: 'water/water17.jpg',
+        file: 'water/water16.jpg',
         title: 'Shallow Pools of Agua Negra ', place: 'Bailey County, Texas',
         lat: 34.102829, lng: -102.892902,
         specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/800s',
         caption: 'Coyote Lake has been a consistent water source for wildlife, livestock, indigenous peoples, and settlers for centuries. Its waters are brackish and shallow, and they assume various colors due to high mineral content.',
-        x: 1700, y: 680, w: 320,
+        x: 1580, y: 600, w: 320,
+      },
+      {
+        file: 'water/water17.jpg',
+        title: 'Ruins along Crawfish Creek', place: 'Floyd County, Texas',
+        lat: 34.1, lng: -101.3,
+        specs: '12mm \u00B7 \u0192/2.2 \u00B7 1/380s',
+        caption: 'Although more consistently dry than flowing today, Crawfish Creek in Floyd County supplied some of the earliest settlers of the Llano Estacado with water. These rock ruins and their presence along this creek suggest a once flowing source.',
+        x: 1760, y: 340, w: 300,
+      },
+      {
+        file: 'water/water18.jpg',
+        title: 'Monument Lake Vista', place: 'Bailey County, Texas',
+        lat: 33.973168, lng: -102.876181,
+        specs: '24mm \u00B7 \u0192/8 \u00B7 1/200s',
+        caption: 'Although more consistently dry than flowing today, Crawfish Creek in Floyd County supplied some of the earliest settlers of the Llano Estacado with water. These rock ruins and their presence along this creek suggest a once flowing source.',
+        x: 1600, y: 820, w: 400,
       }
     ],
   },
