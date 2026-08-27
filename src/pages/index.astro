@@ -158,7 +158,6 @@
 // spot gradients that used to live there are gone, replaced by the
 // per-leaf textures above.
 import RootLayout from '../layouts/RootLayout.astro';
-import PerfProbe from '../components/PerfProbe.astro'; // TEMP: delete with the component
 import { photoFeatures, PUBLICATION_FEATURES } from '../data/register-features';
 
 const leaves = [
@@ -874,7 +873,6 @@ const SIGNATURE_PEWTER_SVG = `
       .leaf-face--back { display: none !important; }
     </style>
   </noscript>
-  <PerfProbe />
 </RootLayout>
 
 <style>
