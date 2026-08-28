@@ -2,30 +2,75 @@
 /**
  * src/pages/photography.astro — the album
  *
- * The three series as facing-page spreads, alternating sides. Driven
- * entirely by SERIES in src/data/photography.ts: cover image, lede,
- * plate label, and whether the entry links anywhere all come from
- * there, so a fourth series appears here the moment it's added, and
- * Cotton Gins becomes a link the moment `built` flips to true.
+ * The three series as facing pages, alternating sides. Driven entirely
+ * by SERIES in src/data/photography.ts: cover image, lede, plate label,
+ * and whether the entry links anywhere all come from there, so a fourth
+ * series appears here the moment it's added, and Cotton Gins becomes a
+ * link the moment `built` flips to true.
  *
  * The ledes moved here out of the light table's HUD, which was the
  * wrong posture for reading — this is where someone is choosing which
  * series to enter, which is the decision the text is written to inform.
+ *
+ * data-astro-reload on the links INTO the light table: a View Transition
+ * swaps the document without a real navigation, and the browser carries
+ * the visual viewport's pinch zoom straight across. The light table owns
+ * pinch (touch-none, for the board's own zoom), so a visitor who pinched
+ * here used to arrive magnified with no way back. A full load resets the
+ * visual viewport. The light table also detects and recovers from this on
+ * its own — belt and braces, but this way the reader never has to read an
+ * instruction.
+ *
+ * DEPENDENCY TO KEEP AN EYE ON: the per-series links below point at
+ * /photography/plates#<slug>. If the plate index ever stops emitting an
+ * id per series, those land silently at the top of the page.
  */
 import RootLayout from '../layouts/RootLayout.astro';
 import { getCovers } from '../data/photography';
 
 const series = await getCovers();
+
+/* The eyebrow is a range, so both ends come from the data — the start
+   used to be a hardcoded "I", which would have been wrong the first time
+   a series was reordered or retired. En dash, no spaces: it's a range,
+   not an aside. */
+const firstNo = series[0]?.number;
+const lastNo = series[series.length - 1]?.number;
+const seriesRange = !firstNo
+  ? ''
+  : firstNo === lastNo
+    ? `Series ${firstNo}`
+    : `Series ${firstNo}\u2013${lastNo}`;
+
+const DESCRIPTION =
+  'Visual monographs of the American West: photographs of the escarpments, the water of the Llano Estacado, and the cotton gins of Texas, by Austin Allison.';
+
+/* Cover alt text. "American Escarpments — Plate 1.03" is a citation, not
+   a description of the photograph — and because the plate is wrapped in a
+   link, the alt becomes that link's accessible name, which then duplicates
+   the title link sitting beside it. Prefer the plate's own caption, in his
+   words, the same way the home-page rotation does. The `in` guard keeps
+   this compiling whether or not getCovers() currently exposes the field;
+   once you confirm the name in photography.ts, collapse this to a direct
+   read. */
+const coverAlt = (s: (typeof series)[number]) =>
+  'caption' in s && typeof s.caption === 'string' && s.caption.trim()
+    ? s.caption
+    : `${s.title} — ${s.coverLabel}`;
 ---
 
-<RootLayout title="Photography | Austin Allison">
+<RootLayout
+  title="Photography | Austin Allison"
+  description={DESCRIPTION}
+  image={series[0]?.src}
+>
   <div class="max-w-6xl mx-auto py-6 text-iron">
 
     <!-- Minimalist Catalog Header -->
     <header class="border-b border-haze pb-4 mb-16 flex flex-wrap justify-between items-end gap-4">
       <div>
         <span class="text-sm font-mono text-sage uppercase tracking-widest block mb-1">
-          Series I &mdash; {series[series.length - 1]?.number}
+          {seriesRange}
         </span>
         <h1 class="font-serif text-4xl font-medium tracking-tight text-caprock">
           Visual Monographs of the American West
@@ -33,28 +78,25 @@ const series = await getCovers();
       </div>
       <a
         href="/photography/plates"
-        class="font-mono text-[11px] uppercase tracking-widest text-sage hover:text-caprock transition-colors shrink-0"
+        class="font-mono text-[11px] uppercase tracking-widest text-sage hover:text-caprock transition-colors shrink-0 inline-block py-1.5 -mb-1.5"
       >
         Plate index &rarr;
       </a>
     </header>
 
-    <!-- THE BOOK SPREADS -->
+    <!-- THE FACING PAGES -->
     <div class="space-y-32">
       {series.map((s, i) => {
         const href = s.built ? `/photography/${s.slug}` : null;
-        /* data-astro-reload: a View Transition swaps the document
-           without a real navigation, and the browser carries the visual
-           viewport's pinch zoom straight across. The light table owns
-           pinch (touch-none, for the board's own zoom), so a visitor
-           who pinched here used to arrive magnified with no way back.
-           A full load resets the visual viewport. The light table also
-           detects and recovers from this on its own — belt and braces,
-           but this way the reader never has to read an instruction. */
-        const flipped = i % 2 === 1; // odd spreads put the plate on the right
+        const flipped = i % 2 === 1; // odd entries put the plate on the right
+        const headingId = `series-${s.slug}`;
+        const alt = coverAlt(s);
 
         return (
-          <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-start">
+          <article
+            aria-labelledby={headingId}
+            class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-start"
+          >
 
             {/* the plate */}
             <div class={`md:col-span-7 space-y-3 ${flipped ? 'md:order-2' : ''}`}>
@@ -67,11 +109,11 @@ const series = await getCovers();
                         srcset={s.srcset}
                         width={s.width}
                         height={s.height}
-                        alt={`${s.title} — ${s.coverLabel}`}
+                        alt={alt}
                         loading={i === 0 ? 'eager' : 'lazy'}
                         fetchpriority={i === 0 ? 'high' : 'auto'}
                         decoding="async"
-                        class="w-full h-auto hover:grayscale transition-all duration-700 ease-out"
+                        class="unmatted w-full h-auto transition-transform duration-700 ease-out hover:scale-[1.015]"
                       />
                     </a>
                   ) : (
@@ -80,10 +122,10 @@ const series = await getCovers();
                       srcset={s.srcset}
                       width={s.width}
                       height={s.height}
-                      alt={`${s.title} — ${s.coverLabel}`}
+                      alt={alt}
                       loading="lazy"
                       decoding="async"
-                      class="w-full h-auto opacity-80"
+                      class="unmatted w-full h-auto opacity-80"
                     />
                   )}
                 </div>
@@ -95,17 +137,27 @@ const series = await getCovers();
               </div>
             </div>
 
-            {/* the facing page */}
+            {/* the facing page — the plate changes sides, the text does
+                not change alignment. A verso and a recto both set flush
+                left; mirroring the rag is a web habit, not a book one,
+                and right-aligned running prose is measurably slower to
+                read. Dial, if you want the mirror back: append
+                'md:text-right md:items-end' to the flipped branch. */}
             <div
-              class={`md:col-span-5 h-full flex flex-col pt-4 md:pt-12 ${
-                flipped ? 'md:order-1 md:text-right md:items-end' : ''
-              }`}
+              class={`md:col-span-5 flex flex-col pt-4 md:pt-12 ${flipped ? 'md:order-1' : ''}`}
             >
-              <span class="font-serif text-5xl font-light text-sage/70 block leading-none select-none mb-4">
+              <span
+                aria-hidden="true"
+                class="font-serif text-5xl font-light text-sage/70 block leading-none select-none mb-4"
+              >
                 {s.number}
               </span>
 
-              <h2 class="font-serif text-3xl font-medium tracking-tight text-caprock leading-snug mb-4">
+              <h2
+                id={headingId}
+                class="font-serif text-3xl font-medium tracking-tight text-caprock leading-snug mb-4"
+              >
+                <span class="sr-only">Series {s.number}. </span>
                 {href ? (
                   <a href={href} data-astro-reload class="hover:text-sage transition-colors">{s.title}</a>
                 ) : (
@@ -113,21 +165,21 @@ const series = await getCovers();
                 )}
               </h2>
 
-              <p class="text-md font-serif text-iron/80 leading-relaxed max-w-sm">
+              <p class="text-base font-serif text-iron/80 leading-relaxed max-w-sm">
                 {s.lede}
               </p>
 
               {href && (
                 <a
                   href={`/photography/plates#${s.slug}`}
-                  class="font-mono text-[10px] uppercase tracking-widest text-iron/45 hover:text-caprock transition-colors mt-6"
+                  class="font-mono text-[11px] uppercase tracking-widest text-iron/45 hover:text-caprock transition-colors mt-5 py-1.5 self-start"
                 >
-                  Plate list &rarr;
+                  Plates in this series &rarr;
                 </a>
               )}
             </div>
 
-          </div>
+          </article>
         );
       })}
     </div>

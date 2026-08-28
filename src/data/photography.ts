@@ -153,8 +153,8 @@ export const SERIES: SeriesEntry[] = [
     number: 'II',
     title: 'Water of the Llano Estacado',
     built: true,
-    lede: 'A documentary index featuring the increasingly diminutive water sources of the Llano Estacado. From intermittent lake basins to draws and springs, the water sources of the Llano Estacado represent signifiers of life, activity, and history.',
-    cover: 'water/water1.jpg',
+    lede: 'A documentary index featuring the increasingly diminutive water sources of the Llano Estacado. From intermittent lake basins to draws and springs, the water sources of the Llano Estacado represent signifiers of life, activity, and history. Areas adjacent to the Llano Estacado are included in this survey, since water from the Llano drains into several drainage basins providing crucial water to several areas.',
+    cover: 'water/water-cover.jpg',
     coverLabel: 'Plate 2.01 \u00B7 Tule Creek',
   },
   {
@@ -366,7 +366,7 @@ const galleryData: GalleryInput[] = [
       },
       {
         file: 'escarpments/escarpment20.jpg',
-        title: 'In the Coulee',
+        title: 'Dempster in the Coulee',
         place: 'Toole County, Montana',
         lat: 48.953794, lng: -111.954469,
         specs: '12mm \u00B7 \u0192/8 \u00B7 1/200s',

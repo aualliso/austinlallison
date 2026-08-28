@@ -1345,6 +1345,32 @@ const isDev = import.meta.env.DEV;
          here rather than in the module so it lands before first paint. */
       document.documentElement.setAttribute('data-js', '');
 
+      /* THE ARRIVAL PLAYS ONCE PER VISIT (2026-08-26).
+         transition:persist was supposed to guarantee this on its own — a
+         persisted header is MOVED across a view transition, not rebuilt, so
+         its entrance animations never restart. He reported the full ~1s
+         sequence replaying on every navigation, which means the header is
+         being rebuilt: either the client router is not mounted at all (every
+         nav is a full document load) or the persist is not matching. Worth
+         finding separately; this gate is correct either way and costs
+         nothing if persist is doing its job.
+
+         IT MUST BE HERE, NOT IN THE MODULE. This script is parser-blocking,
+         so the attribute lands before the first paint. Set from the module
+         it would arrive after the animations had already begun, and the
+         header would flicker into its resting state.
+
+         sessionStorage, not local: the arrival should play once per VISIT,
+         so a returning visitor still gets it. A blocked storage read means
+         "treat it as an arrival" — playing an entrance too often is a much
+         smaller fault than a header stuck invisible on `both` fill. */
+      try {
+        if (sessionStorage.getItem('horizon-arrived') !== null) {
+          document.documentElement.setAttribute('data-arrived', '');
+        }
+        sessionStorage.setItem('horizon-arrived', '1');
+      } catch (e) { /* storage denied — let it play */ }
+
       var LAT = 33.5779, LON = -101.8552;
       var el = document.getElementById('horizon-header');
       // is:inline scripts aren't Vite-processed, so import.meta.env isn't
@@ -3186,6 +3212,22 @@ const isDev = import.meta.env.DEV;
      FIRST paint, which this module is too late to do. */
   const markJsAvailable = () => document.documentElement.setAttribute('data-js', '');
 
+  /* THE ARRIVAL FLAG NEEDS THE SAME RE-STAMP, and for exactly the reason
+     data-js does: Astro's swap strips every attribute off <html> and copies
+     the incoming document's back, keeping only data-astro-*. The pre-paint
+     is:inline script sets data-arrived once from sessionStorage and never
+     runs again, so the first client-side navigation wiped it and the whole
+     entrance played a second time — which is what he reported.
+
+     By definition a swap IS a return visit, so this is unconditional rather
+     than another storage read. It also keeps sessionStorage in step for the
+     next full document load. after-swap fires before the browser paints, so
+     the attribute lands ahead of the rebuilt header's animations. */
+  const markArrived = () => {
+    document.documentElement.setAttribute('data-arrived', '');
+    try { sessionStorage.setItem('horizon-arrived', '1'); } catch { /* denied */ }
+  };
+
   /* THE PANEL'S SURFACE IS DERIVED FROM THE SKY, AND HAS TO BE MIRRORED.
      Every colour in this header keys off --night, --ink-flip, --sky-horizon
      and the grazing pair, and all five live on #horizon-header. The panel is
@@ -3375,6 +3417,7 @@ const isDev = import.meta.env.DEV;
 
   document.addEventListener('astro:after-swap', () => {
     markJsAvailable();  // FIRST: the swap just stripped it off <html>
+    markArrived();      // ditto — and a swap is by definition not an arrival
     setHorizon();       // the new route's silhouette, before applyPhase/applyStars sample it
     measureSkyWindow(); // nav width changes with the active route's marker
     setPlateLift();     // the new route's land may be a different height under the name
@@ -5012,8 +5055,34 @@ const isDev = import.meta.env.DEV;
   }
 
   /* ======================================================================== */
-  /* ENTRANCE CHOREOGRAPHY (first load only — transition:persist keeps the    */
-  /* header alive across view transitions, so this never replays on nav)      */
+  /* ENTRANCE CHOREOGRAPHY — ONCE PER VISIT.                                  */
+  /*                                                                          */
+  /* Two things hold this to one performance. transition:persist keeps the    */
+  /* header alive across a view transition, so a persisted header never       */
+  /* replays. And html[data-arrived], set before first paint by the is:inline */
+  /* script from sessionStorage, suppresses the lot on any subsequent         */
+  /* document load — which is what catches the case where the header IS being */
+  /* rebuilt, whether because the client router is absent or the persist is   */
+  /* not matching.                                                            */
+  /*                                                                          */
+  /* `animation: none` and not a shortened duration: every one of these       */
+  /* carries `both`, so the resting state is the base style and killing the   */
+  /* animation outright simply shows it.                                      */
+  /* ======================================================================== */
+  html[data-arrived] .horizon-path,
+  html[data-arrived] .horizon-ground,
+  html[data-arrived] .far-plane,
+  html[data-arrived] .landmark,
+  html[data-arrived] .station-plate,
+  html[data-arrived] .marker,
+  html[data-arrived] #horizon-menu-btn,
+  html[data-arrived] #sun-wrap,
+  html[data-arrived] #night-sky,
+  html[data-arrived] #windmill,
+  html[data-arrived] #crane-flock {
+    animation: none;
+  }
+  /* ======================================================================== */
   /* Keyframes define only `from`; base styles are the resting state.         */
   /* Entrance animations live on different elements than scroll animations.   */
   /* ======================================================================== */

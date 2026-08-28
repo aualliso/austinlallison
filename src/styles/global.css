@@ -47,7 +47,7 @@ article h3, .prose h3 {
 }
 
 /* Automate Essay Image Framing */
-article img {
+article img:not(.unmatted) {
   width: 100%;
   height: auto;
   border: 1px solid #E6E4DF;       /* border-haze */
