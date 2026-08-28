@@ -577,11 +577,10 @@ const navItems = [
 // `navItems.find((item) => isActive(item.href))?.label` here AND a re-write
 // from astro:after-swap, because this frontmatter runs once at build time.
 
-// NOTE: routeKey() below deliberately does NOT have an '/about' branch, so
-// /about draws the home caprock mesa. That is the intended default, not an
-// oversight: a fifth landform would have to be built on the same 38-point,
-// 20-unit x grid every other route shares, because the CSS `d` morph
-// interpolates command-for-command.
+// /about got its own landform on 2026-08-26 — see SILHOUETTES.about. It is
+// built on the same 38-point, 20-unit x grid as the other four, because the
+// CSS `d` morph interpolates command-for-command and a different structure
+// would make the route change snap instead of flow.
 
 // ROUTE GEOGRAPHY (rebuilt 2026-08-18 — see the note on landforms below).
 //
@@ -643,10 +642,35 @@ const navItems = [
 // with preserveAspectRatio="none", so all of this is enormously
 // vertically exaggerated and horizontally elastic. These are silhouettes in
 // the sense a woodcut is — the grammar is accurate, the proportions are not.
+// ABOUT — THE CAPROCK ESCARPMENT (added 2026-08-26). The tallest and
+// steepest profile in the set: 12.2 units of relief against publications'
+// 10.8, a level Llano cap from x=580 to x=760, and a face that climbs it in
+// 160 units where every other route's rise takes 200 or more.
+//
+// IT IS THE ONLY ROUTE THAT FACES LEFT, and that is the point rather than an
+// oversight. The other four follow the convention set in the terrain pass —
+// long gentle left, short steep right. But the Caprock Escarpment faces
+// EAST, and with north up and the viewer looking south, east is screen
+// LEFT. So the scarp's face is the near side here: the land turns to look
+// back at you. That mirroring is what makes it read instantly as a
+// different landform rather than a taller version of home's mesa.
+//
+// The low, slightly dissected ground at x=280-380 is the Rolling Plains
+// below the scarp; the long even ramp from x=780 out to baseline is the
+// Llano surface running off west. The cap is dead level to within 0.06 of a
+// unit — a mesa's summit IS the old plain, which is the rule the whole set
+// is drawn to.
+//
+// DISCLOSED COST: setPlateLift samples this profile too, so on /about the
+// header grows up to ~10.2px taller at very wide widths (peak around
+// 3200px; 9.8px at 2560). That is the largest of any route — publications
+// tops out at 8.8 — but still under PLATE_LIFT_MAX_PX of 13. Simulated
+// across 900-3200px before shipping.
 const SILHOUETTES: Record<string, string> = {
   home:         "M0 19 H250 L280 18.63 L300 18.53 L320 18.13 L340 17.74 L360 17.33 L380 16.92 L400 16.62 L420 16.26 L440 15.89 L460 15.56 L480 15.4 L500 14.39 L520 13.55 L540 12.52 L560 11.4 L580 10.81 L600 9.75 L620 9.5 L640 9.5 L660 9.5 L680 9.5 L700 9.92 L720 10.31 L740 9.81 L760 9.57 L780 9.54 L800 9.5 L820 11.71 L840 13.78 L860 15.21 L880 16.5 L900 17.12 L920 17.64 L940 17.88 L960 18.29 L980 18.75 L1000 18.86 L1020 19 H1440",
   cv:           "M0 19 H250 L280 18.99 L300 18.95 L320 18.89 L340 18.88 L360 18.89 L380 18.85 L400 18.85 L420 18.84 L440 18.78 L460 18.76 L480 18.81 L500 18.82 L520 18.84 L540 18.91 L560 18.91 L580 18.89 L600 18.92 L620 18.99 L640 19.08 L660 19.17 L680 19.2 L700 19.18 L720 19.19 L740 19.11 L760 18.99 L780 18.96 L800 18.78 L820 18.64 L840 18.73 L860 18.87 L880 18.87 L900 18.9 L920 18.95 L940 18.97 L960 18.99 L980 19 L1000 18.99 L1020 19 H1440",
   publications: "M0 19 H250 L280 18.53 L300 18.27 L320 18.18 L340 17.64 L360 17.21 L380 16.88 L400 15.95 L420 15.03 L440 13.46 L460 11.45 L480 9.71 L500 8.2 L520 8.2 L540 8.2 L560 8.2 L580 8.2 L600 9.91 L620 11.93 L640 13.59 L660 15.29 L680 16.03 L700 16.8 L720 16.55 L740 15.67 L760 14.14 L780 12.12 L800 10.04 L820 8.8 L840 8.8 L860 8.8 L880 8.8 L900 10.59 L920 12.7 L940 14.51 L960 16.63 L980 17.73 L1000 18.52 L1020 19 H1440",
+  about:        "M0 19 H250 L280 18.95 L300 18.8 L320 18.9 L340 18.72 L360 18.5 L380 18.22 L400 17.8 L420 17.05 L440 15.85 L460 14.2 L480 12.2 L500 10.05 L520 8.2 L540 7.15 L560 6.85 L580 6.8 L600 6.8 L620 6.8 L640 6.8 L660 6.8 L680 6.82 L700 6.8 L720 6.83 L740 6.8 L760 6.86 L780 6.98 L800 7.24 L820 7.78 L840 8.56 L860 9.56 L880 10.72 L900 11.96 L920 13.3 L940 14.72 L960 16.06 L980 17.3 L1000 18.36 L1020 19 H1440",
   photography:  "M0 19 H250 L280 18.04 L300 17.6 L320 17.23 L340 16.48 L360 15.61 L380 14.83 L400 14.01 L420 13.09 L440 12.34 L460 11.64 L480 10.72 L500 9.84 L520 9.47 L540 8.67 L560 8.6 L580 8.6 L600 8.6 L620 8.6 L640 8.6 L660 8.6 L680 8.6 L700 8.6 L720 8.6 L740 11.18 L760 13.23 L780 14.08 L800 14.12 L820 14.15 L840 15.51 L860 16.91 L880 17.58 L900 18.31 L920 17.82 L940 16.86 L960 16.7 L980 16.7 L1000 18.44 L1020 19 H1440",
 };
 
@@ -697,6 +721,7 @@ const FAR_PLANES: Record<string, string> = {
   home:         "M0 18.35 H250 L280 18.23 L300 18 L320 17.81 L340 17.73 L360 17.54 L380 17.33 L400 17.22 L420 17.21 L440 17.19 L460 17.15 L480 17.15 L500 17.15 L520 17.15 L540 17.15 L560 17.15 L580 17.15 L600 17.15 L620 17.15 L640 17.15 L660 17.15 L680 17.15 L700 17.15 L720 17.15 L740 17.15 L760 17.15 L780 17.15 L800 17.15 L820 17.15 L840 17.15 L860 17.15 L880 17.15 L900 17.15 L920 17.28 L940 17.49 L960 17.58 L980 17.88 L1000 18.2 L1020 18.35 H1440",
   cv:           "M0 18.35 H250 L280 18.34 L300 18.33 L320 18.32 L340 18.29 L360 18.29 L380 18.31 L400 18.29 L420 18.28 L440 18.29 L460 18.26 L480 18.25 L500 18.27 L520 18.28 L540 18.28 L560 18.28 L580 18.26 L600 18.24 L620 18.24 L640 18.25 L660 18.25 L680 18.27 L700 18.27 L720 18.25 L740 18.25 L760 18.24 L780 18.25 L800 18.28 L820 18.3 L840 18.3 L860 18.31 L880 18.3 L900 18.27 L920 18.3 L940 18.32 L960 18.32 L980 18.34 L1000 18.35 L1020 18.35 H1440",
   publications: "M0 18.35 H250 L280 18.23 L300 18.02 L320 17.92 L340 17.79 L360 17.59 L380 17.45 L400 17.35 L420 17.35 L440 17.35 L460 17.35 L480 17.35 L500 17.35 L520 17.35 L540 17.35 L560 17.35 L580 17.35 L600 17.35 L620 17.35 L640 17.35 L660 17.35 L680 17.35 L700 17.35 L720 17.35 L740 17.35 L760 17.35 L780 17.35 L800 17.35 L820 17.35 L840 17.35 L860 17.35 L880 17.35 L900 17.48 L920 17.71 L940 17.82 L960 17.91 L980 18.12 L1000 18.25 L1020 18.35 H1440",
+  about:        "M0 18.35 H250 L280 18.28 L300 18.1 L320 17.98 L340 17.95 L360 17.95 L380 17.95 L400 17.95 L420 17.95 L440 17.95 L460 17.95 L480 17.95 L500 17.95 L520 17.95 L540 17.95 L560 17.95 L580 17.95 L600 17.95 L620 17.95 L640 17.95 L660 17.95 L680 17.95 L700 17.95 L720 17.95 L740 17.95 L760 17.95 L780 17.95 L800 17.95 L820 17.95 L840 17.95 L860 17.95 L880 17.95 L900 17.98 L920 18.04 L940 18.12 L960 18.2 L980 18.28 L1000 18.33 L1020 18.35 H1440",
   photography:  "M0 18.35 H250 L280 18.28 L300 18.12 L320 17.97 L340 17.94 L360 17.83 L380 17.71 L400 17.65 L420 17.62 L440 17.58 L460 17.55 L480 17.5 L500 17.5 L520 17.5 L540 17.5 L560 17.5 L580 17.5 L600 17.5 L620 17.5 L640 17.5 L660 17.5 L680 17.5 L700 17.5 L720 17.5 L740 17.5 L760 17.5 L780 17.65 L800 17.75 L820 17.73 L840 17.7 L860 17.7 L880 17.7 L900 17.7 L920 17.7 L940 17.7 L960 17.7 L980 17.8 L1000 18.2 L1020 18.35 H1440",
 };
 
@@ -705,6 +730,7 @@ const routeKey = (p: string): string => {
   if (clean.startsWith('/cv')) return 'cv';
   if (clean.startsWith('/publications')) return 'publications';
   if (clean.startsWith('/photography')) return 'photography';
+  if (clean.startsWith('/about')) return 'about';
   return 'home';
 };
 
@@ -1091,59 +1117,6 @@ const isDev = import.meta.env.DEV;
           </a>
         ))}
       </nav>
-
-      <!-- THE STATION CONTROL — the narrow-width form of the mile markers.
-           Carries .marker, so it inherits the rise-in entrance, the heat
-           shimmer and the label's colour ramp for free; only the graduation
-           display switching is its own. It carries no label: the mark does
-           the work, and the panel's active station says which page you are
-           on. Display is left entirely to the stylesheet (no Tailwind
-           `hidden` utilities) because the html[data-js] gate has to win.
-
-           THE 22x28 BOX IS THE POINT. A real elevator is a vertical slab —
-           drawn square it reads as a farm shed. Rendered at 26x33.
-
-           THE JUNCTION RULE: every vertical in this drawing lands on a bin
-           junction — x = 2, 6, 10, 14 or 18, where two roof arcs meet at
-           y=11 — and never between them. The headhouse wall sat at x=8, the
-           APEX of an arc, and drove straight through the dome and 1.2 units
-           out the other side. Same discipline as the terrain's shared x
-           grid: if you move the headhouse, move it a whole bin. -->
-      <button
-        id="horizon-menu-btn"
-        type="button"
-        aria-expanded="false"
-        aria-controls="horizon-menu"
-        aria-label="Site navigation"
-        class="marker shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A]"
-      >
-        <svg
-          class="elevator"
-          width="26"
-          height="33"
-          viewBox="0 0 22 28"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="0.6"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          aria-hidden="true"
-        >
-          <!-- Bins, headhouse, leg monitor, grade. Everything except the bin
-               walls, which are the only thing that moves. -->
-          <g class="elev-shell">
-            <path d="M2 26 V11 A2 1.2 0 0 1 6 11 A2 1.2 0 0 1 10 11 A2 1.2 0 0 1 14 11 A2 1.2 0 0 1 18 11 V26" />
-            <path d="M10 11 V3.4 H18 V11 M9.4 3.4 H18.6" />
-            <path d="M14.6 3.4 V0.9 H17.6 V3.4" />
-            <path d="M0.6 26.6 H21.4" />
-          </g>
-          <!-- The three bin walls. On open they rotate a quarter turn about
-               the block's centre and land as the panel's three rules. -->
-          <g class="elev-divs">
-            <path d="M6 11 V26 M10 11 V26 M14 11 V26" />
-          </g>
-        </svg>
-      </button>
     </div>
 
     <!-- THE HORIZON — the line is the land, and the land depends on the page -->
@@ -1186,6 +1159,110 @@ const isDev = import.meta.env.DEV;
       />
     </svg>
   </header>
+
+  <!-- THE SEAM — a strip of PAGE, not of sky, holding the control (2026-08-26).
+       WHY THE CONTROL LEFT THE HEADER ROW. Everything inside #horizon-header
+       reads as scenery, because the windmill, the sun and the terrain are all
+       in there and none of them are tappable. A word sitting below the frame,
+       on the page side of the horizon, is categorically not part of the
+       drawing — which is the most reliable "this is chrome" signal available,
+       stronger than any glyph or motion.
+
+       IN FLOW, NOT ABSOLUTE. A sticky block reserves its own space, so this
+       pushes page content down 13px rather than covering it. An absolutely
+       positioned strip would have sat permanently on top of the first 11px of
+       every page — and it could not have contained the button, which would
+       have split the tap target from its own label.
+
+       IT CANNOT LIVE INSIDE THE HEADER. #horizon-header carries
+       `clip-path: inset(0)` (the sun-leak backstop), which clips its whole
+       subtree at the padding box, and adding bottom padding does nothing
+       because the horizon svg is absolute bottom-0 and simply moves down with
+       it. Outside is the only place with room below the line.
+
+       The wrapper is pointer-events-none, hence the re-enable. -->
+  <div class="menu-seam">
+    <!-- THE STATION CONTROL — the narrow-width form of the mile markers.
+           Carries .marker, so it inherits the rise-in entrance, the heat
+           shimmer and the label's colour ramp for free; only the graduation
+           display switching is its own. It carries no label: the mark does
+           the work, and the panel's active station says which page you are
+           on. Display is left entirely to the stylesheet (no Tailwind
+           `hidden` utilities) because the html[data-js] gate has to win.
+
+           THE 22x28 BOX IS THE POINT. A real elevator is a vertical slab —
+           drawn square it reads as a farm shed. Rendered at 26x33.
+
+           THE JUNCTION RULE: every vertical in this drawing lands on a bin
+           junction — x = 2, 6, 10, 14 or 18, where two roof arcs meet at
+           y=11 — and never between them. The headhouse wall sat at x=8, the
+           APEX of an arc, and drove straight through the dome and 1.2 units
+           out the other side. Same discipline as the terrain's shared x
+           grid: if you move the headhouse, move it a whole bin. -->
+      <button
+        id="horizon-menu-btn"
+        type="button"
+        aria-expanded="false"
+        aria-controls="horizon-menu"
+        class="marker shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#C1AD8A]"
+      >
+        <svg
+          class="elevator"
+          width="26"
+          height="33"
+          viewBox="0 0 22 28"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="0.6"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          aria-hidden="true"
+        >
+          <!-- Bins, headhouse and leg monitor. NO GRADE LINE: the mark stands
+               on the header's own drawn horizon, exactly as the windmill does.
+               It used to carry its own at y=26.6, which meant a second ground
+               line a couple of pixels above the real one. See .elevator's
+               margin-bottom for how the base is landed on the line. -->
+          <g class="elev-shell">
+            <path d="M2 26 V11 A2 1.2 0 0 1 6 11 A2 1.2 0 0 1 10 11 A2 1.2 0 0 1 14 11 A2 1.2 0 0 1 18 11 V26" />
+            <path d="M10 11 V3.4 H18 V11 M9.4 3.4 H18.6" />
+            <path d="M14.6 3.4 V0.9 H17.6 V3.4" />
+          </g>
+          <!-- The three bin walls. On open they rotate a quarter turn about
+               the block's centre and land as the panel's three rules. -->
+          <g class="elev-divs">
+            <path d="M6 11 V26 M10 11 V26 M14 11 V26" />
+          </g>
+        </svg>
+        <span class="menu-word">menu</span>
+        <!-- THE WORD IS THE AFFORDANCE (2026-08-26). No symbol reliably reads
+             as "tap me" to a first-time visitor, and motion cannot do it here
+             either: the windmill turns, the sun moves and the dust blows, so
+             MOTION IN THIS HEADER MEANS SCENERY. The press state only helps
+             after someone has already touched it.
+
+             It is set in the STATION PLATE's exact type — 8.5px mono, 0.14em
+             — so the row now carries a mono micro-line at each end, the
+             readout left and the label right, which balances better than the
+             one-sided arrangement it replaces.
+
+             NOTE THE MISSING aria-label. It used to read "Site navigation",
+             which no longer contains the visible word — a WCAG 2.5.3 Label
+             in Name failure the moment a label existed. The text is now the
+             accessible name. If the word ever changes, nothing else needs to.
+             DIAL: "index" is the archival word and nearly as clear; "menu"
+             is here because obvious was the brief.
+
+             IT SITS BELOW THE FRAME. Stacked inside the header row the
+             word's bottom took the horizon and shoved the elevator a dozen
+             pixels into the air; beside the mark it fixed that but left the
+             word inside the picture, where this header turns type into
+             scenery. In the seam it is on the PAGE: the elevator stands on
+             the line above, the word sits under it on white. That is the
+             clearest "this is chrome, not landscape" the header can make,
+             and it is why the control left the row. -->
+      </button>
+  </div>
 
   <!-- THE SECTION — the narrow-width navigation, drawn as a shallow cut
        into the ground below the horizon line.
@@ -2083,7 +2160,8 @@ const isDev = import.meta.env.DEV;
     header.style.setProperty('--sun-white', sunWhiteFromAltitude(altitudeDeg).toFixed(3));
     applyStationReadout(); // the clock ticks with the same 60s cadence
     header.style.setProperty('--horizon-flatten', easeGrazing(refractionFlatten(altitudeDeg)).toFixed(3));
-    applyThemeColor(); // the address bar takes the zenith — must follow --sky-top
+    applyThemeColor();   // the address bar takes the zenith — must follow --sky-top
+    syncMenuSurface();   // the seam's mark is outside the header and needs the same ink
   };
 
   /* ---- THE ADDRESS BAR TAKES THE SKY -------------------------------------
@@ -2942,6 +3020,7 @@ const isDev = import.meta.env.DEV;
     if (clean.startsWith('/cv')) return 'cv';
     if (clean.startsWith('/publications')) return 'publications';
     if (clean.startsWith('/photography')) return 'photography';
+    if (clean.startsWith('/about')) return 'about';
     return 'home';
   };
 
@@ -3088,6 +3167,11 @@ const isDev = import.meta.env.DEV;
      nowhere else. */
   const menuBtn = document.getElementById('horizon-menu-btn');
   const menuPanel = document.getElementById('horizon-menu');
+  /* The 13px strip the control sits in. It mirrors the panel's open state so
+     it can take the panel's surface — see .menu-seam. Done here rather than
+     with a sibling-state CSS selector to keep it off newer syntax the build
+     has mangled before. */
+  const menuSeam = document.querySelector<HTMLElement>('.menu-seam');
 
   /* THE GATE HAS TO BE RE-STAMPED ON EVERY SWAP (2026-08-25, fix).
      Astro's client-side navigation does not merge <html>'s attributes — it
@@ -3122,11 +3206,20 @@ const isDev = import.meta.env.DEV;
                       '--grazing-effective', '--grazing-color', '--landmark-ink'];
 
   const syncMenuSurface = () => {
-    if (!menuPanel || !header) return;
+    if (!header) return;
+    /* ONTO THE STICKY WRAPPER, not the panel. The control moved out of the
+       header on 2026-08-26 and sits in the seam, so it inherits none of the
+       sky tokens either — writing them one level up feeds the seam and the
+       panel from one mirror instead of two.
+       AND ON EVERY PHASE TICK, not just on open: the panel is only visible
+       while open, but the elevator is visible always, so a mirror that ran
+       only on open would leave the mark on last hour's ink. */
+    const target = document.getElementById('horizon-sticky') ?? menuPanel;
+    if (!target) return;
     const resolved = getComputedStyle(header);
     for (const token of SKY_TOKENS) {
       const value = resolved.getPropertyValue(token).trim();
-      if (value) menuPanel.style.setProperty(token, value);
+      if (value) target.style.setProperty(token, value);
     }
   };
 
@@ -3149,6 +3242,7 @@ const isDev = import.meta.env.DEV;
     }
 
     menuPanel.dataset.open = open ? 'true' : 'false';
+    if (menuSeam) menuSeam.dataset.open = open ? 'true' : 'false';
     /* `inert` is applied by script rather than authored into the markup,
        for the same reason it is on the home page's register: it can only be
        REMOVED by script, so a hard-coded attribute would hand a visitor
@@ -3161,11 +3255,32 @@ const isDev = import.meta.env.DEV;
     if (open && moveFocus) menuPanel.querySelector<HTMLAnchorElement>('a[href]')?.focus();
   };
 
+  /* Shown once per browser, never again. localStorage throws in some
+     privacy modes, so a failed read means "already hinted" rather than
+     hinting on every load — the annoying failure is the repeated one. */
+  const HINT_KEY = 'horizon-menu-hinted';
+  const runFirstVisitHint = () => {
+    if (!menuPanel) return;
+    if (!window.matchMedia('(max-width: 767px)').matches) return;      // no control above 768
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let seen = true;
+    try { seen = localStorage.getItem(HINT_KEY) !== null; } catch { /* denied */ }
+    if (seen) return;
+    try { localStorage.setItem(HINT_KEY, '1'); } catch { /* denied */ }
+    menuPanel.classList.add('is-hinting');
+    menuPanel.addEventListener(
+      'animationend',
+      () => menuPanel.classList.remove('is-hinting'),
+      { once: true }
+    );
+  };
+
   const initMenu = () => {
     markJsAvailable();   // idempotent; the is:inline copy already ran
     if (!menuBtn || !menuPanel) return;
     setMenu(false);
     syncMenuSurface();
+    runFirstVisitHint();
 
     menuBtn.addEventListener('click', () => setMenu(!menuIsOpen(), true));
 
@@ -4545,68 +4660,15 @@ const isDev = import.meta.env.DEV;
      and sunset by exactly the amount they do, and --landmark-warmth stays
      the one dial. Never a second warmth expression. */
 
-  #horizon-menu-btn {
-    display: none;
-    align-items: flex-end;
-    /* Padding buys tap-target area without growing the header: the row is
-       items-end and the landmark beside it is taller than this glyph. */
-    padding: 10px 4px 0;
-    background: none;
-    border: 0;
-    cursor: pointer;
-    color: var(--landmark-ink, var(--ink));
-    -webkit-tap-highlight-color: transparent;
-    transition: color 0.6s linear;
-  }
-
-  .elevator { display: block; }
-  .elev-shell,
-  .elev-divs { transition: transform 0.62s cubic-bezier(0.25, 1, 0.5, 1),
-                           opacity 0.5s linear; }
-
-  /* THE ORIGIN LIVES HERE, NOT IN THE OPEN RULE. transform-origin is not a
-     transitioned property, so if it were declared only under
-     [aria-expanded="true"] it would vanish the instant the menu closed and
-     the walls would swing back about the default instead — transform-box
-     defaults to view-box, so that default is 50% 50% of the 22x28 viewBox,
-     i.e. (11, 14) rather than (10, 18.5). Opening looked right; closing
-     drifted. Declared unconditionally, both directions turn about the same
-     point. */
-  .elev-divs { transform-origin: 10px 18.5px; }
-
-  /* OPEN. The three bin walls rotate a quarter turn about the block's
-     centre (10, 18.5) and land as rules at y 14.5 / 18.5 / 22.5, spanning
-     wider than the block itself — which is what makes them read as the
-     panel's rules rather than as a tipped-over building. The shell holds at
-     a third rather than disappearing, so the elevator is still standing
-     behind its own menu. Both are transforms: no animated `d` anywhere, so
-     Firefox behaves. */
-  #horizon-menu-btn[aria-expanded="true"] .elev-divs { transform: rotate(90deg); }
-  #horizon-menu-btn[aria-expanded="true"] .elev-shell { opacity: 0.34; }
-
-  @media (max-width: 767px) {
-    html[data-js] #horizon-nav      { display: none; }
-    html[data-js] #horizon-menu-btn { display: flex; }
-    html[data-js] #horizon-menu     { display: grid; }
-  }
-
-  /* ---- THE SECTION'S SURFACE ----------------------------------------------
-     Derived from the sky, like everything else in this header. --sky-horizon
-     and the rest are MIRRORED onto this element by syncMenuSurface(),
-     because the panel is a sibling of <header> and inherits nothing from it.
-
-     THE EARTH FRACTION FALLS AS THE SKY DARKENS, deliberately. The panel is
-     ground, so under a bright sky it wants a real ground tone — but the ink
-     flip is calibrated against the SKY, and any surface darker than the sky
-     spends the margin the flip was solved for. Scaling the mix by
-     (1 - --night) puts the ground tone exactly where there is headroom for
-     it (26% at noon, contrast 6.9:1) and lets the panel converge on the sky
-     itself through the twilight band, where the margin is thinnest. Modelled
-     over the file's own colour chain across every reachable sun position:
-     the panel's floor is 3.55:1 at dusk against 3.65:1 for the nav labels
-     four pixels above it — within a tenth of the type it sits under, rather
-     than a fixed slab that ignored the sky entirely. */
-  #horizon-menu {
+  /* THE PANEL'S PALETTE LIVES ON THE WRAPPER, not on the panel, so the SEAM
+     can read it as well — it takes --panel-surface when the menu is open so
+     the two read as one sheet. Everything here derives from the tokens
+     syncMenuSurface() mirrors onto this same element, and custom properties
+     may reference others declared alongside them. #horizon-header inherits
+     these too and ignores them.
+     (Note the name clash: --panel-seam is the EMBER HAIRLINE at the panel's
+      base, nothing to do with .menu-seam below.) */
+  #horizon-sticky {
     --panel-earth: #6E5A48;
     --panel-earth-pct: calc((1 - var(--night, 0)) * 26%);
     --panel-surface: color-mix(in oklab,
@@ -4626,8 +4688,175 @@ const isDev = import.meta.env.DEV;
       #9C5B3F calc((1 - var(--night, 0) * 0.55) * 100%),
       var(--panel-surface));
 
+  }
+
+  /* ---- THE SEAM ------------------------------------------------------------
+     13px of PAGE below the header, in normal flow inside the sticky wrapper,
+     holding the control. Transparent on purpose: the strip is page, not sky,
+     and that is the whole point of moving the control out — an object below
+     the frame cannot be mistaken for landscape.
+
+     GEOMETRY. The button hangs upward out of the seam so the elevator
+     straddles the line: base on the horizon, word below it on the page. The
+     -33.6px is derived, not eyeballed — the svg is 33px tall with the bins'
+     base 2 units up in a 28-unit box (2.4px of empty box below), and the
+     drawn line sits 3px above the header's bottom edge, which is the seam's
+     top. So the svg's top must be 33.6px above that edge. If the viewBox or
+     the rendered height change, so does this: (33 - 2.4) + 3. */
+  .menu-seam {
+    display: none;
+    position: relative;
+    height: 13px;
+    pointer-events: auto;   /* the sticky wrapper turns them off */
+    /* PAGE while closed, PANEL while open. Closed, the strip has to read as
+       page — that is the whole reason the control moved out of the header.
+       Open, an uncoloured 13px band between the header and the panel reads
+       as a gap in the panel rather than as page, so it takes the panel's own
+       surface and the two become one sheet.
+       Driven by an attribute set in setMenu() rather than by
+       `:has(#horizon-menu[data-open])`, because a sibling-state selector
+       would put this on the same build-fragility footing as the scroll
+       timelines that never survived production. */
+    background-color: transparent;
+    transition: background-color 0.22s linear;
+  }
+  .menu-seam[data-open="true"] { background-color: var(--panel-surface, #D1C9BF); }
+
+  #horizon-menu-btn {
+    position: absolute;
+    right: 12px;
+    top: -33.6px;
+    display: flex;
+    /* A COLUMN: mark first, word second. THE MARKUP ORDER IS LOAD-BEARING —
+       with the word first it lands ABOVE the elevator and pushes the whole
+       building down past the horizon, which is exactly what happened on the
+       first build of this seam. The mark must be the first child. */
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 0 6px;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    /* The MARK is over the sky, so it takes the sky's ink. The WORD is over
+       the page and sets its own — see .menu-word. */
+    color: var(--landmark-ink, var(--ink, #1A1919));
+    -webkit-tap-highlight-color: transparent;
+    transition: color 0.6s linear;
+  }
+
+  .elevator {
+    display: block;
+    /* LANDS THE BUILDING ON THE DRAWN LINE. The bins' base is y=26 in a
+       28-unit viewBox rendered 33px tall, so 2 units — 2.4px — of empty box
+       hang below it. The row's own bottom is already the horizon (it is
+       `bottom-3px`, and the line sits 3px up inside the 22px horizon svg),
+       so pulling those 2.4px back sets the base exactly on it. The svg is
+       overflow:visible, so nothing clips. If the viewBox height ever
+       changes, this number changes with it: (28 - 26) * 33 / 28. */
+    margin-bottom: -2.4px;
+  }
+
+  /* The station plate's exact type, on the other end of the same row. About
+     25px wide at four characters against the elevator's 26, so it sets no
+     new width and the control's footprint is unchanged. */
+  /* A FIXED PAGE INK, deliberately NOT --ink-muted. That token is calibrated
+     against the SKY and flips light at night — which is right for the mark
+     above the line and catastrophic for a word sitting on a near-white page.
+     The two ends of this control legitimately diverge in colour after dark,
+     and that divergence says the true thing: they are in different worlds. */
+  .menu-word {
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    font-size: 8.5px;
+    letter-spacing: 0.14em;
+    line-height: 1;
+    color: color-mix(in oklab, var(--color-iron, #1A1919) 62%, var(--color-canvas, #FBFBF9));
+    transition: color 0.25s linear;
+  }
+  #horizon-menu-btn:hover .menu-word,
+  #horizon-menu-btn:focus-visible .menu-word {
+    color: var(--color-iron, #1A1919);
+  }
+  /* OPEN: the word is no longer on the page, it is on the panel's surface —
+     which is dark after nightfall, where a fixed page ink would vanish. So
+     it hands over to the sky-derived ink, the same one the panel's own
+     stations use. Declared after the hover rule so it wins when both apply. */
+  #horizon-menu-btn[aria-expanded="true"] .menu-word { color: var(--ink, #1A1919); }
+
+  /* ---- WHAT ACTUALLY SAYS "BUTTON" -----------------------------------------
+     Read this before adding motion here. MOTION IN THIS HEADER SIGNALS
+     SCENERY, NOT INTERACTIVITY: the windmill turns, the sun moves, the dust
+     blows, and none of it is tappable. A wind-driven chaff plume off the
+     headhouse was built on 2026-08-26 and REMOVED the same day for exactly
+     that reason — it made the control read as more scenery, not less. The
+     word above and these three states are the affordance; the first-visit
+     hint below teaches the gesture once.
+
+     :active is the one that matters on a phone — it is the only feedback a
+     touch device can give at the moment of contact, since hover does not
+     exist there. Hover and focus-visible carry the same job on a narrow
+     desktop window and for keyboard users, which the control had NO feedback
+     for at all until now. All three strengthen the same thing, the ink, so
+     the object never changes shape or size — no layout, no reflow. */
+  #horizon-menu-btn:hover,
+  #horizon-menu-btn:focus-visible { color: var(--ink, #1A1919); }
+
+  #horizon-menu-btn:active .elevator {
+    transform: translateY(0.5px);
+    opacity: 0.72;
+  }
+  .elevator { transition: transform 0.12s ease-out, opacity 0.12s ease-out; }
+
+  .elev-shell,
+  .elev-divs { transition: transform 0.62s cubic-bezier(0.25, 1, 0.5, 1),
+                           opacity 0.5s linear; }
+
+  /* THE ORIGIN LIVES HERE, NOT IN THE OPEN RULE. transform-origin is not a
+     transitioned property, so declared only under [aria-expanded="true"] it
+     would vanish the instant the menu closed and the walls would swing back
+     about the default instead — transform-box defaults to view-box, so that
+     default is 50% 50% of the 22x28 viewBox, (11, 14) rather than
+     (10, 18.5). Opening looked right; closing drifted. */
+  .elev-divs { transform-origin: 10px 18.5px; }
+
+  /* OPEN. The three bin walls rotate a quarter turn about the block's centre
+     and land as rules at y 14.5 / 18.5 / 22.5, spanning wider than the block
+     itself — which is what makes them read as the panel's rules rather than
+     as a tipped-over building. The shell holds at a third rather than
+     disappearing, so the elevator still stands behind its own menu. Both are
+     transforms: no animated `d`, so Firefox behaves. */
+  #horizon-menu-btn[aria-expanded="true"] .elev-divs { transform: rotate(90deg); }
+  #horizon-menu-btn[aria-expanded="true"] .elev-shell { opacity: 0.34; }
+
+  /* THE SWITCH. Without this the control is display:none with nothing to
+     turn it on — which is exactly what a careless deletion did on
+     2026-08-26, and the elevator vanished entirely. */
+  @media (max-width: 767px) {
+    html[data-js] #horizon-nav  { display: none; }
+    html[data-js] .menu-seam    { display: block; }
+    html[data-js] #horizon-menu { display: grid; }
+  }
+
+  /* ---- THE SECTION'S SURFACE ----------------------------------------------
+     Derived from the sky, like everything else in this header. --sky-horizon
+     and the rest are MIRRORED onto this element by syncMenuSurface(),
+     because the panel is a sibling of <header> and inherits nothing from it.
+
+     THE EARTH FRACTION FALLS AS THE SKY DARKENS, deliberately. The panel is
+     ground, so under a bright sky it wants a real ground tone — but the ink
+     flip is calibrated against the SKY, and any surface darker than the sky
+     spends the margin the flip was solved for. Scaling the mix by
+     (1 - --night) puts the ground tone exactly where there is headroom for
+     it (26% at noon, contrast 6.9:1) and lets the panel converge on the sky
+     through the twilight band, where the margin is thinnest. Modelled over
+     the file's own colour chain across every reachable sun position: the
+     panel's floor is 3.55:1 at dusk against 3.65:1 for the nav labels four
+     pixels above it. */
+  #horizon-menu {
     display: none;               /* the media query above turns it on */
-    margin-top: -3px;            /* onto the DRAWN line, not the box edge */
+    /* No -3px pull any more. That existed to land the panel's top edge on the
+       drawn horizon when it hung straight off the header; it now hangs off
+       the SEAM's bottom, 13px lower, and opens below the word. */
     grid-template-rows: 0fr;     /* 0fr -> 1fr is the collapse; see .menu-cut */
     opacity: 0;
     visibility: hidden;
@@ -4635,6 +4864,26 @@ const isDev = import.meta.env.DEV;
     transition: grid-template-rows 0.42s cubic-bezier(0.25, 1, 0.5, 1),
                 opacity 0.24s linear,
                 visibility 0s linear 0.42s;
+  }
+
+  /* THE FIRST-VISIT HINT. The panel cracks 9px and settles, once ever, then
+     the class comes off and never returns. This is the one place motion
+     earns its keep here: it is DEMONSTRATING the affordance rather than
+     decorating the control, and a returning visitor never sees it.
+
+     Deliberately does NOT touch data-open, so the panel stays `inert` and
+     pointer-events: none throughout — the hint is purely a picture of what a
+     tap would do, and cannot be tapped into by accident mid-animation.
+     Fixed px tracks rather than 0fr/1fr because those two do not
+     interpolate against each other. */
+  #horizon-menu.is-hinting {
+    visibility: visible;
+    opacity: 1;
+    animation: menu-hint 1.2s cubic-bezier(0.25, 1, 0.5, 1) 1.1s both;
+  }
+  @keyframes menu-hint {
+    0%, 100% { grid-template-rows: 0px; }
+    42%      { grid-template-rows: 9px; }
   }
 
   #horizon-menu[data-open="true"] {
@@ -4896,7 +5145,7 @@ const isDev = import.meta.env.DEV;
     #night-sky, #horizon-moon, .star-point, #windmill, #windmill-rotor, #crane-flock,
     #horizon-haze, #the-horizon, .horizon-path, .horizon-ground, .far-plane,
     .signature-img, .landmark-name, .landmark, .station-plate, .station-meta,
-    .marker, .marker-label, .marker-tick, .elev-shell, .elev-divs,
+    .marker, .marker-label, .marker-tick, .elev-shell, .elev-divs, .elevator,
     #horizon-menu, .menu-cut, .menu-route::before, .stratum, .stratum::before {
       transition: none !important;
       animation: none !important;
