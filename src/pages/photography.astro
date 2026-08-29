@@ -2,187 +2,736 @@
 /**
  * src/pages/photography.astro — the album
  *
- * The three series as facing pages, alternating sides. Driven entirely
- * by SERIES in src/data/photography.ts: cover image, lede, plate label,
- * and whether the entry links anywhere all come from there, so a fourth
- * series appears here the moment it's added, and Cotton Gins becomes a
- * link the moment `built` flips to true.
+ * A row of desks, seen from directly above one at a time. Each series
+ * gets a screen; the cover fills it. Entering a series is not a page
+ * load, it is a step backwards: the photograph contracts to the size
+ * and shape it has on the light table, and the light table picks it up
+ * from there.
  *
- * The ledes moved here out of the light table's HUD, which was the
- * wrong posture for reading — this is where someone is choosing which
- * series to enter, which is the decision the text is written to inform.
+ * Two axes, and that is the whole idea. SCROLL moves you along the row
+ * of desks. ENTER moves you away from the desk you are standing over.
+ * Nothing else to learn, and a fifth series is a fifth desk in the row
+ * with no other change anywhere.
  *
- * data-astro-reload on the links INTO the light table: a View Transition
- * swaps the document without a real navigation, and the browser carries
- * the visual viewport's pinch zoom straight across. The light table owns
- * pinch (touch-none, for the board's own zoom), so a visitor who pinched
- * here used to arrive magnified with no way back. A full load resets the
- * visual viewport. The light table also detects and recovers from this on
- * its own — belt and braces, but this way the reader never has to read an
- * instruction.
+ * ── THE HANDOFF ───────────────────────────────────────────────────
  *
- * DEPENDENCY TO KEEP AN EYE ON: the per-series links below point at
- * /photography/plates#<slug>. If the plate index ever stops emitting an
- * id per series, those land silently at the top of the page.
+ * This page ends its animation with the plate occupying EXIT_WIDTH_VW
+ * of the viewport width, centred, at its true aspect ratio. It then
+ * navigates to /photography/<slug>?from=<plate index>.
+ *
+ * The light table must OPEN in that same state — that plate, centred,
+ * at that width — and then ease out to its normal view. If it opens at
+ * its default scale instead, the two halves do not line up and the
+ * whole effect reads as a page load with a flourish. The receiving
+ * block is small and I have written it out in chat; it belongs in
+ * [slug].astro, which I have not seen.
+ *
+ * EXIT_WIDTH_VW is the contract. It lives in one place here and must
+ * be repeated in one place there. If you change it, change both.
+ *
+ * ── WHY THE FRAME CONTRACTS INSTEAD OF SCALING ────────────────────
+ *
+ * The cover is object-fit: cover, so at full screen it is cropped —
+ * the desk shows the whole plate. A transform: scale() would shrink
+ * the CROPPED result and land on a different picture than the one the
+ * light table draws, which is a visible jump at the seam.
+ *
+ * Animating the frame's width and height instead means the crop
+ * resolves as it goes: as the frame approaches the plate's own aspect
+ * ratio, `cover` crops less, and at the target it crops nothing at
+ * all. The two halves show the same pixels.
+ *
+ * The cost is that this animates layout rather than compositing. It is
+ * one absolutely positioned element with `contain: layout paint`, no
+ * siblings affected, for 520ms — but layout animation is exactly the
+ * class of thing that has been slow in Firefox on this site before, so
+ * test there first. If it stutters, the fallback is to accept the jump
+ * and animate a transform.
+ *
+ * ── A COVER MUST BE A PLATE ───────────────────────────────────────
+ *
+ * The zoom is only truthful if the cover is a real plate with real
+ * board coordinates, so `deskFor` looks the cover up among the
+ * gallery's plates by filename. Escarpments passes: its cover is
+ * escarpment20.jpg. Water DOES NOT — water/water-cover.jpg is a
+ * cover-only file that is not on the desk — so it falls back to plain
+ * navigation with no animation, silently and correctly. Point that
+ * series' `cover` at the Tule Creek plate and it joins in.
+ *
+ * ── SNAP, SVH, PINCH, BACK ────────────────────────────────────────
+ *
+ * Snap is PROXIMITY: mandatory fights the footer and makes a short
+ * trackpad flick feel overruled. Panes are svh because on mobile vh is
+ * the tallest the viewport ever gets, so the bottom of every pane
+ * would hide behind browser chrome.
+ *
+ * The old data-astro-reload is gone, replaced by a CONDITIONAL hard
+ * load. The reason it existed: a View Transition carries the visual
+ * viewport's pinch zoom into the light table, which owns pinch itself,
+ * stranding a magnified visitor. But that punished everyone for a case
+ * almost nobody hits, and a hard load also destroys this animation and
+ * the scroll position. So: if the reader has actually pinched, skip
+ * the animation and hard-load. Otherwise animate and go.
+ *
+ * Coming back matters as much as leaving. Departing stores the pane
+ * and scroll offset; returning restores them before paint. Land at the
+ * top of the album after stepping back from one desk and the whole
+ * thing feels broken on the second try.
+ *
+ * ── NO theme() ────────────────────────────────────────────────────
+ *
+ * Colours and typefaces are utility classes. Tailwind v4 resolves the
+ * palette through CSS custom properties, not the v3 config path, so
+ * theme('colors.canvas') in a style block fails the build. Utilities
+ * work on both.
  */
 import RootLayout from '../layouts/RootLayout.astro';
-import { getCovers } from '../data/photography';
+import { getCovers, getGalleries } from '../data/photography';
 
 const series = await getCovers();
+const galleries = await getGalleries();
 
-/* The eyebrow is a range, so both ends come from the data — the start
-   used to be a hardcoded "I", which would have been wrong the first time
-   a series was reordered or retired. En dash, no spaces: it's a range,
-   not an aside. */
-const firstNo = series[0]?.number;
-const lastNo = series[series.length - 1]?.number;
-const seriesRange = !firstNo
-  ? ''
-  : firstNo === lastNo
-    ? `Series ${firstNo}`
-    : `Series ${firstNo}\u2013${lastNo}`;
+/** Must match the light table's arrival constant. */
+const EXIT_WIDTH_VW = 34;
 
 const DESCRIPTION =
   'Visual monographs of the American West: photographs of the escarpments, the water of the Llano Estacado, and the cotton gins of Texas, by Austin Allison.';
 
-/* Cover alt text. "American Escarpments — Plate 1.03" is a citation, not
-   a description of the photograph — and because the plate is wrapped in a
-   link, the alt becomes that link's accessible name, which then duplicates
-   the title link sitting beside it. Prefer the plate's own caption, in his
-   words, the same way the home-page rotation does. The `in` guard keeps
-   this compiling whether or not getCovers() currently exposes the field;
-   once you confirm the name in photography.ts, collapse this to a direct
-   read. */
 const coverAlt = (s: (typeof series)[number]) =>
-  'caption' in s && typeof s.caption === 'string' && s.caption.trim()
-    ? s.caption
+  'coverAlt' in s && typeof s.coverAlt === 'string' && s.coverAlt.trim()
+    ? s.coverAlt
     : `${s.title} — ${s.coverLabel}`;
+
+/* Where this cover sits on its desk. Null when the cover is not a
+   plate, which disables the zoom for that series rather than faking a
+   position it does not have. */
+/* The prints under the top one. Up to STRIP_MAX plates from the same
+   desk, skipping the cover — the point is to show there is more here,
+   so repeating the photograph already filling the screen would waste a
+   slot. Uses the 280px index derivative the plate index already
+   generates; nothing new enters the image pipeline.
+
+   Each links to ?plate=NN, the light table's existing deep link, which
+   opens that plate in the viewing station. The board deliberately
+   skips the pull-back when ?plate= is present, so the two gestures
+   stay distinct: step back to browse the desk, or reach past it for
+   one print you can already see. */
+const STRIP_MAX = 5;
+
+function stripFor(s: (typeof series)[number]) {
+  const g = galleries.find((x) => x.slug === s.slug);
+  if (!g) return [];
+  return g.plates
+    .filter((p) => p.file !== s.cover && !p.draft)
+    .slice(0, STRIP_MAX)
+    .map((p) => ({
+      src: p.img.index,
+      no: String(p.index + 1).padStart(2, '0'),
+      label: `${p.plate}, ${p.title}`,
+    }));
+}
+
+function deskFor(s: (typeof series)[number]) {
+  const g = galleries.find((x) => x.slug === s.slug);
+  if (!g) return null;
+  const p = g.plates.find((pl) => pl.file === s.cover);
+  if (!p) return null;
+  return { index: p.index, aspect: p.w / p.h };
+}
 ---
 
 <RootLayout
   title="Photography | Austin Allison"
   description={DESCRIPTION}
   image={series[0]?.src}
+  bleed
 >
-  <div class="max-w-6xl mx-auto py-6 text-iron">
+  <div class="album relative" data-exit-vw={EXIT_WIDTH_VW}>
+    {series.map((s, i) => {
+      const href = s.built ? `/photography/${s.slug}` : null;
+      const headingId = `series-${s.slug}`;
+      const desk = href ? deskFor(s) : null;
+      const strip = href ? stripFor(s) : [];
+      const next = series[i + 1];
 
-    <!-- Minimalist Catalog Header -->
-    <header class="border-b border-haze pb-4 mb-16 flex flex-wrap justify-between items-end gap-4">
-      <div>
-        <span class="text-sm font-mono text-sage uppercase tracking-widest block mb-1">
-          {seriesRange}
-        </span>
-        <h1 class="font-serif text-4xl font-medium tracking-tight text-caprock">
-          Visual Monographs of the American West
-        </h1>
-      </div>
-      <a
-        href="/photography/plates"
-        class="font-mono text-[11px] uppercase tracking-widest text-sage hover:text-caprock transition-colors shrink-0 inline-block py-1.5 -mb-1.5"
-      >
-        Plate index &rarr;
-      </a>
-    </header>
+      return (
+        <section class="pane bg-dust" id={s.slug} aria-labelledby={headingId}>
+          <div class="zoomer">
+            <img
+              src={s.src}
+              srcset={s.wideSrcset}
+              sizes="100vw"
+              width={s.width}
+              height={s.height}
+              alt={coverAlt(s)}
+              loading={i === 0 ? 'eager' : 'lazy'}
+              fetchpriority={i === 0 ? 'high' : 'auto'}
+              decoding="async"
+              class="unmatted plate"
+            />
+          </div>
 
-    <!-- THE FACING PAGES -->
-    <div class="space-y-32">
-      {series.map((s, i) => {
-        const href = s.built ? `/photography/${s.slug}` : null;
-        const flipped = i % 2 === 1; // odd entries put the plate on the right
-        const headingId = `series-${s.slug}`;
-        const alt = coverAlt(s);
-
-        return (
-          <article
-            aria-labelledby={headingId}
-            class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-16 items-start"
-          >
-
-            {/* the plate */}
-            <div class={`md:col-span-7 space-y-3 ${flipped ? 'md:order-2' : ''}`}>
-              <div class="border border-iron/10 rounded-sm overflow-hidden p-3 bg-canvas shadow-lg">
-                <div class="overflow-hidden bg-dust/35">
-                  {href ? (
-                    <a href={href} data-astro-reload>
-                      <img
-                        src={s.src}
-                        srcset={s.srcset}
-                        width={s.width}
-                        height={s.height}
-                        alt={alt}
-                        loading={i === 0 ? 'eager' : 'lazy'}
-                        fetchpriority={i === 0 ? 'high' : 'auto'}
-                        decoding="async"
-                        class="unmatted w-full h-auto transition-transform duration-700 ease-out hover:scale-[1.015]"
-                      />
-                    </a>
-                  ) : (
-                    <img
-                      src={s.src}
-                      srcset={s.srcset}
-                      width={s.width}
-                      height={s.height}
-                      alt={alt}
-                      loading="lazy"
-                      decoding="async"
-                      class="unmatted w-full h-auto opacity-80"
-                    />
-                  )}
-                </div>
-              </div>
-
-              <div class="flex justify-between items-baseline text-[11px] font-mono text-iron/50 uppercase tracking-wider px-1">
-                <span>{s.coverLabel}</span>
-                {!s.built && <span class="text-iron/35">In preparation</span>}
-              </div>
-            </div>
-
-            {/* the facing page — the plate changes sides, the text does
-                not change alignment. A verso and a recto both set flush
-                left; mirroring the rag is a web habit, not a book one,
-                and right-aligned running prose is measurably slower to
-                read. Dial, if you want the mirror back: append
-                'md:text-right md:items-end' to the flipped branch. */}
-            <div
-              class={`md:col-span-5 flex flex-col pt-4 md:pt-12 ${flipped ? 'md:order-1' : ''}`}
-            >
+          <div class="foot">
+          <div class="slip bg-canvas border border-haze rounded-sm shadow-2xl p-6 md:p-8">
+            <div class="flex items-baseline justify-between gap-6 mb-3">
+              <span class="font-mono text-[11px] uppercase tracking-widest text-sage">
+                {s.coverLabel}
+              </span>
               <span
                 aria-hidden="true"
-                class="font-serif text-5xl font-light text-sage/70 block leading-none select-none mb-4"
+                class="font-serif text-4xl font-light leading-none text-sage/50 select-none"
               >
                 {s.number}
               </span>
-
-              <h2
-                id={headingId}
-                class="font-serif text-3xl font-medium tracking-tight text-caprock leading-snug mb-4"
-              >
-                <span class="sr-only">Series {s.number}. </span>
-                {href ? (
-                  <a href={href} data-astro-reload class="hover:text-sage transition-colors">{s.title}</a>
-                ) : (
-                  s.title
-                )}
-              </h2>
-
-              <p class="text-base font-serif text-iron/80 leading-relaxed max-w-sm">
-                {s.lede}
-              </p>
-
-              {href && (
-                <a
-                  href={`/photography/plates#${s.slug}`}
-                  class="font-mono text-[11px] uppercase tracking-widest text-iron/45 hover:text-caprock transition-colors mt-5 py-1.5 self-start"
-                >
-                  Plates in this series &rarr;
-                </a>
-              )}
             </div>
 
-          </article>
-        );
-      })}
-    </div>
+            <h2
+              id={headingId}
+              class="font-serif text-3xl md:text-4xl font-medium tracking-tight text-caprock leading-tight mb-3"
+            >
+              <span class="sr-only">Series {s.number}. </span>
+              {s.title}
+            </h2>
 
+            <p class="font-serif text-base leading-relaxed text-iron/80">{s.lede}</p>
+
+            {href ? (
+              <a
+                href={href}
+                class="enter inline-block mt-5 py-1.5 font-mono text-[11px] uppercase tracking-widest text-caprock hover:opacity-60 transition-opacity"
+                data-slug={s.slug}
+                data-plate={desk ? String(desk.index) : ''}
+                data-aspect={desk ? desk.aspect.toFixed(4) : ''}
+              >
+                Step back to the desk &rarr;
+              </a>
+            ) : (
+              <span class="inline-block mt-5 py-1.5 font-mono text-[11px] uppercase tracking-widest text-iron/40">
+                In preparation
+              </span>
+            )}
+          </div>
+
+          {strip.length > 0 && (
+            <div class="strip">
+              {strip.map((t, k) => (
+                <a
+                  href={`/photography/${s.slug}?plate=${t.no}`}
+                  class="strip-print"
+                  style={`--tilt:${[-1.6, 1.1, -0.7, 1.8, -1.2, 0.6, -1.9][k % 7]}deg; --shift:${
+                    (strip.length - 1 - k) * -12
+                  }px`}
+                >
+                  <img src={t.src} alt={t.label} loading="lazy" decoding="async" width="280" />
+                </a>
+              ))}
+            </div>
+          )}
+          </div>
+
+          {/* The catchword. In a bound book the foot of a page carries
+              the first word of the next one, so a reader knows what is
+              coming and a binder knows the sheets are in order. The
+              Register uses them already; this is the same device doing
+              the same job, and it beats a bouncing chevron on both
+              counts — it says how many are left and what they are,
+              rather than restating that pages scroll.
+
+              The last pane points at the plate index, so the album ends
+              somewhere instead of simply stopping. */}
+          <a class="catchword" href={next ? `#${next.slug}` : '/photography/plates'}>
+            {next ? `${next.number}. ${next.title}` : 'Plate index'} &rarr;
+          </a>
+
+        </section>
+      );
+    })}
+
+    {/* Shown at EVERY width now. It was lg-and-up, which meant that on
+        a phone — where one pane fills the screen and nothing peeks over
+        the fold — nothing indicated the album held more than one
+        series. That is the fact a scroll hint should carry, and this is
+        the element that carries it.
+
+        Exposed to assistive tech rather than aria-hidden: these are
+        tappable controls, and hiding a control a sighted touch user can
+        press is worse than mildly duplicating the headings. Numerals
+        appear from lg, where there is room for them.
+
+        The rail-tick and rail-no CLASSES MATTER — the current-pane
+        styling below hangs off them, and without them the observer sets
+        data-current on an element nothing is listening to. */}
+    <nav class="rail flex flex-col gap-3 lg:gap-4" aria-label="Series">
+      {series.map((s) => (
+        <a
+          href={`#${s.slug}`}
+          class="rail-mark group flex items-center justify-end gap-2 py-2"
+          data-for={s.slug}
+          aria-label={`Series ${s.number}, ${s.title}`}
+        >
+          <span class="rail-tick block h-px w-4 lg:w-6 bg-white/60 transition-all duration-200 group-hover:w-9 group-hover:bg-white"></span>
+          <span class="rail-no hidden lg:block font-mono text-[10px] tracking-wider text-white/60 min-w-[1.5rem] transition-colors duration-200 group-hover:text-white">
+            {s.number}
+          </span>
+        </a>
+      ))}
+    </nav>
   </div>
 </RootLayout>
+
+<style>
+  /* A pane is the viewport MINUS THE HEADER. #horizon-sticky is
+     sticky top-0 with an opaque sky behind it, so it never scrolls
+     away — 100svh would put the bottom of every pane, and the whole
+     foot row with it, underneath the header's own height of content.
+
+     --header-h is measured, not hardcoded: the header's height is
+     2.5rem of sky (3.5rem from md) plus the signature, landmark and
+     markers below it, and it moves with the breakpoint. The script
+     sets it and keeps it current through a ResizeObserver.
+
+     scroll-margin-top is the other half. scroll-snap-align: start
+     aligns a pane's top edge with the top of the SCROLLPORT, which
+     here is behind the header — so each pane needs its snap position
+     pushed down by the same amount. */
+  .pane {
+    position: relative;
+    height: calc(100svh - var(--header-h, 0px));
+    min-height: 30rem;
+    overflow: hidden;
+    scroll-snap-align: start;
+    scroll-margin-top: var(--header-h, 0px);
+  }
+
+  @supports not (height: 100svh) {
+    .pane {
+      height: calc(100vh - var(--header-h, 0px));
+    }
+  }
+
+  /* The frame that contracts. Containment keeps the layout animation
+     from reaching anything outside this box. */
+  .zoomer {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    contain: layout paint;
+  }
+
+  .plate {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  .slip {
+    max-width: 32rem;
+  }
+
+  /* Departure state. The slip and the nav wash leave first so the
+     photograph is alone as it contracts. */
+  /* ── the prints underneath ──────────────────────────────────
+     They sit below the bottom edge with only their top margin
+     showing, the way a stack of prints shows under the one you are
+     looking at. Approaching the pane lifts them. The resting peek is
+     larger on touch, where there is no hover to discover them with. */
+  /* ── the bottom of the pane ─────────────────────────────────
+     The slip and the prints share one row rather than being
+     positioned independently. Two earlier attempts hung the strip off
+     bottom: 0 and pushed it down by its own height, which meant the
+     pane's overflow: hidden ate most of it and the only cure was
+     guessing at a reveal amount. Worse, the reveal depended on hover,
+     so on a phone the prints were never visible at all.
+
+     Now nothing is hidden and nothing is clipped. On a narrow screen
+     the prints stack above the slip (column-reverse); from md they sit
+     opposite it on the same baseline. The slip keeps its width cap, so
+     the two cannot collide however wide the run gets. */
+  .foot {
+    position: absolute;
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 4rem;
+    z-index: 2;
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 1.25rem;
+    transition: opacity 240ms ease, transform 240ms ease;
+  }
+
+  /* The row starts at lg, not md. At md the slip's 32rem cap plus the
+     fan plus the gap needs about 1090px and the row began at 768, so
+     the slip was being squeezed at every middling width even before
+     anything was hovered. Below lg they stack instead, where each gets
+     the full width. */
+  @media (min-width: 1024px) {
+    .foot {
+      left: 3rem;
+      right: 3rem;
+      bottom: 5.5rem;
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+  }
+
+  .strip {
+    display: flex;
+    align-items: flex-end;
+    flex-shrink: 0;
+    z-index: 1;
+  }
+
+  /* Above the fan, so a print that spreads left tucks behind the label
+     rather than landing on top of it. */
+  .slip {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Fanned, not spaced — a stack rather than a row of tiles. The
+     overlap keeps the run bounded however many prints there are, and
+     it opens out when you approach the pane, which is a better use of
+     hover than making them appear at all. */
+  .strip-print {
+    display: block;
+    padding: 4px;
+    background: #fff;
+    border-radius: 2px;
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.3);
+    transform: rotate(var(--tilt));
+    transform-origin: bottom center;
+    pointer-events: auto;
+    transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .strip-print + .strip-print {
+    margin-left: -2.5rem;
+  }
+
+  /* The spread is a TRANSFORM, not a margin. Animating margin-left
+     changed the strip's width, and since the strip is flex-shrink: 0
+     and the slip is not, the slip absorbed the difference and visibly
+     narrowed every time the pane was hovered. Transforms do not
+     participate in layout, so the slip now holds still.
+
+     --shift runs leftward, computed per print in the template so the
+     RIGHTMOST stays put. Spreading rightward would push the run off
+     the edge, since the fan is right-aligned. */
+  .pane:hover .strip-print,
+  .pane:focus-within .strip-print {
+    transform: rotate(var(--tilt)) translateX(var(--shift));
+  }
+
+  /* Fixed thumbnail box. Plates are a mix of portrait and landscape,
+     and letting them size themselves gave a ragged run with no
+     predictable height — which is also what made the reveal
+     unguessable. */
+  .strip-print img {
+    display: block;
+    width: 96px;
+    height: 64px;
+    object-fit: cover;
+    border-radius: 1px;
+  }
+
+  /* Individual hover wins over the group spread — same specificity,
+     later in the sheet — so a print you point at straightens and lifts
+     out of the fan while its neighbours stay where the spread put
+     them. */
+  .pane:hover .strip-print:hover,
+  .pane .strip-print:focus-visible {
+    transform: rotate(0deg) translateX(var(--shift)) translateY(-12px);
+    z-index: 3;
+    position: relative;
+  }
+
+
+
+  /* ── foreshadowing the pull-back ────────────────────────────
+     Hovering the enter link eases the photograph back by a hair, so a
+     sliver of desk shows at the edges. The smallest possible preview
+     of what the click does, and the reason the click needs no
+     explaining. :has() is progressive enhancement — where it is
+     unsupported nothing happens and nothing breaks. */
+  .zoomer {
+    transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .pane:has(.enter:hover) .zoomer,
+  .pane:has(.enter:focus-visible) .zoomer {
+    transform: scale(0.972);
+  }
+
+  .pane.is-leaving .foot,
+  .pane.is-leaving .catchword {
+    opacity: 0;
+    transform: translateY(8px);
+    pointer-events: none;
+  }
+
+  /* Over the photograph, so it carries its own shadow rather than
+     assuming the image behind it is dark. Neither this nor the rail
+     can assume anything about a cover it has never seen. */
+  .catchword {
+    position: absolute;
+    left: 50%;
+    bottom: 1.5rem;
+    z-index: 2;
+    transform: translateX(-50%);
+    padding: 0.5rem 0.75rem;
+    white-space: nowrap;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgb(255 255 255 / 0.72);
+    text-shadow: 0 1px 6px rgb(0 0 0 / 0.55);
+    transition: color 200ms ease, opacity 240ms ease;
+  }
+
+  .catchword:hover,
+  .catchword:focus-visible {
+    color: #fff;
+  }
+
+  .rail {
+    position: fixed;
+    right: 0.75rem;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 20;
+    transition: opacity 240ms ease;
+  }
+
+  @media (min-width: 1024px) {
+    .rail {
+      right: 1.5rem;
+    }
+  }
+
+  .album.is-leaving .rail {
+    opacity: 0;
+  }
+
+  /* ── the rail knows where you are ───────────────────────────
+     It was four identical marks with no current state, which is a
+     scrollbar that tells you nothing. */
+  .rail-mark[data-current='true'] .rail-tick {
+    width: 2.25rem;
+    background: #fff;
+  }
+
+  .rail-mark[data-current='true'] .rail-no {
+    color: #fff;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .foot,
+    .rail,
+    .catchword,
+    .strip-print,
+    .zoomer {
+      transition: none;
+    }
+
+    .pane:hover .strip-print,
+    .pane:focus-within .strip-print {
+      transform: rotate(var(--tilt));
+    }
+
+    .pane:has(.enter:hover) .zoomer {
+      transform: none;
+    }
+  }
+</style>
+
+<style is:global>
+  /* Astro ships this only on routes rendering this component. Change
+     `proximity` to `mandatory` for an uninterruptible snap. */
+  html {
+    scroll-snap-type: y proximity;
+    scroll-behavior: smooth;
+  }
+
+  /* The catchword and the rail both navigate by fragment, and a jump
+     cut between two full-screen photographs is disorienting. The
+     restore path passes behavior: 'instant' explicitly, so returning
+     from a desk still lands without an animated scroll. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+</style>
+
+<script>
+  const KEY = 'album:return';
+
+  function init() {
+    const album = document.querySelector<HTMLElement>('.album');
+    if (!album || album.dataset.wired === '1') return;
+    album.dataset.wired = '1';
+
+    const exitVw = Number(album.dataset.exitVw ?? 34);
+
+    trackHeaderHeight();
+    restore();
+    trackRail(album);
+
+    album.addEventListener('click', (e) => {
+      const link = (e.target as Element)?.closest<HTMLAnchorElement>('a.enter');
+      if (!link) return;
+      if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || (e as MouseEvent).button !== 0) return;
+
+      const slug = link.dataset.slug ?? '';
+      const plate = link.dataset.plate ?? '';
+      const aspect = Number(link.dataset.aspect ?? 0);
+      const pane = link.closest<HTMLElement>('.pane');
+      const zoomer = pane?.querySelector<HTMLElement>('.zoomer');
+
+      remember(slug);
+
+      /* A reader who has pinched carries that magnification into the
+         light table, which owns pinch itself. Only they need the hard
+         load — everyone else gets the animation. */
+      const pinched = (window.visualViewport?.scale ?? 1) > 1.01;
+      const still = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      const canZoom = plate !== '' && aspect > 0 && zoomer && !pinched && !still;
+
+      if (!canZoom) {
+        if (pinched) {
+          e.preventDefault();
+          window.location.assign(link.href);
+        }
+        return;
+      }
+
+      e.preventDefault();
+      pane!.classList.add('is-leaving');
+      album.classList.add('is-leaving');
+
+      const w = (window.innerWidth * exitVw) / 100;
+      const h = w / aspect;
+
+      const anim = zoomer!.animate(
+        [
+          { width: '100%', height: '100%', left: '0px', top: '0px' },
+          {
+            width: `${Math.round(w)}px`,
+            height: `${Math.round(h)}px`,
+            left: `${Math.round((window.innerWidth - w) / 2)}px`,
+            top: `${Math.round((pane!.clientHeight - h) / 2)}px`,
+          },
+        ],
+        { duration: 520, easing: 'cubic-bezier(0.33, 0, 0.2, 1)', fill: 'forwards' },
+      );
+
+      const go = () => {
+        const url = new URL(link.href, window.location.origin);
+        url.searchParams.set('from', plate);
+        window.location.assign(url.toString());
+      };
+
+      anim.finished.then(go).catch(go);
+      /* If the animation never settles — a backgrounded tab, a browser
+         that drops it — the reader is not left staring at a frozen
+         photograph. */
+      window.setTimeout(go, 900);
+    });
+  }
+
+  /* The header is sticky and its height varies with breakpoint and
+     content, so the pane height that depends on it has to be measured
+     rather than assumed. Runs before restore(), so a returning reader
+     is scrolled against the correct pane height rather than one that
+     changes under them a frame later. */
+  function trackHeaderHeight() {
+    const sticky = document.getElementById('horizon-sticky');
+    const root = document.documentElement;
+
+    if (!sticky) {
+      /* No header on this render — hideNav, or the markup moved. Zero
+         is right, not a guess: the panes get the whole viewport. */
+      root.style.setProperty('--header-h', '0px');
+      return;
+    }
+
+    const set = () =>
+      root.style.setProperty('--header-h', `${Math.round(sticky.getBoundingClientRect().height)}px`);
+    set();
+
+    if ('ResizeObserver' in window) {
+      const ro = new ResizeObserver(set);
+      ro.observe(sticky);
+      document.addEventListener('astro:before-swap', () => ro.disconnect(), { once: true });
+    } else {
+      window.addEventListener('resize', set);
+    }
+  }
+
+  /* Marks the pane filling most of the screen. threshold 0.5 with one
+     pane per viewport means exactly one qualifies at a time, and
+     mid-scroll the last to cross wins — which is the one you are
+     moving toward. */
+  function trackRail(album: HTMLElement) {
+    const marks = album.querySelectorAll<HTMLElement>('.rail-mark');
+    if (!marks.length || !('IntersectionObserver' in window)) return;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (!entry.isIntersecting) continue;
+          const id = entry.target.id;
+          marks.forEach((m) => m.setAttribute('data-current', String(m.dataset.for === id)));
+        }
+      },
+      { threshold: 0.5 },
+    );
+
+    album.querySelectorAll('.pane').forEach((p) => io.observe(p));
+    document.addEventListener('astro:before-swap', () => io.disconnect(), { once: true });
+  }
+
+  function remember(slug: string) {
+    try {
+      sessionStorage.setItem(KEY, JSON.stringify({ slug, y: window.scrollY }));
+    } catch {
+      /* private mode; the album just opens at the top */
+    }
+  }
+
+  function restore() {
+    let saved: { slug?: string; y?: number } | null = null;
+    try {
+      const raw = sessionStorage.getItem(KEY);
+      if (raw) saved = JSON.parse(raw);
+      sessionStorage.removeItem(KEY);
+    } catch {
+      return;
+    }
+    if (!saved) return;
+
+    const pane = saved.slug ? document.getElementById(saved.slug) : null;
+    if (pane) {
+      pane.scrollIntoView({ block: 'start', behavior: 'instant' as ScrollBehavior });
+    } else if (typeof saved.y === 'number') {
+      window.scrollTo({ top: saved.y, behavior: 'instant' as ScrollBehavior });
+    }
+  }
+
+  if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  document.addEventListener('astro:page-load', init);
+  window.addEventListener('pageshow', (e) => {
+    if ((e as PageTransitionEvent).persisted) {
+      document.querySelectorAll('.pane.is-leaving').forEach((p) => p.classList.remove('is-leaving'));
+      document.querySelector('.album')?.classList.remove('is-leaving');
+      restore();
+    }
+  });
+  init();
+</script>

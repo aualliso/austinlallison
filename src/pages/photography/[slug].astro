@@ -472,9 +472,15 @@ const registry = SERIES;
     let panY = 0;
     let frame = 0;
 
+    /* Off only while the album handoff is in flight. See ARRIVING
+       FROM THE ALBUM below: the opening frame is deliberately outside
+       the legal range, and the animation ends inside it. */
+    let noClamp = false;
+
     /* Clamp against the plates, not the empty sheet — you can never
        drag the work off screen and lose your place. */
     const clampPan = () => {
+      if (noClamp) return;
       const vw = viewport.clientWidth;
       const vh = viewport.clientHeight;
       const cw = (bMaxX - bMinX) * scale;
@@ -529,11 +535,141 @@ const registry = SERIES;
       commit();
     };
 
-    // Desktop opens on the composed view; mobile opens framed, because
-    // 0.45 scale on a phone shows about a quarter of the sheet.
+    /* ── ARRIVING FROM THE ALBUM ──────────────────────────────────
+       /photography hands over with ?from=<plate index>. That page ends
+       its own animation with the plate occupying EXIT_WIDTH_VW of the
+       viewport, centred, at its true aspect ratio. The board opens in
+       exactly that state and pulls back to its normal view, so the
+       navigation between the two pages is invisible: same plate, same
+       size, same place on screen, either side of the load.
+
+       EXIT_WIDTH_VW IS A CONTRACT. It is repeated in photography.astro
+       and nowhere else. Change one, change both.
+
+       BOTH CLAMPS ARE OFF during the flight. clampPan would pull a
+       cover near the edge of the sheet back into range, and MAX_SCALE
+       would refuse the opening scale on a wide display — 34vw against a
+       400-unit plate is about 2.2. Either correction lands the arrival
+       somewhere other than where the album left off, which is the one
+       thing that makes the seam visible. The final frame is the default
+       view, which is legal, so nothing is relaxed permanently.
+
+       The plate's board rectangle comes off the DOM rather than PLATES,
+       which carries w and h but not x and y. The button is positioned
+       against the table and the image against the button, so the two
+       offsets sum to the image's rectangle in board units.
+
+       NOT ANIMATED when the reader asked for less motion, when the
+       index is out of range, or when ?plate= is also present — that
+       last one means a deep link into the viewing station, and the
+       lightbox is the intent. The board just opens where it normally
+       would. */
+    /* Evaluated once, not live — the HUD collapse and the first-visit
+       nudge below both read it, and both want the value as it was at
+       init. This was declared in the block the album handoff replaced;
+       losing it took those two with it. */
     const isNarrow = window.matchMedia('(max-width: 767px)').matches;
-    if (isNarrow) fitBoard();
-    else centerOn(centerX, centerY, 0.65);
+
+    const EXIT_WIDTH_VW = 34;
+
+    const defaultView = () => {
+      const vw = viewport.clientWidth;
+      const vh = viewport.clientHeight;
+      if (isNarrow) {
+        const pad = vw < 768 ? 20 : 64;
+        const cw = bMaxX - bMinX;
+        const ch = bMaxY - bMinY;
+        return {
+          cx: (bMinX + bMaxX) / 2,
+          cy: (bMinY + bMaxY) / 2,
+          s: clamp(Math.min((vw - pad * 2) / cw, (vh - pad * 2) / ch), MIN_SCALE, 1),
+        };
+      }
+      return { cx: centerX, cy: centerY, s: 0.65 };
+    };
+
+    /* Writes the transform straight out, skipping commit's rAF batching
+       so the animation owns its own frames. */
+    const setView = (cx: number, cy: number, s: number) => {
+      scale = s;
+      panX = viewport.clientWidth / 2 - cx * s;
+      panY = viewport.clientHeight / 2 - cy * s;
+      table.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
+    };
+
+    const coverRect = (index: number) => {
+      const btn = table.querySelector<HTMLElement>(`.plate[data-index="${index}"]`);
+      const img = btn?.querySelector<HTMLImageElement>('img');
+      if (!btn || !img || !img.offsetWidth) return null;
+      return {
+        x: btn.offsetLeft + img.offsetLeft,
+        y: btn.offsetTop + img.offsetTop,
+        w: img.offsetWidth,
+        h: img.offsetHeight,
+      };
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const fromRaw = params.get('from');
+    const fromIdx = fromRaw === null ? NaN : Number.parseInt(fromRaw, 10);
+    const rect =
+      Number.isInteger(fromIdx) && fromIdx >= 0 && fromIdx < total ? coverRect(fromIdx) : null;
+
+    if (!rect || reduceMotion || params.has('plate')) {
+      // Desktop opens on the composed view; mobile opens framed, because
+      // 0.45 scale on a phone shows about a quarter of the sheet.
+      if (isNarrow) fitBoard();
+      else centerOn(centerX, centerY, 0.65);
+    } else {
+      noClamp = true;
+      const end = defaultView();
+      const start = {
+        cx: rect.x + rect.w / 2,
+        cy: rect.y + rect.h / 2,
+        s: ((viewport.clientWidth * EXIT_WIDTH_VW) / 100) / rect.w,
+      };
+      setView(start.cx, start.cy, start.s);
+
+      const DUR = 620;
+      const t0 = performance.now();
+      let dollyFrame = 0;
+
+      const step = (now: number) => {
+        if (ac.signal.aborted) return;
+        const p = Math.min(1, (now - t0) / DUR);
+        const e = 1 - Math.pow(1 - p, 3);
+        setView(
+          start.cx + (end.cx - start.cx) * e,
+          start.cy + (end.cy - start.cy) * e,
+          start.s + (end.s - start.s) * e,
+        );
+        if (p < 1) {
+          dollyFrame = requestAnimationFrame(step);
+          return;
+        }
+        noClamp = false;
+        commit();
+      };
+
+      dollyFrame = requestAnimationFrame(step);
+      ac.signal.addEventListener(
+        'abort',
+        () => {
+          cancelAnimationFrame(dollyFrame);
+          noClamp = false;
+        },
+        { once: true },
+      );
+    }
+
+    /* The parameter has done its job. Leaving it in the bar means a
+       reload or a shared link replays the arrival from a page nobody
+       came from. */
+    if (fromRaw !== null) {
+      const cleaned = new URL(window.location.href);
+      cleaned.searchParams.delete('from');
+      history.replaceState(history.state, '', cleaned.toString());
+    }
 
     let resizeTimer = 0;
     const onResize = () => {

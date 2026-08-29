@@ -154,8 +154,8 @@ export const SERIES: SeriesEntry[] = [
     title: 'Water of the Llano Estacado',
     built: true,
     lede: 'A documentary index featuring the increasingly diminutive water sources of the Llano Estacado. From intermittent lake basins to draws and springs, the water sources of the Llano Estacado represent signifiers of life, activity, and history. Areas adjacent to the Llano Estacado are included in this survey, since water from the Llano drains into several drainage basins providing crucial water to several areas.',
-    cover: 'water/water-cover.jpg',
-    coverLabel: 'Plate 2.01 \u00B7 Tule Creek',
+    cover: 'water/water1.jpg',
+    coverLabel: 'Plate 2.01 · Tule Creek',
   },
   {
     slug: 'cotton_gins',
@@ -739,6 +739,10 @@ const THUMB_MAX = 160;   // filmstrip
 
 export type ResolvedImage = {
   board: string;
+  /** the 1400 derivative on its own, not just embedded in the 1x/2x
+   *  string — a full-bleed presentation needs to build its own width
+   *  descriptor ladder and cannot parse it back out of boardSrcset. */
+  board2x: string;
   boardSrcset?: string;
   full: string;
   detail: string;
@@ -761,6 +765,7 @@ async function resolveImage(file: string): Promise<ResolvedImage> {
     const fallback = `/images/${file}`;
     return {
       board: fallback,
+      board2x: fallback,
       boardSrcset: undefined,
       full: fallback,
       detail: fallback,
@@ -790,6 +795,7 @@ async function resolveImage(file: string): Promise<ResolvedImage> {
 
   return {
     board: b1.src,
+    board2x: b2.src,
     boardSrcset: `${b1.src} 1x, ${b2.src} 2x`,
     full: full.src,
     detail: detail.src,
@@ -1026,7 +1032,18 @@ export async function getGallery(slug: string): Promise<ResolvedGallery> {
 
 export type SeriesCover = SeriesEntry & {
   src: string;
+  /** 1x/2x density pair — right for a cover shown in a column. */
   srcset?: string;
+  /** Width descriptors for a cover shown FULL BLEED. The board
+   *  derivatives stop at 1400, which is visibly soft stretched across a
+   *  wide display, so this ladder reaches up through the same 2400 and
+   *  4000 files the light table already generates. Nothing new enters
+   *  the image pipeline. Pair it with sizes="100vw".
+   *
+   *  `detail` falls back to `full` when the original has no more pixels,
+   *  so the last two entries can name the same file. Harmless — the
+   *  browser picks one. */
+  wideSrcset: string;
   width: number;
   height: number;
 };
@@ -1041,6 +1058,12 @@ async function buildCovers(): Promise<SeriesCover[]> {
         ...entry,
         src: img.board,
         srcset: img.boardSrcset,
+        wideSrcset: [
+          `${img.board} 700w`,
+          `${img.board2x} 1400w`,
+          `${img.full} 2400w`,
+          `${img.detail} 4000w`,
+        ].join(', '),
         width: img.width,
         height: img.height,
       };

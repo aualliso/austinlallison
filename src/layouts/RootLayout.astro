@@ -11,11 +11,36 @@ interface Props {
   title: string;
   description?: string;
   image?: string;
+  /* `prose` was being destructured without ever being declared here.
+     Harmless at runtime, but it means nothing type-checks it and
+     nothing tells you the prop exists. */
+  prose?: boolean;
+  /* Edge to edge. Drops main's gutters, its vertical rhythm and its
+     max-width so the page owns the full viewport.
+
+     For pages whose content IS a photograph rather than a column of
+     text: /photography, where each pane is 100svh and object-fit:
+     cover. Without this, px-6 leaves a 24px strip of page colour down
+     both sides on a phone, py-12 keeps the panes off the top and
+     bottom, and max-w-7xl reintroduces the same bars on any display
+     wider than 1280px.
+
+     Use it sparingly. Text set edge to edge on a phone is unreadable,
+     which is exactly what the default is protecting. */
+  bleed?: boolean;
   hideNav?: boolean;
   hideFoot?: boolean;
 }
 
-const { title, description, image, prose, hideNav = false, hideFoot = false } = Astro.props;
+const {
+  title,
+  description,
+  image,
+  prose,
+  bleed = false,
+  hideNav = false,
+  hideFoot = false,
+} = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
 
@@ -49,9 +74,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
 {!hideNav && <Header />}
 
 <!-- The main page content container -->
-	<main class="flex-grow w-full max-w-7xl mx-auto px-6 py-12">
+	<main class:list={['flex-grow w-full', !bleed && 'max-w-7xl mx-auto px-6 py-12']}>
 
-  		<div class={prose ? "prose prose-neutral max-w-none font-sans" : "max-w-none font-sans"}>
+  		<div class:list={[prose && !bleed && 'prose prose-neutral', 'max-w-none font-sans']}>
     	<slot />
   		</div>
 		</main>
