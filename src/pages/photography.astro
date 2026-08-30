@@ -199,6 +199,7 @@ function deskFor(s: (typeof series)[number]) {
               <a
                 href={href}
                 class="enter inline-block mt-5 py-1.5 font-mono text-[11px] uppercase tracking-widest text-caprock hover:opacity-60 transition-opacity"
+                data-astro-prefetch="hover"
                 data-slug={s.slug}
                 data-plate={desk ? String(desk.index) : ''}
                 data-aspect={desk ? desk.aspect.toFixed(4) : ''}
@@ -261,18 +262,16 @@ function deskFor(s: (typeof series)[number]) {
         The rail-tick and rail-no CLASSES MATTER — the current-pane
         styling below hangs off them, and without them the observer sets
         data-current on an element nothing is listening to. */}
-    <nav class="rail flex flex-col gap-3 lg:gap-4" aria-label="Series">
+    <nav class="rail flex flex-col gap-2" aria-label="Series">
       {series.map((s) => (
         <a
           href={`#${s.slug}`}
-          class="rail-mark group flex items-center justify-end gap-2 py-2"
+          class="rail-mark"
           data-for={s.slug}
           aria-label={`Series ${s.number}, ${s.title}`}
         >
-          <span class="rail-tick block h-px w-4 lg:w-6 bg-white/60 transition-all duration-200 group-hover:w-9 group-hover:bg-white"></span>
-          <span class="rail-no hidden lg:block font-mono text-[10px] tracking-wider text-white/60 min-w-[1.5rem] transition-colors duration-200 group-hover:text-white">
-            {s.number}
-          </span>
+          <span class="rail-no">{s.number}</span>
+          <span class="rail-tick"></span>
         </a>
       ))}
     </nav>
@@ -499,19 +498,85 @@ function deskFor(s: (typeof series)[number]) {
     color: #fff;
   }
 
+  /* ── the rail ───────────────────────────────────────────────
+     It was a 1px line, 16px long, white at 60%, over photographs that
+     are mostly bright sky — so it disappeared. Three things fix that,
+     and none of them is "make it brighter", which only works until a
+     cover has a white cloud where the rail sits.
+
+     1. A DARK EDGE behind every light element, so contrast comes from
+        the rail itself rather than from luck about the image. Same
+        reasoning as the catchword's text-shadow. box-shadow and
+        text-shadow rather than a filter on the group: filters are the
+        family of thing that has been slow in Firefox here, and this
+        buys nothing over the cheaper properties.
+     2. A SPINE. Four loose marks read as debris; marks hanging off a
+        vertical rule read as a scale, which is what it is.
+     3. SIZE. 2px tall, and the numerals now show at every width —
+        they were lg-only, which is where the rail was least needed. */
   .rail {
     position: fixed;
-    right: 0.75rem;
+    right: 0.875rem;
     top: 50%;
     transform: translateY(-50%);
     z-index: 20;
+    padding-right: 0.5rem;
     transition: opacity 240ms ease;
+  }
+
+  .rail::before {
+    content: '';
+    position: absolute;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    right: 0.5rem;
+    width: 1px;
+    background: rgb(255 255 255 / 0.35);
+    box-shadow: 0 0 3px rgb(0 0 0 / 0.55);
   }
 
   @media (min-width: 1024px) {
     .rail {
       right: 1.5rem;
     }
+  }
+
+  .rail-mark {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.5rem;
+    min-height: 26px;
+  }
+
+  .rail-no {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: rgb(255 255 255 / 0.65);
+    text-shadow: 0 1px 4px rgb(0 0 0 / 0.7);
+    transition: color 200ms ease;
+  }
+
+  .rail-tick {
+    display: block;
+    width: 14px;
+    height: 2px;
+    border-radius: 1px;
+    background: rgb(255 255 255 / 0.65);
+    box-shadow: 0 0 3px rgb(0 0 0 / 0.6);
+    transition: width 200ms ease, background-color 200ms ease;
+  }
+
+  .rail-mark:hover .rail-tick,
+  .rail-mark:focus-visible .rail-tick {
+    width: 24px;
+    background: #fff;
+  }
+
+  .rail-mark:hover .rail-no,
+  .rail-mark:focus-visible .rail-no {
+    color: #fff;
   }
 
   .album.is-leaving .rail {
@@ -522,7 +587,7 @@ function deskFor(s: (typeof series)[number]) {
      It was four identical marks with no current state, which is a
      scrollbar that tells you nothing. */
   .rail-mark[data-current='true'] .rail-tick {
-    width: 2.25rem;
+    width: 30px;
     background: #fff;
   }
 
@@ -674,10 +739,45 @@ function deskFor(s: (typeof series)[number]) {
     }
   }
 
+  /* Warms a light table's HTML before anyone asks for it.
+
+     The handoff is a real page load: the album's animation finishes,
+     then the browser fetches the desk. If that fetch takes half a
+     second the pull-back turns into a pause, and the one thing this
+     page is built around stops working. Prefetching on approach means
+     the document is already in cache when location.assign fires.
+
+     data-astro-prefetch="hover" on the links covers a pointer, but
+     only if prefetch is enabled in astro.config — and it does nothing
+     at all on a touchscreen, where there is no hover to prefetch on.
+     This covers both: by the time a reader has looked at a pane, its
+     desk is warm. Once per series, and never against the reader's
+     wishes — Save-Data and 2g mean they are paying for bytes and this
+     one is speculative. */
+  const warmed = new Set<string>();
+
+  function warm(pane: Element) {
+    const href = pane.querySelector<HTMLAnchorElement>('a.enter')?.href;
+    if (!href || warmed.has(href)) return;
+
+    const conn = (navigator as Navigator & { connection?: { saveData?: boolean; effectiveType?: string } })
+      .connection;
+    if (conn?.saveData || /(^|-)2g$/.test(conn?.effectiveType ?? '')) return;
+
+    warmed.add(href);
+    const link = document.createElement('link');
+    link.rel = 'prefetch';
+    link.as = 'document';
+    link.href = href;
+    document.head.appendChild(link);
+  }
+
   /* Marks the pane filling most of the screen. threshold 0.5 with one
      pane per viewport means exactly one qualifies at a time, and
      mid-scroll the last to cross wins — which is the one you are
-     moving toward. */
+     moving toward. The same crossing is the cue to warm that pane's
+     desk, which is why the two share an observer rather than running
+     a second one over the same elements. */
   function trackRail(album: HTMLElement) {
     const marks = album.querySelectorAll<HTMLElement>('.rail-mark');
     if (!marks.length || !('IntersectionObserver' in window)) return;
@@ -688,6 +788,7 @@ function deskFor(s: (typeof series)[number]) {
           if (!entry.isIntersecting) continue;
           const id = entry.target.id;
           marks.forEach((m) => m.setAttribute('data-current', String(m.dataset.for === id)));
+          warm(entry.target);
         }
       },
       { threshold: 0.5 },

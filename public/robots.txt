@@ -1,0 +1,8 @@
+# austinlallison.com
+# Served from public/robots.txt — Astro copies public/ to the site root
+# verbatim, so this needs no route and no config.
+
+User-agent: *
+Allow: /
+
+Sitemap: https://austinlallison.com/sitemap-index.xml
