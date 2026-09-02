@@ -106,9 +106,25 @@ const registry = SERIES;
         >
           <span class="block border border-iron/10 p-3 bg-canvas shadow-md rounded-sm overflow-hidden transition-all duration-500 group-hover:shadow-xl group-hover:border-caprock/30">
             <span class="block overflow-hidden bg-iron/5">
+              {/* No srcset. Density descriptors (1x/2x) choose on DPR
+                  alone and cannot see the transform on #light-table, so
+                  a plate drawn at 42px on a phone was still fetching the
+                  1400 file. The ladder goes in data-lod instead and the
+                  board picks a rung from its own scale — see LEVEL OF
+                  DETAIL in the script.
+
+                  Opening src is the 160 thumb: at the fit-to-board view
+                  a phone has every plate on screen at once, so lazy
+                  loading defers nothing and whatever is named here is
+                  what all 38 download. */}
               <img
-                src={plate.img.board}
-                srcset={plate.img.boardSrcset}
+                src={plate.img.thumb}
+                data-lod={[
+                  `${Math.min(160, plate.img.width)}|${plate.img.thumb}`,
+                  `${Math.min(280, plate.img.width)}|${plate.img.index}`,
+                  `${Math.min(700, plate.img.width)}|${plate.img.board}`,
+                  `${Math.min(1400, plate.img.width)}|${plate.img.board2x}`,
+                ].join(',')}
                 width={plate.img.width}
                 height={plate.img.height}
                 alt=""
@@ -495,12 +511,123 @@ const registry = SERIES;
         : clamp(panY, vh - bMaxY * scale, -bMinY * scale);
     };
 
+    /* ══ LEVEL OF DETAIL ═══════════════════════════════════════
+       The board is a CSS transform, and no declarative image feature
+       can see through one. `sizes` resolves against layout; density
+       descriptors resolve against DPR. Neither knows that a 300-unit
+       plate is being drawn at 14% of that. So the browser was asked to
+       choose and had nothing to choose with: on a phone at the
+       fit-to-board view every plate renders about 42px wide and every
+       one of them fetched the 1400 file — roughly 13x too wide, 180x
+       the pixels, and about 5.4 MB across the sheet.
+
+       The pick has to be imperative, so it is made here from the one
+       number that actually decides it: the plate width times the board
+       scale times the pixel ratio.
+
+       Nothing new enters the image pipeline. All four rungs are already
+       built for every plate — 160 for the filmstrip, 280 for the plate
+       index, 700 and 1400 for the board.
+
+       UPGRADE ONLY. A file already fetched costs nothing to keep, and
+       refusing to go back down means a zoom-out cannot thrash the
+       network re-requesting what it just had. `at` is the rung index
+       each plate has reached; it only ever climbs.
+
+       CULLED to the visible board rectangle plus a margin, so panning
+       across a sheet upgrades what you are arriving at rather than all
+       38 at once.
+
+       Rectangles are measured ONCE at init. Plate positions are static
+       inline styles and never move, and reading them per pass would be
+       190 layout reads on every settle. */
+    const LOD_LOOKAHEAD = 260; // board units of margin around the view
+    const LOD_SETTLE = 160; // ms of stillness before swapping
+    const LOD_MAX_DPR = 3; // past this the top rung is the ceiling anyway
+
+    type LodPlate = {
+      img: HTMLImageElement;
+      x: number;
+      y: number;
+      w: number;
+      h: number;
+      iw: number;
+      rungs: { w: number; src: string }[];
+      at: number;
+    };
+
+    const lodPlates: LodPlate[] = [];
+
+    table.querySelectorAll<HTMLElement>('.plate').forEach((btn) => {
+      const img = btn.querySelector<HTMLImageElement>('img');
+      const spec = img?.dataset.lod;
+      if (!img || !spec) return;
+      const rungs = spec
+        .split(',')
+        .map((r) => {
+          const [w, src] = r.split('|');
+          return { w: Number(w), src: src || '' };
+        })
+        .filter((r) => r.w > 0 && r.src);
+      if (!rungs.length) return;
+      lodPlates.push({
+        img,
+        x: btn.offsetLeft,
+        y: btn.offsetTop,
+        w: btn.offsetWidth,
+        h: btn.offsetHeight,
+        /* the IMAGE is narrower than the button — the mount border and
+           the caption row are the difference — and it is the image that
+           has to carry the pixels. */
+        iw: img.offsetWidth || btn.offsetWidth,
+        rungs,
+        at: 0,
+      });
+    });
+
+    const runLod = () => {
+      if (!lodPlates.length) return;
+      const vw = viewport.clientWidth;
+      const vh = viewport.clientHeight;
+      // the visible slice of the board, in board units
+      const x0 = -panX / scale - LOD_LOOKAHEAD;
+      const y0 = -panY / scale - LOD_LOOKAHEAD;
+      const x1 = (vw - panX) / scale + LOD_LOOKAHEAD;
+      const y1 = (vh - panY) / scale + LOD_LOOKAHEAD;
+      const density = scale * Math.min(window.devicePixelRatio || 1, LOD_MAX_DPR);
+
+      for (const p of lodPlates) {
+        if (p.at >= p.rungs.length - 1) continue;
+        if (p.x + p.w < x0 || p.x > x1 || p.y + p.h < y0 || p.y > y1) continue;
+
+        const need = p.iw * density;
+        let want = p.rungs.length - 1;
+        for (let i = 0; i < p.rungs.length; i++) {
+          if (p.rungs[i].w >= need) {
+            want = i;
+            break;
+          }
+        }
+        if (want <= p.at) continue;
+        p.at = want;
+        p.img.src = p.rungs[want].src;
+      }
+    };
+
+    let lodTimer = 0;
+    const scheduleLod = () => {
+      window.clearTimeout(lodTimer);
+      lodTimer = window.setTimeout(runLod, LOD_SETTLE);
+    };
+    ac.signal.addEventListener('abort', () => window.clearTimeout(lodTimer), { once: true });
+
     const commit = () => {
       if (frame) return;
       frame = requestAnimationFrame(() => {
         frame = 0;
         clampPan();
         table.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
+        scheduleLod();
       });
     };
 
@@ -629,6 +756,13 @@ const registry = SERIES;
         s: ((viewport.clientWidth * EXIT_WIDTH_VW) / 100) / rect.w,
       };
       setView(start.cx, start.cy, start.s);
+      /* Synchronous, not scheduled. The arrival opens with one plate
+         filling 34vw at roughly 2x scale; waiting out LOD_SETTLE would
+         show the 160 thumb blown up for the first tenth of a second of
+         the one animation whose whole job is to be seamless. setView
+         deliberately bypasses commit, so nothing else would have run
+         it. */
+      runLod();
 
       const DUR = 620;
       const t0 = performance.now();

@@ -87,6 +87,7 @@
  */
 import RootLayout from '../layouts/RootLayout.astro';
 import { getCovers, getGalleries } from '../data/photography';
+import { plateLight } from '../lib/solar';
 
 const series = await getCovers();
 const galleries = await getGalleries();
@@ -95,7 +96,7 @@ const galleries = await getGalleries();
 const EXIT_WIDTH_VW = 34;
 
 const DESCRIPTION =
-  'Visual monographs of the American West: photographs of the escarpments, the water of the Llano Estacado, and the cotton gins of Texas, by Austin Allison.';
+  'Visual monographs of the American West: photographs of the escarpments, the water of the Llano Estacado, the cotton gins of Texas, and the county courthouses of the Great Plains, by Austin Allison.';
 
 const coverAlt = (s: (typeof series)[number]) =>
   'coverAlt' in s && typeof s.coverAlt === 'string' && s.coverAlt.trim()
@@ -138,6 +139,104 @@ function deskFor(s: (typeof series)[number]) {
   if (!p) return null;
   return { index: p.index, aspect: p.w / p.h };
 }
+
+/* ── THE DESK IS LIT BY THE PLATE'S OWN SUN ────────────────────────
+
+   Every plate already carries lat/lng. Give it `taken` and `timeZone`
+   as well and solar.ts returns the light that was actually on the
+   ground at that moment: the direction and length of the shadow the
+   print throws on the desk, how hard or soft that shadow is, and the
+   colour of the paper under it.
+
+   The plate is the source of truth. A cover that IS a plate reads its
+   own record; only a cover that is not one — an unbuilt series with no
+   gallery — falls back to SeriesEntry.exposure.
+
+   Without a date this returns null and the desk keeps a plain neutral
+   shadow. That is the state it ships in today. Nothing here fails for
+   want of data; it simply does not light.
+
+   ONE RULE, AND IT IS NOT NEGOTIABLE: this light touches the DESK
+   ONLY — paper, cast shadow, the wash across the surface. The moment
+   any of it lands on a photograph you have started editing the
+   picture, and the whole idea is dead. */
+function exposureFor(s: (typeof series)[number]) {
+  const g = galleries.find((x) => x.slug === s.slug);
+  const p = g?.plates.find((pl) => pl.file === s.cover);
+  if (p?.taken && p.timeZone) {
+    return {
+      lat: p.lat,
+      lon: p.lng,
+      timeZone: p.timeZone,
+      taken: p.taken,
+      ...(typeof p.bearing === 'number' ? { cameraBearingDeg: p.bearing } : {}),
+    };
+  }
+  const e = s.exposure;
+  if (e) {
+    return {
+      lat: e.lat,
+      lon: e.lon,
+      timeZone: e.timeZone,
+      taken: e.taken,
+      ...(typeof e.bearing === 'number' ? { cameraBearingDeg: e.bearing } : {}),
+    };
+  }
+  return null;
+}
+
+/* A cover whose sun was below the horizon at its recorded time is
+   almost always a camera clock never reset after driving north, or a
+   body still on a previous owner's zone. Fail the build rather than
+   ship a desk lit at midnight: it is the one check that catches nearly
+   every time-and-zone error, and a plate that passes it is almost
+   certainly right. */
+const belowHorizon: string[] = [];
+
+function lightVarsFor(s: (typeof series)[number]) {
+  const e = exposureFor(s);
+  if (!e) return {} as Record<string, string>;
+  const light = plateLight(e);
+  if (light.belowHorizon) belowHorizon.push(`${s.slug} (${e.taken} ${e.timeZone}, sun ${light.trueAltitudeDeg.toFixed(1)}\u00B0)`);
+  return light.vars;
+}
+
+/* Chrome sampled from the cover by scripts/sample-covers.mjs. Absent
+   means the rail and catchword keep white-with-a-shadow, which is a
+   correct fallback and not a broken state. */
+function chromeVarsFor(s: (typeof series)[number]) {
+  const c = s.chrome;
+  if (!c) return {} as Record<string, string>;
+  return {
+    '--ink-rail': c.rail.ink,
+    '--halo-rail': c.rail.halo,
+    '--halo-rail-strength': String(c.rail.haloStrength),
+    '--ink-catchword': c.catchword.ink,
+    '--halo-catchword': c.catchword.halo,
+    '--halo-catchword-strength': String(c.catchword.haloStrength),
+    ...(c.plateline
+      ? {
+          '--ink-plateline': c.plateline.ink,
+          '--halo-plateline': c.plateline.halo,
+          '--halo-plateline-strength': String(c.plateline.haloStrength),
+        }
+      : {}),
+  } as Record<string, string>;
+}
+
+function paneStyle(s: (typeof series)[number]) {
+  const vars = { ...lightVarsFor(s), ...chromeVarsFor(s) };
+  return Object.entries(vars).map(([k, v]) => `${k}:${v}`).join(';');
+}
+
+const paneStyles = series.map(paneStyle);
+
+if (belowHorizon.length) {
+  throw new Error(
+    `[photography] the sun was below the horizon at the recorded exposure time for: ${belowHorizon.join(', ')}. ` +
+      `Check DateTimeOriginal and the IANA zone on those plates — this is nearly always a camera clock or a stored zone, not a night exposure.`,
+  );
+}
 ---
 
 <RootLayout
@@ -155,7 +254,16 @@ function deskFor(s: (typeof series)[number]) {
       const next = series[i + 1];
 
       return (
-        <section class="pane bg-dust" id={s.slug} aria-labelledby={headingId}>
+        <section class="pane" id={s.slug} aria-labelledby={headingId} style={paneStyles[i]}>
+          {/* The cast shadow the print throws on the desk. A separate
+              element rather than a box-shadow on .zoomer, which has
+              `contain: layout paint` and would clip it, and rather than
+              a drop-shadow filter, which is the family of thing that has
+              been slow in Firefox on this site. It has no background, so
+              only the shadow paints, and it carries the same contraction
+              as the photograph so the two stay registered. */}
+          <div class="cast" aria-hidden="true"></div>
+
           <div class="zoomer">
             <img
               src={s.src}
@@ -171,34 +279,51 @@ function deskFor(s: (typeof series)[number]) {
             />
           </div>
 
+          {/* The plate label. It tells you this full-screen photograph IS
+              a plate — the one line the whole zoom premise rests on — but
+              it answers a question about the PICTURE, while everything in
+              the slip answers a question about the SERIES. Sitting above
+              the title in the same card it read as though it might be
+              labelling the series.
+
+              So it sits on the photograph, and the gutter gives it
+              somewhere better to go: as the print contracts it rides up
+              onto the desk margin that opens above it. A caption written
+              on the mount rather than printed over the picture — the same
+              distinction the light table already makes. */}
+          <span class="plateline">{s.coverLabel}</span>
+
           <div class="foot">
-          <div class="slip bg-canvas border border-haze rounded-sm shadow-2xl p-6 md:p-8">
-            <div class="flex items-baseline justify-between gap-6 mb-3">
-              <span class="font-mono text-[11px] uppercase tracking-widest text-sage">
-                {s.coverLabel}
-              </span>
+          <div class="slip bg-canvas border border-haze p-5 sm:p-6 md:p-8">
+            {/* The numeral moves down to sit WITH the title. It used to
+                hold the right end of a justify-between row whose left end
+                was the plate label; with the label gone it would have been
+                a lone Roman numeral floating in a corner. Beside the title
+                is where it belonged anyway — a catalogue entry, not a
+                header ornament. */}
+            <div class="flex items-baseline gap-3 mb-3">
               <span
                 aria-hidden="true"
-                class="font-serif text-4xl font-light leading-none text-sage/50 select-none"
+                class="font-serif text-3xl md:text-4xl font-light leading-none text-sage/50 select-none shrink-0"
               >
                 {s.number}
               </span>
+              <h2
+                id={headingId}
+                class="font-serif text-2xl sm:text-3xl md:text-4xl font-medium tracking-tight text-caprock leading-tight"
+              >
+                <span class="sr-only">Series {s.number}. </span>
+                {s.title}
+              </h2>
             </div>
 
-            <h2
-              id={headingId}
-              class="font-serif text-3xl md:text-4xl font-medium tracking-tight text-caprock leading-tight mb-3"
-            >
-              <span class="sr-only">Series {s.number}. </span>
-              {s.title}
-            </h2>
+            <p class="slip-lede font-serif text-base leading-relaxed text-iron/80">{s.lede}</p>
 
-            <p class="font-serif text-base leading-relaxed text-iron/80">{s.lede}</p>
-
+            <div class="slip-rule">
             {href ? (
               <a
                 href={href}
-                class="enter inline-block mt-5 py-1.5 font-mono text-[11px] uppercase tracking-widest text-caprock hover:opacity-60 transition-opacity"
+                class="enter inline-block py-1.5 font-mono text-[11px] uppercase tracking-widest text-caprock hover:opacity-60 transition-opacity"
                 data-astro-prefetch="hover"
                 data-slug={s.slug}
                 data-plate={desk ? String(desk.index) : ''}
@@ -207,10 +332,11 @@ function deskFor(s: (typeof series)[number]) {
                 Step back to the desk &rarr;
               </a>
             ) : (
-              <span class="inline-block mt-5 py-1.5 font-mono text-[11px] uppercase tracking-widest text-iron/40">
+              <span class="inline-block py-1.5 font-mono text-[11px] uppercase tracking-widest text-iron/40">
                 In preparation
               </span>
             )}
+            </div>
           </div>
 
           {strip.length > 0 && (
@@ -293,9 +419,49 @@ function deskFor(s: (typeof series)[number]) {
      aligns a pane's top edge with the top of the SCROLLPORT, which
      here is behind the header — so each pane needs its snap position
      pushed down by the same amount. */
+  /* ── THE GUTTER ─────────────────────────────────────────────
+     Crossing from one series to the next used to be a hard cut
+     between two full-bleed photographs, which is the one moment the
+     album read as a slideshow. In a bound book you pass THROUGH
+     something. Now, as a pane leaves centre, the photograph contracts
+     and the desk shows around all four edges, then closes as the next
+     pane settles.
+
+     It also fixes the first-paint problem: the desk is what this page
+     is built around, and before this you could not see it existed
+     without clicking or hovering.
+
+     --gutter-t is 0 at rest and 1 at the seam. It is driven by a view
+     progress timeline, so it runs on the compositor with no scroll
+     listener at all. Where that is unsupported — Firefox still has it
+     behind a flag — the property holds its initial 0 and the panes
+     stay exactly as they ship today. That is the deliberate choice:
+     no JS scroll handler on the one browser where scroll handlers on
+     this site have hurt.
+
+     --contract is the SINGLE quantity both this and the enter-hover
+     foreshadow write. They are the same gesture at two depths, and
+     giving them one variable is what stops them cancelling each other
+     — two rules setting `transform` on .zoomer would have meant the
+     later one won outright. */
   .pane {
+    --gutter-depth: 0.075;
+    --contract: max(calc(var(--gutter-depth) * var(--gutter-t)), var(--hover-contract, 0));
+    /* 0 at rest, 1 when the desk is fully open. Drives everything that
+       should cost nothing while the photograph fills the screen. */
+    --reveal: min(1, calc(var(--contract) / var(--gutter-depth)));
+
     position: relative;
     height: calc(100svh - var(--header-h, 0px));
+
+    /* The desk. --plate-desk carries the paper's colour under the
+       plate's own sun; without a date it resolves to plain dust. */
+    background-color: var(--plate-desk, var(--color-dust, #C1AD8A));
+    background-image: repeating-linear-gradient(
+      180deg,
+      transparent 0 27px,
+      rgb(90 78 60 / 0.10) 27px 28px
+    );
     min-height: 30rem;
     overflow: hidden;
     scroll-snap-align: start;
@@ -306,6 +472,77 @@ function deskFor(s: (typeof series)[number]) {
     .pane {
       height: calc(100vh - var(--header-h, 0px));
     }
+  }
+
+  @keyframes album-gutter {
+    0%,
+    100% {
+      --gutter-t: 1;
+    }
+    38%,
+    62% {
+      --gutter-t: 0;
+    }
+  }
+
+  /* view(block) runs 0 as the pane enters the scrollport to 1 as it
+     leaves, so 50% is the pane at rest in the middle. The flat span
+     between 38% and 62% is what keeps the resting state EXACTLY as it
+     was — full bleed, nothing shrunk, no shadow. */
+  @supports (animation-timeline: view()) {
+    .pane {
+      animation-name: album-gutter;
+      animation-timing-function: linear;
+      animation-fill-mode: both;
+      animation-duration: auto;
+      animation-timeline: view(block);
+    }
+  }
+
+  /* Still scroll-coupled rather than autoplaying, so it is not motion
+     the reader did not ask for — but a 7.5% lurch is more than anyone
+     with this set wants, so the depth drops to the same amount the
+     hover foreshadow already used. */
+  @media (prefers-reduced-motion: reduce) {
+    .pane {
+      --gutter-depth: 0.028;
+    }
+  }
+
+  /* The light across the desk, ending at the sun. Costs nothing at
+     rest: --reveal is 0 while the photograph fills the pane. */
+  .pane::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: var(--reveal);
+    background: linear-gradient(
+      var(--plate-wash-angle, 140deg),
+      transparent 18%,
+      color-mix(
+        in oklab,
+        var(--plate-light, #fdf2dd) calc(var(--plate-wash, 0.1) * 100%),
+        transparent
+      )
+        100%
+    );
+  }
+
+  /* No background of its own — only the shadow paints. A low sun is
+     filtered through a long atmospheric path, so its shadow is long,
+     soft and WEAK; a high sun gives a short hard dark one. solar.ts
+     computes that inverse relationship, and it is the thing that makes
+     this read as light rather than as a drop-shadow being animated. */
+  .cast {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    border-radius: calc(1px + 4px * var(--reveal));
+    box-shadow: var(--plate-sh-dx, 6px) var(--plate-sh-dy, 10px)
+      var(--plate-sh-blur, 24px) var(--plate-shadow, rgb(20 14 6 / 0.55));
+    opacity: calc(var(--plate-sh-alpha, 0.3) * var(--reveal));
+    transform: scale(calc(1 - var(--contract)));
   }
 
   /* The frame that contracts. Containment keeps the layout animation
@@ -325,8 +562,118 @@ function deskFor(s: (typeof series)[number]) {
     display: block;
   }
 
+  /* ── the slip sits ON the desk ──────────────────────────────
+     shadow-2xl is Tailwind's generic 0 25px 50px — straight down,
+     always. The print beside it now throws a shadow whose direction
+     comes from where the sun actually was, so the two were two objects
+     on the same desk lit by two different suns. The slip takes the same
+     light at about a third the offset, because it lies much closer to
+     the surface than the print does.
+
+     Defaults are chosen so a series with no exposure date still gets a
+     sensible straight-down shadow, close to what shadow-2xl gave.
+
+     rounded-sm is gone with it. 2px is small, but a rounded corner is
+     the specific detail that made this read as a UI card rather than a
+     piece of paper. Paper has square corners. */
   .slip {
     max-width: 32rem;
+    box-shadow: calc(var(--plate-sh-dx, 0px) * 0.32) calc(var(--plate-sh-dy, 40px) * 0.32)
+      calc(var(--plate-sh-blur, 26px) * 0.55 + 4px) -6px
+      color-mix(
+        in oklab,
+        var(--plate-shadow, #191410) calc(var(--plate-sh-alpha, 0.3) * 68%),
+        transparent
+      );
+  }
+
+  /* A hairline above the action, the way a catalogue slip rules off its
+     foot. Does more for the paper reading than anything else this small.
+     Carries the margin the link used to hold itself. */
+  .slip-rule {
+    margin-top: 1.15rem;
+    padding-top: 0.7rem;
+    border-top: 1px solid var(--color-haze, #E6E4DF);
+  }
+
+  /* ── the plate label ────────────────────────────────────────
+     Top right, because that is the corner the sampler measures for it
+     and the one corner no other element competes for: the rail is
+     vertically centred, the foot and the catchword are at the bottom.
+
+     It rides UP by --reveal, so at the seam it lands on the strip of
+     desk that has just opened above the print. The same variable drives
+     the hover foreshadow, so the two gestures agree without a second
+     rule.
+
+     THE COLOUR CROSSFADES. At rest it is the ink sampled from the sky
+     it sits on; by the seam it is iron on canvas, because it is no
+     longer on the photograph at all. Without this, a cover with a dark
+     sky would take light ink and then vanish the moment it moved onto
+     the pale desk. */
+  .plateline {
+    position: absolute;
+    z-index: 2;
+    top: 1.25rem;
+    right: 1.25rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    pointer-events: none;
+    transform: translateY(calc(-24px * var(--reveal)));
+    color: color-mix(
+      in oklab,
+      var(--ink-plateline, rgb(255 255 255 / 0.78)) calc((1 - var(--reveal)) * 100%),
+      var(--color-iron, #1a1919)
+    );
+    text-shadow: 0 0 calc(7px * var(--halo-plateline-strength, 0.8))
+        color-mix(
+          in oklab,
+          var(--halo-plateline, rgb(0 0 0 / 0.55)) calc((1 - var(--reveal)) * 100%),
+          transparent
+        ),
+      0 1px 3px
+        color-mix(
+          in oklab,
+          var(--halo-plateline, rgb(0 0 0 / 0.55)) calc((1 - var(--reveal)) * 100%),
+          transparent
+        );
+    transition: opacity 240ms ease;
+  }
+
+  @media (min-width: 1024px) {
+    .plateline {
+      top: 2rem;
+      right: 3rem;
+    }
+  }
+
+  /* ── the lede on a phone ────────────────────────────────────
+     Measured at a 390px viewport, the ledes run 3 to 10 lines, so the
+     slip plus the strip covered between 60% and 91% of the photograph
+     — Water left about 60px of it visible — and was a different height
+     on every pane, because Water's lede is 410 characters and the
+     Courthouses one is 90.
+
+     Three lines says what the series is. The rest is the pitch, and on
+     a phone the photograph is a better pitch than 410 characters are.
+     All four slips now land within a few pixels of each other, which
+     matters as much as the height: the inconsistency was as
+     distracting as the size.
+
+     The full text STAYS IN THE DOM. This hides lines visually, it does
+     not remove them, so a screen reader still gets the whole lede.
+
+     THE DIAL: 3. Two is tighter; four gives most of Water back. */
+  @media (max-width: 767px) {
+    .slip-lede {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      line-clamp: 3;
+      overflow: hidden;
+    }
   }
 
   /* Departure state. The slip and the nav wash leave first so the
@@ -458,15 +805,51 @@ function deskFor(s: (typeof series)[number]) {
      explaining. :has() is progressive enhancement — where it is
      unsupported nothing happens and nothing breaks. */
   .zoomer {
+    transform: scale(calc(1 - var(--contract)));
     transition: transform 420ms cubic-bezier(0.22, 1, 0.36, 1);
   }
 
-  .pane:has(.enter:hover) .zoomer,
-  .pane:has(.enter:focus-visible) .zoomer {
-    transform: scale(0.972);
+  /* 0.028 is the old scale(0.972), unchanged — but written as a
+     CONTRACTION so the gutter and this cannot overwrite one another.
+     max() means the deeper of the two wins and the shallower never
+     cancels it. */
+  .pane:has(.enter:hover),
+  .pane:has(.enter:focus-visible) {
+    --hover-contract: 0.028;
+  }
+
+  /* The exit animates .zoomer's width/height/left/top to land on
+     EXIT_WIDTH_VW exactly. Any contraction still applied is a scale on
+     top of that, so the plate arrives at the light table 2.8% smaller
+     than the contract says and the seam shows. Dropping the animation
+     reverts --gutter-t to its registered initial 0; --hover-contract
+     goes with it, since the pointer is still over the link at the
+     moment of the click.
+
+     This was true before the gutter existed — the hover foreshadow was
+     already riding along into the handoff. */
+  .pane.is-leaving {
+    animation-name: none;
+    animation-timeline: auto;
+    --hover-contract: 0;
+  }
+
+  /* Snap, do not ease. .zoomer carries a 420ms transform transition, so
+     easing the contraction away would run the photograph OUTWARD for
+     the first 420ms of the 520ms contraction — a pop in the wrong
+     direction at the exact moment the gesture has to read as one
+     movement. A single-frame 2.8% correction under a contraction that
+     is already running is invisible. */
+  .pane.is-leaving .zoomer {
+    transition: none;
+  }
+
+  .pane.is-leaving .cast {
+    opacity: 0;
   }
 
   .pane.is-leaving .foot,
+  .pane.is-leaving .plateline,
   .pane.is-leaving .catchword {
     opacity: 0;
     transform: translateY(8px);
@@ -488,14 +871,30 @@ function deskFor(s: (typeof series)[number]) {
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    color: rgb(255 255 255 / 0.72);
-    text-shadow: 0 1px 6px rgb(0 0 0 / 0.55);
+    /* Sampled from the patch of cover this actually sits on, not from
+       the image as a whole: an average over a bright sky and a dark
+       foreground lands on a mid grey that is wrong at both ends. The
+       polarity FLIPS per plate — a bright cover takes dark ink and a
+       light halo, a dark one takes the opposite. It is the plate's own
+       opposite, never a global 'make it darker'.
+
+       Unsampled covers keep white-with-a-shadow, which is correct
+       rather than broken. */
+    color: var(--ink-catchword, rgb(255 255 255 / 0.72));
+    text-shadow:
+      0 0 calc(7px * var(--halo-catchword-strength, 0.8))
+        var(--halo-catchword, rgb(0 0 0 / 0.55)),
+      0 1px 3px var(--halo-catchword, rgb(0 0 0 / 0.55));
     transition: color 200ms ease, opacity 240ms ease;
   }
 
   .catchword:hover,
   .catchword:focus-visible {
-    color: #fff;
+    color: var(--ink-catchword, #fff);
+    text-shadow:
+      0 0 calc(10px * var(--halo-catchword-strength, 0.8))
+        var(--halo-catchword, rgb(0 0 0 / 0.7)),
+      0 1px 3px var(--halo-catchword, rgb(0 0 0 / 0.7));
   }
 
   /* ── the rail ───────────────────────────────────────────────
@@ -531,8 +930,12 @@ function deskFor(s: (typeof series)[number]) {
     bottom: 0.5rem;
     right: 0.5rem;
     width: 1px;
-    background: rgb(255 255 255 / 0.35);
-    box-shadow: 0 0 3px rgb(0 0 0 / 0.55);
+    /* The rail is FIXED and lives outside every pane, so it cannot
+       inherit the current cover's ink. trackRail copies it across as
+       the pane changes — the same observer that already knows which
+       pane you are on. */
+    background: color-mix(in oklab, var(--ink-rail, #fff) 42%, transparent);
+    box-shadow: 0 0 4px var(--halo-rail, rgb(0 0 0 / 0.55));
   }
 
   @media (min-width: 1024px) {
@@ -553,8 +956,9 @@ function deskFor(s: (typeof series)[number]) {
     font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
     font-size: 10px;
     letter-spacing: 0.1em;
-    color: rgb(255 255 255 / 0.65);
-    text-shadow: 0 1px 4px rgb(0 0 0 / 0.7);
+    color: color-mix(in oklab, var(--ink-rail, #fff) 68%, transparent);
+    text-shadow: 0 0 calc(6px * var(--halo-rail-strength, 0.8)) var(--halo-rail, rgb(0 0 0 / 0.7)),
+      0 1px 3px var(--halo-rail, rgb(0 0 0 / 0.7));
     transition: color 200ms ease;
   }
 
@@ -563,20 +967,20 @@ function deskFor(s: (typeof series)[number]) {
     width: 14px;
     height: 2px;
     border-radius: 1px;
-    background: rgb(255 255 255 / 0.65);
-    box-shadow: 0 0 3px rgb(0 0 0 / 0.6);
+    background: color-mix(in oklab, var(--ink-rail, #fff) 68%, transparent);
+    box-shadow: 0 0 calc(4px * var(--halo-rail-strength, 0.8)) var(--halo-rail, rgb(0 0 0 / 0.6));
     transition: width 200ms ease, background-color 200ms ease;
   }
 
   .rail-mark:hover .rail-tick,
   .rail-mark:focus-visible .rail-tick {
     width: 24px;
-    background: #fff;
+    background: var(--ink-rail, #fff);
   }
 
   .rail-mark:hover .rail-no,
   .rail-mark:focus-visible .rail-no {
-    color: #fff;
+    color: var(--ink-rail, #fff);
   }
 
   .album.is-leaving .rail {
@@ -588,17 +992,18 @@ function deskFor(s: (typeof series)[number]) {
      scrollbar that tells you nothing. */
   .rail-mark[data-current='true'] .rail-tick {
     width: 30px;
-    background: #fff;
+    background: var(--ink-rail, #fff);
   }
 
   .rail-mark[data-current='true'] .rail-no {
-    color: #fff;
+    color: var(--ink-rail, #fff);
   }
 
   @media (prefers-reduced-motion: reduce) {
     .foot,
     .rail,
     .catchword,
+    .plateline,
     .strip-print,
     .zoomer {
       transition: none;
@@ -609,13 +1014,24 @@ function deskFor(s: (typeof series)[number]) {
       transform: rotate(var(--tilt));
     }
 
-    .pane:has(.enter:hover) .zoomer {
-      transform: none;
+    .pane:has(.enter:hover) {
+      --hover-contract: 0;
     }
   }
 </style>
 
 <style is:global>
+  /* A custom property only INTERPOLATES if it is registered, and the
+     gutter is nothing but an interpolation of this number. Unregistered
+     it would jump 0 to 1 with no travel. Global because @property is
+     document-scoped whatever block it is written in, and hiding it in a
+     scoped sheet only makes that surprising later. */
+  @property --gutter-t {
+    syntax: '<number>';
+    inherits: true;
+    initial-value: 0;
+  }
+
   /* Astro ships this only on routes rendering this component. Change
      `proximity` to `mandatory` for an uninterruptible snap. */
   html {
@@ -778,9 +1194,29 @@ function deskFor(s: (typeof series)[number]) {
      moving toward. The same crossing is the cue to warm that pane's
      desk, which is why the two share an observer rather than running
      a second one over the same elements. */
+  /* The rail is position: fixed and sits outside every pane, so it
+     cannot inherit the current cover's sampled ink the way the
+     catchword does. Copying three custom properties across on the
+     crossing the observer already reports is the whole mechanism —
+     no second observer, no scroll handler, and it does nothing at all
+     for a cover that has not been sampled. */
+  const TINT_VARS = ['--ink-rail', '--halo-rail', '--halo-rail-strength'];
+
+  function carryTint(rail: HTMLElement | null, pane: Element) {
+    if (!rail) return;
+    const from = getComputedStyle(pane as HTMLElement);
+    for (const name of TINT_VARS) {
+      const value = from.getPropertyValue(name).trim();
+      if (value) rail.style.setProperty(name, value);
+      else rail.style.removeProperty(name);
+    }
+  }
+
   function trackRail(album: HTMLElement) {
     const marks = album.querySelectorAll<HTMLElement>('.rail-mark');
     if (!marks.length || !('IntersectionObserver' in window)) return;
+
+    const rail = album.querySelector<HTMLElement>('.rail');
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -788,6 +1224,7 @@ function deskFor(s: (typeof series)[number]) {
           if (!entry.isIntersecting) continue;
           const id = entry.target.id;
           marks.forEach((m) => m.setAttribute('data-current', String(m.dataset.for === id)));
+          carryTint(rail, entry.target);
           warm(entry.target);
         }
       },

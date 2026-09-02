@@ -59,6 +59,44 @@ export const PHOTOGRAPHER = 'Austin Allison';
 
 /* ── types ──────────────────────────────────────────────────────── */
 
+/** Where and when a cover was exposed, for series whose cover is NOT a
+ *  plate — an unbuilt series has no gallery, so there is nothing to read
+ *  lat/lng off. Built series should leave this alone: the plate is the
+ *  source of truth and duplicating it here is how the two drift apart. */
+export type CoverExposure = {
+  lat: number;
+  /** EAST positive. Western longitudes are negative. */
+  lon: number;
+  /** IANA zone, e.g. 'America/Denver'. NEVER a numeric offset: a camera
+   *  clock records local wall time, so the offset depends on the date and
+   *  a stored number is an hour wrong on the far side of a DST boundary. */
+  timeZone: string;
+  /** EXIF DateTimeOriginal as local wall time, 'YYYY-MM-DDTHH:MM:SS'.
+   *  No zone suffix — the zone above supplies it. */
+  taken: string;
+  /** EXIF GPSImgDirection, if the body wrote one. Only needed for
+   *  frame-relative lighting, which is off by default. */
+  bearing?: number;
+};
+
+/** Chrome colours sampled from a cover by scripts/sample-covers.mjs.
+ *  Paste its output here. Absent means the rail and catchword keep the
+ *  white-with-a-shadow treatment, which is a correct fallback, not a
+ *  broken state. */
+export type CoverChromeRegion = {
+  ink: string;
+  halo: string;
+  haloStrength: number;
+};
+
+export type CoverChrome = {
+  rail: CoverChromeRegion;
+  catchword: CoverChromeRegion;
+  /** Sampled but not yet used: the plate label lives inside the slip,
+   *  which is opaque and needs no halo. Here for the day it moves out. */
+  plateline?: CoverChromeRegion;
+};
+
 export type SeriesEntry = {
   slug: string;
   number: string;
@@ -71,6 +109,15 @@ export type SeriesEntry = {
   /** cover image, relative to src/assets/photography */
   cover: string;
   coverLabel: string;
+  /** Describes the PICTURE for a reader who cannot see it. The album
+   *  falls back to `title — coverLabel`, which is a citation, not a
+   *  description, and it is the accessible name of the link that wraps
+   *  the cover. */
+  coverAlt?: string;
+  /** Only for a cover that is not a plate. See CoverExposure. */
+  exposure?: CoverExposure;
+  /** Output of scripts/sample-covers.mjs for this cover. */
+  chrome?: CoverChrome;
 };
 
 export type PlateInput = {
@@ -93,6 +140,15 @@ export type PlateInput = {
    *  the same view — without pinning either to absolute coordinates. */
   after?: string;
   caption?: string;
+  /** EXIF DateTimeOriginal as local wall time, 'YYYY-MM-DDTHH:MM:SS'.
+   *  Drives the desk light on the album. Omit and that plate's desk
+   *  falls back to neutral light — nothing breaks, nothing lights. */
+  taken?: string;
+  /** IANA zone for `taken`. Required alongside it; see CoverExposure
+   *  for why this is a zone name and not a number. */
+  timeZone?: string;
+  /** EXIF GPSImgDirection. Optional, frame-relative lighting only. */
+  bearing?: number;
   /** Fulfillment checkout URL — a Stripe Payment Link tied to a
    *  Prodigi print product. Empty means no Order a print button. */
   printLink?: string;
@@ -144,27 +200,42 @@ export const SERIES: SeriesEntry[] = [
     number: 'I',
     title: 'American Escarpments',
     built: true,
-    lede: "A gallery of the precipitous escarpments outlining the edges of our country's plateaus. This collection captures the sudden and jarring drops of these areas under natural light. Encompassing several states, this gallery only captures a small portion of our nation's plateaus and escarpments.",
+    lede: "A gallery of the precipitous escarpments outlining the edges of our country's plateaus. This collection captures the sudden and jarring drops of these areas under natural light.",
     cover: 'escarpments/escarpment20.jpg',
     coverLabel: 'Plate 1.20 \u00B7 Buckley Coulee',
+    chrome: {
+      rail: { ink: '#1d1911', halo: '#f8f8f7', haloStrength: 0.504 },       // 7.21:1
+      catchword: { ink: '#edece3', halo: '#0f0f0a', haloStrength: 0.511 },  // 7.34:1
+      plateline: { ink: '#0f191f', halo: '#f6f8f8', haloStrength: 0.35 },   // 5.66:1
+    }, 
   },
   {
     slug: 'water_of_the_llano_estacado',
     number: 'II',
     title: 'Water of the Llano Estacado',
     built: true,
-    lede: 'A documentary index featuring the increasingly diminutive water sources of the Llano Estacado. From intermittent lake basins to draws and springs, the water sources of the Llano Estacado represent signifiers of life, activity, and history. Areas adjacent to the Llano Estacado are included in this survey, since water from the Llano drains into several drainage basins providing crucial water to several areas.',
+    lede: 'A documentary index featuring the diminutive water sources on and near the Llano Estacado.',
     cover: 'water/water1.jpg',
     coverLabel: 'Plate 2.01 · Tule Creek',
+    chrome: {
+      rail: { ink: '#1c1a11', halo: '#f8f8f7', haloStrength: 0.464 },       // 4.64:1
+      catchword: { ink: '#1d1b11', halo: '#f8f8f7', haloStrength: 0.475 },  // 4.67:1
+      plateline: { ink: '#1c1912', halo: '#f8f8f7', haloStrength: 0.455 },  // 4.20:1
+    },
   },
   {
     slug: 'cotton_gins',
     number: 'III',
     title: 'Cotton Gins of Texas',
-    built: false,
+    built: true,
     lede: 'An intentional survey of the remnant legacy cotton gins in Texas. Most no longer in use, these sentinels of the plains register stories of economic prosperity dating back more than a century.',
     cover: 'cotton_gins/dumont.jpg',
-    coverLabel: 'Plate 3.01 \u00B7 Dumont',
+    coverLabel: 'Plate 3.02 \u00B7 Dumont',
+    chrome: {
+      rail: { ink: '#e9e8e7', halo: '#0d0d0c', haloStrength: 0.524 },       // 6.90:1
+      catchword: { ink: '#ede8e3', halo: '#0f0d0a', haloStrength: 0.405 },  // 5.10:1
+      plateline: { ink: '#191515', halo: '#f8f7f7', haloStrength: 0.35 },   // 4.23:1
+    },
   },
   {
     slug: 'courthouses',
@@ -173,7 +244,12 @@ export const SERIES: SeriesEntry[] = [
     built: false,
     lede: 'An in-depth photographic account of courthouses of the Great Plains from Texas to Montana.',
     cover: 'courthouses/teton-cover.jpg',
-    coverLabel: 'Plate 4.x \u00B7 Teton County, Montana',
+    coverLabel: 'Plate 4.01 \u00B7 Teton County, Montana',
+    chrome: {
+      rail: { ink: '#191915', halo: '#f8f8f7', haloStrength: 0.531 },       // 5.86:1
+      catchword: { ink: '#e9eae6', halo: '#0d0e0c', haloStrength: 0.51 },   // 5.15:1
+      plateline: { ink: '#11171d', halo: '#f7f7f8', haloStrength: 0.35 },   // 7.45:1
+    },
   },
 ];
 
@@ -543,6 +619,54 @@ const galleryData: GalleryInput[] = [
       }
     ],
   },
+  {
+    slug: 'cotton_gins',
+    // Set to false while seven of these twelve plates are untitled. A
+    // licensing inquiry for "Plate 06, in preparation" is not one you
+    // want to receive. Flip to true once the metadata is filled in.
+    sellable: false,
+    region: 'Texas | New Mexico',
+    centerX: 1250,
+    centerY: 820,
+    plates: [
+      {
+        file: 'cotton_gins/girvin20191103-008.jpg',
+        title: 'Gin near Girvin',
+        place: 'Girvin, Pecos County, Texas',
+        lat: 31.015116, lng: -102.503481,
+        specs: '6mm \u00B7 \u0192/2.2 \u00B7 1/3000s',
+        x: 950, y: 330, w: 250,
+        caption: 'An abandoned gin sits on Owego Road southwest of Girvin, Texas. Girvin Butte is visible in the background. The gin\'s proximity to the railroad tracks to the northwest suggests it was once a hub of agricultural activity in the area.',
+      },
+      {
+        file: 'cotton_gins/dumontgpp.2018.0029.3.jpg',
+        title: 'Dumont Gin',
+        place: 'Dumont, King County, Texas',
+        lat: 33.809930, lng: -100.516919,
+        specs: '24mm \u00B7 \u0192/8 \u00B7 1/640s',
+        x: 750, y: 150, w: 250,
+        caption: 'The Dumont gin is one of the oldest extant gins in West Texas. A 1921 fire destroyed the original gin, but this structure was built in 1922 and featured a smokestack and whistle from a steamboat.',
+      },
+      {
+        file: 'cotton_gins/causeygpp.2018.0045.jpg',
+        title: 'Gin at Causey',
+        place: 'Causey, Roosevelt County, New Mexico',
+        lat: 33.809930, lng: -100.516919,
+        specs: '200mm \u00B7 \u0192/8 \u00B7 1/500s',
+        x: 1050, y: 150, w: 250,
+        caption: 'The gin at Causey, New Mexico sits abandoned with typical agricultural equipment scattered around the property. The gin is a reminder of the once-thriving cotton industry in the region, which has since declined due to changes in agricultural practices and market demands.',
+      },
+      {
+        file: 'cotton_gins/bulagpp.2018.0039.jpg',
+        title: 'Bula Gin Co.',
+        place: 'Bula, Bailey County, Texas',
+        lat: 33.911635, lng: -102.637156,
+        specs: '24mm \u00B7 \u0192/8 \u00B7 1/400s',
+        x: 1220, y: 330, w: 250,
+        caption: 'The idle Bula Gin remains an imposing testament to the cotton industry that dominated the Llano Estacado. The strinking red steel equipment offers a stark contrast to the muted tones of corrugated steel, highlighting the industrial nature of cotton processing in this region.',
+      },
+    ],
+  }
 ];
 
 /* ── formatting helpers ─────────────────────────────────────────── */
