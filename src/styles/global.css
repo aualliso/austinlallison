@@ -25,33 +25,87 @@
      plate lying on the desk you are about to see. Caliche 30% over
      canvas: paper rather than screen white, still bright enough to be a
      LIGHT table. */
-  --color-desk: #FBFBF9;
+  --color-desk: #F5F3ED;
 
   --font-serif: "cormorant-garamond", "Georgia", "Cambria", "Times New Roman", "Times", serif;
   --font-sans: "komet", "system-ui", "-apple-system", "BlinkMacSystemFont", sans-serif;
 }
 
-/* The contour sheet. Defined once here rather than inside a page's
-   scoped block, because two pages now draw the same desk and a second
-   copy is a second thing to keep in step.
+/* THE PLAT. The desk is ruled as a township-and-section survey: a fine
+   line every section, a heavier one every sixth for the township
+   boundary. That 6:1 rhythm is the whole tell — it is what makes a plat
+   read as a plat rather than as graph paper.
 
-   Stroke is llano at full opacity, not haze at 0.62 — that resolved to
-   1.13:1 against the paper, which is a pattern nobody can see. 1.85:1
-   is still quiet and is actually there.
+   The grid earns its place rather than decorating: the Public Land
+   Survey System is the coordinate system these photographs were taken
+   inside, and ruling the desk with it says so without a word of
+   apparatus. It is also calm in a way curves are not — straight
+   orthogonal lines recede behind a photograph, curves pull the eye.
 
-   Width went 1.2 -> 2.4 board units because #light-table is a CSS
-   transform and the stroke scales with it: at the fit-to-board view it
-   was drawing at 0.24px, which is nothing. It is deliberately still
-   faint when fully zoomed out and resolves as you come in — contours
-   ought to reward approach. */
+   IT IS PAINTED ON THE VIEWPORT, NOT ON THE BOARD. Drawn on the board
+   it ended where the board ended, and the board is sized per gallery —
+   so an eleven-plate series stopped ruling well short of the screen
+   while a twenty-plate one filled it. The lines simply stopped in mid
+   air, and how far out they got depended on how many photographs the
+   series happened to have.
+
+   So the surface is infinite and the BOARD MOVES ACROSS IT: --plat-x
+   and --plat-y take the pan, --plat-k takes the scale, and the light
+   table writes all three every frame it writes its transform. One
+   viewport-sized element, no oversized layer to rasterize, and no edge
+   at any zoom.
+
+   The stops are PERCENTAGES so that background-size does the scaling:
+   1% of a 150-unit section is the 1.5-unit line, 0.333% of a 900-unit
+   township is the 3-unit one, and both stay in proportion as --plat-k
+   changes. Absolute px stops would have held their width while the
+   period grew, which is a different pattern at every zoom.
+
+   HOW IT DEGRADES, which is the point of the two weights: at the
+   fit-to-board view section lines fall to about 0.3px and fade to
+   almost nothing while township lines hold at 0.6px. From a distance a
+   coarse frame; the section grid resolves as you come in.
+
+   THE DIALS: --plat-section-gap and the two alphas. Keep the 6:1 ratio
+   between the gaps — it is the only thing carrying the survey reading. */
 :root {
-  --topo-lines: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Cpath d='M0 250 C 200 210, 250 420, 450 370 C 650 320, 600 580, 800 550 M0 450 C 150 480, 350 280, 550 320 C 750 360, 700 680, 800 700 M0 650 C 180 600, 280 720, 450 620 C 620 520, 680 780, 800 720 M0 50 C 100 80, 200 20, 350 120 C 500 220, 650 100, 800 180' fill='none' stroke='%23BFB49A' stroke-width='2.4' stroke-opacity='0.2'/%3E%3C/svg%3E");
+  --plat-section-gap: 150px; /* board units */
+  --plat-township-gap: 900px; /* six sections */
+  --plat-section: rgb(191 180 154 / 0.34);
+  --plat-township: rgb(191 180 154 / 0.62);
+
+  /* Driven by the light table; these defaults are the un-panned,
+     un-zoomed case the album's gutter wants. */
+  --plat-k: 1;
+  --plat-x: 0px;
+  --plat-y: 0px;
+
+  --plat-lines:
+    repeating-linear-gradient(
+      to right,
+      var(--plat-township) 0 0.3333%,
+      transparent 0.3333% 100%
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      var(--plat-township) 0 0.3333%,
+      transparent 0.3333% 100%
+    ),
+    repeating-linear-gradient(to right, var(--plat-section) 0 1%, transparent 1% 100%),
+    repeating-linear-gradient(to bottom, var(--plat-section) 0 1%, transparent 1% 100%);
+
+  --plat-sizes:
+    calc(var(--plat-township-gap) * var(--plat-k)) 100%,
+    100% calc(var(--plat-township-gap) * var(--plat-k)),
+    calc(var(--plat-section-gap) * var(--plat-k)) 100%,
+    100% calc(var(--plat-section-gap) * var(--plat-k));
 }
 
-.bg-topo-canvas {
+.bg-plat-desk {
   background-color: var(--color-desk);
-  background-image: var(--topo-lines);
-  background-size: 1800px 1800px;
+  background-image: var(--plat-lines);
+  background-size: var(--plat-sizes);
+  background-position: var(--plat-x) var(--plat-y);
 }
 
 /* Global Markdown Typography Handlers */

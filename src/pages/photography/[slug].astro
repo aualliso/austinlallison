@@ -76,15 +76,48 @@ const { plates, bounds, eager } = gallery;
 const registry = SERIES;
 ---
 
-<Layout title={`${gallery.title} | Austin Allison`} hideFoot={true}>
-  <main
+{/* bleed AND hideNav, both load-bearing.
+
+    Without bleed, RootLayout wraps this in its own
+    `max-w-7xl mx-auto px-6 py-12` <main>: 24px of white down each side
+    of the desk, 48px above and below, and a document 222px taller than
+    the viewport on a phone — so a workspace that is meant to be fixed
+    under your thumb scrolled. The prop was added in August for exactly
+    this on the album; the light table never got it.
+
+    Without hideNav the sticky header takes 126px of flow above a board
+    already sized at 100dvh, which is the rest of that scroll, and then
+    pins itself over the top of the desk. Keeping it would mean
+    measuring --header-h here too, to preserve a frame this page does
+    not use: the light table is a place you go INTO, it already carries
+    a complete navigation of its own — close album to leave, the
+    registry to change series, a link to the plate index — and two
+    exits sitting near each other only asks which one is real. hideFoot
+    was already declaring half of this. */}
+<Layout
+  title={`${gallery.title} | Austin Allison`}
+  bleed={true}
+  hideNav={true}
+  hideFoot={true}
+>
+  {/* A section, not a <main>. This sat inside RootLayout's own <main>,
+      so the page shipped NESTED LANDMARKS — invalid, and two of them is
+      a real problem for a screen reader deciding what the page is.
+
+      Not role="application" either, tempting as it is for a pannable
+      canvas: that suppresses browse mode outright, and a reader who
+      lands here would lose the normal way of getting around before
+      discovering there is a keyboard scheme to replace it. A named
+      region says what this is and takes nothing away. */}
+  <section
     id="workspace-viewport"
-    class="w-full h-[100dvh] overflow-hidden bg-desk text-iron select-none cursor-grab active:cursor-grabbing relative touch-none"
+    class="w-full h-[100dvh] overflow-hidden bg-plat-desk text-iron select-none cursor-grab active:cursor-grabbing relative touch-none"
+    aria-label={`${gallery.title} — mount desk`}
   >
     <!-- ── the mount desk ─────────────────────────────────────── -->
     <div
       id="light-table"
-      class="absolute bg-topo-canvas pointer-events-auto origin-top-left will-change-transform"
+      class="absolute pointer-events-auto origin-top-left will-change-transform"
       style={`width:${gallery.boardW}px; height:${gallery.boardH}px;`}
       data-center-x={gallery.centerX}
       data-center-y={gallery.centerY}
@@ -143,11 +176,11 @@ const registry = SERIES;
         </button>
       ))}
     </div>
-  </main>
+  </section>
 
   <!-- ── field notebook (fixed HUD) ────────────────────────────────
-       A SIBLING of <main>, not a child. It's position:fixed either way,
-       so it renders in the same place — but touch-action is intersected
+       A SIBLING of #workspace-viewport, not a child. It's
+       position:fixed either way, so it renders in the same place — but touch-action is intersected
        down the ancestor chain, and #workspace-viewport carries
        touch-none for the board's own pinch. Nested, the notebook
        inherited that and couldn't be pinched or scrolled on a phone; a
@@ -286,7 +319,8 @@ const registry = SERIES;
   ></div>
 
   <!-- ── viewing station ──────────────────────────────────────────
-       Outside <main> so the board can be made inert while it's open. -->
+       Outside #workspace-viewport so the board can be made inert
+       while it's open. -->
   <div
     id="lightbox-modal"
     role="dialog"
@@ -630,7 +664,7 @@ const registry = SERIES;
       frame = requestAnimationFrame(() => {
         frame = 0;
         clampPan();
-        table.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
+        paint();
         scheduleLod();
       });
     };
@@ -743,11 +777,28 @@ const registry = SERIES;
 
     /* Writes the transform straight out, skipping commit's rAF batching
        so the animation owns its own frames. */
+    /* The board's transform and the desk's ruling are ONE operation.
+       The plat is painted on the viewport rather than on the board — a
+       board is sized per gallery, so ruling it meant the lines stopped
+       in mid air at a distance that depended on how many plates the
+       series happened to have. Painting the surface and sliding the
+       board across it gives an edgeless desk for one viewport-sized
+       element instead of an oversized layer to rasterize.
+
+       Both writers go through here so the two can never drift apart by
+       a frame. */
+    const paint = () => {
+      table.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
+      viewport.style.setProperty('--plat-k', String(scale));
+      viewport.style.setProperty('--plat-x', `${panX}px`);
+      viewport.style.setProperty('--plat-y', `${panY}px`);
+    };
+
     const setView = (cx: number, cy: number, s: number) => {
       scale = s;
       panX = viewport.clientWidth / 2 - cx * s;
       panY = viewport.clientHeight / 2 - cy * s;
-      table.style.transform = `translate3d(${panX}px, ${panY}px, 0) scale(${scale})`;
+      paint();
     };
 
     const coverRect = (index: number) => {
@@ -1675,12 +1726,11 @@ html, body {
     #hud-overlay[data-expanded='true'] { max-width: 24rem; }
   }
 
-  /* .bg-topo-canvas now lives in global.css. The album's gutter draws
-     the same sheet, and one desk defined in two places is one desk that
-     drifts. The contours also went from haze/0.62 (1.13:1 — invisible)
-     to llano at full strength, and from 1.2 to 2.4 board units, because
-     this element is a CSS transform and the stroke scales with it: at
-     the fit-to-board view it was drawing at a quarter of a pixel. */
+  /* .bg-plat-desk lives in global.css. The album's gutter rules the
+     same sheet, and one desk defined in two places is one desk that
+     drifts. See that file for why the survey grid replaced the
+     contours, and for how the two line weights are meant to degrade as
+     this element scales. */
 
   @media (prefers-reduced-motion: reduce) {
     #lightbox-img,
