@@ -267,7 +267,7 @@ export function plateLight(exposure: PlateExposure, options: SolarOptions = {}):
     `color-mix(in oklab, ${SKY_TINT} ${(30 + 42 * skyBlue).toFixed(0)}%, ${SHADOW_BASE})`;
 
   const litPaper =
-    `color-mix(in oklab, ${light} ${(9 + 22 * directShare).toFixed(1)}%, var(--color-dust, #C1AD8A))`;
+    `color-mix(in oklab, ${light} ${(9 + 22 * directShare).toFixed(1)}%, var(--color-desk, #F5F3ED))`;
   // Skip the outer mix entirely in daylight rather than emitting a
   // three-deep nest with a 0% term. Every plate is a daytime exposure, so
   // this is the normal path, and what lands in devtools should be readable.

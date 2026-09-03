@@ -294,7 +294,7 @@ if (belowHorizon.length) {
           <span class="plateline">{s.coverLabel}</span>
 
           <div class="foot">
-          <div class="slip bg-canvas border border-haze p-5 sm:p-6 md:p-8">
+          <div class="slip bg-caliche border border-llano p-5 sm:p-6 md:p-8">
             {/* The numeral moves down to sit WITH the title. It used to
                 hold the right end of a justify-between row whose left end
                 was the plate label; with the label gone it would have been
@@ -323,7 +323,7 @@ if (belowHorizon.length) {
             {href ? (
               <a
                 href={href}
-                class="enter inline-block py-1.5 font-mono text-[11px] uppercase tracking-widest text-caprock hover:opacity-60 transition-opacity"
+                class="enter inline-block py-1.5 font-mono text-[11px] uppercase tracking-widest text-redbed hover:opacity-60 transition-opacity"
                 data-astro-prefetch="hover"
                 data-slug={s.slug}
                 data-plate={desk ? String(desk.index) : ''}
@@ -332,7 +332,7 @@ if (belowHorizon.length) {
                 Step back to the desk &rarr;
               </a>
             ) : (
-              <span class="inline-block py-1.5 font-mono text-[11px] uppercase tracking-widest text-iron/40">
+              <span class="inline-block py-1.5 font-mono text-[11px] uppercase tracking-widest text-iron/70">
                 In preparation
               </span>
             )}
@@ -347,7 +347,7 @@ if (belowHorizon.length) {
                   class="strip-print"
                   style={`--tilt:${[-1.6, 1.1, -0.7, 1.8, -1.2, 0.6, -1.9][k % 7]}deg; --shift:${
                     (strip.length - 1 - k) * -12
-                  }px`}
+                  }px; --i:${strip.length - 1 - k}`}
                 >
                   <img src={t.src} alt={t.label} loading="lazy" decoding="async" width="280" />
                 </a>
@@ -454,14 +454,18 @@ if (belowHorizon.length) {
     position: relative;
     height: calc(100svh - var(--header-h, 0px));
 
-    /* The desk. --plate-desk carries the paper's colour under the
-       plate's own sun; without a date it resolves to plain dust. */
-    background-color: var(--plate-desk, var(--color-dust, #C1AD8A));
-    background-image: repeating-linear-gradient(
-      180deg,
-      transparent 0 27px,
-      rgb(90 78 60 / 0.10) 27px 28px
-    );
+    /* THE DESK — the same sheet the light table lays its plates on.
+       It used to be dust with a ruled ledger line, while the light
+       table was canvas with contours: 2.11:1 apart, two different
+       surfaces for the one thing the zoom insists is continuous. The
+       contour sheet won because it is the better idea for photographs
+       of land, and both pages now draw it from global.css.
+
+       --plate-desk carries the paper's colour under the plate's own
+       sun; without a date it resolves to the plain sheet. */
+    background-color: var(--plate-desk, var(--color-desk, #F5F3ED));
+    background-image: var(--topo-lines);
+    background-size: 1800px 1800px;
     min-height: 30rem;
     overflow: hidden;
     scroll-snap-align: start;
@@ -563,6 +567,26 @@ if (belowHorizon.length) {
   }
 
   /* ── the slip sits ON the desk ──────────────────────────────
+     THE PAPER IS CALICHE, NOT CANVAS. --color-canvas is #FBFBF9, a
+     relative luminance of 0.963 — on a full-bleed photograph it is
+     almost always the brightest thing on screen, and against a bright
+     Llano sky it measures 1.11:1, which is to say the same value. It
+     did not sit on a bright cover so much as punch a hole in it.
+
+     The gutter is what forced the question. It shows the desk, and the
+     desk is dust — so at every seam you saw two papers that did not
+     match: a warm ruled sheet, and a card 2.11:1 brighter than it.
+     Caliche closes that to 1.68:1 while staying unmistakably lighter,
+     and it comes out of the palette that is already there. That palette
+     is a stratigraphic column — caliche, llano, ogallala, redbed,
+     dockum, basement, the Llano Estacado's own section from the
+     surface down — so the slip is now built from the top two layers
+     and its small print from further down.
+
+     The print mounts in the fan stay pure white on purpose. A
+     photographic print IS mounted on white board and a catalogue slip
+     IS buff card; that difference is real, not an inconsistency.
+
      shadow-2xl is Tailwind's generic 0 25px 50px — straight down,
      always. The print beside it now throws a shadow whose direction
      comes from where the sun actually was, so the two were two objects
@@ -584,7 +608,11 @@ if (belowHorizon.length) {
         in oklab,
         var(--plate-shadow, #191410) calc(var(--plate-sh-alpha, 0.3) * 68%),
         transparent
-      );
+      ),
+      /* the top edge of the card catching the light. One inset pixel —
+         paper has a thickness and a lit side, and this is the whole of
+         what says so. */
+      inset 0 1px 0 rgb(255 255 255 / 0.5);
   }
 
   /* A hairline above the action, the way a catalogue slip rules off its
@@ -593,7 +621,8 @@ if (belowHorizon.length) {
   .slip-rule {
     margin-top: 1.15rem;
     padding-top: 0.7rem;
-    border-top: 1px solid var(--color-haze, #E6E4DF);
+    /* haze measures 1.03:1 on caliche — a rule you cannot see. */
+    border-top: 1px solid var(--color-llano, #BFB49A);
   }
 
   /* ── the plate label ────────────────────────────────────────
@@ -749,28 +778,67 @@ if (belowHorizon.length) {
     background: #fff;
     border-radius: 2px;
     box-shadow: 0 6px 18px rgb(0 0 0 / 0.3);
-    transform: rotate(var(--tilt));
+    transform: rotate(var(--tilt)) translateX(calc(var(--shift) * var(--spread)));
     transform-origin: bottom center;
     pointer-events: auto;
     transition: transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: 0ms;
   }
 
   .strip-print + .strip-print {
     margin-left: -2.5rem;
   }
 
-  /* The spread is a TRANSFORM, not a margin. Animating margin-left
+  /* ── the fan deals itself out ───────────────────────────────
+     The spread is a TRANSFORM, not a margin. Animating margin-left
      changed the strip's width, and since the strip is flex-shrink: 0
      and the slip is not, the slip absorbed the difference and visibly
      narrowed every time the pane was hovered. Transforms do not
-     participate in layout, so the slip now holds still.
+     participate in layout, so the slip holds still.
 
      --shift runs leftward, computed per print in the template so the
      RIGHTMOST stays put. Spreading rightward would push the run off
-     the edge, since the fan is right-aligned. */
+     the edge, since the fan is right-aligned.
+
+     --spread is 0 stacked, 1 open. Hover and arrival both set that ONE
+     variable instead of each writing their own transform — the same
+     reason --contract exists for the gutter and the foreshadow. Two
+     rules setting transform on this element would mean the later one
+     won outright, and the individual-print lift below would have had
+     to know about both. */
+  .pane {
+    --spread: 0;
+  }
+
+  .pane:hover,
+  .pane:focus-within {
+    --spread: 1;
+  }
+
+  /* The gesture has never existed on a phone: the fan opened on hover,
+     and touch does not hover. So where there is no pointer, ARRIVING at
+     the pane opens it — the same crossing trackRail already reports for
+     the rail, no second observer and no scroll handler.
+
+     Gated on (hover: none) deliberately. On a desktop the stack at rest
+     and the opening on approach is the behaviour that was designed, and
+     making the current pane permanently open would take that away to
+     fix a problem desktop does not have. */
+  @media (hover: none) {
+    .pane.is-current {
+      --spread: 1;
+    }
+  }
+
+  /* Staggered from the print that does not move, so they DEAL rather
+     than slide as one block. The delay lives on the open state only:
+     transitions read their timing from the style being moved TO, so
+     closing collapses straight away instead of unwinding print by
+     print. */
   .pane:hover .strip-print,
-  .pane:focus-within .strip-print {
-    transform: rotate(var(--tilt)) translateX(var(--shift));
+  .pane:focus-within .strip-print,
+  .pane.is-current .strip-print {
+    transition-delay: calc(var(--i, 0) * 38ms);
   }
 
   /* Fixed thumbnail box. Plates are a mix of portrait and landscape,
@@ -789,9 +857,10 @@ if (belowHorizon.length) {
      later in the sheet — so a print you point at straightens and lifts
      out of the fan while its neighbours stay where the spread put
      them. */
-  .pane:hover .strip-print:hover,
-  .pane .strip-print:focus-visible {
-    transform: rotate(0deg) translateX(var(--shift)) translateY(-12px);
+  .strip-print:hover,
+  .strip-print:focus-visible {
+    transform: rotate(0deg) translateX(calc(var(--shift) * var(--spread))) translateY(-12px);
+    transition-delay: 0ms;
     z-index: 3;
     position: relative;
   }
@@ -1009,9 +1078,15 @@ if (belowHorizon.length) {
       transition: none;
     }
 
+    /* The fan still opens — it is what tells you the series has more
+       than one plate, and on a phone there is no hover to reveal it.
+       It just arrives there instantly rather than dealing out. The
+       previous rule cancelled the spread outright, which on touch
+       meant the information was never available at all. */
     .pane:hover .strip-print,
-    .pane:focus-within .strip-print {
-      transform: rotate(var(--tilt));
+    .pane:focus-within .strip-print,
+    .pane.is-current .strip-print {
+      transition-delay: 0ms;
     }
 
     .pane:has(.enter:hover) {
@@ -1033,10 +1108,29 @@ if (belowHorizon.length) {
   }
 
   /* Astro ships this only on routes rendering this component. Change
-     `proximity` to `mandatory` for an uninterruptible snap. */
+     `proximity` to `mandatory` for an uninterruptible snap.
+
+     SNAPPING IS OFF UNTIL THE HEADER HAS BEEN MEASURED. Before the
+     script runs, --header-h falls back to 0px — so a pane is a full
+     100svh tall and its scroll-margin-top is 0, which puts its snap
+     area at the header's full height instead of at 0. Proximity snap
+     resolves that the only way it can: by scrolling the document down
+     by exactly the height of the header, on load, before anyone has
+     touched it.
+
+     It shows on a phone and not a desktop because that is where the
+     script lands late enough for the browser to lay out, snap and
+     paint first. Turning snap on only once the measurement is in
+     place removes the window entirely. Re-enabling it at scroll
+     position 0 moves nothing, because by then pane one's snap area
+     starts at 0 too. */
   html {
-    scroll-snap-type: y proximity;
+    scroll-snap-type: none;
     scroll-behavior: smooth;
+  }
+
+  html[data-album-ready] {
+    scroll-snap-type: y proximity;
   }
 
   /* The catchword and the rail both navigate by fragment, and a jump
@@ -1131,6 +1225,31 @@ if (belowHorizon.length) {
      rather than assumed. Runs before restore(), so a returning reader
      is scrolled against the correct pane height rather than one that
      changes under them a frame later. */
+  function hasSavedReturn() {
+    try {
+      return !!sessionStorage.getItem(KEY);
+    } catch {
+      return false;
+    }
+  }
+
+  /* Arms the snap, and first undoes the load-time nudge if the browser
+     managed one before the attribute landed — a slow phone can lay out,
+     snap and paint before a module script executes. The correction is
+     deliberately narrow: only a scroll position inside the header's own
+     height, only with no fragment in the URL, and only when no return
+     is pending, so a deep link or a reader coming back from a desk is
+     never dragged to the top. */
+  function armSnap(root: HTMLElement) {
+    if (!location.hash && !hasSavedReturn()) {
+      const h = parseFloat(getComputedStyle(root).getPropertyValue('--header-h')) || 0;
+      if (window.scrollY > 0 && window.scrollY <= h + 4) {
+        window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior });
+      }
+    }
+    root.setAttribute('data-album-ready', '');
+  }
+
   function trackHeaderHeight() {
     const sticky = document.getElementById('horizon-sticky');
     const root = document.documentElement;
@@ -1139,12 +1258,14 @@ if (belowHorizon.length) {
       /* No header on this render — hideNav, or the markup moved. Zero
          is right, not a guess: the panes get the whole viewport. */
       root.style.setProperty('--header-h', '0px');
+      armSnap(root);
       return;
     }
 
     const set = () =>
       root.style.setProperty('--header-h', `${Math.round(sticky.getBoundingClientRect().height)}px`);
     set();
+    armSnap(root);
 
     if ('ResizeObserver' in window) {
       const ro = new ResizeObserver(set);
@@ -1217,6 +1338,7 @@ if (belowHorizon.length) {
     if (!marks.length || !('IntersectionObserver' in window)) return;
 
     const rail = album.querySelector<HTMLElement>('.rail');
+    const panes = album.querySelectorAll<HTMLElement>('.pane');
 
     const io = new IntersectionObserver(
       (entries) => {
@@ -1224,6 +1346,11 @@ if (belowHorizon.length) {
           if (!entry.isIntersecting) continue;
           const id = entry.target.id;
           marks.forEach((m) => m.setAttribute('data-current', String(m.dataset.for === id)));
+          /* Marks the pane you have arrived at. On a touch device that
+             is what opens the print fan, which until now only ever
+             opened on hover — a gesture a phone does not have. Four
+             classList writes on a crossing that was already happening. */
+          panes.forEach((p) => p.classList.toggle('is-current', p === entry.target));
           carryTint(rail, entry.target);
           warm(entry.target);
         }

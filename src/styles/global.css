@@ -18,8 +18,40 @@
   --color-basement: #1c1917;
   --color-gold: #D3AF37;
 
+  /* THE DESK. One sheet, shared by the light table and by the strip the
+     album's gutter opens around a plate. They were two different
+     surfaces — canvas #FBFBF9 here, dust #C1AD8A there, 2.11:1 apart —
+     which broke the one premise the zoom rests on: that a pane IS a
+     plate lying on the desk you are about to see. Caliche 30% over
+     canvas: paper rather than screen white, still bright enough to be a
+     LIGHT table. */
+  --color-desk: #FBFBF9;
+
   --font-serif: "cormorant-garamond", "Georgia", "Cambria", "Times New Roman", "Times", serif;
   --font-sans: "komet", "system-ui", "-apple-system", "BlinkMacSystemFont", sans-serif;
+}
+
+/* The contour sheet. Defined once here rather than inside a page's
+   scoped block, because two pages now draw the same desk and a second
+   copy is a second thing to keep in step.
+
+   Stroke is llano at full opacity, not haze at 0.62 — that resolved to
+   1.13:1 against the paper, which is a pattern nobody can see. 1.85:1
+   is still quiet and is actually there.
+
+   Width went 1.2 -> 2.4 board units because #light-table is a CSS
+   transform and the stroke scales with it: at the fit-to-board view it
+   was drawing at 0.24px, which is nothing. It is deliberately still
+   faint when fully zoomed out and resolves as you come in — contours
+   ought to reward approach. */
+:root {
+  --topo-lines: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Cpath d='M0 250 C 200 210, 250 420, 450 370 C 650 320, 600 580, 800 550 M0 450 C 150 480, 350 280, 550 320 C 750 360, 700 680, 800 700 M0 650 C 180 600, 280 720, 450 620 C 620 520, 680 780, 800 720 M0 50 C 100 80, 200 20, 350 120 C 500 220, 650 100, 800 180' fill='none' stroke='%23BFB49A' stroke-width='2.4' stroke-opacity='0.2'/%3E%3C/svg%3E");
+}
+
+.bg-topo-canvas {
+  background-color: var(--color-desk);
+  background-image: var(--topo-lines);
+  background-size: 1800px 1800px;
 }
 
 /* Global Markdown Typography Handlers */

@@ -79,7 +79,7 @@ const registry = SERIES;
 <Layout title={`${gallery.title} | Austin Allison`} hideFoot={true}>
   <main
     id="workspace-viewport"
-    class="w-full h-[100dvh] overflow-hidden bg-canvas text-iron select-none cursor-grab active:cursor-grabbing relative touch-none"
+    class="w-full h-[100dvh] overflow-hidden bg-desk text-iron select-none cursor-grab active:cursor-grabbing relative touch-none"
   >
     <!-- ── the mount desk ─────────────────────────────────────── -->
     <div
@@ -104,7 +104,7 @@ const registry = SERIES;
           data-index={plate.index}
           aria-label={`Open ${plate.plate}, ${plateLine(plate)}`}
         >
-          <span class="block border border-iron/10 p-3 bg-canvas shadow-md rounded-sm overflow-hidden transition-all duration-500 group-hover:shadow-xl group-hover:border-caprock/30">
+          <span class="block border border-iron/10 p-3 bg-canvas shadow-md overflow-hidden transition-all duration-500 group-hover:shadow-xl group-hover:border-caprock/30">
             <span class="block overflow-hidden bg-iron/5">
               {/* No srcset. Density descriptors (1x/2x) choose on DPR
                   alone and cannot see the transform on #light-table, so
@@ -163,16 +163,16 @@ const registry = SERIES;
     <div
       id="hud-overlay"
       data-expanded="false"
-      class="pointer-events-auto w-full bg-canvas/95 backdrop-blur-xs p-4 md:p-6 border border-haze rounded-sm shadow-lg transition-all duration-300 flex flex-col gap-1.5"
+      class="pointer-events-auto w-full bg-canvas p-4 md:p-6 border border-llano/70 shadow-md transition-all duration-300 flex flex-col gap-1.5"
     >
       <div class="flex items-start justify-between gap-3">
-        <span class="font-serif text-lg md:text-2xl text-sage">
+        <span class="font-serif text-lg md:text-2xl text-iron/60">
           Series {gallery.number}.
         </span>
         <button
           id="hud-toggle"
           type="button"
-          class="md:hidden font-mono text-[9px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors flex items-center gap-1 focus:outline-none shrink-0"
+          class="md:hidden font-mono text-[10px] uppercase tracking-widest text-iron/70 hover:text-caprock transition-colors flex items-center gap-1 focus:outline-none shrink-0"
           aria-expanded="false"
           aria-controls="hud-collapsible"
         >
@@ -185,34 +185,34 @@ const registry = SERIES;
         {gallery.title}
       </h1>
 
-      <p class="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-sage/90">
+      <p class="font-mono text-[10px] uppercase tracking-widest text-iron/70">
         {gallery.region}
       </p>
 
       <div id="hud-collapsible" class="hidden md:block transition-all duration-300 overflow-hidden">
-        <nav class="flex flex-col gap-1.5 mt-4 border-t border-haze/40 pt-4 pb-2">
-          <span class="font-mono text-[9px] uppercase tracking-widest text-iron/40 mb-1">
+        <nav class="flex flex-col gap-1.5 mt-4 border-t border-llano/60 pt-4 pb-2">
+          <span class="font-mono text-[10px] uppercase tracking-widest text-iron/60 mb-1">
             Series Registry
           </span>
           {registry.map((s) =>
             !s.built ? (
               <span
-                class="font-mono text-[10px] text-iron/30 truncate cursor-default"
+                class="font-mono text-[10px] text-iron/70 truncate cursor-default"
                 title="In preparation"
               >
-                {s.number}. {s.title} <span class="text-iron/25">— in preparation</span>
+                {s.number}. {s.title} <span class="text-iron/55">— in preparation</span>
               </span>
             ) : s.slug === gallery.slug ? (
               <span
                 aria-current="page"
-                class="font-mono text-[10px] text-caprock truncate flex items-center gap-1.5"
+                class="font-mono text-[10px] text-redbed font-semibold truncate flex items-center gap-1.5"
               >
                 <span aria-hidden="true">▸</span>{s.number}. {s.title}
               </span>
             ) : (
               <a
                 href={`/photography/${s.slug}`}
-                class="font-mono text-[10px] text-sage hover:text-caprock transition-colors truncate"
+                class="font-mono text-[10px] text-redbed hover:text-caprock transition-colors truncate"
               >
                 {s.number}. {s.title}
               </a>
@@ -221,7 +221,7 @@ const registry = SERIES;
 
           <a
             href={`/photography/plates#${gallery.slug}`}
-            class="font-mono text-[9px] uppercase tracking-widest text-iron/40 hover:text-caprock transition-colors mt-2 pt-2 border-t border-haze/30"
+            class="font-mono text-[10px] uppercase tracking-widest text-iron/70 hover:text-caprock transition-colors mt-2 pt-2 border-t border-llano/40"
           >
             Plate index &rarr;
           </a>
@@ -229,32 +229,36 @@ const registry = SERIES;
       </div>
 
       <!-- board controls + legend -->
-      <div class="flex items-center gap-3 mt-2 pt-2 border-t border-haze/40">
+      <div class="flex items-center gap-3 mt-2 pt-2 border-t border-llano/60">
+        {/* The control now reads louder than the instructions that
+            describe it. It was the other way round: `fit board` at
+            iron/50 beside a caprock instruction line, so the loudest
+            text on the page was also the least important. */}
         <button
           id="btn-fit"
           type="button"
-          class="font-mono text-[9px] md:text-[10px] uppercase tracking-widest text-iron/50 hover:text-caprock transition-colors focus:outline-none"
+          class="font-mono text-[10px] uppercase tracking-widest text-redbed hover:text-caprock transition-colors focus:outline-none border border-llano px-2 py-1"
           title="Frame every plate (0)"
         >
           fit board
         </button>
-        <span class="hidden md:inline font-mono text-[10px] uppercase tracking-wider text-caprock">
+        <span class="hidden md:inline font-mono text-[10px] uppercase tracking-wider text-iron/70">
           drag to move · ⌘/ctrl + scroll to zoom · click to open
         </span>
       </div>
 
       <div
         id="mobile-instructions"
-        class="hidden md:hidden font-mono text-[9px] uppercase tracking-wider text-sage/80 items-center gap-2 border-t border-haze/30 pt-3 mt-1"
+        class="hidden md:hidden font-mono text-[10px] uppercase tracking-wider text-iron/70 items-center gap-2 border-t border-llano/50 pt-3 mt-1"
       >
-        <span class="animate-pulse" aria-hidden="true">●</span> Pinch and drag to explore. Tap to open.
+        <span aria-hidden="true">●</span> Pinch and drag to explore. Tap to open.
       </div>
     </div>
 
     <div class="pointer-events-auto shrink-0">
       <a
         href="/photography"
-        class="font-mono text-[9px] md:text-[10px] lowercase tracking-wide bg-caprock/80 backdrop-blur-xs px-3 py-1.5 md:px-4 md:py-2 border border-haze rounded-sm text-canvas hover:text-caprock hover:bg-canvas transition-colors shadow-xs block"
+        class="font-mono text-[10px] lowercase tracking-wide bg-canvas px-3 py-1.5 md:px-4 md:py-2 border border-llano/70 text-redbed hover:text-caprock transition-colors shadow-sm block"
       >
         &larr; close<span class="hidden sm:inline"> album</span>
       </a>
@@ -359,7 +363,7 @@ const registry = SERIES;
             <a
               id="lightbox-record"
               href="#"
-              class="font-mono text-[9px] uppercase tracking-widest text-iron/60 hover:text-caprock transition-colors"
+              class="font-mono text-[10px] uppercase tracking-widest text-iron/70 hover:text-caprock transition-colors"
             >
               Plate record &rarr;
             </a>
@@ -368,14 +372,14 @@ const registry = SERIES;
               href="#"
               target="_blank"
               rel="noopener noreferrer"
-              class="hidden font-mono text-[9px] uppercase tracking-widest text-caprock hover:text-iron transition-colors"
+              class="hidden font-mono text-[10px] uppercase tracking-widest text-redbed hover:text-iron transition-colors"
             >
               Order a print &rarr;
             </a>
             <a
               id="lightbox-license"
               href="#"
-              class="hidden font-mono text-[9px] uppercase tracking-widest text-sage hover:text-caprock transition-colors"
+              class="hidden font-mono text-[10px] uppercase tracking-widest text-iron/70 hover:text-caprock transition-colors"
             >
               Inquire about licensing
             </a>
@@ -385,7 +389,7 @@ const registry = SERIES;
           id="lightbox-notes"
           class="col-span-12 md:col-span-7 border-t border-dashed border-haze/40 pt-3 md:pt-0 md:border-t-0 font-serif normal-case tracking-normal text-xs text-iron/70 leading-relaxed max-h-[12dvh] overflow-y-auto pr-2 scrollbar-none select-text touch-pan-y"
         >
-          <p id="lightbox-caption" class="cursor-text font-mono"></p>
+          <p id="lightbox-caption" class="cursor-text"></p>
         </div>
       </div>
 
@@ -655,6 +659,37 @@ const registry = SERIES;
       commit();
     };
 
+    /* ── how a phone should arrive ────────────────────────────────
+       fitBoard() fits BOTH axes, which is right for a button called
+       "fit board" and wrong as an arrival. A landscape sheet in a
+       portrait viewport is bound entirely by width: on a 321x704 phone
+       the plates landed in a band about a quarter of the height, every
+       one of them around 40px, with three quarters of the screen bare
+       desk. Twenty unreadable squares and a lot of paper.
+
+       A light table is not a thing you view entire. It is a thing you
+       stand over part of. So the phone arrives filling the height with
+       plates near 100px, and pans. The whole sheet is still one tap
+       away on `fit board`.
+
+       The height is reserved TWICE over, once for the notebook and once
+       for the gap it leaves at the bottom, because clampPan re-centres
+       anything shorter than the viewport — so asking for a band below
+       the notebook would simply be centred back underneath it. Sizing
+       the content to clear the notebook at dead centre is the one form
+       of this that survives the clamp. */
+    const HUD_RESERVE = 132;
+
+    const narrowView = () => {
+      const vh = viewport.clientHeight;
+      const ch = bMaxY - bMinY;
+      return {
+        cx: (bMinX + bMaxX) / 2,
+        cy: (bMinY + bMaxY) / 2,
+        s: clamp((vh - HUD_RESERVE * 2) / ch, MIN_SCALE, 0.5),
+      };
+    };
+
     const centerOn = (x: number, y: number, s: number) => {
       scale = clamp(s, MIN_SCALE, MAX_SCALE);
       panX = viewport.clientWidth / 2 - x * scale;
@@ -702,16 +737,7 @@ const registry = SERIES;
     const defaultView = () => {
       const vw = viewport.clientWidth;
       const vh = viewport.clientHeight;
-      if (isNarrow) {
-        const pad = vw < 768 ? 20 : 64;
-        const cw = bMaxX - bMinX;
-        const ch = bMaxY - bMinY;
-        return {
-          cx: (bMinX + bMaxX) / 2,
-          cy: (bMinY + bMaxY) / 2,
-          s: clamp(Math.min((vw - pad * 2) / cw, (vh - pad * 2) / ch), MIN_SCALE, 1),
-        };
-      }
+      if (isNarrow) return narrowView();
       return { cx: centerX, cy: centerY, s: 0.65 };
     };
 
@@ -743,10 +769,10 @@ const registry = SERIES;
       Number.isInteger(fromIdx) && fromIdx >= 0 && fromIdx < total ? coverRect(fromIdx) : null;
 
     if (!rect || reduceMotion || params.has('plate')) {
-      // Desktop opens on the composed view; mobile opens framed, because
-      // 0.45 scale on a phone shows about a quarter of the sheet.
-      if (isNarrow) fitBoard();
-      else centerOn(centerX, centerY, 0.65);
+      // Desktop opens on the composed view; a phone opens over the
+      // sheet rather than above it — see narrowView.
+      const v = defaultView();
+      centerOn(v.cx, v.cy, v.s);
     } else {
       noClamp = true;
       const end = defaultView();
@@ -1649,11 +1675,12 @@ html, body {
     #hud-overlay[data-expanded='true'] { max-width: 24rem; }
   }
 
-  .bg-topo-canvas {
-    background-color: #FBFBF9;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Cpath d='M0 250 C 200 210, 250 420, 450 370 C 650 320, 600 580, 800 550 M0 450 C 150 480, 350 280, 550 320 C 750 360, 700 680, 800 700 M0 650 C 180 600, 280 720, 450 620 C 620 520, 680 780, 800 720 M0 50 C 100 80, 200 20, 350 120 C 500 220, 650 100, 800 180' fill='none' stroke='%23E6E4DF' stroke-width='1.2' stroke-opacity='0.62'/%3E%3C/svg%3E");
-    background-size: 1800px 1800px;
-  }
+  /* .bg-topo-canvas now lives in global.css. The album's gutter draws
+     the same sheet, and one desk defined in two places is one desk that
+     drifts. The contours also went from haze/0.62 (1.13:1 — invisible)
+     to llano at full strength, and from 1.2 to 2.4 board units, because
+     this element is a CSS transform and the stroke scales with it: at
+     the fit-to-board view it was drawing at a quarter of a pixel. */
 
   @media (prefers-reduced-motion: reduce) {
     #lightbox-img,
