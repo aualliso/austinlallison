@@ -137,8 +137,23 @@ export type PlateInput = {
   w?: number;
   /** Place this plate directly beneath another, by that plate's `file`.
    *  For pairs that have to be read together — a summer and winter of
-   *  the same view — without pinning either to absolute coordinates. */
+   *  the same view — without pinning either to absolute coordinates.
+   *  Must reference a plate on the SAME sheet. */
   after?: string;
+  /** Which sheet of the desk this plate is laid on. Sheets appear in
+   *  the order first mentioned, laid side by side on one continuous
+   *  desk, and each is authored in its OWN coordinates starting near
+   *  the origin — the offset between them is computed, never written.
+   *
+   *  Name a sheet for WHERE, not for which: 'The Montana Front', 'The
+   *  Caprock'. A sheet called 'Plates 21-40' is pagination wearing a
+   *  costume; a sheet named for a place is the reason to have sheets at
+   *  all — and it is how a plat book is bound, by township and range
+   *  rather than by count.
+   *
+   *  Omit it and every plate falls on one unnamed sheet, which is
+   *  exactly what a small series should keep. */
+  sheet?: string;
   caption?: string;
   /** EXIF DateTimeOriginal as local wall time, 'YYYY-MM-DDTHH:MM:SS'.
    *  Drives the desk light on the album. Omit and that plate's desk
@@ -541,7 +556,6 @@ const galleryData: GalleryInput[] = [
         title: 'Earth\'s Canvas in Texas', place: 'Bailey County, Texas',
         lat: 33.991164, lng: -102.708448,
         specs: '12mm \u00B7 \u0192/5.6 \u00B7 1/800s',
-        w: 300,
         caption:'The rust-colored water bleeds into the vibrant green shoreline, separated by chalky white salt flats that look like brushstrokes from above, showcasing the raw, abstract beauty of a receding playa lake.',
         x: 1920, y: 600, w: 300,
       },
@@ -698,7 +712,7 @@ const galleryData: GalleryInput[] = [
         place: 'Grow, King County, Texas',
         lat:  33.81, lng: -100.306,
         specs: '12mm \u00B7 \u0192/2.2 \u00B7 1/4000s',
-        x: 1580, y: 80, w: 250,
+        x: 1580, y: 70, w: 250,
         caption: 'An aerial view of the Grow Gin in King County, Texas. The scale house and gin sit amidst the gently rolling plains east of the Llano Estacado.',
       }, 
       {
@@ -746,6 +760,42 @@ const galleryData: GalleryInput[] = [
         x: 1330, y: 700, w: 250,
         caption: 'The gin at Hart Camp, Texas exists just south of the crossroads of FM 37 and FM 168 in eastern Lamb County. Prominent bits of signage are still visible on the corrugated metal and a Hardwicke-Etter sign remains at the peak. The Hart Camp School is north of this structure and is another extant struture of the once busling corner.',
       },   
+      {
+        file: 'cotton_gins/cottoncentergpp.2018.0003.jpg',
+        title: 'Starnes Gin at Cotton Center',
+        place: 'Cotton Center, Hale County, Texas',
+        lat:  33.991868, lng: -101.994937,
+        specs: '70mm \u00B7 \u0192/5.6 \u00B7 1/800s',
+        x: 1600, y: 680, w: 250,
+        caption: 'The 1938 Gill Starnes Gin at Cotton Center remains idle here in the 21st century exhibiting remnants of past operations. The first Gill Starnes Gin burned in January 1938 before being quickly rebuilt later that year. The facility\'s brick burr burner remains a sentinel in the gin\'s yard.',
+      }, 
+      {
+        file: 'cotton_gins/aftongpp.2018.0031.jpg',
+        title: 'Afton Gin',
+        place: 'Afton, Dickens County, Texas',
+        lat:  33.758793, lng: -100.815778,
+        specs: '70mm \u00B7 \u0192/8 \u00B7 1/160s',
+        x: 1760, y: 290, w: 250,
+        caption: 'The gin at Afton sits at the curve of FM 193. Seen here near a late-winter sunset, the gin\'s waxing silhouette features typical blueish gray corrugated metal with splotches of rust becoming more evident. The community\'s water tower is visible in the foreground.',
+      },
+      {
+        file: 'cotton_gins/ceeveegpp.2018.0019.jpg',
+        title: 'Gin at Cee Vee',
+        place: 'Cee Vee, Cottle County, Texas',
+        lat:  34.221609, lng: -100.445686,
+        specs: '24mm \u00B7 \u0192/8 \u00B7 1/500s',
+        x: 780, y: 770, w: 250,
+        caption: 'The gin at Cee Vee is a prime example of a West Texas gin with mixed additions. Built after 1965 just southwest of the site of the prior gin, this gin sits in the heart of Cee Vee adjacent to the historic green-roofed church.',
+      }, 
+      {
+        file: 'cotton_gins/parmer20190520-4.jpg',
+        title: 'Gin in rural Parmer County',
+        place: 'Parmer County, Texas',
+        lat:  34.422325, lng: -102.717289,
+        specs: '200mm \u00B7 \u0192/5.6 \u00B7 1/500s',
+        x: 1280, y: 900, w: 250,
+        caption: 'This gin at a curve in Highway 214 between Muleshoe and Friona was built at the edge of a playa lake. The surrounding landscape gently descends into an unseen lake basin.',
+      },
     ],
   }
 ];
@@ -791,6 +841,10 @@ export const plateLine = (p: { title: string; place: string }) =>
 const GUTTER_X = 110;   // horizontal breathing room between columns
 const GUTTER_Y = 96;    // vertical gap below a plate's caption
 const MARGIN = 220;     // slack from the sheet's top-left origin
+/* Bare desk between one sheet and the next. Wide enough that the two
+   never read as one crowded sheet, narrow enough that gliding across
+   is a move rather than a journey. */
+const SHEET_GUTTER = 520;
 const JITTER_X = 46;    // how far a plate may drift within its column
 const JITTER_Y = 70;    // extra sag below the column head
 const PAIR_GAP = 34;    // gap under an `after:` plate — tighter, they pair
@@ -1035,6 +1089,19 @@ export type ResolvedPlate = Omit<PlateInput, 'x' | 'y' | 'w'> & {
   printLink: string;
 };
 
+/** One sheet on the desk. Coordinates are FINAL board coordinates —
+ *  the per-sheet offset is already folded in. */
+export type ResolvedSheet = {
+  index: number;
+  /** as authored; empty for a gallery that never named its sheets */
+  label: string;
+  bounds: { minX: number; minY: number; maxX: number; maxY: number };
+  centerX: number;
+  centerY: number;
+  /** global plate indices on this sheet, in plate order */
+  plates: number[];
+};
+
 export type ResolvedGallery = Omit<GalleryInput, 'plates' | 'centerX' | 'centerY'> & {
   number: string;
   title: string;
@@ -1043,9 +1110,11 @@ export type ResolvedGallery = Omit<GalleryInput, 'plates' | 'centerX' | 'centerY
   /** the sheet, sized to whatever the layout produced */
   boardW: number;
   boardH: number;
-  /** the opening view — authored, or the centre of the content */
+  /** the opening view — authored, or the centre of the FIRST sheet */
   centerX: number;
   centerY: number;
+  /** always at least one, even when no plate named a sheet */
+  sheets: ResolvedSheet[];
   eager: Set<number>;
 };
 
@@ -1133,10 +1202,75 @@ async function build(): Promise<ResolvedGallery[]> {
       }),
     );
 
-    const positions = layout(
-      sized.map(({ p, w, h }) => ({ file: p.file, w, h, x: p.x, y: p.y, after: p.after })),
-      g.slug,
-    );
+    /* ── SHEETS ──────────────────────────────────────────────────
+       Sheets are not pages. They are laid SIDE BY SIDE on one
+       continuous desk, so flipping to the next slides the desk over
+       rather than swapping the board out — which is what a light table
+       actually does, and which keeps every existing behaviour intact:
+       the lightbox still runs the whole series in order, ?plate= still
+       finds its plate, the album handoff still lands on a board that is
+       already there, and the level-of-detail pass already culls what is
+       off screen, so the sheets you are not looking at cost nothing.
+
+       It also removes the ceiling that prompted it. Fit-to-board used
+       to have to frame every plate in the gallery, which on a phone
+       capped a series near thirty; it frames a SHEET now, so only a
+       sheet has to stay legible and the gallery can be any size.
+
+       Each sheet is authored in its own coordinates near the origin.
+       The offset is computed here from the widest sheet, so adding a
+       wide sheet never makes an author revisit the others. */
+    const sheetLabels: string[] = [];
+    const sheetOf = sized.map(({ p }) => {
+      const label = p.sheet ?? '';
+      let k = sheetLabels.indexOf(label);
+      if (k === -1) {
+        k = sheetLabels.length;
+        sheetLabels.push(label);
+      }
+      return k;
+    });
+
+    /* `after` resolves inside a single layout pass, so a reference
+       across a sheet boundary would silently fall back to the flow
+       instead of pairing. Better to say so at build. */
+    for (let i = 0; i < sized.length; i++) {
+      const ref = sized[i].p.after;
+      if (!ref) continue;
+      const j = sized.findIndex(({ p }) => p.file === ref);
+      if (j === -1 || sheetOf[j] === sheetOf[i]) continue;
+      throw new Error(
+        `[photography/${g.slug}] ${sized[i].p.file} is placed after ${ref}, but they are on different sheets. ` +
+          '`after` only pairs plates that share a sheet.',
+      );
+    }
+
+    const local = sheetLabels.map((_, k) => {
+      const idx = sheetOf.flatMap((sk, i) => (sk === k ? [i] : []));
+      const pos = layout(
+        idx.map((i) => {
+          const { p, w, h } = sized[i];
+          return { file: p.file, w, h, x: p.x, y: p.y, after: p.after };
+        }),
+        `${g.slug}#${k}`,
+      );
+      return { idx, pos };
+    });
+
+    const stride =
+      Math.max(
+        ...local.map(({ idx, pos }) =>
+          Math.max(...pos.map((q, n) => q.x + sized[idx[n]].w)),
+        ),
+      ) + SHEET_GUTTER;
+
+    const positions: { x: number; y: number }[] = new Array(sized.length);
+    for (let k = 0; k < local.length; k++) {
+      const { idx, pos } = local[k];
+      idx.forEach((i, n) => {
+        positions[i] = { x: pos[n].x + k * stride, y: pos[n].y };
+      });
+    }
 
     const bounds = sized.reduce(
       (acc, { w, h }, i) => ({
@@ -1154,8 +1288,31 @@ async function build(): Promise<ResolvedGallery[]> {
     const boardW = Math.max(1200, Math.ceil(bounds.maxX + MARGIN));
     const boardH = Math.max(900, Math.ceil(bounds.maxY + MARGIN));
 
-    const centerX = g.centerX ?? Math.round((bounds.minX + bounds.maxX) / 2);
-    const centerY = g.centerY ?? Math.round((bounds.minY + bounds.maxY) / 2);
+    const sheets: ResolvedSheet[] = local.map(({ idx }, k) => {
+      const b = idx.reduce(
+        (acc, i) => ({
+          minX: Math.min(acc.minX, positions[i].x),
+          minY: Math.min(acc.minY, positions[i].y),
+          maxX: Math.max(acc.maxX, positions[i].x + sized[i].w),
+          maxY: Math.max(acc.maxY, positions[i].y + sized[i].h + CAPTION_H),
+        }),
+        { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity },
+      );
+      return {
+        index: k,
+        label: sheetLabels[k],
+        bounds: b,
+        centerX: Math.round((b.minX + b.maxX) / 2),
+        centerY: Math.round((b.minY + b.maxY) / 2),
+        plates: idx,
+      };
+    });
+
+    /* The opening view is the FIRST sheet's centre, not the whole
+       desk's — a desk with four sheets on it has its centre in a gutter
+       between the second and third, which is a view of nothing. */
+    const centerX = g.centerX ?? sheets[0].centerX;
+    const centerY = g.centerY ?? sheets[0].centerY;
 
     const plates = sized.map(({ p, img, w, h }, i) => {
       const { x, y } = positions[i];
@@ -1188,6 +1345,7 @@ async function build(): Promise<ResolvedGallery[]> {
       for (let i = 0; i < plates.length; i++) {
         for (let j = i + 1; j < plates.length; j++) {
           const a = plates[i], b = plates[j];
+          if (sheetOf[i] !== sheetOf[j]) continue;
           const hit =
             a.x < b.x + b.w && b.x < a.x + a.w &&
             a.y < b.y + b.h + CAPTION_H && b.y < a.y + a.h + CAPTION_H;
@@ -1208,6 +1366,7 @@ async function build(): Promise<ResolvedGallery[]> {
       boardH,
       centerX,
       centerY,
+      sheets,
       eager: new Set(
         [...plates].sort((a, b) => a.d - b.d).slice(0, 4).map((p) => p.index),
       ),

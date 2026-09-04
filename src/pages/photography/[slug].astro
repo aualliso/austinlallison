@@ -72,7 +72,12 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 const gallery = await getGallery(slug!);
-const { plates, bounds, eager } = gallery;
+const { plates, bounds, eager, sheets } = gallery;
+
+/* A gallery only shows sheet machinery if it actually has sheets. One
+   unnamed sheet is the ordinary case and looks exactly as it did before
+   any of this existed. */
+const hasSheets = sheets.length > 1 || sheets[0].label !== '';
 const registry = SERIES;
 ---
 
@@ -128,6 +133,24 @@ const registry = SERIES;
       data-max-x={bounds.maxX}
       data-max-y={bounds.maxY}
     >
+      {/* Each sheet names itself on the desk, the way a plat book
+          titles its sheets. It is also the only orientation you get
+          while panning freely across a desk with several on it — the
+          rail says where you are, this says what you are looking at
+          without a trip back to the notebook. */}
+      {hasSheets &&
+        sheets.map((sh) =>
+          sh.label ? (
+            <div
+              class="sheet-title"
+              aria-hidden="true"
+              style={`left:${sh.bounds.minX}px; top:${sh.bounds.minY - 62}px; width:${sh.bounds.maxX - sh.bounds.minX}px;`}
+            >
+              {sh.label}
+            </div>
+          ) : null,
+        )}
+
       {plates.map((plate) => (
         <button
           type="button"
@@ -221,6 +244,31 @@ const registry = SERIES;
       <p class="font-mono text-[10px] uppercase tracking-widest text-iron/70">
         {gallery.region}
       </p>
+
+      {/* Above the fold on purpose. The collapsible below is shut on a
+          phone, and once a series is spread over sheets this is its
+          primary navigation — not a detail to go looking for. */}
+      {hasSheets && (
+        <nav
+          id="sheet-rail"
+          class="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3 pt-3 border-t border-llano/60"
+          aria-label="Sheets"
+        >
+          <span class="font-mono text-[10px] uppercase tracking-widest text-iron/60 w-full">
+            Sheets
+          </span>
+          {sheets.map((sh) => (
+            <button
+              type="button"
+              class="sheet-mark font-mono text-[10px] text-redbed hover:text-caprock transition-colors text-left inline-flex items-center min-h-[30px] py-1 pr-1"
+              data-sheet={sh.index}
+              data-current={sh.index === 0 ? 'true' : 'false'}
+            >
+              {sh.label || `Sheet ${sh.index + 1}`}
+            </button>
+          ))}
+        </nav>
+      )}
 
       <div id="hud-collapsible" class="hidden md:block transition-all duration-300 overflow-hidden">
         <nav class="flex flex-col gap-1.5 mt-4 border-t border-llano/60 pt-4 pb-2">
@@ -443,6 +491,20 @@ const registry = SERIES;
   </div>
 
   <!-- plate records, read by the lightbox -->
+  <!-- sheet extents, read by fit-to-sheet and the sheet rail -->
+  <script type="application/json" id="sheet-data" is:inline set:html={JSON.stringify(
+    sheets.map((sh) => ({
+      i: sh.index,
+      label: sh.label,
+      minX: sh.bounds.minX,
+      minY: sh.bounds.minY,
+      maxX: sh.bounds.maxX,
+      maxY: sh.bounds.maxY,
+      cx: sh.centerX,
+      cy: sh.centerY,
+    })),
+  )} />
+
   <script type="application/json" id="plate-data" is:inline set:html={JSON.stringify(
     plates.map((p) => ({
       full: p.img.full,
@@ -514,10 +576,74 @@ const registry = SERIES;
     const MAX_SCALE = 1.6;
     const EDGE_PAD = 160; // board units of slack around the plates
 
+    /* WHOLE-DESK bounds. clampPan uses these, so panning is free across
+       every sheet — they are laid side by side on one surface and
+       walling each one off would undo the reason for that. */
     const bMinX = Number(table.dataset.minX) - EDGE_PAD;
     const bMinY = Number(table.dataset.minY) - EDGE_PAD;
     const bMaxX = Number(table.dataset.maxX) + EDGE_PAD;
     const bMaxY = Number(table.dataset.maxY) + EDGE_PAD;
+
+    /* ── SHEETS ──────────────────────────────────────────────────
+       Sheets are regions of one desk, not pages of a book, so almost
+       nothing here has to know about them. The lightbox still runs the
+       whole series in order and crosses sheet boundaries without
+       comment, ?plate= still centres on its plate, the album handoff
+       still opens on a board that is already in the DOM, and the
+       level-of-detail pass already culls what is off screen, so the
+       sheets you are not looking at cost nothing.
+
+       What DOES change is the unit that framing works on. `fit board`
+       used to have to frame every plate in the gallery, which is what
+       capped a series near thirty on a phone. It frames a SHEET now, so
+       only a sheet has to stay legible and the gallery can be any
+       size. */
+    type SheetRecord = {
+      i: number; label: string;
+      minX: number; minY: number; maxX: number; maxY: number;
+      cx: number; cy: number;
+    };
+    const sheetEl = document.getElementById('sheet-data');
+    const SHEETS: SheetRecord[] = sheetEl ? JSON.parse(sheetEl.textContent || '[]') : [];
+    const sheetMarks = Array.from(
+      document.querySelectorAll<HTMLElement>('#sheet-rail .sheet-mark'),
+    );
+    let activeSheet = 0;
+
+    /* The framing bounds: the active sheet when there is one, the whole
+       desk when the gallery never named any. */
+    const sheetFrame = () => {
+      const sh = SHEETS[activeSheet];
+      if (!sh) return { minX: bMinX, minY: bMinY, maxX: bMaxX, maxY: bMaxY, cx: 0, cy: 0 };
+      return {
+        minX: sh.minX - EDGE_PAD, minY: sh.minY - EDGE_PAD,
+        maxX: sh.maxX + EDGE_PAD, maxY: sh.maxY + EDGE_PAD,
+        cx: sh.cx, cy: sh.cy,
+      };
+    };
+
+    const markSheet = (k: number) => {
+      if (k === activeSheet || !SHEETS[k]) return;
+      activeSheet = k;
+      sheetMarks.forEach((m) =>
+        m.setAttribute('data-current', String(Number(m.dataset.sheet) === k)),
+      );
+    };
+
+    /* Which sheet you are actually over, by whichever centre is nearest
+       the middle of the viewport. Panning across the desk keeps the rail
+       honest without anyone having to click it. */
+    const sheetUnderView = () => {
+      if (SHEETS.length < 2) return 0;
+      const cx = (viewport.clientWidth / 2 - panX) / scale;
+      const cy = (viewport.clientHeight / 2 - panY) / scale;
+      let best = 0, bestD = Infinity;
+      for (const sh of SHEETS) {
+        const d = Math.hypot(sh.cx - cx, sh.cy - cy);
+        if (d < bestD) { bestD = d; best = sh.i; }
+      }
+      return best;
+    };
     const centerX = Number(table.dataset.centerX) || 1600;
     const centerY = Number(table.dataset.centerY) || 1100;
 
@@ -655,7 +781,11 @@ const registry = SERIES;
     let lodTimer = 0;
     const scheduleLod = () => {
       window.clearTimeout(lodTimer);
-      lodTimer = window.setTimeout(runLod, LOD_SETTLE);
+      lodTimer = window.setTimeout(() => {
+        runLod();
+        markSheet(sheetUnderView());
+        settleIntoSheet();
+      }, LOD_SETTLE);
     };
     ac.signal.addEventListener('abort', () => window.clearTimeout(lodTimer), { once: true });
 
@@ -685,11 +815,12 @@ const registry = SERIES;
       const vw = viewport.clientWidth;
       const vh = viewport.clientHeight;
       const pad = vw < 768 ? 20 : 64;
-      const cw = bMaxX - bMinX;
-      const ch = bMaxY - bMinY;
+      const f = sheetFrame();
+      const cw = f.maxX - f.minX;
+      const ch = f.maxY - f.minY;
       scale = clamp(Math.min((vw - pad * 2) / cw, (vh - pad * 2) / ch), MIN_SCALE, 1);
-      panX = (vw - cw * scale) / 2 - bMinX * scale;
-      panY = (vh - ch * scale) / 2 - bMinY * scale;
+      panX = (vw - cw * scale) / 2 - f.minX * scale;
+      panY = (vh - ch * scale) / 2 - f.minY * scale;
       commit();
     };
 
@@ -712,16 +843,116 @@ const registry = SERIES;
        the notebook would simply be centred back underneath it. Sizing
        the content to clear the notebook at dead centre is the one form
        of this that survives the clamp. */
-    const HUD_RESERVE = 132;
+    /* MEASURED, not remembered. This was a hardcoded 132 taken before
+       the sheet rail existed; a four-sheet gallery wraps to three rows
+       in a 70vw notebook and adds about 88px, so the number was 88
+       short and the top of the sheet slid under the notebook.
+
+       Clamped at 42% of the viewport so an expanded notebook cannot
+       crush the desk to nothing. */
+    const hudReserve = () => {
+      const el = document.getElementById('hud-overlay');
+      const vh = viewport.clientHeight;
+      if (!el) return 132;
+      const bottom = el.getBoundingClientRect().bottom + 16;
+      return clamp(bottom, 96, vh * 0.42);
+    };
 
     const narrowView = () => {
       const vh = viewport.clientHeight;
-      const ch = bMaxY - bMinY;
+      const f = sheetFrame();
       return {
-        cx: (bMinX + bMaxX) / 2,
-        cy: (bMinY + bMaxY) / 2,
-        s: clamp((vh - HUD_RESERVE * 2) / ch, MIN_SCALE, 0.5),
+        cx: (f.minX + f.maxX) / 2,
+        cy: (f.minY + f.maxY) / 2,
+        s: clamp((vh - hudReserve() * 2) / (f.maxY - f.minY), MIN_SCALE, 0.5),
       };
+    };
+
+    /* Flipping a sheet SLIDES the desk. A cut would make these look
+       like pages, which is the reading the whole side-by-side layout
+       exists to avoid — you should see the next sheet arrive from the
+       direction it actually lies in. Reduced motion gets the cut. */
+    let gliding = 0;
+
+    const glideToSheet = (k: number) => {
+      if (!SHEETS[k]) return;
+      markSheet(k);
+      if (reduceMotion) {
+        fitBoard();
+        return;
+      }
+      window.cancelAnimationFrame(gliding);
+      const from = { x: panX, y: panY, s: scale };
+      const vw = viewport.clientWidth;
+      const vh = viewport.clientHeight;
+      const pad = vw < 768 ? 20 : 64;
+      const f = sheetFrame();
+      const cw = f.maxX - f.minX;
+      const ch = f.maxY - f.minY;
+      const isNarrowNow = vw < 768;
+      const target = isNarrowNow
+        ? narrowView()
+        : {
+            cx: (f.minX + f.maxX) / 2,
+            cy: (f.minY + f.maxY) / 2,
+            s: clamp(Math.min((vw - pad * 2) / cw, (vh - pad * 2) / ch), MIN_SCALE, 1),
+          };
+      const to = {
+        s: target.s,
+        x: vw / 2 - target.cx * target.s,
+        y: vh / 2 - target.cy * target.s,
+      };
+      const t0 = performance.now();
+      const DUR = 620;
+      const step = (t: number) => {
+        const u = Math.min(1, (t - t0) / DUR);
+        const e = 1 - Math.pow(1 - u, 3);
+        panX = from.x + (to.x - from.x) * e;
+        panY = from.y + (to.y - from.y) * e;
+        scale = from.s + (to.s - from.s) * e;
+        paint();
+        if (u < 1) gliding = window.requestAnimationFrame(step);
+        else commit();
+      };
+      gliding = window.requestAnimationFrame(step);
+    };
+
+    /* A 520-unit gutter at a phone's scale is about 200px of bare desk —
+       half the width of the screen showing nothing. Free panning is
+       deliberate and stays that way, but ending a drag parked between
+       two sheets is a 'where am I' moment with no upside, so on a narrow
+       screen the desk settles the nearest sheet back under you. Pan
+       only: the scale you chose is yours to keep. Desktop is untouched —
+       there is room enough to see where you are. */
+    const glidePanTo = (cx: number, cy: number) => {
+      window.cancelAnimationFrame(gliding);
+      const from = { x: panX, y: panY };
+      const to = {
+        x: viewport.clientWidth / 2 - cx * scale,
+        y: viewport.clientHeight / 2 - cy * scale,
+      };
+      const t0 = performance.now();
+      const step = (t: number) => {
+        const u = Math.min(1, (t - t0) / 460);
+        const e = 1 - Math.pow(1 - u, 3);
+        panX = from.x + (to.x - from.x) * e;
+        panY = from.y + (to.y - from.y) * e;
+        paint();
+        if (u < 1) gliding = window.requestAnimationFrame(step);
+        else commit();
+      };
+      gliding = window.requestAnimationFrame(step);
+    };
+
+    const settleIntoSheet = () => {
+      if (!isNarrow || SHEETS.length < 2 || gliding) return;
+      const cx = (viewport.clientWidth / 2 - panX) / scale;
+      const onPaper = SHEETS.some(
+        (sh) => cx >= sh.minX - EDGE_PAD && cx <= sh.maxX + EDGE_PAD,
+      );
+      if (onPaper) return;
+      const sh = SHEETS[sheetUnderView()];
+      if (sh) glidePanTo(sh.cx, sh.cy);
     };
 
     const centerOn = (x: number, y: number, s: number) => {
@@ -815,6 +1046,34 @@ const registry = SERIES;
 
     const params = new URLSearchParams(window.location.search);
     const fromRaw = params.get('from');
+
+    /* Resolve the sheet before anything frames anything. ?plate= and
+       ?from= both name a plate, and framing the wrong sheet would open
+       the desk somewhere the plate is not — for the handoff that means
+       the dolly runs against bare desk, which is the one animation that
+       cannot afford to be wrong. */
+    const sheetOfPlate = (i: number) => {
+      const el = table.querySelector<HTMLElement>(`.plate[data-index="${i}"]`);
+      if (!el || SHEETS.length < 2) return 0;
+      const x = el.offsetLeft + el.offsetWidth / 2;
+      const y = el.offsetTop + el.offsetHeight / 2;
+      let best = 0, bestD = Infinity;
+      for (const sh of SHEETS) {
+        const d = Math.hypot(sh.cx - x, sh.cy - y);
+        if (d < bestD) { bestD = d; best = sh.i; }
+      }
+      return best;
+    };
+
+    {
+      const want = params.get('plate') ?? params.get('from');
+      const n = want === null ? NaN : Number.parseInt(want, 10);
+      if (Number.isInteger(n)) {
+        const i = params.has('plate') ? n - 1 : n;
+        if (i >= 0 && i < total) markSheet(sheetOfPlate(i));
+      }
+    }
+
     const fromIdx = fromRaw === null ? NaN : Number.parseInt(fromRaw, 10);
     const rect =
       Number.isInteger(fromIdx) && fromIdx >= 0 && fromIdx < total ? coverRect(fromIdx) : null;
@@ -922,6 +1181,14 @@ const registry = SERIES;
     document.getElementById('btn-fit')?.addEventListener('click', (e) => {
       e.stopPropagation();
       fitBoard();
+    });
+
+    document.getElementById('sheet-rail')?.addEventListener('click', (e) => {
+      const b = (e.target as HTMLElement).closest<HTMLElement>('.sheet-mark');
+      if (!b) return;
+      e.stopPropagation();
+      glideToSheet(Number(b.dataset.sheet));
+      collapseHud();
     });
 
     /* ── wheel: pan by default, zoom on ctrl/cmd or a notched wheel ── */
@@ -1696,6 +1963,39 @@ html, body {
      there. !important because it has to beat Tailwind's touch-none on
      the same element. */
   #workspace-viewport.pinch-released { touch-action: auto !important; }
+
+  /* The sheet's own title, ruled onto the desk above its plates. It
+     scales with the board like everything else on it, so it reads as
+     something written on the paper rather than as an overlay. */
+  .sheet-title {
+    position: absolute;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 26px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: color-mix(in oklab, var(--color-llano, #BFB49A) 78%, var(--color-iron, #1A1919));
+    padding-bottom: 10px;
+    border-bottom: 2px solid color-mix(in oklab, var(--color-llano, #BFB49A) 70%, transparent);
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .sheet-mark[data-current='true'] {
+    color: var(--color-caprock, #B85A38);
+    font-weight: 600;
+  }
+
+  .sheet-mark[data-current='true']::before {
+    content: '\25B8';
+    margin-right: 0.35em;
+  }
+
+  .sheet-mark[data-current='false']::before {
+    content: '';
+    margin-right: 0.9em;
+  }
 
   /* one display authority — `hidden` and `flex` on the same element
      is a coin flip on which utility wins */
