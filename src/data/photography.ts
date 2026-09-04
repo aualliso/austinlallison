@@ -644,6 +644,7 @@ const galleryData: GalleryInput[] = [
     centerY: 820,
     plates: [
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/girvin20191103-008.jpg',
         title: 'Gin near Girvin',
         place: 'Girvin, Pecos County, Texas',
@@ -653,6 +654,7 @@ const galleryData: GalleryInput[] = [
         caption: 'An abandoned gin sits on Owego Road southwest of Girvin, Texas. Girvin Butte is visible in the background. The gin\'s proximity to the railroad tracks to the northwest suggests it was once a hub of agricultural activity in the area.',
       },
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/dumontgpp.2018.0029.3.jpg',
         title: 'Dumont Gin',
         place: 'Dumont, King County, Texas',
@@ -662,6 +664,7 @@ const galleryData: GalleryInput[] = [
         caption: 'The Dumont gin is one of the oldest extant gins in West Texas. A 1921 fire destroyed the original gin, but this structure was built in 1922 and featured a smokestack and whistle from a steamboat.',
       },
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/causeygpp.2018.0045.jpg',
         title: 'Gin at Causey',
         place: 'Causey, Roosevelt County, New Mexico',
@@ -671,6 +674,7 @@ const galleryData: GalleryInput[] = [
         caption: 'The gin at Causey, New Mexico sits abandoned with typical agricultural equipment scattered around the property. The gin is a reminder of the once-thriving cotton industry in the region, which has since declined due to changes in agricultural practices and market demands.',
       },
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/bulagpp.2018.0039.jpg',
         title: 'Bula Gin Co.',
         place: 'Bula, Bailey County, Texas',
@@ -680,6 +684,7 @@ const galleryData: GalleryInput[] = [
         caption: 'The idle Bula Gin remains an imposing testament to the cotton industry that dominated the Llano Estacado. The strinking red steel equipment offers a stark contrast to the muted tones of corrugated steel, highlighting the industrial nature of cotton processing in this region.',
       },
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/pleasantvalleygpp.2018.0050.jpg',
         title: 'Pleasant Valley Gin',
         place: 'Pleasant Valley, Lamb County, Texas',
@@ -689,6 +694,7 @@ const galleryData: GalleryInput[] = [
         caption: 'The Pleasant Valley Gin remained active until recent years. This gin was the center of a thriving agricultural community in northern Lamb County that benefitted from the shallow water belt north of the sandhills. Local\'s will remember Betty Bryant who ran the Pleasant Valley Cafe near the gin.',
       },
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/finney20220101-8.jpg',
         title: 'Finney Gin',
         place: 'Finney, Hale County, Texas',
@@ -698,6 +704,7 @@ const galleryData: GalleryInput[] = [
         caption: 'The Finney Gin sits abandoned in the heart of the Llano Estacado. While some of the gin\'s corrugated metal has been removed or has fallen away, the main structure remains a visible testament to this area\'s agricultural output. Horses graze near the gin and use it as protection from occasional harsh weather.',
       },
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/rallsgpp.2018.0035.1.jpg',
         title: 'Gin at Sunset',
         place: 'Ralls, Crosby County, Texas',
@@ -707,6 +714,7 @@ const galleryData: GalleryInput[] = [
         caption: 'A gin in Ralls maintains its presence in the community despite the slow deterioration of its structure. The gin\'s silhouette is highlighted against the already set sun',
       },
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/grow20190420-002.jpg',
         title: 'Grow Gin',
         place: 'Grow, King County, Texas',
@@ -716,6 +724,7 @@ const galleryData: GalleryInput[] = [
         caption: 'An aerial view of the Grow Gin in King County, Texas. The scale house and gin sit amidst the gently rolling plains east of the Llano Estacado.',
       }, 
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/newlynn20220108-2.jpg',
         title: 'New Lynn Gin',
         place: 'New Lynn, Lynn County, Texas',
@@ -725,6 +734,7 @@ const galleryData: GalleryInput[] = [
         caption: 'The New Lynn gin presents a unique adaptation of an old school structure into a functional cotton gin. Following New Lynn\'s consolidation with Wilson in 1947, the old school structure was repurposed to serve the local cotton industry.',
       },    
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/littlefieldgpp.2018.0061.jpg',
         title: 'Lumsden-Perkins Gin',
         place: 'Littlefield, Lamb County, Texas',
@@ -734,6 +744,7 @@ const galleryData: GalleryInput[] = [
         caption: 'The Lumsden-Perkins Gin four miles west of Littlefield is an example of a historic gin yard with several extant structures. The previous gin was destroyed in April 1957 by a tornado. Ross Lumsden and J.G. Perkins rebuilt the gin, and it operated for several decades before being abandoned.',
       },
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/petersburg20220101-5.jpg',
         title: 'Gin at Petersburg',
         place: 'Petersburg, Hale County, Texas',
@@ -743,6 +754,7 @@ const galleryData: GalleryInput[] = [
         caption: 'This abandoned gin at Petersburg, Texas illustrates the typical West Texas gin design. It is notable to frame this image with the 21 century wind turbines in the background with the aging gin structure.',
       },  
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/enochsgpp.2018.0040.jpg',
         title: 'Gardner-Hankins Gin at Enochs',
         place: 'Enochs, Bailey County, Texas',
@@ -752,6 +764,7 @@ const galleryData: GalleryInput[] = [
         caption: 'The abandoned Gardner-Hankins Gin at Enochs is the typical large, imposing, and grandiose gin structure that was once common in the crossroads towns across the area. This gin was at one time managed by Erelious Notrey (E.N.) "Shorty" McCall.',
       },  
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/hartcampgpp.2018.0006.jpg',
         title: 'Hart Camp Gin',
         place: 'Hart Camp, Lamb County, Texas',
@@ -761,6 +774,7 @@ const galleryData: GalleryInput[] = [
         caption: 'The gin at Hart Camp, Texas exists just south of the crossroads of FM 37 and FM 168 in eastern Lamb County. Prominent bits of signage are still visible on the corrugated metal and a Hardwicke-Etter sign remains at the peak. The Hart Camp School is north of this structure and is another extant struture of the once busling corner.',
       },   
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/cottoncentergpp.2018.0003.jpg',
         title: 'Starnes Gin at Cotton Center',
         place: 'Cotton Center, Hale County, Texas',
@@ -770,6 +784,7 @@ const galleryData: GalleryInput[] = [
         caption: 'The 1938 Gill Starnes Gin at Cotton Center remains idle here in the 21st century exhibiting remnants of past operations. The first Gill Starnes Gin burned in January 1938 before being quickly rebuilt later that year. The facility\'s brick burr burner remains a sentinel in the gin\'s yard.',
       }, 
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/aftongpp.2018.0031.jpg',
         title: 'Afton Gin',
         place: 'Afton, Dickens County, Texas',
@@ -779,6 +794,7 @@ const galleryData: GalleryInput[] = [
         caption: 'The gin at Afton sits at the curve of FM 193. Seen here near a late-winter sunset, the gin\'s waxing silhouette features typical blueish gray corrugated metal with splotches of rust becoming more evident. The community\'s water tower is visible in the foreground.',
       },
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/ceeveegpp.2018.0019.jpg',
         title: 'Gin at Cee Vee',
         place: 'Cee Vee, Cottle County, Texas',
@@ -788,6 +804,7 @@ const galleryData: GalleryInput[] = [
         caption: 'The gin at Cee Vee is a prime example of a West Texas gin with mixed additions. Built after 1965 just southwest of the site of the prior gin, this gin sits in the heart of Cee Vee adjacent to the historic green-roofed church.',
       }, 
       {
+        sheet: 'Sheet 1',
         file: 'cotton_gins/parmer20190520-4.jpg',
         title: 'Gin in rural Parmer County',
         place: 'Parmer County, Texas',
@@ -795,6 +812,76 @@ const galleryData: GalleryInput[] = [
         specs: '200mm \u00B7 \u0192/5.6 \u00B7 1/500s',
         x: 1280, y: 900, w: 250,
         caption: 'This gin at a curve in Highway 214 between Muleshoe and Friona was built at the edge of a playa lake. The surrounding landscape gently descends into an unseen lake basin.',
+      },
+      {
+        sheet: 'Sheet 1',
+        file: 'cotton_gins/woodrow20160328-005.jpg',
+        title: 'Woodrow Gin',
+        place: 'Woodrow, Lubbock County, Texas',
+        lat:  33.449798, lng: -101.844157,
+        specs: '24mm \u00B7 \u0192/8 \u00B7 1/80s',
+        x: 1550, y: 890, w: 250,
+        caption: 'The Woodrow Gin sits in the middle of a now busling and expanding school district, but it was once a hub of agricultural activity in the area. The gin\'s corrugated metal and steel structure is typical of West Texas gins.',
+      },
+      {
+        sheet: 'Sheet 1',
+        file: 'cotton_gins/thaliagpp.2018.0014.jpg',
+        title: 'Thalia Gin',
+        place: 'Thalia, Foard County, Texas',
+        lat:  33.449798, lng: -101.844157,
+        specs: '24mm \u00B7 \u0192/8 \u00B7 1/1000s',
+        x: 1020, y: 950, w: 250,
+        caption: 'The gin at Thalia shows sign of recent activity with hay bales and other agricultural equipment in the yard. A faded Lummus International sign is visible on the front of the structure. Similar to the gin at Cee Vee, the Thalia gin features a structural additions that date from different periods.',
+      },
+      {
+        sheet: 'Sheet 2',
+        file: 'cotton_gins/crowellgpp.2018.0016.jpg',
+        title: 'Gin in Crowell',
+        place: 'Crowell, Foard County, Texas',
+        lat:  33.981942, lng: -99.723596,
+        specs: '70mm \u00B7 \u0192/8 \u00B7 1/320s',
+        x: 1280, y: 900, w: 250,
+        caption: 'This gin in Crowell, Texas sits south of the town\'s square and shows evidence of repurposing such as a basketball hoop and other playground equipment. This gin has since been torn down.',
+      },
+      {
+        sheet: 'Sheet 2',
+        file: 'cotton_gins/earth20220122-22.jpg',
+        title: 'Earth Gin Co.',
+        place: 'Earth, Lamb County, Texas',
+        lat:  34.232175, lng: -102.410525,
+        specs: '24mm \u00B7 \u0192/8 \u00B7 1/1000s',
+        x: 780, y: 350, w: 250,
+        caption: 'Bare, mid-winter trees surround the abandonded Earth Gin Company gin in Earth, Texas. This gin features numerous large windows and remnant signage from its operational period.',
+      },
+      {
+        sheet: 'Sheet 2',
+        file: 'cotton_gins/estacado20160328-013.jpg',
+        title: 'Medlock\'s Estacado Gin',
+        place: 'Estacado, Lubbock County, Texas',
+        lat:  33.749344, lng: -101.563731,
+        specs: '20mm \u00B7 \u0192/8 \u00B7 1/100s',
+        x: 1060, y: 390, w: 250,
+        caption: 'A blanket of January snow covers Medlock\'s Estacado Gin in eastern Lubbock County. Fresh tire tracks suggest activity near the gin, but the structure and its ginning equipment no longer operate.',
+      },
+      {
+        sheet: 'Sheet 2',
+        file: 'cotton_gins/fieldton20180704-004.jpg',
+        title: 'Hilltop Gin at Fieldton',
+        place: 'Fieldton, Lamb County, Texas',
+        lat:  34.033269, lng: -102.220562,
+        specs: '12mm \u00B7 \u0192/2.2 \u00B7 1/1500s',
+        x: 680, y: 560, w: 250,
+        caption: 'The Hilltop Gin at Fieldton, Texas is one of two gins in the complex that sits above terrain below that forms Blackwater Draw. Hardwicke-Etter signage is visible on the gin\'s corrugated metal siding.',
+      },
+      {
+        sheet: 'Sheet 2',
+        file: 'cotton_gins/lakeview20220213-9.jpg',
+        title: 'Lakeview Gin Co.',
+        place: 'Lakeview, Floyd County, Texas',
+        lat:  33.877, lng: -101.254,
+        specs: '175mm \u00B7 \u0192/8 \u00B7 1/2500s',
+        x: 980, y: 660, w: 250,
+        caption: 'The Lakeview Gin occupies a prominent position at the crossroads of FM 1958 and FM 651 in rural southeastern Floyd County. Elevators and the gin\'s scale house are visible near the gin yard.',
       },
     ],
   }

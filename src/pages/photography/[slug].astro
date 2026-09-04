@@ -666,13 +666,20 @@ const registry = SERIES;
       const cw = (bMaxX - bMinX) * scale;
       const ch = (bMaxY - bMinY) * scale;
 
+      /* The rule is that the viewport's CENTRE stays on the desk, not
+         that the whole viewport does. The stricter version could not be
+         satisfied and a sheet centred at the same time: framing the
+         first or last sheet asks to show desk past the end, so the
+         clamp hauled it back — 186px on the first sheet here, 477px on
+         a small one at the far end. Any point of the desk can now reach
+         the middle of the screen, and no more than that. */
       panX = cw <= vw
         ? (vw - cw) / 2 - bMinX * scale
-        : clamp(panX, vw - bMaxX * scale, -bMinX * scale);
+        : clamp(panX, vw / 2 - bMaxX * scale, vw / 2 - bMinX * scale);
 
       panY = ch <= vh
         ? (vh - ch) / 2 - bMinY * scale
-        : clamp(panY, vh - bMaxY * scale, -bMinY * scale);
+        : clamp(panY, vh / 2 - bMaxY * scale, vh / 2 - bMinY * scale);
     };
 
     /* ══ LEVEL OF DETAIL ═══════════════════════════════════════
@@ -789,6 +796,21 @@ const registry = SERIES;
     };
     ac.signal.addEventListener('abort', () => window.clearTimeout(lodTimer), { once: true });
 
+    /* Where a pan/scale WILL end up once clamped, without moving
+       anything. Every animation has to land on this, because the frame
+       after it finishes runs clampPan — and an animation whose target
+       the clamp disagrees with ends with a jump. Running the real
+       clampPan over a borrowed state is the only version of this that
+       cannot drift from it. */
+    const settled = (x: number, y: number, s: number) => {
+      const px = panX, py = panY, ps = scale;
+      panX = x; panY = y; scale = s;
+      clampPan();
+      const out = { x: panX, y: panY, s: scale };
+      panX = px; panY = py; scale = ps;
+      return out;
+    };
+
     const commit = () => {
       if (frame) return;
       frame = requestAnimationFrame(() => {
@@ -897,11 +919,11 @@ const registry = SERIES;
             cy: (f.minY + f.maxY) / 2,
             s: clamp(Math.min((vw - pad * 2) / cw, (vh - pad * 2) / ch), MIN_SCALE, 1),
           };
-      const to = {
-        s: target.s,
-        x: vw / 2 - target.cx * target.s,
-        y: vh / 2 - target.cy * target.s,
-      };
+      const to = settled(
+        vw / 2 - target.cx * target.s,
+        vh / 2 - target.cy * target.s,
+        target.s,
+      );
       const t0 = performance.now();
       const DUR = 620;
       const step = (t: number) => {
@@ -927,10 +949,11 @@ const registry = SERIES;
     const glidePanTo = (cx: number, cy: number) => {
       window.cancelAnimationFrame(gliding);
       const from = { x: panX, y: panY };
-      const to = {
-        x: viewport.clientWidth / 2 - cx * scale,
-        y: viewport.clientHeight / 2 - cy * scale,
-      };
+      const to = settled(
+        viewport.clientWidth / 2 - cx * scale,
+        viewport.clientHeight / 2 - cy * scale,
+        scale,
+      );
       const t0 = performance.now();
       const step = (t: number) => {
         const u = Math.min(1, (t - t0) / 460);
@@ -1085,7 +1108,24 @@ const registry = SERIES;
       centerOn(v.cx, v.cy, v.s);
     } else {
       noClamp = true;
-      const end = defaultView();
+      /* Landed through the clamp for the same reason the sheet glide is.
+         The dolly finishes with commit(), and an end the clamp disagrees
+         with is a jump at the exact moment the handoff is meant to be
+         invisible. `settled` is computed with noClamp already true, so
+         it is asked explicitly rather than implicitly skipped. */
+      const endRaw = defaultView();
+      noClamp = false;
+      const endPos = settled(
+        viewport.clientWidth / 2 - endRaw.cx * endRaw.s,
+        viewport.clientHeight / 2 - endRaw.cy * endRaw.s,
+        endRaw.s,
+      );
+      noClamp = true;
+      const end = {
+        cx: (viewport.clientWidth / 2 - endPos.x) / endPos.s,
+        cy: (viewport.clientHeight / 2 - endPos.y) / endPos.s,
+        s: endPos.s,
+      };
       const start = {
         cx: rect.x + rect.w / 2,
         cy: rect.y + rect.h / 2,
