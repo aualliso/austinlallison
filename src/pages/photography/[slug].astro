@@ -659,12 +659,65 @@ const registry = SERIES;
 
     /* Clamp against the plates, not the empty sheet — you can never
        drag the work off screen and lose your place. */
+    /* ── THE NOTEBOOK'S FOOTPRINT ────────────────────────────────
+       On a phone the notebook spans most of the width, so the band
+       under it is the only place a sheet can actually live. That used
+       to be handled by reserving its height TWICE and letting clampPan
+       centre the result — which clears the notebook, but pays for it
+       with an equal band of dead desk at the BOTTOM, over nothing.
+       With a notebook 39% of the screen tall that left 19% for the
+       photographs and 39% empty beneath them.
+
+       Telling clampPan about the inset instead means the sheet is
+       centred in the band BELOW the notebook and the height is paid
+       for once. Same clearance, three times the room.
+
+       Zero on a desktop: there the notebook is a narrow left-hand
+       panel, not a top band, and the desk is meant to run under it.
+
+       Cached because clampPan runs on every frame of every pan and
+       getBoundingClientRect is a layout read. Re-measured on resize and
+       whenever the notebook opens or shuts. */
+    let topInsetPx = 0;
+    let leftInsetPx = 0;
+
+    /* WHICH AXIS depends on the shape the notebook actually takes.
+       On a phone it spans most of the width, so it is a top band. On
+       anything wider it is a LEFT PANEL, and insetting from the top
+       would reserve a strip where nothing is in the way while leaving
+       the sheet centred behind the panel.
+
+       That was the landscape bug: 1411x646 is neither narrow nor short,
+       so no inset applied at all — while the notebook took 41% of the
+       width and 64% of the height, and a fitted sheet centred in the
+       full viewport landed 377px behind it.
+
+       Each is capped at half its axis so the notebook can never leave
+       the desk with nowhere to go. */
+    const measureInset = () => {
+      const el = document.getElementById('hud-overlay');
+      const vw = viewport.clientWidth;
+      const vh = viewport.clientHeight;
+      topInsetPx = 0;
+      leftInsetPx = 0;
+      if (!el) return;
+      const r = el.getBoundingClientRect();
+      if (r.width / vw > 0.6) topInsetPx = Math.min(r.bottom + 12, vh * 0.55);
+      else leftInsetPx = Math.min(r.right + 16, vw * 0.5);
+    };
+
     const clampPan = () => {
       if (noClamp) return;
       const vw = viewport.clientWidth;
       const vh = viewport.clientHeight;
       const cw = (bMaxX - bMinX) * scale;
       const ch = (bMaxY - bMinY) * scale;
+      const top = topInsetPx;
+      const left = leftInsetPx;
+      const availH = vh - top;
+      const availW = vw - left;
+      const midY = (top + vh) / 2;
+      const midX = (left + vw) / 2;
 
       /* The rule is that the viewport's CENTRE stays on the desk, not
          that the whole viewport does. The stricter version could not be
@@ -673,13 +726,13 @@ const registry = SERIES;
          clamp hauled it back — 186px on the first sheet here, 477px on
          a small one at the far end. Any point of the desk can now reach
          the middle of the screen, and no more than that. */
-      panX = cw <= vw
-        ? (vw - cw) / 2 - bMinX * scale
-        : clamp(panX, vw / 2 - bMaxX * scale, vw / 2 - bMinX * scale);
+      panX = cw <= availW
+        ? left + (availW - cw) / 2 - bMinX * scale
+        : clamp(panX, midX - bMaxX * scale, midX - bMinX * scale);
 
-      panY = ch <= vh
-        ? (vh - ch) / 2 - bMinY * scale
-        : clamp(panY, vh / 2 - bMaxY * scale, vh / 2 - bMinY * scale);
+      panY = ch <= availH
+        ? top + (availH - ch) / 2 - bMinY * scale
+        : clamp(panY, midY - bMaxY * scale, midY - bMinY * scale);
     };
 
     /* ══ LEVEL OF DETAIL ═══════════════════════════════════════
@@ -833,16 +886,34 @@ const registry = SERIES;
       commit();
     };
 
-    const fitBoard = () => {
+    /* The one place a sheet's framing is worked out. fitBoard and the
+       sheet glide both take it, so the button and the rail can never
+       land a sheet in two different places. */
+    const fitTarget = () => {
       const vw = viewport.clientWidth;
       const vh = viewport.clientHeight;
       const pad = vw < 768 ? 20 : 64;
       const f = sheetFrame();
       const cw = f.maxX - f.minX;
       const ch = f.maxY - f.minY;
-      scale = clamp(Math.min((vw - pad * 2) / cw, (vh - pad * 2) / ch), MIN_SCALE, 1);
-      panX = (vw - cw * scale) / 2 - f.minX * scale;
-      panY = (vh - ch * scale) / 2 - f.minY * scale;
+      const availW = vw - leftInsetPx;
+      const availH = vh - topInsetPx;
+      return {
+        cx: (f.minX + f.maxX) / 2,
+        cy: (f.minY + f.maxY) / 2,
+        s: clamp(
+          Math.min((availW - pad * 2) / cw, (availH - pad * 2) / ch),
+          MIN_SCALE,
+          1,
+        ),
+      };
+    };
+
+    const fitBoard = () => {
+      const t = fitTarget();
+      scale = t.s;
+      panX = leftInsetPx + (viewport.clientWidth - leftInsetPx) / 2 - t.cx * t.s;
+      panY = topInsetPx + (viewport.clientHeight - topInsetPx) / 2 - t.cy * t.s;
       commit();
     };
 
@@ -872,21 +943,17 @@ const registry = SERIES;
 
        Clamped at 42% of the viewport so an expanded notebook cannot
        crush the desk to nothing. */
-    const hudReserve = () => {
-      const el = document.getElementById('hud-overlay');
-      const vh = viewport.clientHeight;
-      if (!el) return 132;
-      const bottom = el.getBoundingClientRect().bottom + 16;
-      return clamp(bottom, 96, vh * 0.42);
-    };
-
     const narrowView = () => {
       const vh = viewport.clientHeight;
       const f = sheetFrame();
+      /* Once, not twice — clampPan now knows where the notebook ends,
+         so the sheet is centred in the band beneath it rather than in
+         the whole viewport. */
+      const availH = vh - topInsetPx - 24;
       return {
         cx: (f.minX + f.maxX) / 2,
         cy: (f.minY + f.maxY) / 2,
-        s: clamp((vh - hudReserve() * 2) / (f.maxY - f.minY), MIN_SCALE, 0.5),
+        s: clamp(availH / (f.maxY - f.minY), MIN_SCALE, 0.5),
       };
     };
 
@@ -907,23 +974,25 @@ const registry = SERIES;
       const from = { x: panX, y: panY, s: scale };
       const vw = viewport.clientWidth;
       const vh = viewport.clientHeight;
-      const pad = vw < 768 ? 20 : 64;
-      const f = sheetFrame();
-      const cw = f.maxX - f.minX;
-      const ch = f.maxY - f.minY;
-      const isNarrowNow = vw < 768;
-      const target = isNarrowNow
-        ? narrowView()
-        : {
-            cx: (f.minX + f.maxX) / 2,
-            cy: (f.minY + f.maxY) / 2,
-            s: clamp(Math.min((vw - pad * 2) / cw, (vh - pad * 2) / ch), MIN_SCALE, 1),
-          };
+      const target = vw < 768 ? narrowView() : fitTarget();
       const to = settled(
-        vw / 2 - target.cx * target.s,
-        vh / 2 - target.cy * target.s,
+        leftInsetPx + (vw - leftInsetPx) / 2 - target.cx * target.s,
+        topInsetPx + (vh - topInsetPx) / 2 - target.cy * target.s,
         target.s,
       );
+      /* Warm the destination BEFORE the glide, not after it. paint()
+         deliberately does not schedule the level-of-detail pass — it
+         runs 60 times a second — so without this the sheet you are
+         gliding to arrives holding whatever rung it had while it was
+         off screen, and sharpens a beat after it lands. Same reasoning
+         as the synchronous runLod on the album arrival. */
+      {
+        const px = panX, py = panY, ps = scale;
+        panX = to.x; panY = to.y; scale = to.s;
+        runLod();
+        panX = px; panY = py; scale = ps;
+      }
+
       const t0 = performance.now();
       const DUR = 620;
       const step = (t: number) => {
@@ -933,8 +1002,17 @@ const registry = SERIES;
         panY = from.y + (to.y - from.y) * e;
         scale = from.s + (to.s - from.s) * e;
         paint();
-        if (u < 1) gliding = window.requestAnimationFrame(step);
-        else commit();
+        if (u < 1) {
+          gliding = window.requestAnimationFrame(step);
+          return;
+        }
+        /* CLEARED, not just left holding the last handle. Other code
+           reads `gliding` as 'is something in flight', and a spent rAF
+           id is still a truthy number — leaving it set disabled
+           settleIntoSheet permanently after the first sheet you
+           clicked. */
+        gliding = 0;
+        commit();
       };
       gliding = window.requestAnimationFrame(step);
     };
@@ -961,14 +1039,20 @@ const registry = SERIES;
         panX = from.x + (to.x - from.x) * e;
         panY = from.y + (to.y - from.y) * e;
         paint();
-        if (u < 1) gliding = window.requestAnimationFrame(step);
-        else commit();
+        if (u < 1) {
+          gliding = window.requestAnimationFrame(step);
+          return;
+        }
+        gliding = 0;
+        commit();
       };
       gliding = window.requestAnimationFrame(step);
     };
 
     const settleIntoSheet = () => {
-      if (!isNarrow || SHEETS.length < 2 || gliding) return;
+      /* Read live rather than using the init-time isNarrow, which goes
+         stale the moment a phone is rotated. */
+      if (viewport.clientWidth >= 768 || SHEETS.length < 2 || gliding) return;
       const cx = (viewport.clientWidth / 2 - panX) / scale;
       const onPaper = SHEETS.some(
         (sh) => cx >= sh.minX - EDGE_PAD && cx <= sh.maxX + EDGE_PAD,
@@ -1097,6 +1181,10 @@ const registry = SERIES;
       }
     }
 
+    /* Before ANY framing. Every opening view is computed against the
+       band under the notebook, so the band has to be known first. */
+    measureInset();
+
     const fromIdx = fromRaw === null ? NaN : Number.parseInt(fromRaw, 10);
     const rect =
       Number.isInteger(fromIdx) && fromIdx >= 0 && fromIdx < total ? coverRect(fromIdx) : null;
@@ -1184,7 +1272,13 @@ const registry = SERIES;
     let resizeTimer = 0;
     const onResize = () => {
       window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(commit, 120);
+      resizeTimer = window.setTimeout(() => {
+        /* A rotation rewraps the sheet rail and moves the notebook's
+           bottom edge, so the band under it has to be re-measured
+           before the board is re-clamped against it. */
+        measureInset();
+        commit();
+      }, 120);
     };
     window.addEventListener('resize', onResize, sig);
 
@@ -1207,6 +1301,12 @@ const registry = SERIES;
       mobileInstructions?.classList.toggle('flex', open);
       if (toggleText) toggleText.textContent = open ? 'close' : 'info';
       if (toggleIcon) toggleIcon.style.transform = open ? 'rotate(45deg)' : 'rotate(0deg)';
+      /* The notebook just changed height, so the band under it did too.
+         Deferred a frame so the rect is read after layout settles. */
+      requestAnimationFrame(() => {
+        measureInset();
+        commit();
+      });
     };
 
     hudToggle?.addEventListener('click', (e) => {
@@ -1215,7 +1315,12 @@ const registry = SERIES;
     });
 
     const collapseHud = () => {
-      if (isNarrow && hud?.getAttribute('data-expanded') === 'true') setHud(false);
+      /* Width was the wrong test here too: on a landscape phone the
+         notebook is collapsible again, so picking a sheet should shut
+         it. Matches the CSS query above. */
+      const compact =
+        viewport.clientWidth < 768 || window.matchMedia('(max-height: 560px)').matches;
+      if (compact && hud?.getAttribute('data-expanded') === 'true') setHud(false);
     };
 
     document.getElementById('btn-fit')?.addEventListener('click', (e) => {
@@ -2064,6 +2169,42 @@ html, body {
   @media (min-width: 768px) {
     #hud-overlay,
     #hud-overlay[data-expanded='true'] { max-width: 24rem; }
+  }
+
+  /* ── SHORT VIEWPORTS ─────────────────────────────────────────
+     A phone in landscape is 844 x 390: WIDE enough to satisfy `md:`,
+     so the notebook opened its full desktop body — registry, plate
+     index, the lot — into 390px of height. It ran about 480px tall,
+     overflowed the bottom of the screen, and took `fit board` with it,
+     since the toolbar is the last thing in the panel.
+
+     The condition was never width. Height decides whether the long
+     body fits, so a height query brings back the same collapsed
+     notebook and `info` toggle that portrait already uses. Both
+     selectors carry an id, so they beat the `md:` utilities without
+     !important. */
+  @media (max-height: 560px) {
+    #hud-toggle { display: inline-flex; }
+    #hud-collapsible.hidden { display: none; }
+  }
+
+  /* A backstop, independent of the above: whatever ends up inside the
+     notebook, it can never be taller than the screen, and the part that
+     gives is the long body — the title, the sheet rail and the toolbar
+     never scroll away. `min-height: 0` is required or a flex child
+     refuses to shrink below its content and the cap does nothing. */
+  #hud-overlay {
+    max-height: calc(100dvh - 2rem);
+  }
+
+  #hud-collapsible {
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+
+  @media (min-width: 768px) {
+    #hud-overlay { max-height: calc(100dvh - 4rem); }
   }
 
   /* .bg-plat-desk lives in global.css. The album's gutter rules the
