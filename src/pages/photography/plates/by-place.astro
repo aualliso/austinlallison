@@ -1,0 +1,187 @@
+---
+/**
+ * src/pages/photography/plates/by-place.astro — "The Place Index"
+ *
+ * The second reading of the same collection. /photography/plates lists
+ * the work the way it was made — series by series, in plate order, a
+ * curatorial sequence. This lists it the way the country is: by county,
+ * heaviest first.
+ *
+ * That reordering is the whole point, and it says something the series
+ * order actively hides. Bailey County holds more plates than any other
+ * by a factor of two and a half, and they are spread across all three
+ * series — so a body of work that presents itself as being about
+ * escarpments, about water and about cotton gins is, in one quiet
+ * respect, about one county. Nothing else on the site can state that.
+ *
+ * A SECOND STATIC ORDER, NOT A SORT CONTROL. The note in plates.astro
+ * called this correctly: two pre-rendered orders beat one interactive
+ * one. Both pages stay scriptless, crawlable and linkable, and each has
+ * a URL you can hand to someone.
+ *
+ * Every field here is derived from `place` by parsePlace in
+ * src/data/photography.ts. Nothing is authored twice.
+ */
+import Layout from '../../../layouts/RootLayout.astro';
+import { getGalleries, PHOTOGRAPHER, type ResolvedPlate } from '../../../data/photography';
+
+const galleries = await getGalleries();
+
+type Entry = { plate: ResolvedPlate; slug: string; series: number; seriesTitle: string };
+
+/* One bucket per county. Keyed on "County, State" so two counties of the
+   same name in different states never merge — Lynn County, Texas and a
+   Lynn County anywhere else are different ground. */
+const counties = new Map<
+  string,
+  { county: string; state: string; entries: Entry[]; series: Set<number> }
+>();
+
+for (const gallery of galleries) {
+  for (const plate of gallery.plates) {
+    if (plate.draft) continue;
+    const key = `${plate.county}, ${plate.state}`;
+    let bucket = counties.get(key);
+    if (!bucket) {
+      bucket = { county: plate.county, state: plate.state, entries: [], series: new Set() };
+      counties.set(key, bucket);
+    }
+    bucket.entries.push({
+      plate,
+      slug: gallery.slug,
+      series: gallery.number,
+      seriesTitle: gallery.title,
+    });
+    bucket.series.add(gallery.number);
+  }
+}
+
+/* Heaviest county first — the ordering IS the argument. Ties fall back
+   to alphabetical so the page is stable between builds. */
+const ordered = [...counties.values()].sort(
+  (a, b) => b.entries.length - a.entries.length || a.county.localeCompare(b.county),
+);
+
+const totalPlates = ordered.reduce((n, c) => n + c.entries.length, 0);
+const states = [...new Set(ordered.map((c) => c.state))];
+const crossSeries = ordered.filter((c) => c.series.size > 1);
+const anchor = (county: string, state: string) =>
+  `${county}-${state}`.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+
+const roman = ['', 'I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII'];
+---
+
+<Layout title={`Place Index | ${PHOTOGRAPHER}`}>
+  <main class="bg-canvas text-iron min-h-screen px-5 md:px-8 py-16 md:py-24">
+    <div class="max-w-3xl mx-auto">
+
+      <header class="border-b border-haze pb-6 mb-10">
+        <p class="font-mono text-[10px] uppercase tracking-widest text-sage mb-3">
+          Photography
+        </p>
+        <h1 class="font-serif text-3xl md:text-4xl font-light tracking-tight text-caprock">
+          Place Index
+        </h1>
+        <p class="font-serif text-sm text-iron/70 leading-relaxed mt-4 max-w-xl">
+          The same photographs, ordered by ground rather than by series —
+          heaviest county first. Where a county appears in more than one
+          series, the same land has been photographed for more than one
+          reason.
+        </p>
+        <p class="font-mono text-[10px] uppercase tracking-widest text-iron/40 mt-4">
+          {totalPlates} plates &middot; {ordered.length} counties &middot; {states.length} states
+        </p>
+        <nav class="mt-4 font-mono text-[10px] uppercase tracking-widest">
+          <a href="/photography/plates" class="text-sage hover:text-caprock transition-colors">
+            &larr; By series
+          </a>
+        </nav>
+      </header>
+
+      {crossSeries.length > 0 && (
+        <section class="border border-haze bg-caliche/40 px-5 py-4 mb-12">
+          <p class="font-mono text-[10px] uppercase tracking-widest text-iron/50 mb-2">
+            Photographed for more than one series
+          </p>
+          <p class="font-serif text-sm text-iron/75 leading-relaxed">
+            {crossSeries.map((c, i) => (
+              <>
+                {i > 0 && ', '}
+                <a
+                  href={`#${anchor(c.county, c.state)}`}
+                  class="text-caprock hover:text-iron transition-colors"
+                >{c.county}</a>
+              </>
+            ))}.
+          </p>
+        </section>
+      )}
+
+      {ordered.map((c) => (
+        <section id={anchor(c.county, c.state)} class="mb-14 scroll-mt-8">
+          <div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-iron/25 pb-2 mb-1">
+            <h2 class="font-serif text-xl md:text-2xl font-light tracking-tight text-caprock">
+              {c.county}
+              <span class="text-sage">, {c.state}</span>
+            </h2>
+            <span class="font-mono text-[10px] uppercase tracking-widest text-iron/40 shrink-0">
+              {c.entries.length} {c.entries.length === 1 ? 'plate' : 'plates'}
+            </span>
+          </div>
+
+          <p class="font-mono text-[10px] uppercase tracking-widest text-iron/40 mb-4">
+            {[...c.series].sort((a, b) => a - b).map((n, i) => (
+              <span>{i > 0 && ' \u00B7 '}Series {roman[n] ?? n}</span>
+            ))}
+          </p>
+
+          <ol class="list-none">
+            {c.entries.map((e) => (
+              <li>
+                <a
+                  href={e.plate.href}
+                  class="group flex gap-4 items-start py-3 border-b border-haze/60 hover:bg-iron/[0.03] transition-colors focus:outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-caprock"
+                >
+                  <span class="font-mono text-[10px] text-iron/50 w-6 shrink-0 pt-1">
+                    {e.plate.no}
+                  </span>
+
+                  <img
+                    src={e.plate.img.index}
+                    alt=""
+                    width="88"
+                    height="59"
+                    loading="lazy"
+                    decoding="async"
+                    class="w-[88px] h-[59px] object-cover bg-iron/5 border border-haze rounded-xs shrink-0"
+                  />
+
+                  <span class="min-w-0 flex-1">
+                    <span class="block font-serif text-[15px] text-caprock group-hover:text-iron transition-colors">
+                      {e.plate.title}
+                    </span>
+                    {/* The locality, not the whole place string — the
+                        county is the heading, and repeating it in every
+                        row is the sort of noise a shelf list accumulates. */}
+                    <span class="block font-mono text-[10px] uppercase tracking-wider text-sage mt-1">
+                      {e.plate.locality ?? `${c.county} \u2014 unincorporated`}
+                    </span>
+                    <span class="block font-mono text-[10px] text-iron/40 mt-1 truncate">
+                      Series {roman[e.series] ?? e.series} &middot; {e.plate.coordinates}
+                    </span>
+                  </span>
+
+                  <span
+                    aria-hidden="true"
+                    class="font-mono text-[11px] text-iron/25 group-hover:text-caprock transition-colors pt-1 shrink-0"
+                  >&rsaquo;</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </section>
+      ))}
+
+    </div>
+  </main>
+</Layout>

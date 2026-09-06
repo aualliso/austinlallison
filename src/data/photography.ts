@@ -282,7 +282,7 @@ const galleryData: GalleryInput[] = [
         place: 'Toole County, Montana',
         lat: 48.968683, lng: -111.982261,
         specs: '12mm \u00B7 \u0192/8 \u00B7 1/320s',
-        x: 890, y: 320, w: 350,
+        x: 890, y: 300, w: 350,
         caption: 'Overlooking Buckley Coulee near Sunburst and Sweet Grass, Montana. This dramatic 200-foot drop reveals incredible rugged rock formations. A small piece of "Little Jerusalem" and its hoodoos can be seen in the foreground.',
         printLink: '', // TODO: Stripe Payment Link
       },
@@ -840,7 +840,7 @@ const galleryData: GalleryInput[] = [
         place: 'Crowell, Foard County, Texas',
         lat:  33.981942, lng: -99.723596,
         specs: '70mm \u00B7 \u0192/8 \u00B7 1/320s',
-        x: 1280, y: 900, w: 250,
+        x: 1240, y: 800, w: 250,
         caption: 'This gin in Crowell, Texas sits south of the town\'s square and shows evidence of repurposing such as a basketball hoop and other playground equipment. This gin has since been torn down.',
       },
       {
@@ -942,6 +942,46 @@ const galleryData: GalleryInput[] = [
         specs: '24mm \u00B7 \u0192/8 \u00B7 1/1600s',
         x: 1300, y: 100, w: 250,
         caption: 'The Patricia Farmer\'s Gin is another example of a gin with mixed additions to accomodate expansion. Shown here in 2022, the gin experienced a noticeably rapid decline from operational to dilapidated. This gin was town down between 2023 and 2025.',
+      },
+      {
+        sheet: 'Sheet 2',
+        file: 'cotton_gins/baileyborogpp.2018.0046.jpg',
+        title: 'Shafer Gin at Baileyboro',
+        place: 'Baileyboro, Bailey County, Texas',
+        lat:  34.032001, lng: -102.875273,
+        specs: '70mm \u00B7 \u0192/8 \u00B7 1/400s',
+        x: 1600, y: 390, w: 250,
+        caption: 'Constructed in 1948, the Shafer Gin several miles west of Baileyboro reminds visitors of the once lucrative cotton industry in central and southern Bailey County. Lewis Shafer, a well-known and successful ginner with experience dating to 1922, operated the gin from 1948 through 1977. The Nickels family purchased the gin in 1977 and continued to operate it for several years. The gin remains largely intact with intact corrugated metal and a sound structure.',
+      },
+      {
+        sheet: 'Sheet 2',
+        file: 'cotton_gins/kalgary20220102-5.jpg',
+        title: 'West Texas Gin at Kalgary',
+        place: 'Kalgary, Crosby County, Texas',
+        lat:  33.408213, lng: -101.149744,
+        specs: '24mm \u00B7 \u0192/8 \u00B7 1/1250s',
+        x: 1540, y: 580, w: 250,
+        caption: 'The West Texas Gin at Kalgary is one of the few extant historic building at Kalgary. The gin exists at the intersection of ranch land and farm land in rural southern Crosby County illustrating the cross-section of historic industry in that portion of the county. A section of the southern part of the gin is seen collapsed here.',
+      },
+      {
+        sheet: 'Sheet 2',
+        file: 'cotton_gins/paducahgpp.2018.0023.1.jpg',
+        title: 'Gin at Paducah',
+        place: 'Paducah, Cottle County, Texas',
+        lat:  34.016755, lng: -100.300647,
+        specs: '100mm \u00B7 \u0192/8 \u00B7 1/400s',
+        x: 1540, y: 780, w: 250,
+        caption: 'Paducah, Texas is the home to several operational and defunct cotton gins. This example seen here in 2018 remains in good shape as it stands in the middle of Paducah. Aging cotton stripping equipment is stored on the yard here.',
+      },
+      {
+        sheet: 'Sheet 2',
+        file: 'cotton_gins/needmoregpp.2018.0049.jpg',
+        title: 'Needmore Co-Op Gin',
+        place: 'Needmore, Bailey County, Texas',
+        lat:  34.033260, lng: -102.737157,
+        specs: '24mm \u00B7 \u0192/8 \u00B7 1/400s',
+        x: 500, y: 360, w: 250,
+        caption: 'The Needmore Co-Op gin stood at the crossroads of Highway 214 and FM 298 in Bailey County. The gin, which shows signs of deterioration here, was a mainstay in the central part of the county for decades through the late-1990s. The structure was torn down in 2025.',
       },
     ],
   }
@@ -1215,6 +1255,63 @@ async function resolveImage(file: string): Promise<ResolvedImage> {
 
 /* ── resolved shapes ────────────────────────────────────────────── */
 
+/* Two-letter forms that have crept into `place`. Kept deliberately
+   short: this is a typo net, not a gazetteer. Anything not listed
+   passes through as written, so a new state costs nothing until it is
+   abbreviated. */
+const STATE_ALIASES: Record<string, string> = {
+  TX: 'Texas',
+  NM: 'New Mexico',
+  MT: 'Montana',
+  CO: 'Colorado',
+  WA: 'Washington',
+  OK: 'Oklahoma',
+  KS: 'Kansas',
+  NE: 'Nebraska',
+  WY: 'Wyoming',
+  SD: 'South Dakota',
+  ND: 'North Dakota',
+};
+
+/**
+ * Split `place` into its parts.
+ *
+ * DERIVED, NOT AUTHORED. Every place already reads either
+ * `County, State` or `Locality, County, State`, so a `city`/`county`/
+ * `state` field per plate would be several hundred lines restating what
+ * one string already says — and three more chances for the two to
+ * disagree. `place` stays the single authored fact; everything else
+ * falls out of it.
+ *
+ * The county part is CHECKED rather than assumed. Without that,
+ * `Muleshoe, Texas` would silently file a photograph under a county
+ * called Muleshoe, and a place index built on a lie is worse than no
+ * place index.
+ */
+function parsePlace(place: string, where: string) {
+  const parts = place.split(',').map((t) => t.trim()).filter(Boolean);
+  if (parts.length < 2 || parts.length > 3) {
+    throw new Error(
+      `[photography] ${where} has place "${place}". Expected ` +
+        `"County, State" or "Locality, County, State".`,
+    );
+  }
+  const county = parts[parts.length - 2];
+  if (!/\b(County|Parish|Borough|Census Area)$/.test(county)) {
+    throw new Error(
+      `[photography] ${where} has place "${place}", whose second-to-last ` +
+        `part is "${county}". That slot must be the county — the plate ` +
+        `index groups on it.`,
+    );
+  }
+  const raw = parts[parts.length - 1];
+  return {
+    locality: parts.length === 3 ? parts[0] : null,
+    county,
+    state: STATE_ALIASES[raw] ?? raw,
+  };
+}
+
 export type ResolvedPlate = Omit<PlateInput, 'x' | 'y' | 'w'> & {
   /** resolved by the layout — always concrete on a ResolvedPlate */
   x: number;
@@ -1230,6 +1327,10 @@ export type ResolvedPlate = Omit<PlateInput, 'x' | 'y' | 'w'> & {
   plate: string;
   href: string;
   coordinates: string;
+  /** parsed from `place` — see parsePlace. Never authored. */
+  locality: string | null;
+  county: string;
+  state: string;
   mapUrl: string;
   draft: boolean;
   sellable: boolean;
@@ -1478,6 +1579,7 @@ async function build(): Promise<ResolvedGallery[]> {
         // an untitled plate gets no record page, so it gets no link
         href: draft ? '' : plateHref(g.slug, i),
         coordinates: coordLabel(p.lat, p.lng),
+        ...parsePlace(p.place, `${g.slug} ${plateNo(i)} (${p.file})`),
         mapUrl: geoUrl(p.lat, p.lng),
         draft,
         // an unfinished plate is never for sale, whatever the gallery says

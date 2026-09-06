@@ -25,20 +25,26 @@ import { getGalleries, SERIES, PHOTOGRAPHER } from '../../data/photography';
 
 const galleries = await getGalleries();
 
-/** distinct states named in a gallery's plates, in first-seen order */
-const statesOf = (places: string[]) => {
+/** distinct states in a gallery's plates, in first-seen order.
+    Reads the derived `state`, so `NM` and `New Mexico` no longer count
+    as two — the alias table in photography.ts settles it once. */
+const statesOf = (plates: { state: string }[]) => {
   const seen: string[] = [];
-  for (const place of places) {
-    const state = place.split(',').pop()?.trim();
-    if (state && !seen.includes(state)) seen.push(state);
-  }
+  for (const { state } of plates) if (!seen.includes(state)) seen.push(state);
   return seen;
 };
 
-const totalPlates = galleries.reduce(
-  (n, g) => n + g.plates.filter((p) => !p.draft).length,
-  0,
-);
+const listed = galleries.flatMap((g) => g.plates.filter((p) => !p.draft));
+const totalPlates = listed.length;
+
+/* The reach of the work, which this page is the only place to state.
+   `county` and `state` are derived from `place` in photography.ts — see
+   parsePlace — so this costs no authoring and cannot drift. A
+   photographer with fifty plates in one county is a local; fifty from
+   Val Verde to Toole County is a survey, and the difference is
+   currently something a reader could only learn by counting rows. */
+const countyCount = new Set(listed.map((p) => `${p.county}, ${p.state}`)).size;
+const stateCount = new Set(listed.map((p) => p.state)).size;
 ---
 
 <Layout title={`Plate Index | ${PHOTOGRAPHER}`}>
@@ -58,8 +64,14 @@ const totalPlates = galleries.reduce(
           galleries themselves are laid out on the light table.
         </p>
         <p class="font-mono text-[10px] uppercase tracking-widest text-iron/40 mt-4">
-          {totalPlates} plates &middot; {galleries.length} series in print
+          {totalPlates} plates &middot; {galleries.length} series in print &middot;
+          {' '}{countyCount} counties &middot; {stateCount} states
         </p>
+        <nav class="mt-4 font-mono text-[10px] uppercase tracking-widest">
+          <a href="/photography/plates/by-place" class="text-sage hover:text-caprock transition-colors">
+            By place &rarr;
+          </a>
+        </nav>
       </header>
 
       {galleries.map((gallery) => (
@@ -79,8 +91,8 @@ const totalPlates = galleries.reduce(
 
           <p class="font-mono text-[10px] uppercase tracking-widest text-iron/40 mb-4">
             {gallery.plates.filter((p) => !p.draft).length} plates
-            {statesOf(gallery.plates.filter((p) => !p.draft).map((p) => p.place)).length > 0 && (
-              <span> &middot; {statesOf(gallery.plates.filter((p) => !p.draft).map((p) => p.place)).join(' \u00B7 ')}</span>
+            {statesOf(gallery.plates.filter((p) => !p.draft)).length > 0 && (
+              <span> &middot; {statesOf(gallery.plates.filter((p) => !p.draft)).join(' \u00B7 ')}</span>
             )}
           </p>
 
