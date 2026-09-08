@@ -119,6 +119,24 @@ const coverAlt = (s: (typeof series)[number]) =>
    one print you can already see. */
 const STRIP_MAX = 5;
 
+/* ── THE OTHER CONTRACT ────────────────────────────────────────────
+   EXIT_WIDTH_VW is not the only thing this page and the light table
+   have to agree on. Each print in the fan links to ?plate=NN, and NN
+   is the light table's own deep-link format: the plate's position in
+   the gallery, one-based, padded to two digits. Getting it wrong does
+   not throw; it opens the desk on the wrong plate, or on none.
+
+   It was written inline in stripFor, which made it look like a
+   formatting detail rather than the second half of a cross-page
+   contract. It is now named, in one place, next to the one that
+   already carries a warning.
+
+   BETTER STILL, when there is reason to touch photography.ts: export
+   the builder from there, so the album and the light table read the
+   format from the module that owns the plates instead of both
+   knowing it. Until then, this is the single copy on this side. */
+const plateParam = (index: number) => String(index + 1).padStart(2, '0');
+
 function stripFor(s: (typeof series)[number]) {
   const g = galleries.find((x) => x.slug === s.slug);
   if (!g) return [];
@@ -127,7 +145,7 @@ function stripFor(s: (typeof series)[number]) {
     .slice(0, STRIP_MAX)
     .map((p) => ({
       src: p.img.index,
-      no: String(p.index + 1).padStart(2, '0'),
+      no: plateParam(p.index),
       label: `${p.plate}, ${p.title}`,
     }));
 }
@@ -301,10 +319,10 @@ if (belowHorizon.length) {
                 a lone Roman numeral floating in a corner. Beside the title
                 is where it belonged anyway — a catalogue entry, not a
                 header ornament. */}
-            <div class="flex items-baseline gap-3 mb-3">
+            <div class="slip-head flex items-baseline gap-3 mb-3">
               <span
                 aria-hidden="true"
-                class="font-serif text-3xl md:text-4xl font-light leading-none text-sage/50 select-none shrink-0"
+                class="slip-no font-serif text-3xl md:text-4xl font-light leading-none text-sage/50 select-none shrink-0"
               >
                 {s.number}
               </span>
@@ -467,7 +485,18 @@ if (belowHorizon.length) {
     background-color: var(--plate-desk, var(--color-desk, #F5F3ED));
     background-image: var(--plat-lines);
     background-size: var(--plat-sizes);
-    min-height: 30rem;
+    /* NO min-height. A floor here can only ever make the pane TALLER
+       than the viewport it is supposed to be, which is the one thing
+       it must never be: the foot is anchored to the pane's bottom
+       edge, so a pane 150px taller than the screen puts the slip, the
+       fan and the catchword below the fold, and scroll-snap-align:
+       start aligns a top edge to something whose bottom cannot be
+       reached. That is a landscape phone, where the viewport is about
+       390px tall and the old 30rem floor added roughly 150px of pane
+       nobody could see.
+
+       Short viewports are handled by tightening the foot instead —
+       see the max-height tier near the bottom of this sheet. */
     overflow: hidden;
     scroll-snap-align: start;
     scroll-margin-top: var(--header-h, 0px);
@@ -603,6 +632,12 @@ if (belowHorizon.length) {
      piece of paper. Paper has square corners. */
   .slip {
     max-width: 32rem;
+    /* Above the fan, so a print that spreads left tucks behind the
+       slip rather than landing on top of it. This used to be a second
+       `.slip` block further down the sheet; there is no reason for the
+       card to be described in two places. */
+    position: relative;
+    z-index: 2;
     box-shadow: calc(var(--plate-sh-dx, 0px) * 0.32) calc(var(--plate-sh-dy, 40px) * 0.32)
       calc(var(--plate-sh-blur, 26px) * 0.55 + 4px) -6px
       color-mix(
@@ -760,13 +795,6 @@ if (belowHorizon.length) {
     align-items: flex-end;
     flex-shrink: 0;
     z-index: 1;
-  }
-
-  /* Above the fan, so a print that spreads left tucks behind the label
-     rather than landing on top of it. */
-  .slip {
-    position: relative;
-    z-index: 2;
   }
 
   /* Fanned, not spaced — a stack rather than a row of tiles. The
@@ -1069,6 +1097,97 @@ if (belowHorizon.length) {
     color: var(--ink-rail, #fff);
   }
 
+  /* ── short viewports ────────────────────────────────────────
+     A phone turned sideways is the case nothing here was measured
+     for. The pane is about 390px minus the header, and the foot was
+     designed against a portrait pane three times that tall: the slip
+     alone runs about 250px before the fan is counted, and above
+     767px the lede is not even clamped, because that breakpoint asks
+     about WIDTH and a landscape phone is 844px wide. So the one
+     screen where the photograph has the least room to spare was
+     being given the largest furniture on the site.
+
+     This tier asks about HEIGHT instead, which is the quantity that
+     is actually short. It trims rather than hides: everything the
+     pane carries in portrait is still here, at the size a 390px-tall
+     screen can hold. It also lands on a desktop window dragged very
+     short, which is correct for the same reason.
+
+     Placed last so it wins over the base rules it narrows; the
+     max-width tiers above it ask a different question and do not
+     collide. */
+  @media (max-height: 34rem) {
+    .foot {
+      bottom: 2.25rem;
+      gap: 0.75rem;
+    }
+
+    /* The utility padding comes off here rather than being tuned in
+       the markup: p-5 sm:p-6 md:p-8 is a width ladder, and at 844px
+       wide it is asking for the largest step at the exact moment
+       there is no room for it. */
+    .slip {
+      max-width: 26rem;
+      padding: 0.85rem 1.1rem;
+    }
+
+    .slip-head {
+      margin-bottom: 0.35rem;
+    }
+
+    .slip h2 {
+      font-size: 1.375rem;
+    }
+
+    .slip-no {
+      font-size: 1.5rem;
+    }
+
+    /* Two lines rather than three. Same reasoning as the phone-width
+       clamp, and the full text stays in the DOM there too. */
+    .slip-lede {
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      overflow: hidden;
+      font-size: 0.9375rem;
+    }
+
+    .slip-rule {
+      margin-top: 0.6rem;
+      padding-top: 0.45rem;
+    }
+
+    .strip-print img {
+      width: 72px;
+      height: 48px;
+    }
+
+    .catchword {
+      bottom: 0.5rem;
+    }
+
+    .plateline {
+      top: 0.75rem;
+      right: 0.75rem;
+    }
+  }
+
+  /* The lg row exists because at md the slip's cap plus the fan
+     needed more width than there was. A landscape phone has the
+     opposite problem — width to spare, no height — so the same row
+     that was wrong at 768px is exactly right here: side by side, the
+     fan costs the foot nothing in height at all. */
+  @media (max-height: 34rem) and (min-width: 40rem) {
+    .foot {
+      flex-direction: row;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
     .foot,
     .rail,
@@ -1222,7 +1341,20 @@ if (belowHorizon.length) {
         { duration: 520, easing: 'cubic-bezier(0.33, 0, 0.2, 1)', fill: 'forwards' },
       );
 
+      /* ONCE. Three things call this: the animation finishing, the
+         animation failing, and the 900ms backstop. On a warm cache the
+         first fires at 520ms and the navigation is committed long
+         before the timer, so the guard never matters — but on a cold
+         or slow connection the document is still in flight at 900ms,
+         and a second assign() to the same URL cancels the request that
+         is already running and starts it again. That is the pause the
+         prefetch exists to prevent, arriving from the code that was
+         meant to be insurance against it. */
+      let gone = false;
+
       const go = () => {
+        if (gone) return;
+        gone = true;
         const url = new URL(link.href, window.location.origin);
         url.searchParams.set('from', plate);
         window.location.assign(url.toString());

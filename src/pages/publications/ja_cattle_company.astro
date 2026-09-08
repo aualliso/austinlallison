@@ -1,0 +1,137 @@
+---
+// src/pages/publications/ja_cattle_company.astro
+// A "Notes, Documents, and Sundries" contribution to the WTHA Year Book.
+// No endnotes, one unnumbered comparison figure, schema.org/Article.
+//
+// The whole piece is two paragraphs plus a facsimile of the document it
+// describes, so the figure sits AFTER the prose, which is where the Year Book
+// printed it (text on p. 173, deed on pp. 174-175).
+import RootLayout from '../../layouts/RootLayout.astro';
+import ScholarlyMeta from '../../components/ScholarlyMeta.astro';
+import PublicationHeader from '../../components/PublicationHeader.astro';
+import Figure from '../../components/Figure.astro';
+import CiteThis from '../../components/CiteThis.astro';
+import { CITATION, FIGURES } from '../../data/publications/ja_cattle_company';
+
+const c = CITATION;
+
+// Austin's own opening sentences, verbatim. No invented abstract on the short
+// pieces — this feeds RootLayout's description and the schema.org summary.
+const SUMMARY =
+  'Housed at the Southwest Collection/Special Collections Library, the JA Cattle Company ' +
+  'records (1813–1994) contain a breathtaking history of the Texas Panhandle’s oldest ranch. ' +
+  'Of particular interest here is a warranty deed transferring a half-section of land in ' +
+  'southeast Armstrong County from Charles Goodnight to Cornelia Adair, John Adair’s widow.';
+---
+
+<RootLayout
+  title={`${c.title} | ${c.authors[0]}`}
+  description={SUMMARY}
+  image="/images/ja_cattle_company/ja_deed_p1.jpg"
+>
+  <Fragment slot="head">
+    <ScholarlyMeta citation={c} />
+  </Fragment>
+
+  <article class="max-w-4xl mx-auto py-6 text-iron" itemscope itemtype="https://schema.org/Article">
+
+    <!-- Breadcrumb Anchor Navigation -->
+    <div class="mb-8 flex justify-between items-center">
+      <p>
+        <a href="/publications" class="text-sm font-serif text-sage hover:text-caprock transition-colors lowercase tracking-wide">
+          &larr; return to repository index
+        </a>
+      </p>
+      <p>
+        <a href="/cv" class="text-sm font-serif text-sage hover:text-caprock transition-colors lowercase tracking-wide">
+          return to cv &rarr;
+        </a>
+      </p>
+    </div>
+
+    <PublicationHeader citation={c} eyebrow="Notes, Documents, and Sundries" />
+
+    <!-- Article Body -->
+    <div class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6" itemprop="articleBody">
+
+      <p>
+        Housed at the Southwest Collection/Special Collections Library, the JA Cattle Company records (1813&ndash;1994) contain a breathtaking history of the Texas Panhandle&rsquo;s oldest ranch. Of particular interest here is a warranty deed transferring a half-section of land in southeast Armstrong County from the possession of Charles Goodnight to Cornelia Adair, John Adair&rsquo;s widow. Also of interest is the fact that this transaction took place less than a year after John Adair&rsquo;s death in May of 1885. Was this half-section of land of such importance that it was necessary for Goodnight to transfer it to Mrs. Adair not even a year after her husband&rsquo;s death?
+      </p>
+
+      <p>
+        Perhaps it is important to note where the actual piece of land is located in order to decipher why it was important in 1885. Assuming that it is still held by the JA Ranch, this piece of land is located on the Caprock fourteen miles southeast of Claude, and is near several former water sources as well as clear ranching equipment and structures, based on satellite imagery. A distinct feature of the JA Cattle Company&rsquo;s records is that there are several boxes that contain detailed abstracts of many parcels of land that were acquired or sold by the JA ranch from the 1870s all the way up the mid-twentieth century, and Abstract 275 out of this collection is no different. In this folder there is a well documented history of this piece of land dating back to when it was owned by the Texas Western Narrow Gauge Railroad Company to its acquisition by the JA Ranch.
+      </p>
+
+      <Figure set={FIGURES} id="goodnight-adair-deed" numbered={false} />
+
+      <!-- The contributor note printed at the foot of p. 173 in 2012. Kept
+           because it is part of the published artifact, dated because the post
+           is no longer current. Delete this whole <p> if you would rather it
+           not appear. -->
+      <p class="text-sm font-serif text-iron/60 italic leading-relaxed border-t border-haze pt-5">
+        Contributor note as printed in 2012: Austin Allison works at the Reference Desk at the Southwest Collection/Special Collections Library.
+      </p>
+
+    </div>
+
+    <CiteThis citation={c} />
+
+  </article>
+</RootLayout>
+
+<style is:global>
+  /* One knob for every in-page jump, so nothing lands under the sticky header. */
+  :root {
+    --anchor-offset: 7.5rem;
+  }
+
+  .versions .version-link {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-haze, #ddd8cf);
+    border-radius: 2px;
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.6);
+    text-decoration: none;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .versions a.version-link:hover,
+  .versions a.version-link:focus-visible {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+  }
+  .versions .version-link--current {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+    background: rgb(from #9c5b3f r g b / 0.06);
+  }
+
+  @media print {
+    :root {
+      --anchor-offset: 0;
+    }
+    nav,
+    .versions,
+    a[href="/publications"],
+    a[download] {
+      display: none !important;
+    }
+    .prose-article {
+      max-width: none;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: #000;
+    }
+    h1 {
+      font-size: 18pt;
+    }
+    .prose-article a[href^="http"]::after {
+      content: " (" attr(href) ")";
+      font-size: 8pt;
+      word-break: break-all;
+    }
+    p {
+      orphans: 3;
+      widows: 3;
+    }
+  }
+</style>

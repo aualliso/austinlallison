@@ -244,8 +244,8 @@ export const SERIES: SeriesEntry[] = [
     title: 'Cotton Gins of the High Plains',
     built: true,
     lede: 'An intentional survey of the remnant legacy cotton gins in Texas. Most no longer in use, these sentinels of the plains register stories of economic prosperity dating back more than a century.',
-    cover: 'cotton_gins/dumont.jpg',
-    coverLabel: 'Plate 3.02 \u00B7 Dumont',
+    cover: 'cotton_gins/needmoregpp.2018.0049.jpg',
+    coverLabel: 'Plate 3.34 \u00B7 Needmore Co-Op Gin',
     chrome: {
       rail: { ink: '#e9e8e7', halo: '#0d0d0c', haloStrength: 0.524 },       // 6.90:1
       catchword: { ink: '#ede8e3', halo: '#0f0d0a', haloStrength: 0.405 },  // 5.10:1

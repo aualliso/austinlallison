@@ -1,0 +1,222 @@
+---
+// src/pages/publications/newspapers_oil_and_railroad_land.astro
+// A "Notes, Documents, and Sundries" contribution to the West Texas
+// Historical Review. No endnotes, six unnumbered figures, schema.org/Article.
+//
+// THREE notes under one title, divided in print by a row of eight asterisks.
+// Those dividers are reproduced as .asterism paragraphs with role="separator",
+// so a screen reader announces the break instead of reading eight asterisks.
+import RootLayout from '../../layouts/RootLayout.astro';
+import ScholarlyMeta from '../../components/ScholarlyMeta.astro';
+import PublicationHeader from '../../components/PublicationHeader.astro';
+import Figure from '../../components/Figure.astro';
+import CiteThis from '../../components/CiteThis.astro';
+import { CITATION, FIGURES } from '../../data/publications/newspapers_oil_and_railroad_land';
+
+const c = CITATION;
+
+// Austin's own opening sentences, verbatim. No invented abstract on the short
+// pieces. This covers only the first of the three notes, which is a fair
+// snippet but not a summary of the whole — see the handover note.
+const SUMMARY =
+  'The Southwest Collection/Special Collections Library is home to several unique collections, ' +
+  'not least of which is a newspaper collection from the rural community of Darrouzett in ' +
+  'Lipscomb County, Texas. The Darrouzett News was a weekly newspaper that began publication ' +
+  'in 1931, but quickly ceased production in 1932 after financial strains during the height ' +
+  'of the Great Depression.';
+---
+
+<RootLayout
+  title={`${c.title} | ${c.authors[0]}`}
+  description={SUMMARY}
+  image="/images/newspapers_oil_railroad_land/darrouzett_news_1931_09_17.jpg"
+>
+  <Fragment slot="head">
+    <ScholarlyMeta citation={c} />
+  </Fragment>
+
+  <article class="max-w-4xl mx-auto py-6 text-iron" itemscope itemtype="https://schema.org/Article">
+
+    <!-- Breadcrumb Anchor Navigation -->
+    <div class="mb-8 flex justify-between items-center">
+      <p>
+        <a href="/publications" class="text-sm font-serif text-sage hover:text-caprock transition-colors lowercase tracking-wide">
+          &larr; return to repository index
+        </a>
+      </p>
+      <p>
+        <a href="/cv" class="text-sm font-serif text-sage hover:text-caprock transition-colors lowercase tracking-wide">
+          return to cv &rarr;
+        </a>
+      </p>
+    </div>
+
+    <PublicationHeader citation={c} eyebrow="Notes, Documents, and Sundries" />
+
+    <!-- Article Body -->
+    <div class="prose-article max-w-3xl mx-auto font-serif text-[17px] leading-[1.75] text-iron/90 space-y-6" itemprop="articleBody">
+
+      <!-- ===== I. The Darrouzett News ===== -->
+
+      <p>
+        The Southwest Collection/Special Collections Library is home to several unique collections, not least of which is a newspaper collection from the rural community of Darrouzett in Lipscomb County, Texas. <em>The Darrouzett News</em> was a weekly newspaper that began publication in 1931, but quickly ceased production in 1932 after financial strains during the height of the Great Depression. The main audience was the people of Lipscomb County in Texas, as well as Beaver County in the Oklahoma panhandle.
+      </p>
+
+      <p>
+        Like most rural newspapers of the time, <em>The Darrouzett News</em> contained a mixture of information ranging from the basics of who was travelling where and who was in town visiting, to more in-depth information about local schools and agricultural news. In fact, the largest headline throughout the entire run of the newspaper was in the September 3<sup>rd</sup>, 1931, issue proclaiming &ldquo;DARROUZETT SCHOOL WILL OPEN MONDAY SEPT. 7.&rdquo; Not even the robbery of a neighboring community&rsquo;s bank garnered such a large headline.
+      </p>
+
+      <p>
+        From the beginning, the newspaper was managed by Elsie Montgomery, who was later the editor of the <em>Hutchinson County Herald</em> in Borger and part-owner and editor of the <em>Potter County News</em> in Amarillo.  Perhaps what is most striking about Montgomery is the young age she was when she began managing the newspaper; she was just 21 years old.
+      </p>
+
+      <p>
+        Darrouzett, a community of just over 400 people at its height, struggled to keep the newspaper operational.
+      </p>
+
+      <p>
+        On July 28, 1932, fourteen months after the newspaper&rsquo;s founding, the final issue of <em>The Darrouzett News</em> was published. Montgomery attributes financial hardship to the demise of the newspaper, having not been able to meet printing and postage costs during the final months. Ultimately, it was the local Chamber of Commerce that felt continuing publication of the newspaper was a losing proposition, and it was their decision to suspend the newspaper.
+      </p>
+
+      <Figure set={FIGURES} id="darrouzett-front-page" numbered={false} />
+
+      <p class="asterism" role="separator" aria-label="Section break">********</p>
+
+      <!-- ===== II. Oil in Eastland, Callahan, and Coleman counties ===== -->
+
+      <p>
+        During the first three decades of the twentieth century, the Texas counties of Eastland, Callahan, and Coleman experienced tremendous growth due to the oil boom. This growth is documented by digitized newspapers available through the Southwest Collection. The <em>Baird Star</em>, <em>Cross Plains Review</em>, and <em>Santa Anna News</em> all contained many articles detailing the growth of oil operations in the region. Between the years of 1910 and 1925 each of the newspapers had almost weekly updates on the status of the various oil wells in the region, an indicator of the importance of that commodity.
+      </p>
+
+      <p>
+        The community of Santa Anna saw the earliest oil strikes in the region. In the September 20, 1918, issue of the <em>Santa Anna News</em> a story highlighted an oil well at Trickham, Texas&mdash;one of the county&rsquo;s major wells&mdash;being damaged by a fire. Interestingly, the article reported that this was the first well-fire in Coleman County. The fire caused more than $1,000 worth of destruction, but did not damage the nearby storage tanks.
+      </p>
+
+      <p>
+        To the north, in the community of Cross Plains, the months between April and July 1922 featured numerous headlines in <em>The Cross Plains Review</em> discussing oil well activity in the region, specifically wells to the east in Eastland County. One specific example in the April 28, 1922, issue tells of a new &ldquo;gusher&rdquo; at the Eakin No. 2 well. The following issue on May 5 supplemented the previous information with new reports of the well producing upwards of 3,000 barrels per day.
+      </p>
+
+      <Figure set={FIGURES} id="cross-plains-masthead" numbered={false} />
+
+      <Figure set={FIGURES} id="oil-clippings" numbered={false} />
+
+      <p>
+        Further north, Baird experienced an oil boom in early 1924. <em>The Baird Star</em> reported on February 8, 1924, that an increased petroleum prices was spurring exploration oil in Callahan County. Along with news of the increase, the newspaper reported updates on no less than twelve county oil wells. Three months later in May, the <em>Star</em> again printed updates about oil wells in the county, including information about the various companies that operated the wells.
+      </p>
+
+      <p>
+        The digitization of these West Texas newspapers makes it easier for patrons to research not only oil development events, but also a wide range of other topics. Through examining these newspapers, it is very clear that the discovery of oil helped sustain the economy of this region for quite some time. Even into the latter part of the 1920s and early 1930s, Santa Anna and Cross Plains were still regularly reporting on oil field news.
+      </p>
+
+      <p class="asterism" role="separator" aria-label="Section break">********</p>
+
+      <!-- ===== III. Southern Pacific land pamphlets ===== -->
+
+      <p>
+        The Southern Pacific Railroad, a major railroad system that spanned the American West from New Orleans to the Pacific Ocean, relied heavily on land promotional pamphlets. While grandiose landscape photographs and over-exaggerated descriptions of the climate of West Texas are rampant in these pamphlets, the reader is offered a glimpse into how land and property were advertised in the early twentieth century. Clearly the intent was to attract as many settlers as possible while also skirting the truth to the fullest extent. Even in an era of less-than-precise meteorology and climatology, Fort Davis, Texas, was advertised in <em>West Texas Beyond the Pecos</em> (next page) as receiving 20.38 inches of rain per year, and El Paso receiving an average of 13.14, both highly-exaggerated estimates for a region that usually totaled no more than four inches.
+      </p>
+
+      <Figure set={FIGURES} id="pecos-pamphlet-cover" numbered={false} />
+
+      <p>
+        Photographs of feeble bridges crossing perilously wide canyons are reminiscent of Monty Python&rsquo;s &ldquo;Bridge of Death,&rdquo; but many of the photographs are enticing enough to persuade anyone to seek out the natural beauty of West Texas. The photographs accurately capture the landscape scenes that the Trans-Pecos is known for even today, showing the canyon and river systems that traverse the landscape. Such advertising tracts were unencumbered by factual reality. Little or no distinction is made between photographs depicting Texas and New Mexico, with images of the Sacramento Mountains in south-central New Mexico included with descriptions of West Texas. Images from near Cloudcroft, New Mexico, are also included. From what we know about these promotionals, embellishment was expected, and one hundred years later their profit-oriented strategies remain apparent.
+      </p>
+
+      <Figure set={FIGURES} id="high-bridge" numbered={false} />
+
+      <p>
+        Even taking into consideration the misleading nature of these pamphlets, they still offer an idealized portrait of West Texas that captured the beauty that still attracts people today. This document acts as a historical representation of how West Texas was presented to the outside world, and while inaccurate at times, it is still a significant piece of history.
+      </p>
+
+      <Figure set={FIGURES} id="rio-grande-bluffs" numbered={false} />
+
+      <p>
+        All of the images here are available among the Southwest Collection digital holdings, easily found at <a href="https://collections.swco.ttu.edu" rel="noopener">collections.swco.ttu.edu</a>.
+      </p>
+
+      <!-- The contributor note printed at the foot of p. 129 in 2014. Kept
+           because it is part of the published artifact, dated because the post
+           is no longer current. Delete this whole <p> if you would rather it
+           not appear. -->
+      <p class="text-sm font-serif text-iron/60 italic leading-relaxed border-t border-haze pt-5">
+        Contributor note as printed in 2014: Austin Allison is a cataloger and digital collections specialist at the Southwest Collection/Special Collections Library.
+      </p>
+
+    </div>
+
+    <CiteThis citation={c} />
+
+  </article>
+</RootLayout>
+
+<style is:global>
+  /* One knob for every in-page jump, so nothing lands under the sticky header. */
+  :root {
+    --anchor-offset: 7.5rem;
+  }
+
+  /* The printed section divider between the three notes. Scoped to the article
+     body so it can't leak onto any other page. The eight asterisks are the
+     literal characters the Review printed; the letter-spacing is what stops
+     them reading as a typewriter artifact. */
+  .prose-article .asterism {
+    text-align: center;
+    letter-spacing: 0.55em;
+    /* letter-spacing adds a trailing gap after the last character, which
+       throws the run off-centre; this pulls it back. */
+    text-indent: 0.55em;
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.45);
+    padding: 1.5rem 0;
+    user-select: none;
+  }
+
+  .versions .version-link {
+    display: inline-block;
+    padding: 0.35rem 0.6rem;
+    border: 1px solid var(--color-haze, #ddd8cf);
+    border-radius: 2px;
+    color: rgb(from var(--color-iron, #3a3733) r g b / 0.6);
+    text-decoration: none;
+    transition: color 150ms ease, border-color 150ms ease;
+  }
+  .versions a.version-link:hover,
+  .versions a.version-link:focus-visible {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+  }
+  .versions .version-link--current {
+    color: #9c5b3f;
+    border-color: #9c5b3f;
+    background: rgb(from #9c5b3f r g b / 0.06);
+  }
+
+  @media print {
+    :root {
+      --anchor-offset: 0;
+    }
+    nav,
+    .versions,
+    a[href="/publications"],
+    a[download] {
+      display: none !important;
+    }
+    .prose-article {
+      max-width: none;
+      font-size: 10.5pt;
+      line-height: 1.5;
+      color: #000;
+    }
+    h1 {
+      font-size: 18pt;
+    }
+    .prose-article a[href^="http"]::after {
+      content: " (" attr(href) ")";
+      font-size: 8pt;
+      word-break: break-all;
+    }
+    p {
+      orphans: 3;
+      widows: 3;
+    }
+  }
+</style>
