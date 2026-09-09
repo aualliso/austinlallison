@@ -1,346 +1,1171 @@
 ---
 // src/pages/cv.astro
+//
+// CHANGES, 2026-09-09
+//  - Contact block + "Updated" line + a Print / Save as PDF button in the masthead.
+//  - Real @media print stylesheet (is:global -- the old one was scoped, so its
+//    `header, footer` rules never matched anything outside this component).
+//  - Publications, presentations and newspaper projects are now DATA at the top
+//    of this file, rendered by one formatter each. Order and punctuation are
+//    mechanical, so they can no longer drift.
+//  - Instructional footprint promoted out of the map-digitization block into its
+//    own Teaching and Instruction section.
+//  - Newspaper digitization prose converted to a table with computed totals.
+//  - text-md (not a Tailwind class -- it was doing nothing) -> text-base.
+//
+// STILL NEEDS YOU: search this file for "TODO" -- four places where I will not
+// guess: the two NEH requested amounts, GROWTH_BASIS, CREDENTIALS, MEMBERSHIPS.
 import RootLayout from '../layouts/RootLayout.astro';
+import {
+  NEWSPAPERS,
+  groupTotal,
+  issuesTotal,
+  titleCount,
+} from '../data/newspapers';
+
+const UPDATED = 'September 2026'; // hand-set: means "content reviewed", not "site rebuilt"
+
+const CONTACT = {
+  email: 'hello@austinlallison.com',
+  orcid: '0000-0001-6787-9636',
+  orcidUrl: 'https://orcid.org/0000-0001-6787-9636',
+};
+
+// Declined submissions normally stay in the internal dossier rather than the
+// public CV. The record is kept below either way -- flip this to true to print it.
+const SHOW_DECLINED = false;
+
+const LINK =
+  'text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors';
+
+/* ------------------------------------------------------------------ *
+ * PUBLICATIONS
+ * Sorted by `sort` (descending). Punctuation is produced by the two
+ * formatters below, so every entry is Chicago-consistent by construction.
+ * When src/lib/citation.ts grows an index over the publication data
+ * modules, these arrays get replaced by one import and nothing else.
+ * ------------------------------------------------------------------ */
+type Work = {
+  sort: string;
+  title: string;
+  href?: string;
+  container: string;
+  volume?: string;
+  issue?: string;
+  date?: string;
+  pages?: string;
+  status?: 'published' | 'review' | 'declined';
+  note?: string;
+};
+
+// Author. "Title." Container vol, no. N (Date): pp.
+function journalTail(w: Work) {
+  let s = '';
+  if (w.volume) s += ' ' + w.volume;
+  if (w.issue) s += ', no. ' + w.issue;
+  if (w.date) s += ' (' + w.date + ')';
+  s += w.pages ? ': ' + w.pages + '.' : '.';
+  return s;
+}
+
+// Author. "Title." Container, Issue, Season Year, pp.
+function featureTail(w: Work) {
+  let s = '';
+  if (w.volume) {
+    s += ' ' + w.volume;
+    if (w.issue) s += ', no. ' + w.issue;
+    if (w.date) s += ' (' + w.date + ')';
+    if (w.pages) s += ': ' + w.pages;
+  } else {
+    if (w.date) s += ', ' + w.date;
+    if (w.pages) s += ', ' + w.pages;
+  }
+  return s + '.';
+}
+
+// Titles are stored without terminal punctuation; the period goes inside the
+// closing quotation mark, once, for every entry.
+const stripDot = (t: string) => t.replace(/[.]+$/, '');
+const byDateDesc = (a: Work, b: Work) => b.sort.localeCompare(a.sort);
+
+const ARTICLES: Work[] = [
+  {
+    sort: '2026-01',
+    title: 'Surveying the Capitol Land Reservation in Texas',
+    href: '/publications/capitol_land_shq',
+    container: 'Southwestern Historical Quarterly',
+    volume: '129',
+    issue: '3',
+    date: 'January 2026',
+    pages: '335\u2013364',
+  },
+  {
+    sort: '2025-01',
+    title:
+      "\u2018Opportunity Knocking\u2019: The Vaughan Land Company and Early Bailey County Development",
+    href: '/publications/opportunity_knocking',
+    container: 'Panhandle-Plains Historical Review',
+    volume: '96',
+    date: '2025',
+    pages: '40\u201365',
+  },
+  {
+    sort: '2019-01',
+    title:
+      "A Spring Sprung It: Tracing and Understanding the True Genesis of North America's Longest River",
+    href: '/publications/spring_sprung_it',
+    container: 'Journal of the West',
+    volume: '58',
+    issue: '3',
+    date: '2019',
+    pages: '6\u201321',
+  },
+  {
+    sort: '2018-01',
+    title: 'Maps and Newspapers in the Southwest Collection',
+    href: '/publications/maps_and_newspapers',
+    container: 'Archivation Exploration',
+    volume: '3',
+    issue: '2',
+    date: '2018',
+  },
+  {
+    sort: '2014-01',
+    title: 'Notes, Documents, and Sundries: Newspapers, Oil, and Railroad Land',
+    href: '/publications/newspapers_oil_and_railroad_land',
+    container: 'West Texas Historical Review',
+    volume: 'XC',
+    date: '2014',
+    pages: '129\u2013135',
+  },
+  {
+    sort: '2012-01',
+    title: 'Notes, Documents and Sundries: JA Cattle Company',
+    href: '/publications/ja_cattle_company',
+    container: 'West Texas Historical Association Year Book',
+    volume: 'LXXXVIII',
+    date: '2012',
+    pages: '173\u2013175',
+  },
+].sort(byDateDesc);
+
+const IN_PROGRESS_ALL: Work[] = [
+  {
+    sort: '2025-10',
+    title: 'The Digitization of Edwards Plateau Newspapers',
+    container: 'Edwards Plateau Historian',
+    status: 'review',
+    note: 'Under review; submitted October 2025',
+  },
+  {
+    sort: '2024-09',
+    title: 'The Digitization of West Texas Newspapers',
+    container: 'Digital Library Perspectives',
+    status: 'declined',
+    note: 'Submitted September 2024; declined January 2025',
+  },
+];
+
+const IN_PROGRESS = IN_PROGRESS_ALL.filter(
+  (w) => SHOW_DECLINED || w.status !== 'declined'
+).sort(byDateDesc);
+
+const FEATURES: Work[] = [
+  {
+    sort: '2025-06',
+    title:
+      'Lipscomb County Courthouse: A Prairie Landmark with Enduring Presence',
+    href: '/publications/lipscomb_county_courthouse',
+    container: 'Authentic Texas',
+    date: 'Issue 33, Summer 2025',
+  },
+  {
+    sort: '2024-11-29',
+    title: 'Albert Pike and His Journey to Ransom Canyon',
+    href: '/publications/albert_pike',
+    container: 'Lubbock Avalanche-Journal',
+    date: 'November 29, 2024',
+  },
+  {
+    // "Winter 2024" keyed to February so it keeps its place above the January
+    // Avalanche-Journal column, as on your original page.
+    sort: '2024-02',
+    title:
+      'The Remnants of the Southwest Conference: The Story of a Landmark Archival Collection',
+    href: '/publications/southwest_conference',
+    container: 'Authentic Texas',
+    date: 'Issue 27, Winter 2024',
+  },
+  {
+    sort: '2024-01-28',
+    title: 'The Sharps rifle, buffalo hunting, and the South Plains',
+    href: '/publications/sharps_rifle',
+    container: 'Lubbock Avalanche-Journal',
+    date: 'January 28, 2024',
+  },
+  {
+    sort: '2023-03',
+    title: 'Tumbleweed Smith and the Sounds of Texas',
+    href: '/publications/tumbleweed_smith',
+    container: 'Authentic Texas',
+    date: 'Issue 25, Spring 2023',
+  },
+  {
+    sort: '2021-09',
+    title:
+      'Comfortably Lodged: Transforming historic county jails into silos for historical and cultural heritage',
+    href: '/publications/comfortably_lodged',
+    container: 'Authentic Texas',
+    date: 'Issue 22, Fall 2021',
+    pages: '40\u201342',
+  },
+  {
+    sort: '2019-01',
+    title:
+      "Unusual Annotations in Stephen F. Austin's 1835 Map of Texas Tell Early Texas History",
+    href: '/publications/unusual_annotations',
+    container: 'The Southwestern Archivist',
+    volume: '42',
+    issue: '1',
+    date: '2019',
+    pages: '19',
+  },
+].sort(byDateDesc);
+
+/* ------------------------------------------------------------------ *
+ * PRESENTATIONS -- grouped by year at render time.
+ * ------------------------------------------------------------------ */
+type Talk = {
+  sort: string;
+  date: string;
+  tag?: string;
+  title?: string;
+  lead?: string; // for entries that were not a titled paper (booths, exhibitions)
+  venue: string;
+  place: string;
+  // 'outreach' entries are staffed booths and displays, not papers. They render
+  // in their own subsection so the presentation list stays a list of talks.
+  kind?: 'outreach';
+};
+
+const TALKS: Talk[] = [
+  {
+    sort: '2026-04-10',
+    date: 'April 10, 2026',
+    title:
+      'Early maps of Lubbock and Lubbock County at the Southwest Collection',
+    venue: 'West Texas Historical Association 2026 annual meeting',
+    place: 'Lubbock, Texas',
+  },
+  {
+    sort: '2025-11-08',
+    date: 'November 8, 2025',
+    tag: 'Invited',
+    title:
+      'Opportunity Knocking: The Vaughan Land Company, Virginia City, and Early Bailey County Development',
+    venue: '31st Annual Center for Big Bend Studies Conference',
+    place: 'Alpine, Texas',
+  },
+  {
+    sort: '2025-05-06',
+    date: 'May 6, 2025',
+    tag: 'Keynote',
+    title:
+      'Navigating the Southwest Collection: Accessing Digitized Archives for Genealogy and Research',
+    venue: 'San Angelo Genealogical and Historical Society Speaker Series',
+    place: 'San Angelo, Texas',
+  },
+  {
+    sort: '2025-01-23',
+    date: 'January 23, 2025',
+    tag: 'Workshop',
+    title:
+      'Digitizing West Texas: How a Small-Scale Effort Evolved to Become the Largest Archive of Digitized West Texas Newspapers',
+    venue: 'Society of Southwest Archivists Workshop',
+    place: 'Online',
+  },
+  {
+    sort: '2024-11-09',
+    date: 'November 9, 2024',
+    tag: 'Invited',
+    title: 'Surveying the Capitol Land Reservation in 1879 and 1880',
+    venue: '30th Annual Center for Big Bend Studies Conference',
+    place: 'Alpine, Texas',
+  },
+  {
+    sort: '2024-09-21',
+    date: 'September 21, 2024',
+    title:
+      'Preserving the history of the Edwards Plateau region through newspaper digitization',
+    venue: 'Edwards Plateau Historical Association conference',
+    place: 'Ballinger, Texas',
+  },
+  {
+    sort: '2024-04-22',
+    date: 'April 22, 2024',
+    tag: 'Invited',
+    title: 'Digital Newspapers',
+    venue: 'Texas Tech University Digital Humanities Working Group Symposium',
+    place: 'Lubbock, Texas',
+  },
+  {
+    sort: '2022-11-12',
+    date: 'November 12, 2022',
+    tag: 'Invited',
+    title:
+      'The upper northwest Comanche Trail: using maps and drones to trace the trail',
+    venue: 'Center for Big Bend Studies 28th annual conference',
+    place: 'Alpine, Texas',
+  },
+  {
+    sort: '2022-03-18',
+    date: 'March 18, 2022',
+    title:
+      'Using drone technology to evaluate sites near and on the Comanche Trail',
+    venue: 'West Texas Historical Association 97th annual conference',
+    place: 'Lubbock, Texas',
+  },
+  {
+    sort: '2021-11-05',
+    date: 'November 5, 2021',
+    tag: 'Invited',
+    title:
+      'Missing Links: Attempting to Reconcile Old Maps of the Llano Estacado',
+    venue: 'Center for Big Bend Studies 27th Annual Conference',
+    place: 'Alpine, Texas',
+  },
+  {
+    sort: '2019-10-20',
+    date: 'October 20, 2019',
+    tag: 'Invited',
+    title: 'Drones for Historic Preservation',
+    venue: 'West Texas Trails Association annual conference',
+    place: 'Graham, Texas',
+  },
+  {
+    sort: '2019-08-15',
+    date: 'August 15, 2019',
+    tag: 'Invited',
+    title: 'Drones for Historic Preservation',
+    venue: 'Texas Plains Trail Region Board Meeting',
+    place: 'Wheeler, Texas',
+  },
+  {
+    sort: '2019-01-20',
+    kind: 'outreach',
+    date: 'January 20, 2019',
+    lead: 'Southwest Collection Digital Newspaper program booth',
+    venue: 'Texas Press Association',
+    place: 'Denton, Texas',
+  },
+  {
+    sort: '2018-07-01',
+    date: 'July 2018',
+    tag: 'Invited',
+    title:
+      'Sandoval Plaza: Utilizing drone technology to survey pastores sites in West Texas',
+    venue: 'Canyonlands Archaeological Society',
+    place: 'Matador, Texas',
+  },
+  {
+    sort: '2018-04-01',
+    date: 'April 2018',
+    title: 'Southwest Collection newspaper digitization',
+    venue: 'West Texas Historical Association',
+    place: 'San Angelo, Texas',
+  },
+  {
+    // TODO: "CITED" was the flag on your original entry and I could not work out
+    // what it denotes. Rename or delete the tag.
+    sort: '2017-04-01',
+    date: 'April 2017',
+    tag: 'Cited',
+    title:
+      'From Wagon Trails to Flight Paths: Drone Technology in Surveying Historic Sites along the Yellow House Draw',
+    venue: 'West Texas Historical Association',
+    place: 'Lubbock, Texas',
+  },
+  {
+    sort: '2016-10-15',
+    date: 'October 15, 2016',
+    title: 'Drones to identify trails and historic locations',
+    venue: 'West Texas Trails Association',
+    place: 'Wheeler, Texas',
+  },
+  {
+    sort: '2016-04-01',
+    date: 'April 2016',
+    lead: 'Southwest Collection Digital Newspaper presentation and exhibition',
+    venue: 'Texas Plains Trail meeting',
+    place: 'Spearman, Texas',
+  },
+  {
+    sort: '2016-01-20',
+    kind: 'outreach',
+    date: 'January 20, 2016',
+    lead: 'Southwest Collection Digital Newspaper program booth',
+    venue: 'Texas Press Association',
+    place: 'San Marcos, Texas',
+  },
+  {
+    sort: '2015-04-25',
+    date: 'April 25, 2015',
+    title:
+      'Texas Tech University, Southwest Collection/Special Collections Library, Newspaper Digitization Project',
+    venue: 'Panhandle Press Association, 105th Annual Convention',
+    place: 'Amarillo, Texas',
+  },
+  {
+    sort: '2015-04-10',
+    date: 'April 10, 2015',
+    title:
+      "Sifting through the Dust: The Process of Digitizing West Texas' Aging Newspapers",
+    venue: 'West Texas Historical Association, 92nd Meeting',
+    place: 'Amarillo, Texas',
+  },
+];
+
+const byTalkDateDesc = (a: Talk, b: Talk) => b.sort.localeCompare(a.sort);
+
+const PAPERS = TALKS.filter((t) => t.kind !== 'outreach').sort(byTalkDateDesc);
+const OUTREACH = TALKS.filter((t) => t.kind === 'outreach').sort(byTalkDateDesc);
+
+const talksByYear = PAPERS.reduce<Record<string, Talk[]>>((acc, t) => {
+  const y = t.sort.slice(0, 4);
+  (acc[y] = acc[y] || []).push(t);
+  return acc;
+}, {});
+const talkYears = Object.keys(talksByYear).sort().reverse();
+
+/* ------------------------------------------------------------------ *
+ * TEACHING
+ * ------------------------------------------------------------------ */
+const TEACHING = [
+  { course: 'LIBR 1100', role: 'Guest lecture', term: 'Spring 2026' },
+];
+
+/* ------------------------------------------------------------------ *
+ * MAP DIGITIZATION
+ * TODO: 2022 (138 maps, 47%) and 2023 (109 maps, 27%) move in opposite
+ * directions, so the percentage cannot be year-over-year growth in maps
+ * digitized. Put the true basis in GROWTH_BASIS and it prints under the
+ * table; leave it empty and no caption is rendered.
+ * e.g. 'Percentages are growth of the DSpace map collection as a whole.'
+ * ------------------------------------------------------------------ */
+const GROWTH_BASIS = '';
+
+const MAPS = [
+  { year: '2025', count: 335, growth: '30%' },
+  { year: '2024', count: 245, growth: '45%' },
+  { year: '2023', count: 109, growth: '27%' },
+  { year: '2022', count: 138, growth: '47%' },
+  { year: '2021', count: 63, growth: '27% (from baseline)' },
+];
+
+const CATALOGING = [
+  {
+    label: 'Map cataloging',
+    value: '2025: 526 | 2024: 505 | 2023: 370 | 2022: 538 | 2021: 110',
+  },
+  { label: 'Mary McClurg Project (2026)', value: '328 periodicals | 137 books' },
+  {
+    label: 'Frederick Suppe Collection (P1 & P2)',
+    value: '2025: 614 books | 2024: 281 books | 2021: 22 boxes',
+  },
+  { label: 'Oral history cataloging', value: '2023: 78 in OCLC | 2022: 166 in OCLC' },
+  { label: 'Bruce Mitchell Collection (2023)', value: '~1,500 records altered' },
+];
+
+const num = (n: number) => n.toLocaleString('en-US');
+
+/* ------------------------------------------------------------------ *
+ * TODO: both of these render only when non-empty. Uncomment and fill in
+ * if you want them on the page -- I am not going to assert a certificate
+ * or a membership you have not told me you hold.
+ * ------------------------------------------------------------------ */
+const CREDENTIALS: { label: string; detail: string }[] = [
+  // { label: 'FAA Part 107 Remote Pilot Certificate', detail: 'Federal Aviation Administration, 0000' },
+];
+
+const MEMBERSHIPS: string[] = [
+  // 'West Texas Historical Association',
+  // 'Society of Southwest Archivists',
+];
+
+
+/* ------------------------------------------------------------------ *
+ * EDUCATION / POSITIONS / GRANTS / AWARDS / EXHIBITS / MEDIA
+ * These were hand-written markup. They are data now for one reason:
+ * the year view below is DERIVED, so nothing on this page is written
+ * down twice.
+ * ------------------------------------------------------------------ */
+const EDUCATION = [
+  {
+    year: '2016',
+    school: 'University of North Texas',
+    degree: 'Master of Science | Major: Library Science',
+    date: 'May 2016',
+  },
+  {
+    year: '2012',
+    school: 'Texas Tech University',
+    degree: 'Bachelor of Arts | Major: History | Minor: Classics',
+    date: 'May 2012',
+  },
+];
+
+const EMPLOYER =
+  'Texas Tech University | Southwest Collection/Special Collections Library';
+
+const POSITIONS = [
+  {
+    year: '2021',
+    title: 'Assistant Librarian | Bibliographic Services | Tenure-Track',
+    date: 'June 2021 \u2013 Present',
+    body: 'Manage and supervise cataloging, metadata, and digitization projects for bibliographic services department. Supervise two exempt unit managers who oversee staffed units within the SWC/SCL, including conservation, reception, and bibliographic services. Work with internal and external stakeholders to ensure proper and ongoing access to physical and digital resources.',
+  },
+  {
+    year: '2014',
+    title: 'Unit Manager | Bibliographic Services',
+    date: 'August 2014 \u2013 June 2021',
+    body: 'Managed cataloging and digitization projects for SWC/SCL bibliographic services department. Supervision of one non-exempt staff member.',
+  },
+  {
+    year: '2013',
+    title: 'Specialist IV | Bibliographic Services',
+    date: 'November 2013 \u2013 July 2014',
+    body: 'Cataloged incoming items for SWC/SCL bibliographic services department. Performed specialized duties to create bibliographic records for online access.',
+  },
+  {
+    year: '2010',
+    title: 'Part-Time Reference Assistant | Reference',
+    date: 'June 2010 \u2013 October 2013',
+    body: 'Assisted reference staff with duties to serve incoming students and researchers.',
+  },
+];
+
+type Grant = {
+  year: string;
+  funder: string;
+  role?: string;
+  body?: string;
+  /** Amount in dollars. Omit when unknown; see amountNote. */
+  amount?: number;
+  /** TODO: for the two NEH rows, the REQUESTED figure belongs here as e.g.
+   *  amount: 000000, amountNote: 'requested'. An unfunded proposal still
+   *  shows the scale of the effort. */
+  amountNote?: string;
+  awarded: boolean;
+};
+
+const GRANTS: Grant[] = [
+  {
+    year: '2026',
+    funder: 'Helen Jones Foundation',
+    role: 'Principal Investigator',
+    body: 'Grant awarded to replace an aging microfilm scanner at the SWC/SCL to support newspaper digitization program.',
+    amount: 72000,
+    awarded: true,
+  },
+  {
+    year: '2020',
+    funder: 'Helen Jones Foundation',
+    role: 'Principal Investigator',
+    body: 'Grant awarded to replace aging flatbed scanners at the SWC/SCL.',
+    amount: 24400,
+    awarded: true,
+  },
+  {
+    year: '2018',
+    funder:
+      'National Endowment for the Humanities, National Digital Newspaper Program',
+    awarded: false,
+  },
+  {
+    year: '2017',
+    funder:
+      'National Endowment for the Humanities, National Digital Newspaper Program',
+    awarded: false,
+  },
+];
+
+const grantsAwarded = GRANTS.filter((g) => g.awarded).reduce(
+  (t, g) => t + (g.amount ?? 0),
+  0
+);
+
+const AWARDS = [
+  {
+    year: '2024',
+    date: 'April 4, 2024',
+    title:
+      'Award of Excellence in Preserving History | Texas Historical Commission',
+    body: 'Awarded to the digital newspaper digitization project team at the SWC/SCL.',
+  },
+];
+
+const EXHIBITS = [
+  {
+    year: '2024',
+    title: 'Digital Newspapers Permanent Exhibit',
+    venue: 'Globe Room Rotunda',
+    date: 'May 2024 \u2013 Present',
+    body: 'Exhibit curated to showcase award after SWC/SCL received \u201cAward of Excellence in Preserving History\u201d from the Texas Historical Commission in April 2024.',
+  },
+  {
+    year: '2022',
+    title: 'Black and Brown in Print',
+    venue: 'East Rotunda Rotating Exhibit Case',
+    date: 'Oct 2022 \u2013 Mar 2023',
+    body: 'An exhibit honoring the impact and influence of minority-owned newspapers in West Texas.',
+  },
+];
+
+const MEDIA = [
+  {
+    year: '2025',
+    date: 'July 31, 2025',
+    title:
+      'KLBK News Segment: \u201cOn this day in 1891: Lubbock gets its first newspaper\u201d',
+    body: 'Interviewed for the segment; provided quotes and located the supporting material in the Southwest Collection.',
+  },
+  {
+    year: '2022',
+    date: 'July 9, 2022',
+    title: 'Hockley County Centennial Celebration',
+    body: 'Flew and delivered aerial video of the county landscape and the event for the centennial record.',
+  },
+];
+
+const CHAPTER = {
+  year: '2021',
+  title: 'Tahoka Lake',
+  href: '/publications/tahoka_lake',
+  book: 'Caprock Chronicles: More Tales of the Llano Estacado',
+  editors: 'John T. (Jack) Becker and David J. Murrah',
+  pages: '55\u201356',
+  imprint: 'Charleston, South Carolina: The History Press, 2021',
+};
+
+const mapsTotal = MAPS.reduce((t, m) => t + m.count, 0);
+
+/* ------------------------------------------------------------------ *
+ * THE YEAR VIEW
+ * One chronology derived from every array above. Nothing here is typed
+ * a second time: add a talk or a grant and it appears in both views.
+ * ------------------------------------------------------------------ */
+type CvEvent = {
+  year: string;
+  kind: string;
+  text: string;
+  href?: string;
+  detail?: string;
+};
+
+const KIND_ORDER = [
+  'Appointment',
+  'Degree',
+  'Grant',
+  'Award',
+  'Article',
+  'Chapter',
+  'Feature',
+  'Manuscript',
+  'Presentation',
+  'Outreach',
+  'Exhibit',
+  'Teaching',
+  'Media',
+  'Newspapers',
+  'Maps',
+];
+
+const yearOf = (sort: string) => sort.slice(0, 4);
+
+const EVENTS: CvEvent[] = [
+  ...POSITIONS.map((x) => ({
+    year: x.year,
+    kind: 'Appointment',
+    text: x.title,
+    detail: EMPLOYER,
+  })),
+  ...EDUCATION.map((x) => ({
+    year: x.year,
+    kind: 'Degree',
+    text: x.degree,
+    detail: x.school,
+  })),
+  ...GRANTS.map((g) => ({
+    year: g.year,
+    kind: 'Grant',
+    text: g.amount
+      ? g.funder + ' \u2014 $' + num(g.amount)
+      : g.funder,
+    detail: g.awarded ? 'Awarded' : 'Not awarded',
+  })),
+  ...AWARDS.map((a) => ({ year: a.year, kind: 'Award', text: a.title })),
+  ...ARTICLES.map((w) => ({
+    year: yearOf(w.sort),
+    kind: 'Article',
+    text: stripDot(w.title),
+    href: w.href,
+    detail: w.container,
+  })),
+  {
+    year: CHAPTER.year,
+    kind: 'Chapter',
+    text: CHAPTER.title,
+    href: CHAPTER.href,
+    detail: CHAPTER.book,
+  },
+  ...FEATURES.map((w) => ({
+    year: yearOf(w.sort),
+    kind: 'Feature',
+    text: stripDot(w.title),
+    href: w.href,
+    detail: w.container,
+  })),
+  ...IN_PROGRESS.map((w) => ({
+    year: yearOf(w.sort),
+    kind: 'Manuscript',
+    text: stripDot(w.title),
+    detail: w.container,
+  })),
+  ...PAPERS.map((t) => ({
+    year: yearOf(t.sort),
+    kind: 'Presentation',
+    text: t.title ? stripDot(t.title) : (t.lead as string),
+    detail: t.venue + ', ' + t.place,
+  })),
+  ...OUTREACH.map((t) => ({
+    year: yearOf(t.sort),
+    kind: 'Outreach',
+    text: t.title ? stripDot(t.title) : (t.lead as string),
+    detail: t.venue + ', ' + t.place,
+  })),
+  ...EXHIBITS.map((x) => ({
+    year: x.year,
+    kind: 'Exhibit',
+    text: x.title,
+    detail: x.venue,
+  })),
+  ...TEACHING.map((t) => ({
+    year: t.term.replace(/\D+/g, ''),
+    kind: 'Teaching',
+    text: t.course + ' \u2014 ' + t.role,
+    detail: t.term,
+  })),
+  ...MEDIA.map((m) => ({ year: m.year, kind: 'Media', text: m.title })),
+  ...NEWSPAPERS.map((g) => ({
+    year: g.year,
+    kind: 'Newspapers',
+    text:
+      num(groupTotal(g)) +
+      ' issues digitized across ' +
+      g.items.length +
+      ' titles',
+    detail: g.group === g.year ? undefined : g.group,
+  })),
+  ...MAPS.map((m) => ({
+    year: m.year,
+    kind: 'Maps',
+    text: num(m.count) + ' maps digitized',
+  })),
+];
+
+const eventsByYear = EVENTS.reduce<Record<string, CvEvent[]>>((acc, e) => {
+  (acc[e.year] = acc[e.year] || []).push(e);
+  return acc;
+}, {});
+Object.values(eventsByYear).forEach((list) =>
+  list.sort((a, b) => KIND_ORDER.indexOf(a.kind) - KIND_ORDER.indexOf(b.kind))
+);
+const eventYears = Object.keys(eventsByYear).sort().reverse();
+
+const H2 =
+  'text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3';
+const H3 = 'text-lg font-bold uppercase tracking-wider text-sage pb-1';
 ---
 
-<RootLayout title="Curriculum vitae | Austin Allison" prose={false}>
-  <div class="max-w-4xl mx-auto px-4 md:px-0 py-6 font-serif text-iron">
+<RootLayout
+  title="Curriculum vitae | Austin Allison"
+  description="Curriculum vitae of Austin Allison, cataloging and metadata librarian at the Southwest Collection/Special Collections Library, Texas Tech University: positions, grants, publications, presentations and digitization projects."
+  prose={false}
+>
+  <div class="cv-page max-w-4xl mx-auto px-4 md:px-0 py-6 font-serif text-iron">
 
-    <!-- PDF-Style Contact Header -->
-    <div class="pb-2 mb-3 text-center md:text-left flex flex-col md:flex-row md:justify-between md:items-end gap-2 md:gap-4">
+    <!-- MASTHEAD -->
+    <div class="pb-3 mb-3 border-b border-haze/60 flex flex-col md:flex-row md:justify-between md:items-end gap-3 md:gap-8 text-center md:text-left">
       <div>
         <h1 class="font-serif text-3xl font-medium tracking-tight text-iron">Austin Allison</h1>
         <p class="text-lg font-serif text-sage mt-1">Cataloging and Metadata Librarian</p>
-        <p class="text-md text-iron/80 mt-1">Southwest Collection/Special Collections Library | Texas Tech University</p>
+        <p class="text-base text-iron/80 mt-1">Southwest Collection/Special Collections Library | Texas Tech University</p>
       </div>
       <div class="text-sm font-serif text-iron/70 md:text-right space-y-1">
         <p>Lubbock, Texas</p>
+        <p><a href={`mailto:${CONTACT.email}`} class={LINK}>{CONTACT.email}</a></p>
+        <p>
+          <span class="text-iron/50">ORCID</span>
+          {' '}<a href={CONTACT.orcidUrl} rel="me noopener" class={LINK}>{CONTACT.orcid}</a>
+        </p>
+        <p class="text-iron/50">Updated {UPDATED}</p>
       </div>
     </div>
 
-    <div class="space-y-2.5">
+    <!-- Document controls. They belong here, under the rule and above the
+         document, because they govern everything BELOW them - in the contact
+         block they read as another piece of contact information. -->
+    <div class="print:hidden mb-6 flex flex-wrap items-center justify-between gap-3">
+      <span data-view-toggle hidden role="group" aria-label="Arrangement" class="inline-flex border border-haze rounded-sm overflow-hidden text-sm font-serif">
+        <button type="button" data-view="category" aria-pressed="true" class="px-3 py-1 transition-colors">By category</button>
+        <button type="button" data-view="year" aria-pressed="false" class="px-3 py-1 border-l border-haze transition-colors">By year</button>
+      </span>
+      <button
+        type="button"
+        data-print-cv
+        hidden
+        class="text-sm font-serif text-caprock underline underline-offset-2 hover:bg-sage hover:text-canvas hover:no-underline rounded-sm px-1 transition-colors"
+      >Print / save as PDF</button>
+    </div>
+
+    <div id="cv-by-category" class="cv-view space-y-8">
 
       <!-- SECTION: EDUCATION -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Education</h2>
-        <div class="space-y-2 text-md">
-          <div class="flex flex-col md:flex-row md:justify-between md:items-baseline gap-0.5">
-            <div>
-              <span class="font-semibold">University of North Texas</span>
-              <p class="text-iron/80 pl-0 md:pl-6 mt-0.5">Master of Science | Major: Library Science</p>
+        <h2 class={H2} id="education">Education</h2>
+        <div class="space-y-2 text-base">
+          {EDUCATION.map((e) => (
+            <div class="cv-entry flex flex-col md:flex-row md:justify-between md:items-baseline gap-0.5">
+              <div>
+                <span class="font-semibold">{e.school}</span>
+                <p class="text-iron/80 pl-0 md:pl-6 mt-0.5">{e.degree}</p>
+              </div>
+              <span class="text-sm font-serif text-iron/60 whitespace-nowrap">{e.date}</span>
             </div>
-            <span class="font-serif text-iron/60 whitespace-nowrap">May 2016</span>
-          </div>
-          <div class="flex flex-col md:flex-row md:justify-between md:items-baseline gap-0.5">
-            <div>
-              <span class="font-semibold">Texas Tech University</span>
-              <p class="text-iron/80 pl-0 md:pl-6 mt-0.5">Bachelor of Arts | Major: History | Minor: Classics</p>
-            </div>
-            <span class="font-serif text-iron/60 whitespace-nowrap">May 2012</span>
-          </div>
+          ))}
         </div>
       </section>
 
       <!-- SECTION: POSITIONS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Academic and Professional Positions</h2>
+        <h2 class={H2} id="positions">Academic and Professional Positions</h2>
         <div class="text-sm">
-          <div class="text-lg text-sage uppercase font-semibold mb-1.5">Texas Tech University | Southwest Collection/Special Collections Library</div>
+          <div class="text-lg text-sage uppercase font-semibold mb-1.5">{EMPLOYER}</div>
 
           <div class="space-y-3">
-            <div>
-              <div class="flex flex-col md:flex-row md:justify-between md:items-baseline">
-                <h3 class="font-semibold text-base text-iron">Assistant Librarian | Bibliographic Services | Tenure-Track</h3>
-                <span class="text-lg font-serif text-iron/60 whitespace-nowrap">June 2021 - Present</span>
+            {POSITIONS.map((r) => (
+              <div class="cv-entry">
+                <div class="flex flex-col md:flex-row md:justify-between md:items-baseline">
+                  <h3 class="font-semibold text-base text-iron">{r.title}</h3>
+                  <span class="text-sm font-serif text-iron/60 whitespace-nowrap">{r.date}</span>
+                </div>
+                <p class="text-iron/80 leading-snug pl-0 md:pl-6 mt-0.5">{r.body}</p>
               </div>
-              <p class="text-iron/80 leading-snug pl-0 md:pl-6 mt-0.5">Manage and supervise cataloging, metadata, and digitization projects for bibliographic services department. Supervise two exempt unit managers who oversee staffed units within the SWC/SCL, including conservation, reception, and bibliographic services. Work with internal and external stakeholders to ensure proper and ongoing access to physical and digital resources available.</p>
-            </div>
-            <div>
-              <div class="flex flex-col md:flex-row md:justify-between md:items-baseline">
-                <h3 class="font-semibold text-base text-iron">Unit Manager | Bibliographic Services</h3>
-                <span class="text-lg font-serif text-iron/60 whitespace-nowrap">August 2014 - June 2021</span>
-              </div>
-              <p class="text-iron/80 leading-snug pl-0 md:pl-6 mt-0.5">Managed cataloging and digitization projects for SWC/SCL bibliographic services department. Supervision of one non-exempt staff member.</p>
-            </div>
-            <div>
-              <div class="flex flex-col md:flex-row md:justify-between md:items-baseline">
-                <h3 class="font-semibold text-base text-iron">Specialist IV | Bibliographic Services</h3>
-                <span class="text-lg font-serif text-iron/60 whitespace-nowrap">November 2013 - July 2014</span>
-              </div>
-              <p class="text-iron/80 leading-snug pl-0 md:pl-6 mt-0.5">Cataloged incoming items for SWC/SCL bibliographic services department. Performed specialized duties to create bibliographic records for online access.</p>
-            </div>
-            <div>
-              <div class="flex flex-col md:flex-row md:justify-between md:items-baseline">
-                <h3 class="font-semibold text-base text-iron">Part-Time Reference Assistant | Reference</h3>
-                <span class="text-lg font-serif text-iron/60 whitespace-nowrap">June 2010 - October 2013</span>
-              </div>
-              <p class="text-iron/80 leading-snug pl-0 md:pl-6 mt-0.5">Assisted reference staff with duties to serve incoming students and researchers.</p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
 
+      <!-- SECTION: TEACHING (was "Instructional Footprint", nested under map digitization) -->
+      <section>
+        <h2 class={H2} id="teaching">Teaching and Instruction</h2>
+        <ul class="space-y-1 text-sm">
+          {TEACHING.map((t) => (
+            <li class="cv-entry flex flex-col md:flex-row md:justify-between md:items-baseline gap-0.5">
+              <span><span class="font-semibold">{t.course}</span> &mdash; {t.role}</span>
+              <span class="text-sm font-serif text-iron/60 whitespace-nowrap">{t.term}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
       <!-- SECTION: GRANTS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Scholarship/Research</h2>
-        <h3 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-3">Contracts, Grants and Sponsored Research</h3>
-        <div class="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
+        <h2 class={H2} id="grants">Contracts, Grants and Sponsored Research</h2>
+        <div class="cv-x-scroll overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
           <table class="w-full min-w-[560px] text-left text-sm border-collapse">
+            <caption class="sr-only">Contracts, grants and sponsored research, most recent first</caption>
             <thead>
               <tr class="border-b border-iron text-sm font-serif text-iron/60 uppercase">
-                <th class="py-2 pr-4">Year</th>
-                <th class="py-2 px-4">Funding Entity & Project Frame</th>
-                <th class="py-2 px-4 text-right">Amount</th>
-                <th class="py-2 pl-4 text-right">Status</th>
+                <th scope="col" class="py-2 pr-4">Year</th>
+                <th scope="col" class="py-2 px-4">Funding Entity &amp; Project Frame</th>
+                <th scope="col" class="py-2 px-4 text-right">Amount</th>
+                <th scope="col" class="py-2 pl-4 text-right">Status</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-haze/60 text-sm md:text-sm">
-              <tr>
-                <td class="py-2 pr-4 font-serif align-top">2026</td>
-                <td class="py-2 px-4">
-                  <span class="font-semibold">Helen Jones Foundation</span> | Principal Investigator
-                  <p class="text-sm text-iron/70 mt-1">Grant awarded to replace an aging microfilm scanner at the SWC/SCL to support newspaper digitization program.</p>
-                </td>
-                <td class="py-2 px-4 text-right font-serif font-semibold text-caprock">$72,000</td>
-                <td class="py-2 pl-4 text-right"><span class="px-2 py-0.5 bg-sage/10 text-sage rounded-sm font-medium">Awarded</span></td>
-              </tr>
-              <tr>
-                <td class="py-2 pr-4 font-serif align-top">2020</td>
-                <td class="py-2 px-4">
-                  <span class="font-semibold">Helen Jones Foundation</span> | Principal Investigator
-                  <p class="text-sm text-iron/70 mt-1">Grant awarded to replace aging flatbed scanners at the SWC/SCL.</p>
-                </td>
-                <td class="py-2 px-4 text-right font-serif font-semibold text-caprock">$24,400</td>
-                <td class="py-2 pl-4 text-right"><span class="px-2 py-0.5 bg-sage/10 text-sage rounded-sm font-medium">Awarded</span></td>
-              </tr>
-              <tr>
-                <td class="py-2 pr-4 font-serif text-iron/40 align-top">2018</td>
-                <td class="py-2 px-4 text-iron/50">National Endowment for the Humanities, National Digital Newspaper Program</td>
-                <td class="py-2 px-4 text-right font-serif text-iron/40">&mdash;</td>
-                <td class="py-2 pl-4 text-right text-sm text-iron/40">Not awarded</td>
-              </tr>
-              <tr>
-                <td class="py-2 pr-4 font-serif text-iron/40 align-top">2017</td>
-                <td class="py-2 px-4 text-iron/50">National Endowment for the Humanities, National Digital Newspaper Program</td>
-                <td class="py-2 px-4 text-right font-serif text-iron/40">&mdash;</td>
-                <td class="py-2 pl-4 text-right text-sm text-iron/40">Not awarded</td>
-              </tr>
+            <tbody class="divide-y divide-haze/60 text-sm">
+              {GRANTS.map((g) => (
+                <tr>
+                  <td class={`py-2 pr-4 font-serif align-top ${g.awarded ? '' : 'text-iron/40'}`}>{g.year}</td>
+                  <td class={`py-2 px-4 ${g.awarded ? '' : 'text-iron/50'}`}>
+                    <span class={g.awarded ? 'font-semibold' : ''}>{g.funder}</span>{g.role ? ' | ' + g.role : ''}
+                    {g.body && <p class="text-sm text-iron/70 mt-1">{g.body}</p>}
+                  </td>
+                  <td class={`py-2 px-4 text-right font-serif ${g.awarded ? 'font-semibold text-caprock' : 'text-iron/40'}`}>
+                    {g.amount ? '$' + num(g.amount) : <Fragment>&mdash;</Fragment>}
+                    {g.amountNote ? ' (' + g.amountNote + ')' : ''}
+                  </td>
+                  <td class="py-2 pl-4 text-right">
+                    {g.awarded ? (
+                      <span class="px-2 py-0.5 bg-sage/10 text-sage rounded-sm font-medium">Awarded</span>
+                    ) : (
+                      <span class="text-sm text-iron/40">Not awarded</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
             </tbody>
+            <tfoot>
+              <tr class="border-t-2 border-iron">
+                <td class="py-2 pr-4 text-iron uppercase tracking-wider text-sm font-semibold" colspan="2">Total awarded</td>
+                <td class="py-2 px-4 text-right font-serif font-semibold text-caprock">${num(grantsAwarded)}</td>
+                <td class="py-2 pl-4"></td>
+              </tr>
+            </tfoot>
           </table>
         </div>
       </section>
 
       <!-- SECTION: INTELLECTUAL CONTRIBUTIONS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Intellectual Contributions</h2>
+        <h2 class={H2} id="publications">Intellectual Contributions</h2>
 
-        <div class="space-y-4 text-md">
+        <div class="space-y-6 text-base">
           <div>
-            <h3 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-3">Journal Articles</h3>
+            <h3 class={`${H3} mb-3`}>Journal Articles</h3>
             <ul class="space-y-3 list-none pl-0">
-              <li class="pl-4 border-l-2 border-haze">Allison, Austin. "The Digitization of Edwards Plateau Newspapers." <span class="italic">Edwards Plateau Historian</span>. Under Review (Submitted October 2025)</li>
-              <li class="pl-4 border-l-2 border-caprock">Allison, Austin. <a href="/publications/opportunity_knocking" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">"'Opportunity Knocking': The Vaughan Land Company and Early Bailey County Development."</a> <span class="italic">Panhandle-Plains Historical Review</span> 96 (2025), 40-65.</li>
-              <li class="pl-4 border-l-2 border-caprock">Allison, Austin. <a href="/publications/capitol_land_shq" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">"Surveying the Capitol Land Reservation in Texas."</a> <span class="italic">Southwestern Historical Quarterly</span> 129, no.3 (January 2026), 335-364.</li>
-              <li class="pl-4 border-l-2 border-haze text-iron/50">Allison, Austin. "The Digitization of West Texas Newspapers." <span class="italic">Digital Library Perspectives</span>. Submitted September 2024, Refused January 2025</li>
-              <li class="pl-4 border-l-2 border-caprock">Allison, Austin. <a href="/publications/spring_sprung_it" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">"A Spring Sprung It: Tracing and Understanding the True Genesis of North America's Longest River."</a> <span class="italic">Journal of the West</span> 58, no. 3 (2019), 6-21.</li>
-              <li class="pl-4 border-l-2 border-caprock">Allison, Austin. <a href="/publications/maps_and_newspapers" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">"Maps and newspapers in the Southwest Collection."</a> <span class="italic">Archivation Exploration</span> 3, no. 2 (2018).</li>
-              <li class="pl-4 border-l-2 border-haze">Allison, Austin. <a href="/publications/newspapers_oil_and_railroad_land" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">"Notes, Documents, and Sundries: Newspapers, Oil, and Railroad Land."</a> <span class="italic">West Texas Historical Review</span> XC (2014): 129-135.</li>
-              <li class="pl-4 border-l-2 border-haze">Allison, Austin. <a href="/publications/ja_cattle_company" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">"Notes, Documents and Sundries: JA Cattle Company."</a> <span class="italic">West Texas Historical Association Year Book</span> LXXXVIII (2012): 173-175.</li>
+              {ARTICLES.map((w) => (
+                <li class="cv-entry pl-4 border-l-2 border-caprock">
+                  Allison, Austin.{' '}
+                  {w.href ? (
+                    <a href={w.href} class={LINK}>&ldquo;{stripDot(w.title)}.&rdquo;</a>
+                  ) : (
+                    <span>&ldquo;{stripDot(w.title)}.&rdquo;</span>
+                  )}{' '}
+                  <cite class="italic">{w.container}</cite>{journalTail(w)}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {IN_PROGRESS.length > 0 && (
+            <div>
+              <h3 class={`${H3} mb-3`}>Manuscripts in Review</h3>
+              <ul class="space-y-3 list-none pl-0">
+                {IN_PROGRESS.map((w) => (
+                  <li class="cv-entry pl-4 border-l-2 border-haze">
+                    Allison, Austin. &ldquo;{stripDot(w.title)}.&rdquo;{' '}
+                    <cite class="italic">{w.container}</cite>.
+                    <span class="block text-sm text-iron/60 mt-0.5">{w.note}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <div>
+            <h3 class={`${H3} border-b border-sage mb-4`}>Book, Chapter in Scholarly Book</h3>
+            <p class="cv-entry pl-4 border-l-2 border-caprock">
+              Allison, Austin. <a href={CHAPTER.href} class={LINK}>&ldquo;{CHAPTER.title}.&rdquo;</a> In <cite class="italic">{CHAPTER.book}</cite>, edited by {CHAPTER.editors}, {CHAPTER.pages}. {CHAPTER.imprint}.
+            </p>
+          </div>
+
+          <div>
+            <h3 class={`${H3} border-b border-sage mb-4`}>Magazines / Trade Publications</h3>
+            <ul class="space-y-2 list-none pl-0">
+              {FEATURES.map((w) => (
+                <li class="cv-entry pl-4 border-l-2 border-haze text-iron/90">
+                  Allison, Austin.{' '}
+                  {w.href ? (
+                    <a href={w.href} class={LINK}>&ldquo;{stripDot(w.title)}.&rdquo;</a>
+                  ) : (
+                    <span>&ldquo;{stripDot(w.title)}.&rdquo;</span>
+                  )}{' '}
+                  <cite class="italic">{w.container}</cite>{featureTail(w)}
+                </li>
+              ))}
             </ul>
           </div>
 
           <div>
-            <h3 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-4 border-b border-sage">Book, Chapter in Scholarly Book</h3>
-            <p class="pl-4 border-l-2 border-caprock">Allison, Austin. <a href="/publications/tahoka_lake" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">"Tahoka Lake"</a> in <span class="italic">Caprock Chronicles: More Tales of the Llano Estacado</span>, edited by John T. (Jack) Becker and David J Murrah, 55-56. Charleston, South Carolina: The History Press, 2021.</p>
-          </div>
-
-          <div>
-            <h3 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-4 border-b border-sage">Magazines / Trade Publications</h3>
-            <ul class="space-y-2 list-disc list-inside text-iron/90 pl-2">
-              <li>Allison, Austin. "<a href="/publications/lipscomb_county_courthouse" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">Lipscomb County Courthouse: A Prairie Landmark with Enduring Presence</a>" <span class="italic">Authentic Texas</span>, Issue 33, Summer 2025.</li>
-              <li>Allison, Austin. "<a href="/publications/albert_pike" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">Albert Pike and His Journey to Ransom Canyon</a>" <span class="italic">Lubbock Avalanche-Journal</span>, November 29, 2024.</li>
-              <li>Allison, Austin. "<a href="/publications/southwest_conference" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">The Remnants of the Southwest Conference: The Story of Landmark Archival Collection</a>" <span class="italic">Authentic Texas</span>, Issue 27, Winter 2024.</li>
-              <li>Allison, Austin. "<a href="/publications/sharps_rifle" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">The Sharps rifle, buffalo hunting, and the South Plains</a>" <span class="italic">Lubbock Avalanche-Journal</span>, January 28, 2024.</li>
-              <li>Allison, Austin. "<a href="/publications/tumbleweed_smith" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">Tumbleweed Smith and the Sounds of Texas.</a>" <span class="italic">Authentic Texas</span>, Issue 25, Spring 2023.</li>
-              <li>Allison, Austin. "<a href="/publications/comfortably_lodged" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">Comfortably Lodged: Transforming historic county jails into silos for historical and cultural heritage.</a>" <span class="italic">Authentic Texas</span>, Issue 22, Fall 2021, 40-42.</li>
-              <li>Allison, Austin. "<a href="/publications/unusual_annotations" class="text-caprock rounded-sm hover:bg-sage hover:text-canvas transition-colors">Unusual Annotations in Stephen F. Austin's 1835 Map of Texas Tell Early Texas History.</a>" <span class="italic">The Southwestern Archivist</span> 42, no. 1 (2019), 19.</li>
+            <h3 class={`${H3} border-b border-sage mb-4`}>Edited and Compiled Works</h3>
+            <ul class="space-y-2 list-none pl-0">
+              <li class="cv-entry pl-4 border-l-2 border-haze text-iron/90">
+                Compiler, &ldquo;Publications in West Texas History.&rdquo; <cite class="italic">West Texas Historical Review</cite>, West Texas Historical Association, 2014, 2016&ndash;2026.
+              </li>
             </ul>
-          </div>
-
-          <div>
-            <h3 class="text-lg font-bold uppercase tracking-wider text-sage pb-1 mb-4 border-b border-sage">Edited and Compiled Works</h3>
-            <p class="text-iron/90 pl-2">&bull; Compiler of "Publications in West Texas History" for the <span class="italic">West Texas Historical Review</span>, West Texas Historical Association, 2014, 2016-2026.</p>
           </div>
         </div>
       </section>
 
       <!-- SECTION: PRESENTATIONS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Presentations</h2>
-        <div class="space-y-2.5 text-sm max-h-[500px] overflow-y-auto pr-2 border border-haze/40 p-4 bg-haze/10 rounded-sm">
-          <div>
-            <span class="text-sm font-serif text-iron/50 font-semibold block">April 10, 2026</span>
-            <p class="text-iron/90">Allison, Austin. "Early maps of Lubbock and Lubbock County at the Southwest Collection." <span class="italic">West Texas Historical Association 2026 annual meeting</span>. Lubbock, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-caprock font-semibold block">November 8, 2025 &bull; INVITED</span>
-            <p class="text-iron/90">Allison, Austin. "Opportunity Knocking: The Vaughan Land Company, Virginia City, and Early Bailey County Development." <span class="italic">31st Annual Center for Big Bend Studies Conference</span>. Alpine Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-caprock font-semibold block">May 6, 2025 &bull; Keynote Lecture</span>
-            <p class="text-iron/90">Allison, Austin. "Navigating the Southwest Collection: Accessing Digitized Archives for Genealogy and Research." <span class="italic">San Angelo Genealogical and Historical Society Speaker Series</span>. San Angelo, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-caprock font-semibold block">January 23, 2025 &bull; Workshop</span>
-            <p class="text-iron/90">Allison, Austin. "Digitizing West Texas: How a Small-Scale Effort Evolved to Become the Largest Archive of Digitized West Texas Newspapers." <span class="italic">Society of Southwest Archivists Workshop</span>. Online.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-caprock font-semibold block">November 9, 2024 &bull; INVITED</span>
-            <p class="text-iron/90">Allison, Austin. "Surveying the Capitol Land Reservation in 1879 and 1880." <span class="italic">30th Annual Center for Big Bend Studies Conference</span>. Alpine, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-iron/50 font-semibold block">September 21, 2024</span>
-            <p class="text-iron/90">Allison, Austin. "Preserving the history of the Edwards Plateau region through newspaper digitization." <span class="italic">Edwards Plateau Historical Association conference</span>. Ballinger, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-caprock font-semibold block">April 22, 2024 &bull; INVITED</span>
-            <p class="text-iron/90">Allison, Austin. "Digital Newspapers." <span class="italic">Texas Tech University - Digital Humanities Working Group Symposium</span>. Lubbock, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-caprock font-semibold block">November 12, 2022 &bull; INVITED</span>
-            <p class="text-iron/90">Allison, Austin. "The upper northwest Comanche Trail: using maps and drones to trace the trail." <span class="italic">Center for Big Bend Studies 28th annual conference</span>. Alpine Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-iron/50 font-semibold block">March 18, 2022</span>
-            <p class="text-iron/90">Allison, Austin. "Using drone technology to evaluate sites near and on the Comanche Trail." <span class="italic">West Texas Historical Association 97th annual conference</span>. Lubbock, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-caprock font-semibold block">November 5, 2021 &bull; INVITED</span>
-            <p class="text-iron/90">Allison, Austin. "Missing Links: Attempting to Reconcile Old Maps of the Llano Estacado." <span class="italic">Center for Big Bend Studies 27th Annual Conference</span>. Alpine, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-caprock font-semibold block">October 20, 2019 &bull; INVITED</span>
-            <p class="text-iron/90">Allison, Austin. "Drones for Historic Preservation." <span class="italic">West Texas Trails Association annual conference</span>. Graham, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-caprock font-semibold block">August 15, 2019 &bull; INVITED</span>
-            <p class="text-iron/90">Allison, Austin. "Drones for Historic Preservation." <span class="italic">Texas Plains Trail Region Board Meeting</span>. Wheeler, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-iron/50 font-semibold block">January 20, 2019</span>
-            <p class="text-iron/90">Allison, Austin. Southwest Collection Digital Newspaper program booth <span class="italic">Texas Press Association</span>. Denton, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-caprock font-semibold block">July 2018 &bull; INVITED</span>
-            <p class="text-iron/90">Allison, Austin. "Sandoval Plaza: Utilizing drone technology to survey pastores sites in West Texas." <span class="italic">Canyonlands Archaeological Society</span>. Matador, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-iron/50 font-semibold block">April 2018</span>
-            <p class="text-iron/90">Allison, Austin. "Southwest Collection newspaper digitization." <span class="italic">West Texas Historical Association</span>. San Angelo, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-iron/50 font-semibold block">April 2017 &bull; CITED</span>
-            <p class="text-iron/90">Allison, Austin. "From Wagon Trails to Flight Paths: Drone Technology in Surveying Historic Sites along the Yellow House Draw." <span class="italic">West Texas Historical Association</span>. Lubbock, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-iron/50 font-semibold block">October 15, 2016</span>
-            <p class="text-iron/90">Allison, Austin. "Drones to identify trails and historic locations." <span class="italic">West Texas Trails Association</span>. Wheeler, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-iron/50 font-semibold block">April 2016</span>
-            <p class="text-iron/90">Allison, Austin. Southwest Collection Digital Newspaper presentation and exhibition, <span class="italic">Texas Plains Trail meeting</span>. Spearman, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-iron/50 font-semibold block">January 20, 2016</span>
-            <p class="text-iron/90">Allison, Austin. Southwest Collection Digital Newspaper program booth <span class="italic">Texas Press Association</span>. San Marcos, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-iron/50 font-semibold block">April 25, 2015</span>
-            <p class="text-iron/90">Allison, Austin. "Texas Tech University, Southwest Collection/Special Collections Library, Newspaper Digitization Project." <span class="italic">Panhandle Press Association, 105th Annual Convention</span>. Amarillo, Texas.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-iron/50 font-semibold block">April 10, 2015</span>
-            <p class="text-iron/90">Allison, Austin. "Sifting through the Dust: The Process of Digitizing West Texas' Aging Newspapers." <span class="italic">West Texas Historical Association, 92nd Meeting</span>. Amarillo, Texas.</p>
-          </div>
+        <h2 class={H2} id="presentations">Presentations</h2>
+        <div class="space-y-5 text-sm">
+          {talkYears.map((year) => (
+            <div>
+              <h3 class="text-sm font-serif text-sage uppercase tracking-widest font-semibold border-b border-haze/40 pb-1 mb-2">{year}</h3>
+              <div class="space-y-2.5">
+                {talksByYear[year].map((t) => (
+                  <div class="cv-entry">
+                    <span class={`text-sm font-serif font-semibold block ${t.tag ? 'text-caprock' : 'text-iron/50'}`}>
+                      {t.date}{t.tag ? <span class="uppercase tracking-wider"> &bull; {t.tag}</span> : null}
+                    </span>
+                    <p class="text-iron/90">
+                      Allison, Austin.{' '}
+                      {t.title ? <span>&ldquo;{stripDot(t.title)}.&rdquo;</span> : <span>{t.lead},</span>}{' '}
+                      <cite class="italic">{t.venue}</cite>. {t.place}.
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
+
+        {OUTREACH.length > 0 && (
+          <div class="mt-5">
+            <h3 class="text-sm font-serif text-sage uppercase tracking-widest font-semibold border-b border-haze/40 pb-1 mb-2">Program Exhibits and Outreach</h3>
+            <div class="space-y-2.5 text-sm">
+              {OUTREACH.map((t) => (
+                <div class="cv-entry">
+                  <span class="text-sm font-serif text-iron/50 font-semibold block">{t.date}</span>
+                  <p class="text-iron/90">
+                    Allison, Austin.{' '}
+                    {t.title ? <span>&ldquo;{stripDot(t.title)}.&rdquo;</span> : <span>{t.lead},</span>}{' '}
+                    <cite class="italic">{t.venue}</cite>. {t.place}.
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </section>
 
       <!-- SECTION: PERFORMANCE & EXHIBITS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Artistic and Professional Performances and Exhibits</h2>
+        <h2 class={H2} id="exhibits">Artistic and Professional Performances and Exhibits</h2>
         <div class="space-y-2 text-sm">
-          <div class="flex flex-col md:flex-row md:justify-between md:items-baseline gap-1 md:gap-4">
-            <div>
-              <span class="font-semibold">Digital Newspapers Permanent Exhibit</span> &mdash; <span class="italic text-iron/80">Globe Room Rotunda</span>
-              <p class="text-sm text-iron/70 mt-1">Exhibit curated to showcase award after SWC/SCL received "Award of Excellence in Preserving History" from the Texas Historical Commission in April 2024.</p>
+          {EXHIBITS.map((x) => (
+            <div class="cv-entry flex flex-col md:flex-row md:justify-between md:items-baseline gap-1 md:gap-4">
+              <div>
+                <span class="font-semibold">{x.title}</span> &mdash; <span class="italic text-iron/80">{x.venue}</span>
+                <p class="text-sm text-iron/70 mt-1">{x.body}</p>
+              </div>
+              <span class="text-sm font-serif text-iron/60 whitespace-nowrap">{x.date}</span>
             </div>
-            <span class="text-sm font-serif text-iron/60 whitespace-nowrap">May 2024 - Present</span>
-          </div>
-          <div class="flex flex-col md:flex-row md:justify-between md:items-baseline gap-1 md:gap-4">
-            <div>
-              <span class="font-semibold">Black and Brown in Print</span> &mdash; <span class="italic text-iron/80">East Rotunda Rotating Exhibit Case</span>
-            </div>
-            <span class="text-sm font-serif text-iron/60 whitespace-nowrap">Oct 2022 - Mar 2023</span>
-          </div>
+          ))}
         </div>
       </section>
 
-      <!-- SECTION: METRICS (CATALOGING & DIGITIZATION) -->
+      <!-- SECTION: CATALOGING & DIGITIZATION -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Cataloging and Metadata Projects</h2>
+        <h2 class={H2} id="projects">Cataloging and Metadata Projects</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
 
-          <!-- Column A: Map Digitization Growth Metrics -->
           <div class="space-y-3">
-            <h3 class="text-sm font-serif text-sage uppercase tracking-wider font-semibold border-b border-haze/40 pb-1">Map Digitization Project (DSpace Growth)</h3>
-            <ul class="space-y-1 font-serif text-sm text-iron/90">
-              <li><strong class="text-iron font-serif">2025:</strong> 335 maps digitized (30% growth)</li>
-              <li><strong class="text-iron font-serif">2024:</strong> 245 maps digitized (45% growth)</li>
-              <li><strong class="text-iron font-serif">2023:</strong> 109 maps digitized (27% growth)</li>
-              <li><strong class="text-iron font-serif">2022:</strong> 138 maps digitized (47% growth)</li>
-              <li><strong class="text-iron font-serif">2021:</strong> 63 maps digitized (27% growth from baseline)</li>
-            </ul>
-            <div class="pt-4">
-              <h4 class="text-sm font-serif text-sage uppercase tracking-wider font-semibold border-b border-haze/40 pb-1 mb-2">Instructional Footprint</h4>
-              <p class="text-sm font-serif text-iron/60">LIBR1100, Guest Lecture, Spring 2026</p>
-            </div>
+            <h3 class="text-sm font-serif text-sage uppercase tracking-wider font-semibold border-b border-haze/40 pb-1">Map Digitization Project (DSpace)</h3>
+            <table class="w-full text-left font-serif text-sm">
+              <caption class="sr-only">Maps digitized by year</caption>
+              <thead>
+                <tr class="text-iron/50 border-b border-haze/40">
+                  <th scope="col" class="py-1 pr-3 font-normal">Year</th>
+                  <th scope="col" class="py-1 px-3 font-normal text-right">Maps digitized</th>
+                  <th scope="col" class="py-1 pl-3 font-normal text-right">Growth</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-haze/30">
+                {MAPS.map((m) => (
+                  <tr>
+                    <th scope="row" class="py-1 pr-3 font-semibold text-iron text-left">{m.year}</th>
+                    <td class="py-1 px-3 text-right text-iron/90">{num(m.count)}</td>
+                    <td class="py-1 pl-3 text-right text-iron/70">{m.growth}</td>
+                  </tr>
+                ))}
+              </tbody>
+              <tfoot>
+                <tr class="border-t border-iron">
+                  <th scope="row" class="py-1 pr-3 text-left font-semibold text-iron uppercase tracking-wider text-sm">Total</th>
+                  <td class="py-1 px-3 text-right font-semibold text-caprock">{num(mapsTotal)}</td>
+                  <td class="py-1 pl-3"></td>
+                </tr>
+              </tfoot>
+            </table>
+            {GROWTH_BASIS && <p class="text-sm text-iron/60 italic">{GROWTH_BASIS}</p>}
           </div>
 
-          <!-- Column B: Map/Oral History Cataloging Records -->
           <div class="space-y-3">
             <h3 class="text-sm font-serif text-sage uppercase tracking-wider font-semibold border-b border-haze/40 pb-1">Cataloging Projects Volume</h3>
-            <div class="space-y-2 text-sm">
-              <p><strong class="font-serif text-sm">Map Cataloging:</strong> <span class="font-serif text-iron/70">2025: 526 maps | 2024: 505 maps | 2023: 370 maps | 2022: 538 maps | 2021: 110 maps</span></p>
-              <p><strong class="font-serif text-sm">Mary McClurg Project (2026):</strong> <span class="font-serif text-iron/70">328 periodicals | 137 books</span></p>
-              <p><strong class="font-serif text-sm">Frederick Suppe Collection (P1 & P2):</strong> <span class="font-serif text-iron/70">2025: 614 books | 2024: 281 books | 2021: 22 boxes</span></p>
-              <p><strong class="font-serif text-sm">Oral History Cataloging:</strong> <span class="font-serif text-iron/70">2023: 78 in OCLC | 2022: 166 in OCLC</span></p>
-              <p><strong class="font-serif text-sm">Bruce Mitchell Collection (2023):</strong> <span class="font-serif text-iron/70">~1,500 records altered</span></p>
-            </div>
+            <dl class="space-y-2 text-sm">
+              {CATALOGING.map((c) => (
+                <div class="cv-entry">
+                  <dt class="font-serif font-semibold text-iron">{c.label}</dt>
+                  <dd class="font-serif text-iron/70">{c.value}</dd>
+                </div>
+              ))}
+            </dl>
           </div>
 
         </div>
 
-        <!-- Full-Width Pipeline Records Box -->
-        <div class="mt-6 bg-haze/20 border border-haze/60 p-5 rounded-sm text-sm space-y-3">
-          <h3 class="text-sm font-serif text-iron uppercase tracking-widest font-semibold">Newspaper Digitization Projects</h3>
-          <p class="leading-relaxed"><strong class="font-serif text-sm text-caprock block mb-1">2026 Projects</strong> Snyder Daily News 1941-2004, (14,782 issues, project complete), Midland Reporter-Telegram 1981-2018 (10,757 issues, project complete), Lubbock 1926-1930 (2,819 issues ongoing), Dawson County Courier (874 issues), Colorado City Record (5,135 issues), Junction Eagle (699 issues), Snyder Daily News (1,238 issues), West Texas Baptist (586 issues), Wichita Falls (102 issues).</p>
-          <p class="leading-relaxed"><strong class="font-serif text-sm text-iron block mb-1">2025 Projects</strong> Mitchell County News (2,074 issues), Portales Valley News (554 issues), Perryton Herald (1,848 issues), Texas Live Stock Journal (634 issues), Friona Star (51 issues).</p>
-          <p class="leading-relaxed"><strong class="font-serif text-sm text-iron/70 block mb-1">2024-2022 Cumulative Projects</strong> Texas Christian Advocate (2,543 issues), Burkburnett Star (2,336 issues), Stanton Reporter (1,209 issues), Neu-Braunfelser Zeitung (1,487 issues), Abernathy Review (1,568 issues), Talco Times (2,890 issues), El Mosquito (861 issues).</p>
+        <div class="cv-panel mt-6 bg-haze/20 border border-haze/60 p-5 rounded-sm">
+          <h3 class="text-sm font-serif text-iron uppercase tracking-widest font-semibold mb-1">Newspaper Digitization Projects</h3>
+          <p class="text-sm text-iron/70 mb-3">{num(issuesTotal)} issues across {titleCount} titles since 2022, at the largest archive of digitized West Texas newspapers.</p>
+          <div class="cv-x-scroll overflow-x-auto -mx-2 px-2">
+            <table class="w-full min-w-[460px] text-left text-sm border-collapse font-serif">
+              <caption class="sr-only">Newspaper digitization projects by year, with issue counts</caption>
+              <thead>
+                <tr class="border-b border-haze text-iron/60 uppercase text-sm">
+                  <th scope="col" class="py-1.5 pr-3">Newspaper</th>
+                  <th scope="col" class="py-1.5 px-3">Years</th>
+                  <th scope="col" class="py-1.5 px-3 text-right">Issues</th>
+                  <th scope="col" class="py-1.5 pl-3 text-right">Status</th>
+                </tr>
+              </thead>
+              {NEWSPAPERS.map((g) => (
+                <tbody class="divide-y divide-haze/40">
+                  <tr>
+                    <th scope="colgroup" colspan="4" class="pt-3 pb-1 text-left text-caprock font-semibold tracking-wider uppercase text-sm">{g.group}</th>
+                  </tr>
+                  {g.items.map((p) => (
+                    <tr>
+                      <td class="py-1.5 pr-3 text-iron/90">{p.title}</td>
+                      <td class="py-1.5 px-3 text-iron/60">{p.span ?? ''}</td>
+                      <td class="py-1.5 px-3 text-right text-iron/90">{num(p.issues)}</td>
+                      <td class="py-1.5 pl-3 text-right text-iron/60">{p.status ?? ''}</td>
+                    </tr>
+                  ))}
+                  <tr class="border-t border-haze">
+                    <td class="py-1.5 pr-3 text-iron/60 italic" colspan="2">Subtotal</td>
+                    <td class="py-1.5 px-3 text-right text-iron font-semibold">{num(groupTotal(g))}</td>
+                    <td class="py-1.5 pl-3"></td>
+                  </tr>
+                </tbody>
+              ))}
+              <tfoot>
+                <tr class="border-t-2 border-iron">
+                  <td class="py-2 pr-3 text-iron font-semibold uppercase tracking-wider text-sm" colspan="2">Issues, listed projects</td>
+                  <td class="py-2 px-3 text-right text-caprock font-semibold">{num(issuesTotal)}</td>
+                  <td class="py-2 pl-3"></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
         </div>
       </section>
 
       <!-- SECTION: SERVICE -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Professional Service</h2>
+        <h2 class={H2} id="service">Professional Service</h2>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-sm">
           <div>
             <h3 class="text-sm font-serif text-sage uppercase tracking-wider font-semibold mb-2">Department / School</h3>
             <ul class="space-y-1 text-sm text-iron/90 list-disc list-inside">
-              <li>University Research Committee (Chair 2026-2027, Member 2025-2027)</li>
+              <li>University Research Committee (Chair 2026&ndash;2027, Member 2025&ndash;2027)</li>
               <li>Assistant Archivist Search (Chair 2024)</li>
               <li>Rare Books Search Committee (Member 2023)</li>
-              <li>University Libraries' Executive Committee (Member 2022-2024, Sec 2022-2023)</li>
-              <li>Public Programming/Outreach (Member 2016-2024)</li>
+              <li>University Libraries' Executive Committee (Member 2022&ndash;2024, Secretary 2022&ndash;2023)</li>
+              <li>Public Programming/Outreach (Member 2016&ndash;2024)</li>
               <li>HEB Fuel For Finals Volunteer (2022, 2024)</li>
             </ul>
           </div>
@@ -356,10 +1181,10 @@ import RootLayout from '../layouts/RootLayout.astro';
           <div>
             <h3 class="text-sm font-serif text-sage uppercase tracking-wider font-semibold mb-2">Professional / Public</h3>
             <ul class="space-y-1 text-sm text-iron/90 list-disc list-inside">
-              <li>WTHA Annual Events Coordinator (2017-Present)</li>
-              <li>WTHA Rupert N. Richardson Book Award Committee (2017-Present)</li>
-              <li>Texas Plains Trail Region Board Chair & President (2022-Present)</li>
-              <li>Texas Plains Trail Region Board Member (2021-Present)</li>
+              <li>WTHA Annual Events Coordinator (2017&ndash;Present)</li>
+              <li>WTHA Rupert N. Richardson Book Award Committee (2017&ndash;Present)</li>
+              <li>Texas Plains Trail Region Board Chair &amp; President (2022&ndash;Present)</li>
+              <li>Texas Plains Trail Region Board Member (2021&ndash;Present)</li>
             </ul>
           </div>
         </div>
@@ -367,40 +1192,270 @@ import RootLayout from '../layouts/RootLayout.astro';
 
       <!-- SECTION: HONORS & AWARDS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Fellowships, Scholarships, and Awards</h2>
-        <div class="text-sm border-l-2 border-caprock pl-4 py-1">
-          <span class="text-sm font-serif text-caprock font-semibold block">April 4, 2024</span>
-          <strong class="text-iron">Award of Excellence in Preserving History | Texas Historical Commission</strong>
-          <p class="text-sm text-iron/80 mt-1">Awarded to the digital newspaper digitization project team at the SWC/SCL.</p>
+        <h2 class={H2} id="awards">Fellowships, Scholarships, and Awards</h2>
+        <div class="space-y-3">
+          {AWARDS.map((a) => (
+            <div class="cv-entry text-sm border-l-2 border-caprock pl-4 py-1">
+              <span class="text-sm font-serif text-caprock font-semibold block">{a.date}</span>
+              <strong class="text-iron">{a.title}</strong>
+              <p class="text-sm text-iron/80 mt-1">{a.body}</p>
+            </div>
+          ))}
         </div>
       </section>
 
       <!-- SECTION: MEDIA CONTRIBUTIONS -->
       <section>
-        <h2 class="text-xl font-bold uppercase text-caprock border-b border-sage pb-1 mb-3">Media Contributions</h2>
-        <div class="space-y-2 text-sm">
-          <div>
-            <span class="text-sm font-serif text-iron/50 block">July 31, 2025</span>
-            <span class="font-semibold">KLBK News Segment: "On this day in 1891: Lubbock gets its first newspaper"</span>
-            <p class="text-sm text-iron/80 mt-0.5">Provided specialized quotes and collection discovery context for the primary historical feature.</p>
-          </div>
-          <div>
-            <span class="text-sm font-serif text-iron/50 block">July 9, 2022</span>
-            <span class="font-semibold">Hockley County Centennial Celebration</span>
-            <p class="text-sm text-iron/80 mt-0.5">Fielded detailed landscape and situational aerial drone video profiles documentation for the 100th anniversary event records.</p>
-          </div>
+        <h2 class={H2} id="media">Media Contributions</h2>
+        <div class="space-y-3 text-sm">
+          {MEDIA.map((m) => (
+            <div class="cv-entry">
+              <span class="text-sm font-serif text-iron/50 block">{m.date}</span>
+              <span class="font-semibold">{m.title}</span>
+              <p class="text-sm text-iron/80 mt-0.5">{m.body}</p>
+            </div>
+          ))}
         </div>
       </section>
 
+      <!-- SECTION: CREDENTIALS -- renders only when the arrays are filled in -->
+      {(CREDENTIALS.length > 0 || MEMBERSHIPS.length > 0) && (
+        <section>
+          <h2 class={H2} id="credentials">Certifications and Memberships</h2>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
+            {CREDENTIALS.length > 0 && (
+              <ul class="space-y-1 text-iron/90 list-disc list-inside">
+                {CREDENTIALS.map((c) => (
+                  <li><span class="font-semibold">{c.label}</span> &mdash; {c.detail}</li>
+                ))}
+              </ul>
+            )}
+            {MEMBERSHIPS.length > 0 && (
+              <ul class="space-y-1 text-iron/90 list-disc list-inside">
+                {MEMBERSHIPS.map((m) => <li>{m}</li>)}
+              </ul>
+            )}
+          </div>
+        </section>
+      )}
+
     </div>
+
+    <!-- THE YEAR VIEW. Derived from the same arrays as everything above;
+         hidden until the toggle is wired, so a visitor without JS gets the
+         category view and nothing broken. Never printed. -->
+    <div id="cv-by-year" class="cv-view" hidden>
+      <ol class="cv-rail list-none pl-0 m-0">
+        {eventYears.map((year) => (
+          <li class="cv-rail-year grid grid-cols-[4.25rem_minmax(0,1fr)] md:grid-cols-[5.5rem_minmax(0,1fr)] gap-4" data-year={year}>
+            <div class="cv-rail-gutter border-r border-haze">
+              <span class="cv-rail-label font-serif text-sm text-iron/50 block sticky top-20 pr-5 text-right whitespace-nowrap transition-colors">{year}</span>
+            </div>
+            <ul class="cv-rail-events list-none pl-0 py-2 space-y-2.5">
+              {eventsByYear[year].map((e) => (
+                <li class="cv-entry text-sm">
+                  <span class="cv-kind block text-sm font-serif uppercase tracking-widest text-sage">{e.kind}</span>
+                  <span class="text-iron/90">
+                    {e.href ? <a href={e.href} class={LINK}>{e.text}</a> : e.text}
+                  </span>
+                  {e.detail && <span class="block text-sm text-iron/60 italic">{e.detail}</span>}
+                </li>
+              ))}
+            </ul>
+          </li>
+        ))}
+      </ol>
+    </div>
+
+    <!-- Printed only; invisible on screen -->
+    <p class="print-only">Austin Allison &mdash; Curriculum vitae &mdash; updated {UPDATED} &mdash; austinlallison.com/cv</p>
+
   </div>
 </RootLayout>
 
-<style>
-  /* Retain print layout safety constraints in line with PDF formats */
+<script is:inline>
+  // The print button is hidden in markup and revealed here, so it never renders
+  // as a dead control when JS is off. Wired on astro:page-load rather than at
+  // parse time: ClientRouter swaps the DOM without re-parsing, so a parse-time
+  // listener would be lost on the second visit to this page.
+  (() => {
+    const wirePrint = () => {
+      const btn = document.querySelector('[data-print-cv]');
+      if (!btn || btn.dataset.wired) return;
+      btn.dataset.wired = '1';
+      btn.hidden = false;
+      btn.addEventListener('click', () => window.print());
+    };
+
+    // Two views over one document. The toggle is revealed here rather than in
+    // markup, so with JS off the category view is simply the page.
+    const wireViews = () => {
+      const toggle = document.querySelector('[data-view-toggle]');
+      const category = document.getElementById('cv-by-category');
+      const year = document.getElementById('cv-by-year');
+      if (!toggle || !category || !year || toggle.dataset.wired) return;
+      toggle.dataset.wired = '1';
+      toggle.hidden = false;
+
+      const setView = (v) => {
+        category.hidden = v !== 'category';
+        year.hidden = v !== 'year';
+        toggle.querySelectorAll('button[data-view]').forEach((b) => {
+          b.setAttribute('aria-pressed', String(b.dataset.view === v));
+        });
+      };
+      toggle.addEventListener('click', (ev) => {
+        const b = ev.target.closest('button[data-view]');
+        if (b) setView(b.dataset.view);
+      });
+      setView('category');
+
+      // Light the year the reader is in. Cheap on purpose: no filters, no
+      // blend modes, no scroll listener - one observer and a class.
+      const rows = Array.from(year.querySelectorAll('.cv-rail-year'));
+      if (!rows.length || !('IntersectionObserver' in window)) return;
+      const seen = new Set();
+      const io = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((e) => {
+            if (e.isIntersecting) seen.add(e.target);
+            else seen.delete(e.target);
+          });
+          const current = rows.find((r) => seen.has(r));
+          rows.forEach((r) => r.classList.toggle('is-current', r === current));
+        },
+        { rootMargin: '-15% 0px -60% 0px' }
+      );
+      rows.forEach((r) => io.observe(r));
+    };
+
+    const wire = () => {
+      wirePrint();
+      wireViews();
+    };
+    document.addEventListener('astro:page-load', wire);
+    if (document.readyState !== 'loading') wire();
+    else document.addEventListener('DOMContentLoaded', wire);
+  })();
+</script>
+
+<style is:global>
+  /* Screen: the printed running foot is hidden. */
+  .cv-page .print-only { display: none; }
+
+  /* Every section heading is now an anchor target (/cv#publications and so on).
+     Keeps a landed heading clear of the top of the viewport. */
+  .cv-page h2[id] { scroll-margin-top: 5rem; }
+
+  /* --- the year rail ------------------------------------------------
+     A tick per year on a ruled gutter, the year you are reading lit.
+     Colour only - no filter, blend mode, mask or clip-path anywhere on
+     this page, deliberately. */
+  .cv-page .cv-rail-label::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 50%;
+    width: 10px;
+    border-top: 1px solid currentColor;
+    opacity: 0.3;
+    transition: width 120ms linear, opacity 120ms linear;
+  }
+  .cv-page .cv-rail-year.is-current .cv-rail-label::after {
+    width: 14px;
+    border-top-width: 2px;
+    border-top-color: #9C5B3F;
+    opacity: 1;
+  }
+  .cv-page .cv-rail-year.is-current .cv-rail-label {
+    color: #9C5B3F;
+  }
+  .cv-page [data-view-toggle] button[aria-pressed='true'] {
+    background: #9C5B3F;
+    color: #FFFFFF;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cv-page .cv-rail-label::after { transition: none; }
+  }
+
   @media print {
-    header, footer { display: none !important; }
-    .max-w-4xl { max-width: 100% !important; padding: 0 !important; }
-    body { background-color: #ffffff !important; color: #000000 !important; }
+    @page { margin: 0.75in; }
+
+    /* The CV prints as the document, never as the chronology - and prints
+       it even if the reader was looking at the year view. */
+    .cv-page #cv-by-year,
+    .cv-page [data-view-toggle] { display: none !important; }
+    .cv-page #cv-by-category[hidden] { display: block !important; }
+
+    /* Site chrome. This block must be is:global -- a scoped style block only
+       matches elements declared in THIS component, so the old
+       `header, footer { display: none }` rule never matched the site header
+       or the caprock footer and the printed CV carried both. */
+    header, footer, nav { display: none !important; }
+
+    body {
+      background: #fff !important;
+      color: #111 !important;
+    }
+
+    .cv-page {
+      max-width: none !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      font-size: 10.5pt;
+      line-height: 1.35;
+    }
+
+    .cv-page .print-only {
+      display: block;
+      margin-top: 1.5em;
+      padding-top: 0.5em;
+      border-top: 1px solid #bbb;
+      font-size: 8.5pt;
+      color: #555;
+    }
+
+    /* Links print as text with their destination spelled out. */
+    .cv-page a {
+      color: #111 !important;
+      background: none !important;
+      text-decoration: none !important;
+    }
+    .cv-page a::after {
+      font-size: 0.85em;
+      color: #555;
+      word-break: break-all;
+    }
+    .cv-page a[href^='/']::after { content: ' (austinlallison.com' attr(href) ')'; }
+    .cv-page a[href^='http']::after { content: ' (' attr(href) ')'; }
+    .cv-page a[href^='mailto:']::after { content: none; }
+
+    /* Anything that scrolls on screen must open out on paper, or the printed
+       CV silently loses whatever was below the fold of the scroll box. */
+    .cv-page .cv-x-scroll {
+      overflow: visible !important;
+      margin: 0 !important;
+      padding: 0 !important;
+    }
+    .cv-page table { min-width: 0 !important; width: 100% !important; }
+
+    /* Ink economy: drop tinted panels, keep the rules. */
+    .cv-page .cv-panel {
+      background: none !important;
+      border: 0 !important;
+      border-top: 1px solid #ccc !important;
+      padding: 0.5em 0 0 0 !important;
+      border-radius: 0 !important;
+    }
+
+    /* Pagination. */
+    .cv-page h1,
+    .cv-page h2,
+    .cv-page h3 { break-after: avoid-page; }
+    .cv-page .cv-entry,
+    .cv-page li,
+    .cv-page tr,
+    .cv-page dl > div { break-inside: avoid; }
+    .cv-page thead { display: table-header-group; }
   }
 </style>

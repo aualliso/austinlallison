@@ -13,9 +13,6 @@ import {
 export const CITATION: Citation = {
   title:
     'A Spring Sprung It: Tracing and Understanding the True Genesis of North America\u2019s Longest River',
-  displayTitle: 'A Spring Sprung It',
-  subtitle:
-    'Tracing and Understanding the True Genesis of North America\u2019s Longest River',
   authors: ['Austin Allison'],
   orcid: 'https://orcid.org/0000-0001-6787-9636',
   status: 'record',

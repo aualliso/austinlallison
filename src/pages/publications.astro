@@ -1,357 +1,138 @@
 ---
 // src/pages/publications.astro
+//
+// REBUILT 2026-09-09. Every card on this page used to be hand-typed HTML, and
+// it had drifted: two titles disagreed with the CV, three volume formats were
+// in use across four entries, and two finished article pages (ja_cattle_company,
+// newspapers_oil_and_railroad_land) had no card at all.
+//
+// The page now derives from src/data/publications/index.ts, which reads the
+// CITATION each article data file already exports. Nothing here restates a
+// citation, so nothing here can disagree with one. Add a data file and a page
+// the normal way and the card appears on its own.
+//
+// The card designs are unchanged - the row layout for articles, the
+// bottom-bleed card for everything else.
 import RootLayout from '../layouts/RootLayout.astro';
+import {
+  SECTIONS,
+  bySection,
+  sourceLine,
+  PUBLICATIONS,
+  type SectionId,
+} from '../data/publications/index';
+
+/** Sections that use the thumbnail-beside-text row layout. */
+const ROW_LAYOUT: SectionId[] = ['articles', 'notes'];
+
+const H2 =
+  'text-sm font-mono text-sage uppercase tracking-widest font-bold flex items-center gap-2';
+const CARD =
+  'border-t-4 border-t-caprock border-x border-b border-haze rounded-sm bg-haze/10 flex flex-col justify-between hover:shadow-sm transition-all group overflow-hidden';
+const TITLE =
+  'font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors duration-300';
+const IMG =
+  'w-full h-full object-cover filter group-hover:grayscale transition-all duration-500';
+const BTN =
+  'px-3 py-1.5 bg-caprock text-canvas rounded-sm hover:bg-sage transition-colors';
+const READ =
+  'text-xs font-mono text-caprock font-semibold hover:text-iron pt-2 inline-block';
+
+const visible = SECTIONS.map((s) => ({ ...s, items: bySection(s.id) })).filter(
+  (s) => s.items.length > 0
+);
 ---
 
-<RootLayout title="Research and Creative Activity | Austin Allison">
+<RootLayout
+  title="Research and Creative Activity | Austin Allison"
+  description={`Articles, essays, columns and book chapters by Austin Allison on the history and landscapes of Texas and the American West - ${PUBLICATIONS.length} pieces, most readable in full on this site.`}
+  prose={false}
+>
   <div class="max-w-4xl mx-auto py-6 text-iron">
-    <header class="border-b-2 border-caprock pb-4 mb-12 flex justify-between items-baseline">
+    <header class="border-b-2 border-caprock pb-4 mb-12">
       <h1 class="font-serif text-3xl font-medium tracking-tight text-iron">Research and Creative Activity</h1>
     </header>
+
     <div class="space-y-16">
-      <!-- JOURNAL ARTICLES -->
-      <section class="space-y-6">
-      <h2 class="text-sm font-mono text-sage uppercase tracking-widest font-bold flex items-center gap-2">
-      <span>&bull;</span> Peer-Reviewed &amp; Journal Articles
-      </h2>
-      <div class="space-y-8 pl-4 border-l border-haze">
-        <!-- Article 1 -->
-        <div class="group flex flex-col sm:flex-row gap-5 items-start">
-        <!-- Thumbnail Image -->
-          <div class="w-full sm:w-24 md:w-28 shrink-0 aspect-[4/3] sm:aspect-square overflow-hidden bg-haze rounded-sm">
-            <img 
-                src="/images/wiley_notes.jpg" 
-                alt="Image of H.A. Wiley's field notes" 
-                class="w-full h-full object-cover filter group-hover:grayscale transition-all duration-500"
-            />
-          </div>
-        <!-- Text Content -->
-        <div class="flex-1">
-          <span class="text-xs font-mono text-caprock font-semibold block mb-1">January 2026</span>
-          <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors duration-300">
-            Surveying the Capitol Land Reservation in Texas
-          </h3>
-          <p class="text-md text-iron/70 mt-1 font-serif">
-            <span class="text-sm text-iron/70 mt-1 italic">Southwestern Historical Quarterly</span> &bull; Volume 129, No. 3 &bull; 2026.
-          </p>
-          <div class="mt-4 flex gap-3 text-xs font-mono">
-            <a href="/publications/capitol_land_shq" aria-label="Read full text: Surveying the Capitol Land Reservation in Texas" class="px-3 py-1.5 bg-caprock text-canvas rounded-sm hover:bg-sage transition-colors">
-              read full text
-            </a>
-            <a href="/publications/capitol_land" aria-label="Read full text: Surveying the Capitol Land Reservation in Texas" class="px-3 py-1.5 bg-caprock text-canvas rounded-sm hover:bg-sage transition-colors">
-              read original manuscript
-            </a>
-          </div>
-        </div>
-        </div>
-        <!-- Article 2 -->
-        <div class="group flex flex-col sm:flex-row gap-5 items-start">
-        <!-- Thumbnail Image -->
-          <div class="w-full sm:w-24 md:w-28 shrink-0 aspect-[4/3] sm:aspect-square overflow-hidden bg-haze rounded-sm">
-            <img 
-                src="/images/vaughan_land_company.jpg" 
-                alt="Advertisement for Vaughan Land Company" 
-                class="w-full h-full object-cover filter group-hover:grayscale transition-all duration-500"
-            />
-          </div>
-        <!-- Text Content -->
-        <div class="flex-1">
-          <span class="text-xs font-mono text-caprock font-semibold block mb-1">2025</span>
-          <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors duration-300">
-            'Opportunity Knocking': The Vaughan Land Company and Early Bailey County Development.
-          </h3>
-          <p class="text-md text-iron/70 mt-1 font-serif">
-            <span class="text-sm text-iron/70 mt-1 italic">Panhandle-Plains Historical Review</span> &bull; Volume 96 &bull; 2025.
-          </p>
-          <div class="mt-4 flex gap-3 text-xs font-mono">
-            <a href="/publications/opportunity_knocking" aria-label="Read full text: 'Opportunity Knocking': The Vaughan Land Company and Early Bailey County Development" class="px-3 py-1.5 bg-caprock text-canvas rounded-sm hover:bg-sage transition-colors">
-              read full text
-            </a>
-          </div>
-        </div>
-        </div>
-        <!-- Article 3 -->
-        <div class="group flex flex-col sm:flex-row gap-5 items-start">
-        <!-- Thumbnail Image -->
-          <div class="w-full sm:w-24 md:w-28 shrink-0 aspect-[4/3] sm:aspect-square overflow-hidden bg-haze rounded-sm">
-            <img 
-                src="/images/spring_sprung_it.jpg" 
-                alt="Image of Missouri River Headwaters" 
-                class="w-full h-full object-cover filter group-hover:grayscale transition-all duration-500"
-            />
-          </div>
-        <!-- Text Content -->
-        <div class="flex-1">
-          <span class="text-xs font-mono text-caprock font-semibold block mb-1">2019</span>
-          <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors duration-300">
-            A Spring Sprung It: Tracing and Understanding the True Genesis of North America's Longest River.
-          </h3>
-          <p class="text-md text-iron/70 mt-1 font-serif">
-            <span class="text-sm text-iron/70 mt-1 italic">Journal of the West</span> &bull; Volume 58, Number 3 &bull; 2019.
-          </p>
-          <div class="mt-4 flex gap-3 text-xs font-mono">
-            <a href="/publications/spring_sprung_it" aria-label="Read full text: A Spring Sprung It: Tracing and Understanding the True Genesis of North America's Longest River" class="px-3 py-1.5 bg-caprock text-canvas rounded-sm hover:bg-sage transition-colors">
-              read full text
-            </a>
-          </div>
-        </div>
-        </div>
-        <!-- Article 4 -->
-        <div class="group flex flex-col sm:flex-row gap-5 items-start">
-        <!-- Thumbnail Image -->
-          <div class="w-full sm:w-24 md:w-28 shrink-0 aspect-[4/3] sm:aspect-square overflow-hidden bg-haze rounded-sm">
-            <img 
-                src="/images/maps_and_newspapers/der_texas.jpg" 
-                alt="Der Texas Demokrat newspaper" 
-                class="w-full h-full object-cover filter group-hover:grayscale transition-all duration-500"
-            />
-          </div>
-        <!-- Text Content -->
-        <div class="flex-1">
-          <span class="text-xs font-mono text-caprock font-semibold block mb-1">2018</span>
-          <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors duration-300">
-            Maps and Newspapers in the Southwest Collection
-          </h3>
-          <p class="text-md text-iron/70 mt-1 font-serif">
-            <span class="text-sm text-iron/70 mt-1 italic">Archivation Exploration</span> &bull; Volume 3, Number 2 &bull; 2018.
-          </p>
-          <div class="mt-4 flex gap-3 text-xs font-mono">
-            <a href="/publications/maps_and_newspapers" aria-label="Read full text: Maps and Newspapers in the Southwest Collection" class="px-3 py-1.5 bg-caprock text-canvas rounded-sm hover:bg-sage transition-colors">
-              read full text
-            </a>
-          </div>
-        </div>
-        </div>
-        </div>
-      </section>
+      {visible.map((section) => (
+        <section class="space-y-6">
+          <h2 class={H2} id={section.id}>
+            <span aria-hidden="true">&bull;</span> {section.title}
+          </h2>
 
-      <!-- PUBLIC SCHOLARSHIP MAGAZINE CARDS -->
-      <section class="space-y-6">
-        <h2 class="text-sm font-mono text-sage uppercase tracking-widest font-bold flex items-center gap-2">
-          <span>&bull;</span> Magazines & Trade Publications
-        </h2>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <!-- Card 1 -->
-        <div class="border-t-4 border-t-caprock border-x border-b border-haze rounded-sm bg-haze/10 flex flex-col justify-between hover:shadow-sm transition-all group overflow-hidden">
-          
-          <!-- Text Content Container (Padded) -->
-          <div class="p-6 pb-4 space-y-2">
-            <span class="text-[10px] font-mono uppercase tracking-wider text-sage font-bold block">Authentic Texas &bull; Summer 2025</span>
-            <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors">
-              Lipscomb County Courthouse: A Prairie Landmark with Enduring Presence
-            </h3>
-            <a href="/publications/lipscomb_county_courthouse" aria-label="Read full article: Lipscomb County Courthouse: A Prairie Landmark with Enduring Presence" class="text-xs font-mono text-caprock font-semibold hover:text-iron pt-2 inline-block">
-              read full article &rarr;
-            </a>
-          </div>
-
-          <!-- Bottom Full-Bleed Image -->
-          <div class="w-full h-40 overflow-hidden bg-haze mt-auto border-t border-haze/50">
-            <img 
-              src="/images/lipscomb_county.jpg" 
-              alt="Lipscomb County Courthouse" 
-              class="w-full h-full object-cover filter group-hover:grayscale transition-all duration-500"
-            />
-          </div>
-
-        </div>
-<!-- Card 2 -->
-          <div class="border-t-4 border-t-caprock border-x border-b border-haze rounded-sm bg-haze/10 flex flex-col justify-between hover:shadow-sm transition-all group overflow-hidden">
-            
-            <!-- Text Content Container -->
-            <div class="p-6 pb-4 space-y-2">
-              <span class="text-[10px] font-mono uppercase tracking-wider text-sage font-bold block">Authentic Texas &bull; Winter 2024</span>
-              <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors">
-                The Remnants of the Southwest Conference: The Story of a Landmark Archival Collection
-              </h3>
-              <a href="/publications/southwest_conference" aria-label="Read full article: The Remnants of the Southwest Conference: The Story of a Landmark Archival Collection" class="text-xs font-mono text-caprock font-semibold hover:text-iron pt-2 inline-block">
-                read full article &rarr;
-              </a>
+          {ROW_LAYOUT.includes(section.id) ? (
+            <div class="space-y-8 pl-4 border-l border-haze">
+              {section.items.map((e) => (
+                <div class="group flex flex-col sm:flex-row gap-5 items-start">
+                  {e.thumb && (
+                    <div class="w-full sm:w-24 md:w-28 shrink-0 aspect-[4/3] sm:aspect-square overflow-hidden bg-haze rounded-sm">
+                      <img src={e.thumb} alt={e.alt ?? ''} loading="lazy" decoding="async" class={IMG} />
+                    </div>
+                  )}
+                  <div class="flex-1">
+                    <span class="text-xs font-mono text-caprock font-semibold block mb-1">
+                      {e.citation.monthYear ?? e.citation.dateLabel ?? e.citation.year}
+                    </span>
+                    <h3 class={TITLE}>{e.citation.displayTitle ?? e.citation.title}</h3>
+                    <p class="text-base text-iron/70 mt-1 font-serif">
+                      <span class="italic">{sourceLine(e.citation)}</span>
+                    </p>
+                    <div class="mt-4 flex flex-wrap gap-3 text-xs font-mono">
+                      <a
+                        href={e.citation.canonicalPath}
+                        aria-label={`Read the full text of \u201c${e.citation.title}\u201d`}
+                        class={BTN}
+                      >read full text</a>
+                      {e.otherVersions.map((v) => (
+                        <a
+                          href={v.path}
+                          aria-label={`Read the ${v.label.toLowerCase()} of \u201c${e.citation.title}\u201d`}
+                          class={BTN}
+                        >{v.label.toLowerCase()}</a>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
+          ) : (
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {section.items.map((e) => (
+                <div class={CARD}>
+                  <div class="p-6 pb-4 space-y-2">
+                    <span class="text-[10px] font-mono uppercase tracking-wider text-sage font-bold block">
+                      {sourceLine(e.citation)}
+                    </span>
+                    <h3 class={TITLE}>{e.citation.displayTitle ?? e.citation.title}</h3>
+                    <a
+                      href={e.citation.canonicalPath}
+                      aria-label={`Read the full text of \u201c${e.citation.title}\u201d`}
+                      class={READ}
+                    >read full article &rarr;</a>
+                    {e.otherVersions.length > 0 && (
+                      <div class="flex flex-wrap gap-4">
+                        {e.otherVersions.map((v) => (
+                          <a
+                            href={v.path}
+                            aria-label={`Read the ${v.label.toLowerCase()} of \u201c${e.citation.title}\u201d`}
+                            class={READ}
+                          >{v.label.toLowerCase()} &rarr;</a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
 
-            <!-- Bottom Full-Bleed Image -->
-            <div class="w-full h-40 overflow-hidden bg-haze mt-auto border-t border-haze/50">
-              <img 
-                src="/images/southwest_conference2.jpg" 
-                alt="Southwest Conference archival memorabilia" 
-                class="w-full h-full object-cover filter group-hover:grayscale transition-all duration-500"
-              />
+                  {e.thumb && (
+                    <div class="w-full h-40 overflow-hidden bg-haze mt-auto border-t border-haze/50">
+                      <img src={e.thumb} alt={e.alt ?? ''} loading="lazy" decoding="async" class={IMG} />
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
-          </div>
-
-          <!-- Card 4 -->
-          <div class="border-t-4 border-t-caprock border-x border-b border-haze rounded-sm bg-haze/10 flex flex-col justify-between hover:shadow-sm transition-all group overflow-hidden">
-            
-            <!-- Text Content Container -->
-            <div class="p-6 pb-4 space-y-2">
-              <span class="text-[10px] font-mono uppercase tracking-wider text-sage font-bold block">Authentic Texas &bull; Spring 2023</span>
-              <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors">
-                Tumbleweed Smith and the Sounds of Texas
-              </h3>
-              <a href="/publications/tumbleweed_smith" aria-label="Read full article: Tumbleweed Smith and the Sounds of Texas" class="text-xs font-mono text-caprock font-semibold hover:text-iron pt-2 inline-block">
-                read full article &rarr;
-              </a>
-            </div>
-
-            <!-- Bottom Full-Bleed Image -->
-            <div class="w-full h-40 overflow-hidden bg-haze mt-auto border-t border-haze/50">
-              <img 
-                src="/images/tumbleweed_smith.jpg" 
-                alt="Tumbleweed Smith recording audio in Texas" 
-                class="w-full h-full object-cover filter group-hover:grayscale transition-all duration-500"
-              />
-            </div>
-          </div>
-
-          <!-- Card 5 -->
-          <div class="border-t-4 border-t-caprock border-x border-b border-haze rounded-sm bg-haze/10 flex flex-col justify-between hover:shadow-sm transition-all group overflow-hidden">
-            
-            <!-- Text Content Container -->
-            <div class="p-6 pb-4 space-y-2">
-              <span class="text-[10px] font-mono uppercase tracking-wider text-sage font-bold block">Authentic Texas &bull; Fall 2021</span>
-              <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors">
-                Comfortably Lodged: Transforming historic county jails into silos for historical and cultural heritage.
-              </h3>
-              <a href="/publications/comfortably_lodged" aria-label="Read full article: Comfortably Lodged: Transforming historic county jails into silos for historical and cultural heritage" class="text-xs font-mono text-caprock font-semibold hover:text-iron pt-2 inline-block">
-                read full article &rarr;
-              </a>
-            </div>
-
-            <!-- Bottom Full-Bleed Image -->
-            <div class="w-full h-40 overflow-hidden bg-haze mt-auto border-t border-haze/50">
-              <img 
-                src="/images/comfortably_lodged/comfortably_lodged2.jpg" 
-                alt="Historic Texas county jail converted to museum" 
-                class="w-full h-full object-cover filter group-hover:grayscale transition-all duration-500"
-              />
-            </div>
-          </div>
-
-          <!-- Card 6 -->
-          <div class="border-t-4 border-t-caprock border-x border-b border-haze rounded-sm bg-haze/10 flex flex-col justify-between hover:shadow-sm transition-all group overflow-hidden">
-            
-            <!-- Text Content Container -->
-            <div class="p-6 pb-4 space-y-2">
-              <span class="text-[10px] font-mono uppercase tracking-wider text-sage font-bold block">Southwestern Archivist 42, Number 1 &bull; February 2019</span>
-              <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors">
-                Unusual Annotations in Stephen F. Austin's 1835 Map of Texas Tell Early Texas History
-              </h3>
-              <a href="/publications/unusual_annotations" aria-label="Read full article: Unusual Annotations in Stephen F. Austin's 1835 Map of Texas Tell Early Texas History" class="text-xs font-mono text-caprock font-semibold hover:text-iron pt-2 inline-block">
-                read full article &rarr;
-              </a>
-            </div>
-
-            <!-- Bottom Full-Bleed Image -->
-            <div class="w-full h-40 overflow-hidden bg-haze mt-auto border-t border-haze/50">
-              <img 
-                src="/images/unusual_annotations/unusual_annotations2.png" 
-                alt="Detail of annotations on Stephen F. Austin's 1835 Map of Texas" 
-                class="w-full h-full object-cover filter group-hover:grayscale transition-all duration-500"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- PRESS / NEWSPAPER COVERAGE -->
-      <section class="space-y-6">
-        <h2 class="text-sm font-mono text-sage uppercase tracking-widest font-bold flex items-center gap-2">
-          <span>&bull;</span> Press &amp; Newspaper Coverage
-        </h2>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Card 1 -->
-          <div class="border-t-4 border-t-caprock border-x border-b border-haze rounded-sm bg-haze/10 flex flex-col justify-between hover:shadow-sm transition-all group overflow-hidden">
-
-            <!-- Text Content Container -->
-            <div class="p-6 pb-4 space-y-2">
-              <span class="text-[10px] font-mono uppercase tracking-wider text-sage font-bold block">Lubbock Avalanche-Journal &bull; January 28, 2024</span>
-              <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors">
-                The Sharps rifle, buffalo hunting, and the South Plains
-              </h3>
-              <a href="/publications/sharps_rifle" aria-label="Read full article: The Sharps rifle, buffalo hunting, and the South Plains" class="text-xs font-mono text-caprock font-semibold hover:text-iron pt-2 inline-block">
-                read full article &rarr;
-              </a>
-            </div>
-
-            <!-- Bottom Full-Bleed Image -->
-            <div class="w-full h-40 overflow-hidden bg-haze mt-auto border-t border-haze/50">
-              <img
-                src="/images/judia_buffalo_stand.jpg"
-                alt="Vintage Sharps rifle and historical buffalo hunting"
-                class="w-full h-full object-cover filter group-hover:grayscale transition-all duration-500"
-              />
-            </div>
-          </div>
-
-          <!-- Card 2 -->
-          <div class="border-t-4 border-t-caprock border-x border-b border-haze rounded-sm bg-haze/10 flex flex-col justify-between hover:shadow-sm transition-all group overflow-hidden">
-
-            <!-- Text Content Container -->
-            <div class="p-6 pb-4 space-y-2">
-              <span class="text-[10px] font-mono uppercase tracking-wider text-sage font-bold block">Lubbock Avalanche-Journal &bull; September 2, 2017</span>
-              <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors">
-                Accounts vary on location of 1877 battle of Yellow House Canyon
-              </h3>
-              <a href="/publications/yellow_house_canyon" aria-label="Read full article: Accounts vary on location of 1877 battle of Yellow House Canyon" class="text-xs font-mono text-caprock font-semibold hover:text-iron pt-2 inline-block">
-                read full article &rarr;
-              </a>
-            </div>
-
-            <!-- Bottom Full-Bleed Image -->
-            <div class="w-full h-40 overflow-hidden bg-haze mt-auto border-t border-haze/50">
-              <img
-                src="/images/yellow_house_canyon/cook_image.jpg"
-                alt="Map of Lubbock County showing Yellow House Draw, Blackwater Draw, and the site of the 1877 battle"
-                class="w-full h-full object-cover filter group-hover:grayscale transition-all duration-500"
-              />
-            </div>
-          </div>
-          <!-- Card 3 -->
-          <div class="border-t-4 border-t-caprock border-x border-b border-haze rounded-sm bg-haze/10 flex flex-col justify-between hover:shadow-sm transition-all group overflow-hidden">
-
-            <!-- Text Content Container -->
-            <div class="p-6 pb-4 space-y-2">
-              <span class="text-[10px] font-mono uppercase tracking-wider text-sage font-bold block">Lubbock Avalanche-Journal &bull; November 29, 2024</span>
-              <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors">
-                Albert Pike and His Journey to Ransom Canyon
-              </h3>
-              <a href="/publications/albert_pike" aria-label="Read full article: Albert Pike and His Journey to Ransom Canyon" class="text-xs font-mono text-caprock font-semibold hover:text-iron pt-2 inline-block">
-                read full article &rarr;
-              </a>
-            </div>
-
-            <!-- Bottom Full-Bleed Image -->
-            <div class="w-full h-40 overflow-hidden bg-haze mt-auto border-t border-haze/50">
-              <img
-                src="/images/albert_pike/albert_pike_crop.jpg"
-                alt="Map of Lubbock County showing Yellow House Draw, Blackwater Draw, and the site of the 1877 battle"
-                class="w-full h-full object-cover filter group-hover:grayscale transition-all duration-500"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-    <section class="space-y-6">
-        <h2 class="text-sm font-mono text-sage uppercase tracking-widest font-bold flex items-center gap-2">
-          <span>&bull;</span> Book Chapters
-        </h2>
-        <!-- Card 1 -->
-          <div class="border-t-4 border-t-caprock border-x border-b border-haze p-6 rounded-sm bg-haze/10 flex flex-col justify-between hover:shadow-sm transition-all group">
-            <div class="space-y-2">
-              <span class="text-[10px] font-mono uppercase tracking-wider text-sage font-bold block">Caprock Chronicles: More Tales of the Llano Estacado, 2021</span>
-              <h3 class="font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors">
-                Tahoka Lake
-              </h3>
-            </div>
-            <a href="/publications/tahoka_lake" aria-label="Read full article: Tahoka Lake" class="text-xs font-mono text-caprock font-semibold hover:text-iron mt-6 inline-block">
-              read full article &rarr;
-            </a>
-          </div>
-    </section>
-
+          )}
+        </section>
+      ))}
     </div>
   </div>
 </RootLayout>
