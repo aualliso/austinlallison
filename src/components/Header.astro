@@ -567,6 +567,7 @@ const navItems = [
   { href: '/cv', label: 'cv' },
   { href: '/publications', label: 'publications' },
   { href: '/photography', label: 'photography' },
+  { href: '/collections', label: 'collections' },
   { href: '/about', label: 'about' },
 ];
 
@@ -730,6 +731,7 @@ const routeKey = (p: string): string => {
   if (clean.startsWith('/cv')) return 'cv';
   if (clean.startsWith('/publications')) return 'publications';
   if (clean.startsWith('/photography')) return 'photography';
+  if (clean.startsWith('/collections')) return 'collections';
   if (clean.startsWith('/about')) return 'about';
   return 'home';
 };
@@ -3046,6 +3048,7 @@ const isDev = import.meta.env.DEV;
     if (clean.startsWith('/cv')) return 'cv';
     if (clean.startsWith('/publications')) return 'publications';
     if (clean.startsWith('/photography')) return 'photography';
+    if (clean.startsWith('/collections')) return 'collections';
     if (clean.startsWith('/about')) return 'about';
     return 'home';
   };

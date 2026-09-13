@@ -1,0 +1,245 @@
+src/data/collections/ITEM-REFERENCE.txt
+==============================================================================
+EVERY FIELD ON AN ITEM, ANNOTATED
+
+Two records below. The first uses every field the schema has, so you can see
+what is available. The second is what you will actually type most of the time.
+
+READ THE SECOND ONE FIRST. The maximal record is a menu, not a standard.
+
+
+------------------------------------------------------------------------------
+1. THE MINIMUM - a complete, valid record
+------------------------------------------------------------------------------
+
+    {
+      slug: 'jean-and-sammy-with-goat',
+      title: '[Jean and Sammy with goat]',
+      format: 'snapshot',
+      recto: { file: 'jean_and_sammy_with_goat.jpg' },
+      description: 'Two small children in a goat cart in a bare dirt yard.',
+    },
+
+Five lines. Only `slug`, `title` and `recto.file` are strictly required; the
+other two are there because a record with no format and no description is
+findable but not much use.
+
+Square brackets around a title mean YOU supplied it. Quote the title without
+brackets when the object names itself, and set titleSource: 'inscribed'.
+
+
+------------------------------------------------------------------------------
+2. EVERY FIELD
+------------------------------------------------------------------------------
+
+    {
+      /* ---- identity ------------------------------------------------ */
+
+      // REQUIRED. Permanent, lowercase, hyphenated, drawn from the subject.
+      // This is the URL. Changing it later breaks every link anyone has sent.
+      slug: 'old-malcom-swann-gin',
+
+      // Your internal number, where the object carries one. Optional, never
+      // used as a key, displayed on the record when present. Both b.n and
+      // c.n forms are fine in the same collection.
+      controlNumber: 'c.1.4.1',
+
+      // REQUIRED. Quoted from the object when inscribed; in square brackets
+      // when you supplied it.
+      title: 'The Old Malcom Swann Gin - at the home place',
+
+      // 'inscribed' | 'supplied'. Defaults to 'supplied'.
+      titleSource: 'inscribed',
+
+      // Must match a series id declared on the collection. Omit and the item
+      // falls into an "Items" group at the end of the inventory.
+      series: 'enterprises',
+
+      /* ---- the object ---------------------------------------------- */
+
+      // 'cabinet card' | 'carte de visite' | 'mounted photograph'
+      // | 'real photo postcard' | 'snapshot' | 'crayon enlargement'
+      // | 'tintype' | 'copy print' | 'unknown'
+      // Omit when undetermined - it renders as nothing rather than 'unknown'.
+      format: 'mounted photograph',
+
+      // Free text. Of the OBJECT, mount included.
+      dimensions: '6 1/2 x 4 1/4 in. on a 8 x 5 in. mount',
+
+      // All three keys required if you use this at all.
+      photographer: {
+        name: 'Unknown',
+        confidence: 'unidentified',   // certain | probable | possible | unidentified
+        basis: 'No studio imprint on mount or print.',
+      },
+
+      // The studio or firm, when the mount carries an imprint.
+      studio: 'Hutchison Studio, Greenville, Tex.',
+
+      // Where the photograph was TAKEN. Falls back to the collection's
+      // defaults.place when omitted.
+      place: 'Hunt County, Texas',
+
+      /* ---- the date ------------------------------------------------- */
+
+      // Omit the whole block when undated - the index fills in '[undated]'.
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[after 1885]',
+        earliest: 1885,           // optional, numbers not strings
+        latest: 1900,             // optional
+        // One line per piece of evidence. Prints as a bulleted list under
+        // the date on the record page. An empty array is honest and fine.
+        basis: [
+          'The verso reads "Built ab[out] 1885" - which dates the gin, not the photograph.',
+          'ASSESSMENT, NOT ESTABLISHED - the mount style would narrow it.',
+        ],
+        confidence: 'possible',
+      },
+
+      /* ---- the files ------------------------------------------------ */
+
+      // REQUIRED. `file` must match the file in
+      // src/assets/collections/<collection-slug>/ EXACTLY, extension included.
+      // The build throws by name if it does not.
+      recto: {
+        file: 'c_1_4_1_-_Old_Malcom_Swann_Gin.jpg',
+        // width/height: OMIT THESE. Astro reads the real dimensions from the
+        // file. They exist only as a fallback for anything still in /public.
+        capture: 'flatbed, 600 ppi',        // falls back to defaults.capture
+        captured: '2025-11-14',             // when the SURROGATE was made
+        note: 'Scanned from the original.', // anything limiting the surrogate
+      },
+
+      // Omit entirely when there is nothing on the back. The Recto/Verso
+      // buttons only appear when this exists.
+      verso: {
+        file: 'c_1_4_1_-_back.jpg',
+        capture: 'flatbed, 600 ppi',
+      },
+
+      /* ---- description ---------------------------------------------- */
+
+      // What is VISIBLE, for someone who cannot see the image. Also serves
+      // as the alt text, so an item with a bracketed title and no
+      // description is invisible to a screen reader.
+      description: 'A wooden cotton gin complex photographed from across a wire fence...',
+
+      /* ---- what is written on it ------------------------------------ */
+
+      // Omit when nothing is written on the object.
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'The Old Malcom Swann\nGin - at the home place',
+          hand: 'Unattributed.',   // whose hand, when you can say
+          note: '"Thrasher" as written.',
+          // TRUE when the inscription dates the SUBJECT rather than the
+          // photograph. Prints a note saying so.
+          datesSubjectNotObject: false,
+        },
+      ],
+
+      /* ---- who is in it --------------------------------------------- */
+
+      // Where the names on THIS item all came from. Depictions with no basis
+      // of their own inherit it - fourteen names off one verso is fourteen
+      // names and one sentence.
+      identificationBasis: 'Named on the verso in ink.',
+
+      // Omit when nobody in it is named.
+      depicts: [
+        {
+          person: 'swann-malcom',  // an id in people.ts. Build throws if unknown.
+          confidence: 'possible',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'The gin carries his name, but nothing identifies any figure.',
+          position: 'Seated at centre, on the bales.',
+        },
+        {
+          // For someone with no authority record yet. Use `as` OR `person`,
+          // never neither.
+          as: 'Unidentified man in the upper doorway',
+          confidence: 'unidentified',
+          basis: 'Too indistinct to describe further.',
+        },
+      ],
+
+      /* ---- context --------------------------------------------------- */
+
+      // How THIS item reached you, where it differs from the collection's
+      // custodial chain.
+      provenance: 'From the album kept by ... ',
+
+      // Omit to take defaults.rights. Status is one of:
+      // 'public-domain' | 'no-known-restrictions' | 'in-copyright' | 'undetermined'
+      rights: {
+        status: 'undetermined',
+        note: 'Photographer unidentified; unpublished.',
+      },
+
+      // Cross-references. Resolves by SLUG - the build throws on a dangling
+      // one. Works across collections.
+      related: [
+        {
+          slug: 'malcom-swann-in-oklahoma',
+          relation: 'The bearded man at the centre may be the same person.',
+        },
+      ],
+
+      /* ---- named details --------------------------------------------- */
+
+      // Regions worth pointing at. x/y/w/h are PERCENTAGES of the image from
+      // the top left, so they survive a rescan at any resolution. Numbered
+      // buttons under the plate fly the viewer to each crop.
+      details: [
+        {
+          face: 'recto',            // 'recto' | 'verso'
+          x: 38, y: 66, w: 16, h: 13,
+          caption: 'A bale stencilled 345 - the only writing in the photograph.',
+        },
+      ],
+
+      /* ---- your worklist --------------------------------------------- */
+
+      // NEVER RENDERED. This is the cataloguer's note, not page content.
+      needsWork: [
+        'Where "the home place" is.',
+        'Whether the bearded man at centre is Malcom Swann.',
+      ],
+    },
+
+
+------------------------------------------------------------------------------
+3. WHAT THE COLLECTION SUPPLIES
+------------------------------------------------------------------------------
+
+Anything shared by the whole collection goes at the top of the file once,
+not on every item:
+
+    defaults: {
+      capture: 'flatbed, 600 ppi',
+      rights: { status: 'undetermined' },
+      place: 'Hunt County, Texas',
+      identificationBasis: '...',
+    },
+
+An item's own value always wins. This is where the repetition goes.
+
+
+------------------------------------------------------------------------------
+4. THE FOUR THINGS THE BUILD WILL STOP YOU ON
+------------------------------------------------------------------------------
+
+  1. A `file` that does not match what is in src/assets/collections/<slug>/,
+     exactly, extension included.
+  2. A `person` id with no record in people.ts.
+  3. A depiction with a name but no basis, and no identificationBasis to
+     inherit.
+  4. A `related` slug, or a duplicate slug or control number.
+
+Each throws by name. Nothing here fails quietly.

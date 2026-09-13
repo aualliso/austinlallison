@@ -1,0 +1,511 @@
+---
+// src/pages/collections/[collection]/[item].astro
+// The item record. The plate on the left, the description on the right, and
+// an Examine viewer over the top.
+//
+// PERFORMANCE NOTE, deliberate: nothing on this page uses filter, mix-blend-mode,
+// mask-image or clip-path. The viewer moves the image with transform alone.
+import RootLayout from '../../../layouts/RootLayout.astro';
+import { ALL_ITEMS, collectionBySlug, personById, personHref } from '../../../data/collections/index';
+import { naturalNameWithDates } from '../../../data/collections/types';
+import { plate } from '../../../data/collections/images';
+
+export function getStaticPaths() {
+  return ALL_ITEMS.map((i) => ({
+    params: { collection: i.collection, item: i.slug },
+    props: { slug: i.slug },
+  }));
+}
+
+const { slug } = Astro.props as { slug: string };
+const item = ALL_ITEMS.find((i) => i.slug === slug)!;
+const c = collectionBySlug.get(item.collection)!;
+
+// Every view of the object, rendered. The page no longer knows or cares
+// which of them is the "back".
+const faces = await Promise.all(
+  item.faces.map(async (f) => ({
+    ...f,
+    img: await plate(item.collection, f.surrogate.file, f.surrogate),
+  }))
+);
+
+const H3 = 'font-mono text-[0.66rem] uppercase tracking-[0.15em] text-sage font-medium mb-2';
+const DT = 'font-mono text-[0.66rem] uppercase tracking-[0.12em] text-sage sm:w-36 sm:shrink-0 sm:pt-1';
+const ROW = 'flex flex-col sm:flex-row sm:gap-4 border-b border-haze py-2';
+const LINK = 'text-caprock hover:underline';
+const QUAL = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-caprock';
+
+const label = (c2: string) =>
+  c2 === 'certain' ? '' : c2.charAt(0).toUpperCase() + c2.slice(1);
+
+// Reading order here: this is a list of who is in the picture, not an index.
+// The inverted heading stays on the authority record, where it files.
+const nameOf = (d: { person?: string; as?: string }) =>
+  d.person ? naturalNameWithDates(personById.get(d.person)!) : (d.as as string);
+
+const details = item.details ?? [];
+const alt = item.description ?? item.title;
+const altFor = (label: string, first: boolean) =>
+  first ? alt : `${label}: ${item.title}`;
+---
+
+<RootLayout
+  title={`${item.title} | ${c.title} | Austin Allison`}
+  description={item.description ?? `${item.format ?? 'Photograph'} in ${c.title}.`}
+  prose={false}
+>
+  <div class="max-w-5xl mx-auto py-6 text-iron font-serif">
+    <nav class="font-mono text-[0.68rem] uppercase tracking-[0.1em] text-sage mb-4">
+      <a href="/collections" class={LINK}>Collections</a>
+      <span class="opacity-50 mx-1.5">/</span>
+      <a href={`/collections/${c.slug}`} class={LINK}>{c.title}</a>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+
+      <!-- THE PLATE -->
+      <div class="lg:sticky lg:top-24">
+        <div class="relative bg-haze/25 border border-haze p-5 pb-8" data-mat>
+          {faces.map((f, n) => (
+            <img
+              src={f.img.view}
+              srcset={f.img.viewSrcset}
+              sizes="(min-width: 1024px) 46vw, calc(100vw - 3.5rem)"
+              data-face={f.key}
+              data-big={f.img.detail}
+              width={f.img.width}
+              height={f.img.height}
+              alt={altFor(f.label, n === 0)}
+              loading={n === 0 ? 'eager' : 'lazy'}
+              class={`w-full h-auto plate-face${n === 0 ? ' is-on' : ''}`}
+            />
+          ))}
+          <button
+            type="button"
+            data-examine
+            hidden
+            class="examine-btn absolute right-2 bottom-2 font-mono text-[0.6rem] uppercase tracking-[0.12em] bg-canvas border border-haze text-iron px-2 py-1 rounded-sm hover:border-caprock hover:text-caprock"
+          >Examine &#8599;</button>
+        </div>
+
+        {faces.length > 1 && (
+          <div class="flex gap-1 mt-2 flex-wrap" data-faces>
+            {faces.map((f, n) => (
+              <button
+                type="button"
+                data-face={f.key}
+                class={`face-btn font-mono text-[0.66rem] uppercase tracking-[0.12em] border border-haze px-3 py-1 rounded-sm${n === 0 ? ' is-on' : ''}`}
+              >{f.label}</button>
+            ))}
+          </div>
+        )}
+
+        {details.length > 0 && (
+          <div class="mt-4">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span class="font-mono text-[0.6rem] uppercase tracking-[0.13em] text-sage mr-1">Details</span>
+              {details.map((d, n) => (
+                <button
+                  type="button"
+                  class="det-btn font-mono text-[0.68rem] w-7 h-7 border border-haze rounded-full hover:border-caprock hover:text-caprock"
+                  data-face={d.face}
+                  data-x={d.x} data-y={d.y} data-w={d.w} data-h={d.h}
+                  data-cap={d.caption}
+                  aria-label={`Detail ${n + 1}: ${d.caption}`}
+                >{n + 1}</button>
+              ))}
+            </div>
+            <ol class="list-none p-0 mt-3 space-y-1">
+              {details.map((d, n) => (
+                <li class="flex gap-2 text-sm opacity-75">
+                  <span class="font-mono text-[0.68rem] text-caprock w-4 shrink-0">{n + 1}</span>
+                  <span>{d.caption}</span>
+                </li>
+              ))}
+            </ol>
+          </div>
+        )}
+
+
+      </div>
+
+      <!-- THE RECORD -->
+      <div>
+        <h1 class="text-3xl font-medium tracking-tight leading-tight mb-4">{item.title}</h1>
+
+        <dl class="border-t border-haze mb-7">
+          {item.controlNumber && (
+            <div class={ROW}><dt class={DT}>Control number</dt>
+              <dd class="m-0 min-w-0 flex-1 font-mono text-sm">{item.controlNumber}</dd></div>
+          )}
+          {item.format && (
+            <div class={ROW}><dt class={DT}>Format</dt><dd class="m-0 min-w-0 flex-1">{item.format}</dd></div>
+          )}
+          {item.dimensions && (
+            <div class={ROW}><dt class={DT}>Dimensions</dt><dd class="m-0 min-w-0 flex-1">{item.dimensions}</dd></div>
+          )}
+          {item.place && (
+            <div class={ROW}><dt class={DT}>Place</dt><dd class="m-0 min-w-0 flex-1">{item.place}</dd></div>
+          )}
+          <div class={ROW}><dt class={DT}>Date</dt><dd class="m-0 min-w-0 flex-1">{item.date.display}</dd></div>
+          <div class={ROW}><dt class={DT}>Collection</dt>
+            <dd class="m-0 min-w-0 flex-1"><a href={`/collections/${c.slug}`} class={LINK}>{c.title}</a></dd></div>
+        </dl>
+
+        {item.description && (
+          <section class="mb-7">
+            <h3 class={H3}>Description</h3>
+            <p class="m-0">{item.description}</p>
+          </section>
+        )}
+
+        {item.date.basis.length > 0 && (
+          <section class="mb-7">
+            <h3 class={H3}>Evidence for the date</h3>
+            <ul class="list-none p-0 m-0">
+              {item.date.basis.map((b) => (
+                <li class="relative pl-4 mb-1.5 text-[0.95rem] opacity-85 basis-line">{b}</li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {item.depicts.length > 0 && (
+          <section class="mb-7">
+            <h3 class={H3}>People</h3>
+            <ul class="list-none p-0 m-0">
+              {item.depicts.map((d) => (
+                <li class="border-t border-haze first:border-t-0 py-2.5 first:pt-0">
+                  <div class="text-[1.05rem]">
+                    {d.person
+                      ? <a href={personHref(d.person)} class={LINK}>{nameOf(d)}</a>
+                      : <span class="italic opacity-60">{nameOf(d)}</span>}
+                  </div>
+                  <div class="text-sm opacity-75 mt-0.5">
+                    {label(d.confidence) && <span class={QUAL}>{label(d.confidence)}</span>}
+                    {label(d.confidence) && <span> &mdash; </span>}
+                    {d.basis}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {item.inscriptions.length > 0 && (
+          <section class="mb-7">
+            <h3 class={H3}>Inscriptions</h3>
+            <ul class="list-none p-0 m-0">
+              {item.inscriptions.map((ins) => (
+                <li class="border-t border-haze first:border-t-0 py-3 first:pt-0">
+                  <div class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage mb-1.5">
+                    {ins.location} &middot; {ins.medium}
+                  </div>
+                  <blockquote class="m-0 bg-haze/25 border-l-2 border-caprock px-3.5 py-2.5 whitespace-pre-line text-[1.02rem] leading-snug">{ins.text}</blockquote>
+                  {ins.note && <div class="text-sm opacity-75 mt-1.5">{ins.note}</div>}
+                  {ins.datesSubjectNotObject && (
+                    <div class="text-sm opacity-75 mt-1">
+                      <span class={QUAL}>Note</span> &mdash; this dates the subject, not the photograph.
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {item.related && item.related.length > 0 && (
+          <section class="mb-7">
+            <h3 class={H3}>Related</h3>
+            <ul class="list-none p-0 m-0">
+              {item.related.map((r) => {
+                const other = ALL_ITEMS.find((x) => x.slug === r.slug)!;
+                return (
+                  <li class="border-t border-haze first:border-t-0 py-2.5 first:pt-0">
+                    <a href={other.href} class={LINK}>{other.title}</a>
+                    <div class="text-sm opacity-75 mt-0.5">{r.relation}</div>
+                  </li>
+                );
+              })}
+            </ul>
+          </section>
+        )}
+
+        {item.provenance && (
+          <section class="mb-7">
+            <h3 class={H3}>Provenance</h3><p class="m-0">{item.provenance}</p>
+          </section>
+        )}
+
+        <section class="mb-7">
+          <h3 class={H3}>Rights</h3>
+          <p class="m-0">
+            {item.rights.status === 'public-domain' && 'Public domain.'}
+            {item.rights.status === 'no-known-restrictions' && 'No known copyright restrictions.'}
+            {item.rights.status === 'in-copyright' && 'In copyright.'}
+            {item.rights.status === 'undetermined' && 'Rights undetermined.'}
+            {item.rights.note && <span> {item.rights.note}</span>}
+          </p>
+        </section>
+
+        <p class="mt-8 pt-3 border-t border-haze text-[0.92rem] opacity-70">
+          Can you add anything to this record?
+          <a href="mailto:hello@austinlallison.com" class={LINK}> Write to me </a>.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- EXAMINE -->
+  <div id="examine" hidden aria-modal="true" role="dialog" aria-label="Examine the photograph">
+    <div class="ex-bar">
+      <span id="ex-cap"></span>
+      <span class="ex-ctl">
+        <button type="button" data-ex="out" aria-label="Zoom out">&minus;</button>
+        <button type="button" data-ex="in" aria-label="Zoom in">+</button>
+        <button type="button" data-ex="fit">fit</button>
+        <button type="button" data-ex="close">close</button>
+      </span>
+    </div>
+    <div id="ex-stage"><img id="ex-img" alt=""></div>
+  </div>
+</RootLayout>
+
+<style is:global>
+  /* The plate faces. A cross-fade, NOT a 3D flip - a rotateY with
+     backface-visibility is the exact construct that made the home page slow
+     on Firefox Android. */
+  .plate-face { display: none; }
+  .plate-face.is-on { display: block; }
+  .face-btn.is-on { background: #9C5B3F; color: #F7F4EC; border-color: #9C5B3F; }
+  .basis-line::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.75em;
+    width: 0.5rem;
+    border-top: 1px solid currentColor;
+    opacity: 0.6;
+  }
+
+  /* NEVER let an id selector set display on something the hidden attribute
+     controls - an id beats the UA stylesheet's [hidden] rule and the overlay
+     is stuck open. Visibility rides on a class; #examine[hidden] is a belt
+     for the same braces. */
+  #examine {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: none;
+    flex-direction: column;
+    background: var(--color-canvas, #F7F4EC);
+  }
+  #examine.is-open { display: flex; }
+  #examine[hidden] { display: none; }
+  .ex-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid currentColor;
+    min-height: 2.9rem;
+  }
+  #ex-cap { opacity: 0.8; max-width: 60ch; font-size: 0.95rem; }
+  .ex-ctl { display: flex; gap: 0.3rem; flex-shrink: 0; }
+  .ex-ctl button {
+    font-family: ui-monospace, monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: none;
+    border: 1px solid currentColor;
+    color: inherit;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    border-radius: 2px;
+    opacity: 0.7;
+  }
+  .ex-ctl button:hover { opacity: 1; }
+  #ex-stage {
+    flex: 1;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: none;
+  }
+  #ex-stage.can-pan { cursor: grab; }
+  #ex-stage.can-pan:active { cursor: grabbing; }
+  #ex-img { -webkit-user-drag: none; user-select: none; }
+  #ex-img {
+    max-width: 100%;
+    max-height: 100%;
+    transform-origin: center center;
+    will-change: transform;
+  }
+  @media print {
+    #examine, .examine-btn, [data-faces], .det-btn { display: none !important; }
+    .plate-face { display: block !important; }
+  }
+</style>
+
+<script>
+  // Wired on astro:page-load, not at parse time: ClientRouter swaps the DOM
+  // without re-parsing, so a parse-time listener is lost on the second visit.
+  const wire = () => {
+    const mat = document.querySelector('[data-mat]');
+    if (!mat || (mat as HTMLElement).dataset.wired) return;
+    (mat as HTMLElement).dataset.wired = '1';
+
+    const faces = Array.from(document.querySelectorAll<HTMLImageElement>('.plate-face'));
+    const faceBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('.face-btn'));
+    const overlay = document.getElementById('examine')!;
+    const stage = document.getElementById('ex-stage')!;
+    const img = document.getElementById('ex-img') as HTMLImageElement;
+    const cap = document.getElementById('ex-cap')!;
+    const examineBtn = document.querySelector<HTMLButtonElement>('[data-examine]');
+
+    // Start shut regardless of what the markup says.
+    overlay.classList.remove('is-open');
+    overlay.hidden = true;
+    if (examineBtn) examineBtn.hidden = false;
+
+    const showFace = (name: string) => {
+      faces.forEach((f) => f.classList.toggle('is-on', f.dataset.face === name));
+      faceBtns.forEach((b) => b.classList.toggle('is-on', b.dataset.face === name));
+    };
+    faceBtns.forEach((b) =>
+      b.addEventListener('click', () => showFace(b.dataset.face || 'recto'))
+    );
+
+    let k = 1, tx = 0, ty = 0;
+    let drag: { x: number; y: number } | null = null;
+    // Panning is CLAMPED to the image's own edges, so the photograph can never
+    // be shoved off the stage and lost - whatever else goes wrong.
+    const clamp = () => {
+      if (k <= 1) { tx = 0; ty = 0; return; }
+      const r = stage.getBoundingClientRect();
+      const w = img.offsetWidth * k;
+      const h = img.offsetHeight * k;
+      const maxX = Math.max(0, (w - r.width) / 2);
+      const maxY = Math.max(0, (h - r.height) / 2);
+      tx = Math.max(-maxX, Math.min(maxX, tx));
+      ty = Math.max(-maxY, Math.min(maxY, ty));
+    };
+    const paint = () => {
+      clamp();
+      img.style.transform = `translate(${tx}px, ${ty}px) scale(${k})`;
+      stage.classList.toggle('can-pan', k > 1);
+    };
+    const fit = () => { k = 1; tx = 0; ty = 0; paint(); };
+    const open = (src: string, caption: string) => {
+      img.src = src;
+      cap.textContent = caption;
+      overlay.hidden = false;
+      overlay.classList.add('is-open');
+      document.body.style.overflow = 'hidden';
+      fit();
+    };
+    const close = () => {
+      drag = null;
+      overlay.classList.remove('is-open');
+      overlay.hidden = true;
+      document.body.style.overflow = '';
+      img.removeAttribute('src');
+      k = 1; tx = 0; ty = 0;
+    };
+    const frame = (d: DOMStringMap) => {
+      const r = stage.getBoundingClientRect();
+      const ir = img.getBoundingClientRect();
+      const bw = ir.width / k, bh = ir.height / k;
+      const w = Number(d.w), h = Number(d.h), x = Number(d.x), y = Number(d.y);
+      k = Math.min(r.width / (bw * w / 100), r.height / (bh * h / 100)) * 0.92;
+      tx = (0.5 - (x + w / 2) / 100) * bw * k;
+      ty = (0.5 - (y + h / 2) / 100) * bh * k;
+      paint();
+    };
+    const faceSrc = (key: string) => {
+      const f = faces.find((x) => x.dataset.face === key) || faces[0];
+      return { src: f.dataset.big || f.src, alt: f.alt };
+    };
+
+    examineBtn?.addEventListener('click', () => {
+      const on = faces.find((f) => f.classList.contains('is-on')) || faces[0];
+      open(on.dataset.big || on.src, on.alt);
+    });
+
+    document.querySelectorAll<HTMLButtonElement>('.det-btn').forEach((b) => {
+      b.addEventListener('click', () => {
+        const key = b.dataset.face || 'recto';
+        showFace(key);
+        const { src } = faceSrc(key);
+        open(src, b.dataset.cap || '');
+        const go = () => { fit(); frame(b.dataset); };
+        if (img.complete && img.naturalWidth) go();
+        else img.addEventListener('load', go, { once: true });
+      });
+    });
+
+    overlay.addEventListener('click', (e) => {
+      const t = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-ex]');
+      if (t) {
+        if (t.dataset.ex === 'close') close();
+        if (t.dataset.ex === 'in') { k = Math.min(k * 1.4, 12); paint(); }
+        if (t.dataset.ex === 'out') { k = Math.max(k / 1.4, 1); paint(); }
+        if (t.dataset.ex === 'fit') fit();
+        return;
+      }
+      if (e.target === stage && k <= 1) close();
+    });
+    stage.addEventListener('wheel', (e) => {
+      if (overlay.hidden) return;
+      e.preventDefault();
+      k = Math.max(1, Math.min(12, k * (e.deltaY < 0 ? 1.12 : 1 / 1.12)));
+      paint();
+    }, { passive: false });
+    // DRAGGING. The rule that matters is the `e.buttons` test in pointermove:
+    // it asks the browser whether a button is CURRENTLY held rather than
+    // trusting that a pointerup arrived. A pointerup can be swallowed - the
+    // pointer leaves the window, the browser starts its own image drag, a
+    // pointercancel fires instead - and any of those used to leave the drag
+    // latched on, so the photograph followed the bare cursor around the
+    // screen. State that can be read directly should never be remembered.
+    const endDrag = () => { drag = null; };
+
+    stage.addEventListener('pointerdown', (e) => {
+      if (e.button !== 0) return;                       // left button only
+      if ((e.target as HTMLElement).closest('[data-ex]')) return;  // not the controls
+      if (k <= 1) return;                               // nothing to pan yet
+      drag = { x: e.clientX - tx, y: e.clientY - ty };
+      try { stage.setPointerCapture(e.pointerId); } catch { /* not fatal */ }
+      e.preventDefault();
+    });
+
+    stage.addEventListener('pointermove', (e) => {
+      if (!drag) return;
+      if (e.pointerType === 'mouse' && e.buttons === 0) { endDrag(); return; }
+      tx = e.clientX - drag.x;
+      ty = e.clientY - drag.y;
+      paint();
+    });
+
+    stage.addEventListener('pointerup', endDrag);
+    stage.addEventListener('pointercancel', endDrag);
+    stage.addEventListener('lostpointercapture', endDrag);
+    stage.addEventListener('pointerleave', endDrag);
+    window.addEventListener('pointerup', endDrag);
+    window.addEventListener('blur', endDrag);
+    // The browser's own image drag competes for the same gesture.
+    img.addEventListener('dragstart', (e) => e.preventDefault());
+    img.addEventListener('dblclick', () => { k = k > 1 ? 1 : 3; tx = 0; ty = 0; paint(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && !overlay.hidden) close();
+    });
+  };
+
+  document.addEventListener('astro:page-load', wire);
+  if (document.readyState !== 'loading') wire();
+  else document.addEventListener('DOMContentLoaded', wire);
+</script>

@@ -1,0 +1,163 @@
+---
+// src/pages/collections/names/[person].astro
+// One authority record: the heading, what it rests on, and every photograph
+// the person appears in, across collections.
+import RootLayout from '../../../layouts/RootLayout.astro';
+import { PEOPLE, personById, appearancesOf, personHref } from '../../../data/collections/index';
+import { heading, headingDates } from '../../../data/collections/types';
+import { plate } from '../../../data/collections/images';
+
+export function getStaticPaths() {
+  return PEOPLE.map((p) => ({ params: { person: p.id }, props: { id: p.id } }));
+}
+
+const { id } = Astro.props as { id: string };
+const p = personById.get(id)!;
+const appearances = appearancesOf(p.id);
+
+const thumbs = new Map(
+  await Promise.all(
+    appearances.map(
+      async (a) =>
+        [a.item.slug, await plate(a.item.collection, a.item.recto.file, a.item.recto)] as const
+    )
+  )
+);
+
+const H3 = 'font-mono text-[0.66rem] uppercase tracking-[0.15em] text-sage font-medium mb-2';
+const DT = 'font-mono text-[0.66rem] uppercase tracking-[0.12em] text-sage sm:w-36 sm:shrink-0 sm:pt-1';
+const ROW = 'flex flex-col sm:flex-row sm:gap-4 border-b border-haze py-2';
+const QUAL = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-caprock';
+
+const label = (c: string) =>
+  c === 'certain' ? '' : c.charAt(0).toUpperCase() + c.slice(1);
+const dates = headingDates(p);
+---
+
+<RootLayout
+  title={`${heading(p)} | Names | Austin Allison`}
+  description={`Authority record for ${heading(p)}: established heading, variant forms, sources, and the photographs in which the person appears.`}
+  prose={false}
+>
+  <div class="max-w-4xl mx-auto py-6 text-iron font-serif">
+    <nav class="font-mono text-[0.68rem] uppercase tracking-[0.1em] text-sage mb-4">
+      <a href="/collections/names" class="text-caprock hover:underline">Names</a>
+    </nav>
+
+    <div class="flex items-baseline gap-3 flex-wrap mb-4">
+      <h1 class="text-3xl font-medium tracking-tight">{heading(p)}</h1>
+      <span class="font-mono text-[0.6rem] uppercase tracking-[0.13em] text-sage border border-haze px-1.5 py-0.5 rounded-sm">
+        {p.status ?? 'provisional'} heading
+      </span>
+    </div>
+
+    <dl class="border-t border-haze mb-7">
+      <div class={ROW}>
+        <dt class={DT}>Dates</dt>
+        <dd class="m-0 min-w-0 flex-1">{dates || <span class="italic opacity-60">not established</span>}</dd>
+      </div>
+      {p.variants && p.variants.length > 0 && (
+        <div class={ROW}>
+          <dt class={DT}>Search also under</dt>
+          <dd class="m-0 min-w-0 flex-1" set:html={p.variants.join('<br>')} />
+        </div>
+      )}
+    </dl>
+
+    {p.scopeNote && <p class="mb-7">{p.scopeNote}</p>}
+
+    {p.sources && p.sources.length > 0 && (
+      <section class="mb-7">
+        <h3 class={H3}>Sources for this heading</h3>
+        <ul class="list-none p-0 m-0">
+          {p.sources.map((s) => (
+            <li class="relative pl-4 mb-1.5 text-[0.95rem] opacity-85 basis-line">{s}</li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {p.relations && p.relations.length > 0 && (
+      <section class="mb-7">
+        <h3 class={H3}>Relations</h3>
+        <ul class="list-none p-0 m-0">
+          {p.relations.map((r) => (
+            <li class="border-t border-haze first:border-t-0 py-2.5 first:pt-0">
+              <div class="text-[1.05rem]">
+                <span class="capitalize">{r.type}</span>:{' '}
+                <a href={personHref(r.person)} class="text-caprock hover:underline">
+                  {heading(personById.get(r.person)!)}
+                </a>
+              </div>
+              <div class="text-sm opacity-75 mt-0.5">
+                {label(r.confidence) && <span class={QUAL}>{label(r.confidence)}</span>}
+                {label(r.confidence) && <span> &mdash; </span>}
+                {r.basis}
+              </div>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )}
+
+    {p.identifiers && (
+      <section class="mb-7">
+        <h3 class={H3}>Also known to</h3>
+        <ul class="list-none p-0 m-0 text-[0.95rem]">
+          {p.identifiers.viaf && <li>VIAF {p.identifiers.viaf}</li>}
+          {p.identifiers.lccn && <li>LCCN {p.identifiers.lccn}</li>}
+          {p.identifiers.findagrave && <li>Find a Grave {p.identifiers.findagrave}</li>}
+          {p.identifiers.familysearch && <li>FamilySearch {p.identifiers.familysearch}</li>}
+        </ul>
+      </section>
+    )}
+
+    <section>
+      <h3 class={H3}>Photographs</h3>
+      {appearances.length === 0 ? (
+        <p class="m-0 italic opacity-60">
+          No photograph of this person is known. The record exists because the
+          name is written on the back of one.
+        </p>
+      ) : (
+        <ul class="list-none p-0 m-0">
+          {appearances.map((a) => (
+            <li class="flex gap-5 border-t border-haze py-4 items-start">
+              <img
+                src={thumbs.get(a.item.slug)?.index}
+                srcset={thumbs.get(a.item.slug)?.indexSrcset}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                class="w-28 shrink-0 h-auto bg-haze border border-haze"
+              />
+              <div class="min-w-0 flex-1">
+                <a href={a.item.href} class="text-caprock hover:underline">{a.item.title}</a>
+                <div class="font-mono text-[0.65rem] uppercase tracking-[0.08em] text-sage mt-0.5">
+                  {a.item.date.display}
+                </div>
+                <div class="text-sm opacity-75 mt-0.5">
+                  {label(a.confidence) && <span class={QUAL}>{label(a.confidence)}</span>}
+                  {label(a.confidence) && <span> &mdash; </span>}
+                  {a.basis}
+                </div>
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  </div>
+</RootLayout>
+
+<style is:global>
+  .basis-line::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.75em;
+    width: 0.5rem;
+    border-top: 1px solid currentColor;
+    opacity: 0.6;
+  }
+</style>

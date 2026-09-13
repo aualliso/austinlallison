@@ -1,0 +1,89 @@
+---
+// src/pages/collections/index.astro
+// The way in. Lists the collections and says what the arrangement is.
+import RootLayout from '../../layouts/RootLayout.astro';
+import { COLLECTIONS, ALL_ITEMS, itemsOf, depictedNames } from '../../data/collections/index';
+import { plate } from '../../data/collections/images';
+
+const H2 =
+  'font-mono text-xs uppercase tracking-[0.16em] text-sage font-medium border-b border-haze pb-1.5 mt-12 mb-4';
+
+// The most recently described items, whatever collection they are in.
+const recent = ALL_ITEMS.slice(0, 4);
+const thumbs = new Map(
+  await Promise.all(
+    recent.map(
+      async (i) =>
+        [i.slug, await plate(i.collection, i.recto.file, i.recto)] as const
+    )
+  )
+);
+
+const counts = new Map(COLLECTIONS.map((c) => [c.slug, itemsOf(c.slug).length]));
+---
+
+<RootLayout
+  title="Collections | Austin Allison"
+  description="Family photographs described as archival collections: what each object is, who is in it, and how we know."
+  prose={false}
+>
+  <div class="max-w-4xl mx-auto py-6 text-iron font-serif">
+    <header class="border-b-2 border-caprock pb-4 mb-6">
+      <h1 class="text-3xl font-medium tracking-tight">Collections</h1>
+    </header>
+
+    <p class="text-lg max-w-2xl opacity-90">
+      These are photographs that I have collected or have had access to 
+      through the years. Most of them are in my possession. I lump most of 
+      the photographs into family groups, but some photographs transcend
+      the normal organization scheme. There is a name 
+      <a href="/collections/names" class="text-caprock hover:underline"> authority file </a>
+      for users to search, as well. 
+    </p>
+
+    <h2 class={H2}>Collections</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {COLLECTIONS.map((c) => (
+        <div class="border border-haze border-t-[3px] border-t-caprock bg-haze/10 p-5">
+          <h3 class="text-xl font-medium mb-1">
+            <a href={`/collections/${c.slug}`} class="text-caprock hover:underline">{c.title}</a>
+          </h3>
+          <p class="text-sm opacity-80">{c.scope}</p>
+          <p class="font-mono text-[0.65rem] uppercase tracking-[0.1em] text-sage mt-3">
+            {counts.get(c.slug)} items
+            {c.places.length > 0 && <span> &middot; {c.places.join(', ')}</span>}
+          </p>
+        </div>
+      ))}
+    </div>
+
+    <h2 class={H2}>Recently described</h2>
+    <ul class="list-none p-0 m-0">
+      {recent.map((i) => (
+        <li class="flex gap-5 border-t border-haze py-4 items-start">
+          <img
+            src={thumbs.get(i.slug)?.index}
+            srcset={thumbs.get(i.slug)?.indexSrcset}
+            alt=""
+            loading="lazy"
+            decoding="async"
+            class="w-28 shrink-0 h-auto bg-haze border border-haze"
+          />
+          <div class="min-w-0 flex-1">
+            <a href={i.href} class="text-caprock hover:underline">{i.title}</a>
+            <div class="font-mono text-[0.65rem] uppercase tracking-[0.08em] text-sage mt-0.5">
+              {i.controlNumber && <span>{i.controlNumber} &middot; </span>}
+              {i.format && <span>{i.format} &middot; </span>}
+              <span>{i.date.display}</span>
+            </div>
+            <div class="text-sm opacity-75 mt-0.5">
+              {i.depicts.length > 0
+                ? depictedNames(i).join(', ')
+                : <span class="italic opacity-70">no one named</span>}
+            </div>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </div>
+</RootLayout>

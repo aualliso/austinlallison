@@ -1,0 +1,62 @@
+---
+// src/pages/collections/names.astro
+// The authority file. A static route, so it wins over [collection].astro -
+// which is why index.ts refuses a collection slugged 'names'.
+import RootLayout from '../../layouts/RootLayout.astro';
+import { PEOPLE, NAME_INDEX, appearancesOf, personById, personHref } from '../../data/collections/index';
+import { heading } from '../../data/collections/types';
+
+const H2 =
+  'font-mono text-xs uppercase tracking-[0.16em] text-sage font-medium border-b border-haze pb-1.5 mt-10 mb-4';
+
+const headings = PEOPLE.map((p) => ({ p, n: appearancesOf(p.id).length })).sort(
+  (a, b) => heading(a.p).localeCompare(heading(b.p))
+);
+const variants = NAME_INDEX.filter((n) => !n.authorized);
+---
+
+<RootLayout
+  title="Names | Collections | Austin Allison"
+  description="The name authority file for the family photograph collections: one established heading per person, with every variant form the person is found under."
+  prose={false}
+>
+  <div class="max-w-4xl mx-auto py-6 text-iron font-serif">
+    <nav class="font-mono text-[0.68rem] uppercase tracking-[0.1em] text-sage mb-4">
+      <a href="/collections" class="text-caprock hover:underline">Collections</a>
+    </nav>
+
+    <h1 class="text-3xl font-medium tracking-tight mb-3">Names</h1>
+    <p class="text-lg max-w-2xl opacity-90">
+      One established heading per person, with every other form that person is
+      found under. This index cuts across the collections, which are arranged
+      by how the material reached me rather than by family.
+    </p>
+
+    <h2 class={H2}>Headings</h2>
+    <ul class="list-none p-0 m-0 md:columns-2 md:gap-10">
+      {headings.map(({ p, n }) => (
+        <li class="flex justify-between gap-4 border-b border-haze py-1.5 break-inside-avoid">
+          <a href={personHref(p.id)} class="text-caprock hover:underline">{heading(p)}</a>
+          <span class="font-mono text-[0.7rem] text-sage">{n || ''}</span>
+        </li>
+      ))}
+    </ul>
+
+    {variants.length > 0 && (
+      <>
+        <h2 class={H2}>Variant forms</h2>
+        <ul class="list-none p-0 m-0 md:columns-2 md:gap-10">
+          {variants.map((v) => (
+            <li class="border-b border-haze py-1.5 break-inside-avoid flex flex-wrap items-baseline gap-2">
+              <span class="italic opacity-60">{v.form}</span>
+              <span class="font-mono text-[0.6rem] uppercase tracking-[0.12em] text-sage">see</span>
+              <a href={personHref(v.id)} class="text-caprock hover:underline">
+                {heading(personById.get(v.id)!)}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </>
+    )}
+  </div>
+</RootLayout>
