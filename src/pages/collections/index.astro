@@ -1,89 +1,1450 @@
 ---
 // src/pages/collections/index.astro
-// The way in. Lists the collections and says what the arrangement is.
+//
+// THE GUIDE TO THE COLLECTIONS. Five parts, each derived from the data so
+// nothing on this page is hand-maintained:
+//
+//   1. Descriptive summary  extent, inclusive and bulk dates, names, surnames
+//   2. Finder               names (INCLUDING variant forms), titles, places,
+//                           and years matched against date INTERVALS
+//   3. Holdings             one card per collection, its key photographs laid
+//                           out as prints on a mat
+//   4. Chronology           every dated photograph drawn as the span of years
+//                           it could have been made in - the schema's claim
+//                           that a date is an interval, made visible
+//   5. Surnames             a crosswalk of families against collections,
+//                           which is what "arranged by custody, not by
+//                           family" looks like in practice
+//
+// STANDING CONSTRAINTS HONOURED HERE (see the collections notes):
+//   - No filter, blend, mask, backdrop or 3D. Everything that moves animates
+//     transform or opacity only, and nothing moves under reduced motion.
+//   - No Tailwind arbitrary values with commas or parentheses for layout.
+//     Layout lives in the <style> block below, where plain CSS is safe.
+//   - Nothing whose visibility rides on `hidden` gets a `display` rule.
+//   - Script is wired on astro:page-load and guarded, so it survives
+//     ClientRouter navigation.
+//
+// SCALE. Written for tens to a few hundred items. Past that, two things
+// should change: the chronology becomes a weighted histogram (a line per
+// photograph stops being legible), and the finder's inline index should
+// hand over to Pagefind (the JSON grows with every item).
+
 import RootLayout from '../../layouts/RootLayout.astro';
-import { COLLECTIONS, ALL_ITEMS, itemsOf, depictedNames } from '../../data/collections/index';
+import {
+  COLLECTIONS,
+  ALL_ITEMS,
+  PEOPLE_WITH_ITEMS,
+  itemsOf,
+  keyItemsOf,
+  spanOf,
+  extentOf,
+  personHref,
+  depictedNames,
+  naturalName,
+  headingDates,
+  personById,
+} from '../../data/collections/index';
 import { plate } from '../../data/collections/images';
+import type { Rendered } from '../../data/collections/images';
+
+const EN = '\u2013';
+const years = (a: number, b: number) => (a === b ? `${a}` : `${a}${EN}${b}`);
+const plural = (n: number, one: string, many = `${one}s`) =>
+  `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
 
 const H2 =
-  'font-mono text-xs uppercase tracking-[0.16em] text-sage font-medium border-b border-haze pb-1.5 mt-12 mb-4';
+  'font-mono text-xs uppercase tracking-[0.16em] text-sage font-medium border-b border-haze pb-1.5 mb-4';
 
-// The most recently described items, whatever collection they are in.
-const recent = ALL_ITEMS.slice(0, 4);
-const thumbs = new Map(
+/* ---------------------------------------------------------------- *
+ * Images. Rendered once per item; the item pages ask getImage() for the
+ * same transforms, so this page adds no files to the build.
+ * ---------------------------------------------------------------- */
+const renders = new Map<string, Rendered>(
   await Promise.all(
-    recent.map(
-      async (i) =>
-        [i.slug, await plate(i.collection, i.recto.file, i.recto)] as const
+    ALL_ITEMS.map(
+      async (i) => [i.slug, await plate(i.collection, i.recto.file, i.recto)] as const
     )
   )
 );
+const renderOf = (slug: string) => renders.get(slug) as Rendered;
+const collectionTitle = new Map(COLLECTIONS.map((c) => [c.slug, c.title]));
 
-const counts = new Map(COLLECTIONS.map((c) => [c.slug, itemsOf(c.slug).length]));
+/* ---------------------------------------------------------------- *
+ * 1. Summary
+ * ---------------------------------------------------------------- */
+const extent = extentOf(ALL_ITEMS);
+const established = PEOPLE_WITH_ITEMS.filter(
+  (p) => p.person.status === 'established'
+).length;
+
+/* ---------------------------------------------------------------- *
+ * 5. Surnames (computed early: the summary and the facets use it)
+ * ---------------------------------------------------------------- */
+const surnameRows = new Map<
+  string,
+  { surname: string; people: Set<string>; items: Set<string> }
+>();
+const surnamesOnItem = new Map<string, Set<string>>();
+for (const { person, appearances } of PEOPLE_WITH_ITEMS) {
+  const surname = person.surname.trim();
+  const key = surname.toLowerCase();
+  const row = surnameRows.get(key) ?? { surname, people: new Set(), items: new Set() };
+  row.people.add(person.id);
+  for (const a of appearances) {
+    row.items.add(a.item.slug);
+    const on = surnamesOnItem.get(a.item.slug) ?? new Set<string>();
+    on.add(key);
+    surnamesOnItem.set(a.item.slug, on);
+  }
+  surnameRows.set(key, row);
+}
+const itemCollection = new Map(ALL_ITEMS.map((i) => [i.slug, i.collection]));
+const surnames = [...surnameRows.entries()]
+  .map(([key, r]) => ({
+    key,
+    surname: r.surname,
+    people: r.people.size,
+    items: r.items.size,
+    perCollection: COLLECTIONS.map(
+      (c) => [...r.items].filter((s) => itemCollection.get(s) === c.slug).length
+    ),
+  }))
+  .sort((a, b) => a.surname.localeCompare(b.surname));
+const maxCell = Math.max(1, ...surnames.flatMap((r) => r.perCollection));
+const crossing = surnames.filter((r) => r.perCollection.filter(Boolean).length > 1).length;
+
+/* ---------------------------------------------------------------- *
+ * 3. Holdings. Prints on the mat are sized server-side from their real
+ * aspect ratios: the row gets the combined ratio, each print a share of
+ * its width, so every print is the same height with no letterboxing and
+ * no JavaScript.
+ * ---------------------------------------------------------------- */
+const OVERLAP = 0.2; // of print height
+const cards = COLLECTIONS.map((c) => {
+  const items = itemsOf(c.slug);
+  const keys = keyItemsOf(c.slug);
+  const ratios = keys.map((i) => {
+    const r = renderOf(i.slug);
+    return r.width / r.height;
+  });
+  const rowRatio = ratios.reduce((s, a) => s + a, 0) - OVERLAP * Math.max(0, keys.length - 1);
+  const prints = keys.map((item, n) => ({
+    item,
+    r: renderOf(item.slug),
+    width: (ratios[n] / rowRatio) * 100,
+    shift: n === 0 ? 0 : (OVERLAP / rowRatio) * 100,
+  }));
+  return { c, count: items.length, extent: extentOf(items), prints, rowRatio };
+});
+
+/* ---------------------------------------------------------------- *
+ * 4. Chronology
+ * ---------------------------------------------------------------- */
+const LANE_GAP = 2; // years kept clear between two photographs sharing a lane
+// How far an open-ended date ("after 1890") is drawn past its one known year.
+// Not a claim about when it ends - the dashes say it is open - just enough
+// line to show which way it runs without a dashed rule swamping the chart.
+const OPEN_REACH = 15;
+let axis: { lo: number; hi: number } | null = null;
+if (extent) {
+  const lo = Math.floor(extent.from / 10) * 10;
+  let hi = Math.ceil((extent.to + 1) / 10) * 10;
+  if (hi - lo < 30) hi = lo + 30;
+  axis = { lo, hi };
+}
+const pct = (y: number) => (axis ? ((y - axis.lo) / (axis.hi - axis.lo)) * 100 : 0);
+
+const laneEnds: number[] = [];
+const bars = axis
+  ? ALL_ITEMS.flatMap((i) => {
+      const s = spanOf(i);
+      if (!s || !axis) return [];
+      const from = s.openStart ? Math.max(axis.lo, s.to - OPEN_REACH) : s.from;
+      const to = s.openEnd ? Math.min(axis.hi - 1, s.from + OPEN_REACH) : s.to;
+      return [{ i, s, from, to }];
+    })
+      .sort((a, b) => a.from - b.from || a.to - b.to || a.i.title.localeCompare(b.i.title))
+      .map((b) => {
+        let lane = laneEnds.findIndex((end) => end + LANE_GAP <= b.from);
+        if (lane === -1) {
+          lane = laneEnds.length;
+          laneEnds.push(0);
+        }
+        laneEnds[lane] = b.to + 1;
+        const firm = b.i.date.confidence === 'certain' || b.i.date.confidence === 'probable';
+        return {
+          ...b,
+          lane,
+          firm,
+          x: pct(b.from),
+          w: pct(b.to + 1) - pct(b.from),
+          r: renderOf(b.i.slug),
+          surnames: `|${[...(surnamesOnItem.get(b.i.slug) ?? [])].join('|')}|`,
+          coll: collectionTitle.get(b.i.collection) ?? '',
+        };
+      })
+  : [];
+const undated = ALL_ITEMS.length - bars.length;
+const earliest = bars[0];
+
+const ticks: { year: number; x: number; label: boolean; minor: boolean }[] = [];
+if (axis) {
+  const step = axis.hi - axis.lo > 120 ? 20 : 10;
+  for (let y = axis.lo; y <= axis.hi; y += 10) {
+    const label = (y - axis.lo) % step === 0;
+    ticks.push({ year: y, x: pct(y), label, minor: label && ((y - axis.lo) / step) % 2 === 1 });
+  }
+}
+
+/* ---------------------------------------------------------------- *
+ * 2. Finder index. Short keys because it ships in the page.
+ * ---------------------------------------------------------------- */
+const finder = {
+  people: PEOPLE_WITH_ITEMS.map(({ person: p, appearances }) => ({
+    n: naturalName(p),
+    d: headingDates(p),
+    h: personHref(p.id),
+    c: new Set(appearances.map((a) => a.item.slug)).size,
+    // [heading, reading order, ...see-from forms]. Index 0-1 are the
+    // person's own name; a hit at 2+ came through a variant.
+    f: [p.authorized, naturalName(p), ...(p.variants ?? [])],
+  })),
+  items: ALL_ITEMS.map((i) => {
+    const s = spanOf(i);
+    return {
+      t: i.title,
+      h: i.href,
+      d: i.date.display,
+      k: collectionTitle.get(i.collection) ?? '',
+      // Names in reading order AND every see-from form, so "Bud" finds the
+      // photographs of M. B. Thomas as well as his authority record.
+      x: [
+        i.controlNumber,
+        i.place,
+        i.format,
+        ...depictedNames(i),
+        ...i.depicts.flatMap((d) => (d.person ? personById.get(d.person)?.variants ?? [] : [])),
+      ]
+        .filter(Boolean)
+        .join(' '),
+      a: s ? s.from : null,
+      b: s ? s.to : null,
+    };
+  }),
+};
+const finderJson = JSON.stringify(finder).replace(/</g, '\\u003c');
+
+const busiest = [...surnames].sort((a, b) => b.items - a.items)[0];
+const exampleDecade = extent
+  ? Math.floor(((extent.bulk ?? extent).from + (extent.bulk ?? extent).to) / 20) * 10
+  : null;
+const placeholder =
+  busiest && exampleDecade
+    ? `Try ${busiest.surname}, or ${exampleDecade}s`
+    : 'A name, a title, or a year';
+
+/* ---------------------------------------------------------------- *
+ * Share image and structured data
+ * ---------------------------------------------------------------- */
+const shareImage =
+  cards.find((c) => c.prints.length)?.prints[0].r.view ??
+  (ALL_ITEMS[0] ? renderOf(ALL_ITEMS[0].slug).view : undefined);
+
+const site = Astro.site ?? Astro.url;
+const abs = (path: string) => new URL(path, site).href;
+const DESCRIPTION =
+  'Family photographs described as archival collections: what each object is, who is in it, and how we know.';
+const structured = {
+  '@context': 'https://schema.org',
+  '@type': 'CollectionPage',
+  name: 'Collections',
+  url: abs('/collections'),
+  description: DESCRIPTION,
+  hasPart: cards.map(({ c, count, extent: e }) => ({
+    '@type': ['Collection', 'ArchiveComponent'],
+    name: c.title,
+    url: abs(`/collections/${c.slug}`),
+    description: c.scope,
+    collectionSize: count,
+    ...(e ? { temporalCoverage: `${e.from}/${e.to}` } : {}),
+    ...(c.places.length
+      ? { spatialCoverage: c.places.map((name) => ({ '@type': 'Place', name })) }
+      : {}),
+  })),
+};
+const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
 ---
 
 <RootLayout
   title="Collections | Austin Allison"
-  description="Family photographs described as archival collections: what each object is, who is in it, and how we know."
+  description={DESCRIPTION}
+  image={shareImage}
   prose={false}
 >
-  <div class="max-w-4xl mx-auto py-6 text-iron font-serif">
+  <script type="application/ld+json" is:inline set:html={structuredJson} />
+  <script type="application/json" id="guide-finder" is:inline set:html={finderJson} />
+
+  <div class="guide max-w-4xl mx-auto py-6 text-iron font-serif" data-guide>
     <header class="border-b-2 border-caprock pb-4 mb-6">
+      <p class="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-sage mb-1">
+        Guide to the collections
+      </p>
       <h1 class="text-3xl font-medium tracking-tight">Collections</h1>
     </header>
 
-    <p class="text-lg max-w-2xl opacity-90">
-      These are photographs that I have collected or have had access to 
-      through the years. Most of them are in my possession. I lump most of 
-      the photographs into family groups, but some photographs transcend
-      the normal organization scheme. There is a name 
-      <a href="/collections/names" class="text-caprock hover:underline"> authority file </a>
-      for users to search, as well. 
+    <p class="lede text-lg max-w-2xl opacity-90">
+      These are photographs that I have collected or have had access to
+      through the years, and most of them are in my possession. Each
+      collection is a group of photographs that came to me together, so a
+      collection is not the same thing as a family: one box can hold several
+      families, and one family can turn up in several boxes. The people in
+      them are gathered across every collection in the <a
+        href="/collections/names"
+        class="text-caprock hover:underline">name authority file</a>.
     </p>
 
-    <h2 class={H2}>Collections</h2>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {COLLECTIONS.map((c) => (
-        <div class="border border-haze border-t-[3px] border-t-caprock bg-haze/10 p-5">
-          <h3 class="text-xl font-medium mb-1">
-            <a href={`/collections/${c.slug}`} class="text-caprock hover:underline">{c.title}</a>
-          </h3>
-          <p class="text-sm opacity-80">{c.scope}</p>
-          <p class="font-mono text-[0.65rem] uppercase tracking-[0.1em] text-sage mt-3">
-            {counts.get(c.slug)} items
-            {c.places.length > 0 && <span> &middot; {c.places.join(', ')}</span>}
-          </p>
-        </div>
-      ))}
+    <!-- 1. Descriptive summary -->
+    <dl class="ledger">
+      <div>
+        <dt>Photographs</dt>
+        <dd class="fig">{ALL_ITEMS.length.toLocaleString('en-US')}</dd>
+        <dd class="sub">in {plural(COLLECTIONS.length, 'collection')}</dd>
+      </div>
+      <div>
+        <dt>Dates</dt>
+        <dd class="fig">{extent ? years(extent.from, extent.to) : 'Undated'}</dd>
+        <dd class="sub">
+          {extent?.bulk
+            ? `bulk ${years(extent.bulk.from, extent.bulk.to)}`
+            : extent && extent.undated > 0
+              ? `${extent.undated} undated`
+              : 'inclusive'}
+        </dd>
+      </div>
+      <div>
+        <dt>People named</dt>
+        <dd class="fig">{PEOPLE_WITH_ITEMS.length.toLocaleString('en-US')}</dd>
+        <dd class="sub">{established} with established headings</dd>
+      </div>
+      <div>
+        <dt>Surnames</dt>
+        <dd class="fig">{surnames.length.toLocaleString('en-US')}</dd>
+        <dd class="sub">
+          {COLLECTIONS.length > 1 ? `${crossing} in more than one collection` : 'in the collection'}
+        </dd>
+      </div>
+    </dl>
+
+    <!-- 2. Finder -->
+    <div class="finder" data-finder>
+      <label for="finder-input" class="finder-label">Find a name, a photograph, or a year</label>
+      <div class="finder-field">
+        <svg class="finder-icon" viewBox="0 0 20 20" aria-hidden="true">
+          <circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+          <path d="M12.6 12.6 17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+        </svg>
+        <input
+          id="finder-input"
+          type="search"
+          role="combobox"
+          aria-expanded="false"
+          aria-controls="finder-list"
+          aria-autocomplete="list"
+          autocomplete="off"
+          spellcheck="false"
+          placeholder={placeholder}
+          data-finder-input
+        />
+      </div>
+      <ul id="finder-list" class="finder-list" role="listbox" aria-label="Matches" hidden data-finder-list></ul>
+      <p class="sr-only" aria-live="polite" data-finder-status></p>
     </div>
 
-    <h2 class={H2}>Recently described</h2>
-    <ul class="list-none p-0 m-0">
-      {recent.map((i) => (
-        <li class="flex gap-5 border-t border-haze py-4 items-start">
-          <img
-            src={thumbs.get(i.slug)?.index}
-            srcset={thumbs.get(i.slug)?.indexSrcset}
-            alt=""
-            loading="lazy"
-            decoding="async"
-            class="w-28 shrink-0 h-auto bg-haze border border-haze"
-          />
-          <div class="min-w-0 flex-1">
-            <a href={i.href} class="text-caprock hover:underline">{i.title}</a>
-            <div class="font-mono text-[0.65rem] uppercase tracking-[0.08em] text-sage mt-0.5">
-              {i.controlNumber && <span>{i.controlNumber} &middot; </span>}
-              {i.format && <span>{i.format} &middot; </span>}
-              <span>{i.date.display}</span>
+    <!-- 3. Holdings -->
+    <section aria-labelledby="holdings-h" class="mt-12">
+      <h2 id="holdings-h" class={H2}>Holdings</h2>
+      <div class="cards">
+        {cards.map(({ c, count, extent: e, prints, rowRatio }) => (
+          <article class="card" data-collection={c.slug}>
+            <div class="card-in">
+              <div class="mat" aria-hidden="true">
+                {prints.length > 0 ? (
+                  <div class="prints" style={`--ratio:${rowRatio.toFixed(4)}`}>
+                    {prints.map(({ item, r, width, shift }) => (
+                      <img
+                        class="print"
+                        style={`--pw:${width.toFixed(3)}%;--shift:${shift.toFixed(3)}%`}
+                        src={r.index}
+                        srcset={r.indexSrcset}
+                        width={r.width}
+                        height={r.height}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        transition:name={`plate-${item.slug}`}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <span class="mat-empty">Nothing described yet</span>
+                )}
+              </div>
+              <div class="card-body">
+                <h3 class="card-title">
+                  <a href={`/collections/${c.slug}`} class="card-link">{c.title}</a>
+                </h3>
+                <p class="card-meta">
+                  {plural(count, 'photograph')}
+                  {e && <span> &middot; {years(e.from, e.to)}</span>}
+                </p>
+                <p class="card-scope">{c.scope}</p>
+                {(c.lines.length > 0 || c.places.length > 0) && (
+                  <p class="card-foot">
+                    {c.lines.length > 0 && <span>{c.lines.join(', ')}</span>}
+                    {c.lines.length > 0 && c.places.length > 0 && <span> &middot; </span>}
+                    {c.places.length > 0 && <span>{c.places.join('; ')}</span>}
+                  </p>
+                )}
+              </div>
             </div>
-            <div class="text-sm opacity-75 mt-0.5">
-              {i.depicts.length > 0
-                ? depictedNames(i).join(', ')
-                : <span class="italic opacity-70">no one named</span>}
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- 4. Chronology -->
+    {axis && bars.length > 0 && (
+      <section aria-labelledby="chron-h" class="mt-14" data-chron>
+        <h2 id="chron-h" class={H2}>Chronology</h2>
+        <p class="note">
+          Each line is one photograph, drawn across the years in which it could
+          have been made. A short line is closely dated; a long one is not.
+        </p>
+
+        <div class="facets">
+          <div class="facet-row" role="group" aria-label="Show photographs from a collection">
+            <span class="facet-label" aria-hidden="true">Collection</span>
+            <button type="button" class="facet" aria-pressed="true" data-facet="all" data-label="All photographs">All</button>
+            {COLLECTIONS.map((c) => (
+              <button type="button" class="facet" aria-pressed="false" data-facet="c" data-value={c.slug} data-label={c.title}>
+                {c.title}
+              </button>
+            ))}
+          </div>
+          {surnames.length > 0 && (
+            <div class="facet-row" role="group" aria-label="Show photographs of a family">
+              <span class="facet-label" aria-hidden="true">Surname</span>
+              {surnames.map((r) => (
+                <button type="button" class="facet" aria-pressed="false" data-facet="s" data-value={r.key} data-label={r.surname}>
+                  {r.surname}<span class="facet-n" aria-hidden="true">{r.items}</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div class="chron">
+          <div class="plot" style={`--lanes:${laneEnds.length}`} data-plot>
+            <div class="rules" aria-hidden="true">
+              {ticks.map((t) => (
+                <span class:list={['tick', { minor: t.minor }]} style={`--x:${t.x.toFixed(3)}%`}>
+                  {t.label && <b>{t.year}</b>}
+                </span>
+              ))}
+            </div>
+            <div
+              class="bars"
+              role="group"
+              aria-label={`${plural(bars.length, 'dated photograph')}, earliest first. Arrow keys move between them.`}
+            >
+              {bars.map((b, n) => (
+                <a
+                  href={b.i.href}
+                  class:list={['bar', b.firm ? 'firm' : 'soft', { 'open-start': b.s.openStart, 'open-end': b.s.openEnd, 'is-current': n === 0 }]}
+                  tabindex={n === 0 ? 0 : -1}
+                  style={`--x:${b.x.toFixed(3)}%;--w:${b.w.toFixed(3)}%;--y:${b.lane}`}
+                  aria-label={`${b.i.title}, ${b.i.date.display}, ${b.coll}`}
+                  data-c={b.i.collection}
+                  data-s={b.surnames}
+                  data-title={b.i.title}
+                  data-date={b.i.date.display}
+                  data-coll={b.coll}
+                  data-src={b.r.index}
+                  data-srcset={b.r.indexSrcset}
+                  data-w={b.r.width}
+                  data-h={b.r.height}
+                ></a>
+              ))}
             </div>
           </div>
-        </li>
-      ))}
-    </ul>
+
+          <aside class="loupe" aria-hidden="true">
+            <p class="loupe-kicker" data-loupe-kicker>Earliest</p>
+            <div class="loupe-frame">
+              <img
+                src={earliest.r.index}
+                srcset={earliest.r.indexSrcset}
+                width={earliest.r.width}
+                height={earliest.r.height}
+                alt=""
+                loading="lazy"
+                decoding="async"
+                data-loupe-img
+              />
+            </div>
+            <p class="loupe-title" data-loupe-title>{earliest.i.title}</p>
+            <p class="loupe-meta" data-loupe-meta>{earliest.i.date.display} &middot; {earliest.coll}</p>
+          </aside>
+        </div>
+
+        <div class="legend">
+          <span><i class="swatch firm"></i>Certain or probable</span>
+          <span><i class="swatch soft"></i>Possible</span>
+          <span><i class="swatch open"></i>Open-ended</span>
+          {undated > 0 && <span>{plural(undated, 'photograph')} undated, not drawn</span>}
+        </div>
+        <p class="sr-only" aria-live="polite" data-chron-status></p>
+      </section>
+    )}
+
+    <!-- 5. Surnames -->
+    {surnames.length > 0 && COLLECTIONS.length > 0 && (
+      <section aria-labelledby="surnames-h" class="mt-14">
+        <h2 id="surnames-h" class={H2}>Surnames across the collections</h2>
+        <p class="note">
+          Collections follow where the photographs came from, so families run
+          across them. Figures are photographs.
+        </p>
+        <div class="xwalk-wrap">
+          <table class="xwalk">
+            <thead>
+              <tr>
+                <th scope="col">Surname</th>
+                {COLLECTIONS.map((c) => <th scope="col" class="num">{c.title}</th>)}
+                <th scope="col" class="num">People</th>
+              </tr>
+            </thead>
+            <tbody>
+              {surnames.map((r) => (
+                <tr>
+                  <th scope="row">{r.surname}</th>
+                  {r.perCollection.map((n) => (
+                    <td class="num">
+                      {n > 0 ? (
+                        <span class="tally" style={`--v:${(n / maxCell).toFixed(3)}`}>{n}</span>
+                      ) : (
+                        <>
+                          <span class="nil" aria-hidden="true">&ndash;</span>
+                          <span class="sr-only">none</span>
+                        </>
+                      )}
+                    </td>
+                  ))}
+                  <td class="num">{r.people}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    )}
   </div>
 </RootLayout>
+
+<style>
+  .guide {
+    --c-caprock: var(--color-caprock, #9c5b3f);
+    --c-sage: var(--color-sage, #7a8471);
+    --c-haze: var(--color-haze, #dad3c4);
+    --c-dust: var(--color-dust, #ede7da);
+    --c-iron: var(--color-iron, #3b3833);
+    --c-canvas: var(--color-canvas, #f7f4ec);
+    --mono: var(--font-mono, ui-monospace, 'IBM Plex Mono', monospace);
+  }
+  .guide [hidden] {
+    display: none !important;
+  }
+  .lede,
+  .note {
+    text-wrap: pretty;
+  }
+  .note {
+    max-width: 40rem;
+    font-size: 0.98rem;
+    opacity: 0.8;
+  }
+
+  /* 1. Summary ---------------------------------------------------- */
+  .ledger {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 2.25rem 0 0;
+    border-bottom: 1px solid var(--c-haze);
+  }
+  .ledger > div {
+    padding: 0.85rem 0.75rem 0.95rem 0;
+    border-top: 1px solid var(--c-haze);
+  }
+  @media (min-width: 48rem) {
+    .ledger {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .ledger > div + div {
+      padding-left: 1rem;
+      border-left: 1px solid var(--c-haze);
+    }
+  }
+  .ledger dt {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  .ledger .fig {
+    margin: 0.3rem 0 0;
+    font-size: clamp(1.75rem, 1.2rem + 2vw, 2.4rem);
+    font-weight: 500;
+    line-height: 1;
+    font-variant-numeric: oldstyle-nums proportional-nums;
+    white-space: nowrap;
+  }
+  .ledger .sub {
+    margin: 0.35rem 0 0;
+    font-size: 0.92rem;
+    font-style: italic;
+    opacity: 0.75;
+  }
+
+  /* 2. Finder ----------------------------------------------------- */
+  .finder {
+    position: relative;
+    max-width: 34rem;
+    margin-top: 2rem;
+  }
+  .finder-label {
+    display: block;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  .finder-field {
+    position: relative;
+  }
+  .finder-icon {
+    position: absolute;
+    left: 0.1rem;
+    top: 50%;
+    width: 1.1rem;
+    height: 1.1rem;
+    transform: translateY(-50%);
+    color: var(--c-sage);
+    pointer-events: none;
+  }
+  .finder input {
+    width: 100%;
+    padding: 0.5rem 0.25rem 0.45rem 1.75rem;
+    border: 0;
+    border-bottom: 1.5px solid var(--c-iron);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 1.2rem;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .finder input::-webkit-search-cancel-button,
+  .finder input::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .finder input::placeholder {
+    color: var(--c-sage);
+    font-style: italic;
+    opacity: 0.9;
+  }
+  .finder input:focus {
+    outline: none;
+    border-bottom-color: var(--c-caprock);
+    box-shadow: 0 1.5px 0 0 var(--c-caprock);
+  }
+  .finder-list {
+    position: absolute;
+    z-index: 30;
+    left: 0;
+    right: 0;
+    top: calc(100% + 0.35rem);
+    max-height: 22rem;
+    margin: 0;
+    padding: 0.25rem 0;
+    overflow-y: auto;
+    list-style: none;
+    background: var(--c-canvas);
+    border: 1px solid var(--c-haze);
+    border-top: 2px solid var(--c-caprock);
+    box-shadow: 0 14px 30px -14px rgb(59 56 51 / 0.4);
+  }
+  .finder-list :global(.opt) {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.5rem 0.8rem;
+    cursor: pointer;
+  }
+  .finder-list :global(.opt[aria-selected='true']),
+  .finder-list :global(.opt:hover) {
+    background: var(--c-dust);
+  }
+  .finder-list :global(.opt-main) {
+    display: block;
+    line-height: 1.25;
+  }
+  .finder-list :global(.opt-see) {
+    display: block;
+    font-size: 0.88rem;
+    font-style: italic;
+    opacity: 0.75;
+  }
+  .finder-list :global(.opt-meta),
+  .finder-list :global(.opt-kind) {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  .finder-list :global(.opt-kind) {
+    flex-shrink: 0;
+  }
+  .finder-list :global(.opt-empty) {
+    padding: 0.6rem 0.8rem;
+    font-style: italic;
+    opacity: 0.75;
+  }
+
+  /* 3. Holdings --------------------------------------------------- */
+  .cards {
+    display: grid;
+    gap: 1.5rem;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16.5rem), 1fr));
+  }
+  .card {
+    position: relative;
+    container-type: inline-size;
+    border: 1px solid var(--c-haze);
+    border-top: 3px solid var(--c-caprock);
+    background: rgb(218 211 196 / 0.1);
+    transition: background-color 0.25s ease;
+  }
+  .card:hover,
+  .card:focus-within {
+    background: rgb(218 211 196 / 0.24);
+  }
+  .card:focus-within {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 3px;
+  }
+  .card-in {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  .mat {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 12rem;
+    padding: 0 1.25rem;
+    overflow: hidden;
+    background: var(--c-dust);
+    border-bottom: 1px solid var(--c-haze);
+  }
+  .mat-empty {
+    font-style: italic;
+    opacity: 0.6;
+  }
+  .prints {
+    display: flex;
+    align-items: stretch;
+    width: min(88%, calc(8.5rem * var(--ratio)));
+    aspect-ratio: var(--ratio);
+  }
+  .print {
+    position: relative;
+    display: block;
+    width: var(--pw);
+    height: 100%;
+    margin-left: calc(var(--shift) * -1);
+    object-fit: cover;
+    box-shadow:
+      0 1px 1px rgb(59 56 51 / 0.2),
+      0 10px 18px -12px rgb(59 56 51 / 0.55);
+    transform: translate(var(--dx, 0), var(--dy, 0)) rotate(var(--r, 0deg));
+    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+  .print:nth-child(1) {
+    --r: -2.5deg;
+    z-index: 3;
+  }
+  .print:nth-child(2) {
+    --r: 1.75deg;
+    --dy: 2px;
+    z-index: 2;
+  }
+  .print:nth-child(3) {
+    --r: -0.75deg;
+    z-index: 1;
+  }
+  .card:hover .print:nth-child(1),
+  .card:focus-within .print:nth-child(1) {
+    --dx: -0.6rem;
+    --r: -4.5deg;
+  }
+  .card:hover .print:nth-child(2),
+  .card:focus-within .print:nth-child(2) {
+    --dy: -5px;
+    --r: 0.5deg;
+  }
+  .card:hover .print:nth-child(3),
+  .card:focus-within .print:nth-child(3) {
+    --dx: 0.6rem;
+    --r: 2.5deg;
+  }
+  .card-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.4rem;
+    padding: 1rem 1.15rem 1.1rem;
+  }
+  .card-title {
+    font-size: 1.3rem;
+    font-weight: 500;
+    line-height: 1.15;
+    text-wrap: balance;
+  }
+  .card-link {
+    color: var(--c-caprock);
+    text-decoration: none;
+  }
+  .card-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+  }
+  .card-link:focus {
+    outline: none;
+  }
+  .card:hover .card-link {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.15em;
+  }
+  .card-meta,
+  .card-foot {
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  .card-scope {
+    font-size: 0.95rem;
+    opacity: 0.8;
+    text-wrap: pretty;
+  }
+  .card-foot {
+    margin-top: auto;
+    padding-top: 0.65rem;
+    border-top: 1px dotted var(--c-haze);
+    letter-spacing: 0.06em;
+  }
+  /* A card with room to spare puts the mat beside the text, not above it. */
+  @container (min-width: 34rem) {
+    .card-in {
+      flex-direction: row;
+    }
+    .mat {
+      width: 46%;
+      height: auto;
+      min-height: 13rem;
+      border-bottom: 0;
+      border-right: 1px solid var(--c-haze);
+    }
+  }
+
+  /* 4. Chronology ------------------------------------------------- */
+  .facets {
+    display: grid;
+    gap: 0.5rem;
+    margin: 1.1rem 0 1.25rem;
+  }
+  .facet-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.35rem 0.4rem;
+  }
+  .facet-label {
+    width: 5.5rem;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  .facet {
+    padding: 0.2rem 0.6rem 0.25rem;
+    border: 1px solid var(--c-haze);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.95rem;
+    line-height: 1.2;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .facet:hover {
+    border-color: var(--c-caprock);
+  }
+  .facet[aria-pressed='true'] {
+    background: var(--c-iron);
+    border-color: var(--c-iron);
+    color: var(--c-canvas);
+  }
+  .facet:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
+  }
+  .facet-n {
+    margin-left: 0.4rem;
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    opacity: 0.7;
+  }
+
+  .chron {
+    display: grid;
+    gap: 1.25rem;
+  }
+  @media (min-width: 48rem) {
+    .chron {
+      grid-template-columns: minmax(0, 1fr) 12.5rem;
+    }
+  }
+  .plot {
+    --pitch: 12px;
+    position: relative;
+    height: calc(var(--lanes) * var(--pitch) + 2.5rem);
+  }
+  .rules {
+    position: absolute;
+    inset: 0;
+  }
+  .tick {
+    position: absolute;
+    top: 0;
+    bottom: 1.5rem;
+    left: var(--x);
+    border-left: 1px solid var(--c-haze);
+  }
+  .tick b {
+    position: absolute;
+    bottom: -1.3rem;
+    left: 0;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-size: 0.62rem;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    color: var(--c-sage);
+    white-space: nowrap;
+  }
+  .tick:first-child b {
+    transform: none;
+  }
+  .tick:last-child b {
+    transform: translateX(-100%);
+  }
+  @media (max-width: 40rem) {
+    .tick.minor b {
+      visibility: hidden;
+    }
+  }
+  .bars {
+    position: absolute;
+    top: 0.5rem;
+    left: 0;
+    right: 0;
+    height: calc(var(--lanes) * var(--pitch));
+  }
+  /* A date as an interval: a rule between two caps, the way an error bar is
+     drawn. Open-ended dates lose the cap on their open side and go dashed. */
+  .bar {
+    --stripe: linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat;
+    --dash: repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 6px) 0 50% / 100% 2px no-repeat;
+    --cap-l: linear-gradient(currentColor, currentColor) 0 50% / 1.5px 8px no-repeat;
+    --cap-r: linear-gradient(currentColor, currentColor) 100% 50% / 1.5px 8px no-repeat;
+    position: absolute;
+    left: var(--x);
+    top: calc(var(--y) * var(--pitch));
+    width: var(--w);
+    min-width: 5px;
+    height: var(--pitch);
+    color: var(--c-caprock);
+    background: var(--stripe), var(--cap-l), var(--cap-r);
+    transition: opacity 0.2s ease;
+  }
+  .bar.soft {
+    color: var(--c-sage);
+  }
+  .bar.open-start {
+    background: var(--dash), var(--cap-r);
+  }
+  .bar.open-end {
+    background: var(--dash), var(--cap-l);
+  }
+  .bar:hover,
+  .bar.is-current {
+    color: var(--c-iron);
+    z-index: 2;
+  }
+  .bar:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 1px;
+    z-index: 3;
+  }
+  .plot[data-dim] .bar {
+    opacity: 0.12;
+  }
+  .plot[data-dim] .bar.is-lit {
+    opacity: 1;
+  }
+
+  .loupe {
+    display: none;
+  }
+  @media (min-width: 48rem) {
+    .loupe {
+      display: block;
+      position: sticky;
+      top: calc(var(--header-h, 0px) + 1rem);
+      align-self: start;
+    }
+  }
+  .loupe-kicker,
+  .loupe-meta {
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  .loupe-frame {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 12.5rem;
+    margin-top: 0.35rem;
+    padding: 0.85rem;
+    background: var(--c-dust);
+    border: 1px solid var(--c-haze);
+  }
+  .loupe-frame img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+    box-shadow:
+      0 1px 1px rgb(59 56 51 / 0.2),
+      0 10px 18px -12px rgb(59 56 51 / 0.55);
+  }
+  .loupe-title {
+    margin-top: 0.6rem;
+    font-size: 1.02rem;
+    line-height: 1.25;
+    text-wrap: balance;
+  }
+  .loupe-meta {
+    margin-top: 0.25rem;
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.25rem;
+    margin-top: 0.9rem;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  .swatch {
+    display: inline-block;
+    width: 1.75rem;
+    height: 10px;
+    margin-right: 0.45rem;
+    vertical-align: -1px;
+    color: var(--c-caprock);
+    background:
+      linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat,
+      linear-gradient(currentColor, currentColor) 0 50% / 1.5px 8px no-repeat,
+      linear-gradient(currentColor, currentColor) 100% 50% / 1.5px 8px no-repeat;
+  }
+  .swatch.soft {
+    color: var(--c-sage);
+  }
+  .swatch.open {
+    background:
+      repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 6px) 0 50% / 100% 2px no-repeat,
+      linear-gradient(currentColor, currentColor) 0 50% / 1.5px 8px no-repeat;
+  }
+
+  /* 5. Surnames --------------------------------------------------- */
+  .xwalk-wrap {
+    margin-top: 1rem;
+    overflow-x: auto;
+  }
+  .xwalk {
+    width: 100%;
+    border-collapse: collapse;
+    font-variant-numeric: oldstyle-nums tabular-nums;
+  }
+  .xwalk th,
+  .xwalk td {
+    padding: 0.45rem 0.7rem 0.45rem 0;
+    border-bottom: 1px solid var(--c-haze);
+    text-align: left;
+    vertical-align: baseline;
+  }
+  .xwalk thead th {
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--c-iron);
+    vertical-align: bottom;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  .xwalk tbody th {
+    font-size: 1.05rem;
+    font-weight: 500;
+  }
+  .xwalk .num {
+    text-align: right;
+  }
+  .xwalk tbody tr:hover {
+    background: rgb(218 211 196 / 0.16);
+  }
+  .tally {
+    display: inline-block;
+    min-width: 2.5rem;
+    padding-bottom: 3px;
+    background: linear-gradient(var(--c-caprock), var(--c-caprock)) 100% 100% / calc(var(--v) * 100%) 2px no-repeat;
+  }
+  .nil {
+    color: var(--c-haze);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .print,
+    .bar,
+    .card,
+    .facet {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+
+  type PersonEntry = { n: string; d: string; h: string; c: number; f: string[] };
+  type PhotoEntry = {
+    t: string;
+    h: string;
+    d: string;
+    k: string;
+    x: string;
+    a: number | null;
+    b: number | null;
+  };
+  type Result = { kind: string; main: string; see: string; meta: string; href: string; rank: number };
+
+  const norm = (s: string) =>
+    s
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, ' ')
+      .trim();
+
+  const count = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+
+  function initChronology(root: HTMLElement) {
+    const plot = root.querySelector<HTMLElement>('[data-plot]');
+    if (!plot) return;
+    const bars = [...plot.querySelectorAll<HTMLAnchorElement>('.bar')];
+    const status = root.querySelector<HTMLElement>('[data-chron-status]');
+    const img = root.querySelector<HTMLImageElement>('[data-loupe-img]');
+    const kicker = root.querySelector<HTMLElement>('[data-loupe-kicker]');
+    const title = root.querySelector<HTMLElement>('[data-loupe-title]');
+    const meta = root.querySelector<HTMLElement>('[data-loupe-meta]');
+
+    let current = bars.find((b) => b.classList.contains('is-current')) ?? null;
+    const show = (bar: HTMLAnchorElement) => {
+      if (bar === current) return;
+      current?.classList.remove('is-current');
+      bar.classList.add('is-current');
+      current = bar;
+      const d = bar.dataset;
+      if (img && d.src) {
+        img.width = Number(d.w);
+        img.height = Number(d.h);
+        // srcset outranks src: replace it first or the old photograph stays.
+        img.srcset = d.srcset ?? '';
+        img.src = d.src;
+      }
+      if (kicker) kicker.textContent = 'Photograph';
+      if (title) title.textContent = d.title ?? '';
+      if (meta) meta.textContent = `${d.date ?? ''} \u00b7 ${d.coll ?? ''}`;
+    };
+    const barFrom = (t: EventTarget | null) =>
+      t instanceof Element ? t.closest<HTMLAnchorElement>('.bar') : null;
+
+    plot.addEventListener('pointerover', (e) => {
+      const b = barFrom(e.target);
+      if (b) show(b);
+    });
+    plot.addEventListener('focusin', (e) => {
+      const b = barFrom(e.target);
+      if (b) show(b);
+    });
+
+    // One tab stop for the whole chart; arrows walk it in date order.
+    plot.addEventListener('keydown', (e) => {
+      const i = bars.indexOf(document.activeElement as HTMLAnchorElement);
+      if (i < 0) return;
+      const moves: Record<string, number> = {
+        ArrowRight: i + 1,
+        ArrowDown: i + 1,
+        ArrowLeft: i - 1,
+        ArrowUp: i - 1,
+        Home: 0,
+        End: bars.length - 1,
+      };
+      if (!(e.key in moves)) return;
+      e.preventDefault();
+      const next = bars[Math.max(0, Math.min(bars.length - 1, moves[e.key]))];
+      bars[i].tabIndex = -1;
+      next.tabIndex = 0;
+      next.focus();
+    });
+
+    const facets = [...root.querySelectorAll<HTMLButtonElement>('[data-facet]')];
+    const testFor = (btn: HTMLButtonElement | null) => {
+      const v = btn?.dataset.value ?? '';
+      if (btn?.dataset.facet === 'c') return (b: HTMLElement) => b.dataset.c === v;
+      if (btn?.dataset.facet === 's') return (b: HTMLElement) => (b.dataset.s ?? '').includes(`|${v}|`);
+      return null;
+    };
+    const apply = (btn: HTMLButtonElement | null, announce: boolean) => {
+      const test = testFor(btn);
+      let lit = 0;
+      bars.forEach((b) => {
+        const on = !!test && test(b);
+        b.classList.toggle('is-lit', on);
+        if (on) lit++;
+      });
+      plot.toggleAttribute('data-dim', !!test);
+      if (announce && status) {
+        status.textContent = test
+          ? `${btn?.dataset.label}: ${count(lit, 'photograph')} highlighted in the chronology.`
+          : 'Showing every photograph.';
+      }
+    };
+    let committed = facets.find((f) => f.dataset.facet === 'all') ?? null;
+    facets.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        committed = btn;
+        facets.forEach((f) => f.setAttribute('aria-pressed', String(f === btn)));
+        apply(btn, true);
+      });
+      // Hover previews; only a click commits. Mouse only - on touch a
+      // preview would stick with no way to leave it.
+      btn.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'mouse') apply(btn, false);
+      });
+      btn.addEventListener('pointerleave', (e) => {
+        if (e.pointerType === 'mouse') apply(committed, false);
+      });
+    });
+  }
+
+  function initFinder(root: HTMLElement) {
+    const input = root.querySelector<HTMLInputElement>('[data-finder-input]');
+    const list = root.querySelector<HTMLUListElement>('[data-finder-list]');
+    const status = root.querySelector<HTMLElement>('[data-finder-status]');
+    const source = document.getElementById('guide-finder');
+    if (!input || !list || !source) return;
+
+    let data: { people: PersonEntry[]; items: PhotoEntry[] };
+    try {
+      data = JSON.parse(source.textContent || '{}');
+    } catch {
+      return;
+    }
+    const people = (data.people ?? []).map((p) => ({ ...p, keys: p.f.map(norm) }));
+    const photos = (data.items ?? []).map((p) => ({ ...p, hay: norm(`${p.t} ${p.k} ${p.d} ${p.x}`) }));
+
+    // Every query word must begin some word in the target.
+    const matches = (hay: string, words: string[]) => {
+      const w = hay.split(' ');
+      return words.every((q) => w.some((x) => x.startsWith(q)));
+    };
+
+    const search = (q: string): Result[] => {
+      const words = norm(q).split(' ').filter(Boolean);
+      if (!words.length) return [];
+      // "1890" or "1890s" is a date, and a date matches an INTERVAL: a
+      // photograph dated 1885-1900 is a match for 1890 even though no year
+      // on it reads 1890.
+      const dates = words.filter((w) => /^\d{4}s?$/.test(w));
+      const text = words.filter((w) => !dates.includes(w));
+      const out: Result[] = [];
+
+      if (!dates.length) {
+        for (const p of people) {
+          const hit = p.keys.findIndex((k) => matches(k, text));
+          if (hit === -1) continue;
+          out.push({
+            kind: 'Name',
+            main: p.d ? `${p.n}, ${p.d}` : p.n,
+            see: hit >= 2 ? `found as ${p.f[hit]}` : '',
+            meta: count(p.c, 'photograph'),
+            href: p.h,
+            rank: 0,
+          });
+        }
+      }
+      for (const ph of photos) {
+        if (text.length && !matches(ph.hay, text)) continue;
+        const outside = dates.some((d) => {
+          const from = Number(d.slice(0, 4));
+          const to = d.endsWith('s') ? from + 9 : from;
+          return ph.a === null || ph.b === null || ph.b < from || ph.a > to;
+        });
+        if (outside) continue;
+        out.push({ kind: 'Photograph', main: ph.t, see: '', meta: `${ph.d} \u00b7 ${ph.k}`, href: ph.h, rank: 1 });
+      }
+      return out.sort((a, b) => a.rank - b.rank).slice(0, 10);
+    };
+
+    let results: Result[] = [];
+    let active = -1;
+
+    const el = (tag: string, cls: string, text = '') => {
+      const node = document.createElement(tag);
+      node.className = cls;
+      node.textContent = text;
+      return node;
+    };
+    const close = () => {
+      list.hidden = true;
+      input.setAttribute('aria-expanded', 'false');
+      input.removeAttribute('aria-activedescendant');
+      active = -1;
+    };
+    const go = (href: string) => {
+      close();
+      navigate(href);
+    };
+    const highlight = (n: number) => {
+      const opts = [...list.querySelectorAll<HTMLElement>('[role="option"]')];
+      if (!opts.length) return;
+      active = (n + opts.length) % opts.length;
+      opts.forEach((o, i) => o.setAttribute('aria-selected', String(i === active)));
+      input.setAttribute('aria-activedescendant', opts[active].id);
+      opts[active].scrollIntoView({ block: 'nearest' });
+    };
+    const render = () => {
+      const q = input.value;
+      results = search(q);
+      active = -1;
+      list.replaceChildren();
+      input.removeAttribute('aria-activedescendant');
+      if (!q.trim()) {
+        close();
+        if (status) status.textContent = '';
+        return;
+      }
+      if (!results.length) {
+        list.append(el('li', 'opt-empty', 'Nothing found under that name, title or date.'));
+      }
+      results.forEach((r, n) => {
+        const li = el('li', 'opt');
+        li.id = `finder-opt-${n}`;
+        li.setAttribute('role', 'option');
+        li.setAttribute('aria-selected', 'false');
+        const left = el('span', '');
+        left.append(el('span', 'opt-main', r.main));
+        if (r.see) left.append(el('span', 'opt-see', r.see));
+        left.append(el('span', 'opt-meta', r.meta));
+        li.append(left, el('span', 'opt-kind', r.kind));
+        li.addEventListener('mousedown', (e) => e.preventDefault());
+        li.addEventListener('click', () => go(r.href));
+        list.append(li);
+      });
+      list.hidden = false;
+      input.setAttribute('aria-expanded', 'true');
+      if (status) status.textContent = results.length ? `${count(results.length, 'match', 'matches')}.` : 'No matches.';
+    };
+
+    input.addEventListener('input', render);
+    input.addEventListener('focus', () => {
+      if (input.value.trim()) render();
+    });
+    input.addEventListener('blur', close);
+    input.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (list.hidden) render();
+        highlight(active + 1);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        highlight(active - 1);
+      } else if (e.key === 'Enter') {
+        const pick = results[active >= 0 ? active : 0];
+        if (pick) {
+          e.preventDefault();
+          go(pick.href);
+        }
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        if (!list.hidden) close();
+        else input.value = '';
+      }
+    });
+  }
+
+  function initGuide() {
+    const root = document.querySelector<HTMLElement>('[data-guide]');
+    if (!root || root.dataset.ready) return;
+    root.dataset.ready = '1';
+    initChronology(root);
+    initFinder(root);
+  }
+
+  document.addEventListener('astro:page-load', initGuide);
+</script>

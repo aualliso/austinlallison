@@ -187,6 +187,27 @@ for (const item of ALL_ITEMS) {
   }
 }
 
+for (const item of ALL_ITEMS) {
+  const { earliest, latest } = item.date;
+  if (earliest !== undefined && latest !== undefined && earliest > latest) {
+    throw new Error(
+      `${item.slug}: date runs backwards (earliest ${earliest}, latest ${latest}).`
+    );
+  }
+}
+
+for (const c of REGISTERED) {
+  const own = new Set(c.items.map((i) => i.slug));
+  for (const slug of c.keyItems ?? []) {
+    if (!own.has(slug)) {
+      throw new Error(
+        `Collection "${c.slug}" lists key item "${slug}", which is not one of ` +
+          `its own items. Key items must come from the collection they represent.`
+      );
+    }
+  }
+}
+
 for (const p of PEOPLE) {
   for (const r of p.relations ?? []) {
     if (!personById.has(r.person)) {
@@ -287,6 +308,110 @@ export const itemByControlNumber = new Map(
 
 /** Items not yet given a control number - a worklist, not a problem. */
 export const UNNUMBERED = ALL_ITEMS.filter((i) => !i.controlNumber);
+
+/* ------------------------------------------------------------------ *
+ * Dates across many items
+ * ------------------------------------------------------------------ */
+
+export type YearSpan = {
+  from: number;
+  to: number;
+  /** Only `latest` is known: "before 1900". */
+  openStart: boolean;
+  /** Only `earliest` is known: "after 1890". */
+  openEnd: boolean;
+};
+
+/**
+ * The years a photograph could have been made in, or null when undated. A
+ * date with only one bound says so through openStart/openEnd rather than
+ * quietly passing itself off as a single year.
+ */
+export const spanOf = (item: ResolvedItem): YearSpan | null => {
+  const { earliest, latest } = item.date;
+  if (earliest === undefined && latest === undefined) return null;
+  const a = earliest ?? (latest as number);
+  const b = latest ?? (earliest as number);
+  return {
+    from: Math.min(a, b),
+    to: Math.max(a, b),
+    openStart: earliest === undefined,
+    openEnd: latest === undefined,
+  };
+};
+
+export type Extent = {
+  dated: number;
+  undated: number;
+  /** Inclusive dates. */
+  from: number;
+  to: number;
+  /**
+   * Bulk dates: the narrowest run of years holding BULK_SHARE of the
+   * material. Each photograph's weight is spread evenly across its interval,
+   * so a print dated 1885-1905 counts a twenty-first in each of those years
+   * rather than a whole photograph in 1895. Absent when there is too little
+   * material for the figure to mean anything, or when the bulk would be
+   * nearly the whole span anyway.
+   */
+  bulk?: { from: number; to: number };
+};
+
+const BULK_SHARE = 0.8;
+const BULK_MIN_ITEMS = 10;
+
+/** Inclusive and bulk dates for any set of items - a collection, or all. */
+export const extentOf = (items: ResolvedItem[]): Extent | null => {
+  const spans = items.map(spanOf).filter((s): s is YearSpan => s !== null);
+  if (spans.length === 0) return null;
+  const from = Math.min(...spans.map((s) => s.from));
+  const to = Math.max(...spans.map((s) => s.to));
+  const out: Extent = { dated: spans.length, undated: items.length - spans.length, from, to };
+  if (spans.length < BULK_MIN_ITEMS || to - from < 10) return out;
+
+  const weight = new Array<number>(to - from + 1).fill(0);
+  for (const s of spans) {
+    const share = 1 / (s.to - s.from + 1);
+    for (let y = s.from; y <= s.to; y++) weight[y - from] += share;
+  }
+
+  // Shortest window whose weight reaches the target: two pointers, one pass.
+  const target = spans.length * BULK_SHARE - 1e-9;
+  let best: [number, number] | null = null;
+  let sum = 0;
+  let left = 0;
+  for (let right = 0; right < weight.length; right++) {
+    sum += weight[right];
+    while (left < right && sum - weight[left] >= target) sum -= weight[left++];
+    if (sum >= target && (!best || right - left < best[1] - best[0])) best = [left, right];
+  }
+  if (best && best[1] - best[0] <= 0.75 * (to - from)) {
+    out.bulk = { from: from + best[0], to: from + best[1] };
+  }
+  return out;
+};
+
+/**
+ * The photographs that stand for a collection on the guide: its declared
+ * `keyItems`, or else the earliest, a middle and the latest dated item.
+ */
+export const keyItemsOf = (slug: string, n = 3): ResolvedItem[] => {
+  const c = collectionBySlug.get(slug);
+  const items = itemsOf(slug);
+  if (!c || items.length === 0) return [];
+  if (c.keyItems?.length) {
+    return c.keyItems.slice(0, n).map((s) => itemBySlug.get(s) as ResolvedItem);
+  }
+  const dated = items
+    .filter((i) => spanOf(i) !== null)
+    .sort((a, b) => (spanOf(a) as YearSpan).from - (spanOf(b) as YearSpan).from);
+  const pool = dated.length >= n ? dated : items;
+  if (pool.length <= n) return pool;
+  const picks = Array.from({ length: n }, (_, k) =>
+    Math.round((k * (pool.length - 1)) / (n - 1))
+  );
+  return [...new Set(picks)].map((k) => pool[k]);
+};
 
 export { PEOPLE, personById, NAME_INDEX };
 export { heading, headingDates, naturalName, naturalNameWithDates } from './types';

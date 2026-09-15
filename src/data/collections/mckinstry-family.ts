@@ -377,6 +377,12 @@ export const COLLECTION: Collection = {
       verso: { file: 'mckinstry-sam-palomina-verso.jpg' },
       description:
         'This photograph depicts Sam McKinstry\'s palomina horse.',
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sam McKinstry\'s Palomina',
+        }
+      ],
       rights: {
         status: 'public-domain',
         note: 'Photographer unidentified; unpublished.',
@@ -385,6 +391,249 @@ export const COLLECTION: Collection = {
         {
           slug: 'mckinstry-sam-horse',
           relation: 'The horses in each picture appears to be the same.'
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-loveta-minnie-edith-thomas',
+      title: '[Loveta Swann McKinstry, Edith Thomas, Minnie Swann McKinstry]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.4.2',
+      format: 'copy print',
+      place: 'New Mexico',
+      date: {
+        display: '[1920-1925]',
+        earliest: 1920,
+        latest: 1925,
+        basis: [
+          'The date of 1913 on the verso is likely incorrect. This photograph shows Loveta and Minnie after their marriage to McKinstry brothers Sam and Jim, respectively. I date this photograph between 1920 and 1925.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-loveta-minnie-edith-thomas-recto.jpg', },
+      verso: { file: 'mckinstry-loveta-minnie-edith-thomas-verso.jpg' },
+      description:
+        'This photograph depicts Loveta Swann McKinstry, Edith Thomas (Bowles), and Minnie McKinstry in front of a tree and house.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          as: 'Edith Thomas Bowles',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-minnie-and-others',
+      title: '[Minnie Swann McKinstry and others]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.5.2',
+      format: 'copy print',
+      place: 'New Mexico',
+      date: {
+        display: '[1920-1925]',
+        earliest: 1920,
+        latest: 1925,
+        basis: [
+          'The date of this photograph is difficult to ascertain. Minnie Swann McKinstry appears to be between 30 and 35 years old, so dates of 1920 through 1925 are possible.',
+        ],
+        confidence: 'possible',
+      },
+      recto: { file: 'mckinstry-minnie-and-others-recto.jpg', },
+      verso: { file: 'mckinstry-minnie-and-others-recto.jpg' },
+      description:
+        'This photograph depicts Minnie Swann McKinstry with four other unidentified individuals.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      depicts: [
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-sam-portrait',
+      title: 'Sam McKinstry',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.7.2',
+      format: 'mounted photograph',
+      place: 'Illinois',
+      date: {
+        display: '[1898-1903]',
+        earliest: 1898,
+        latest: 1903,
+        basis: [
+          'There is no date on this photograph, but Sam McKinstry appears to be between 20 and 25 years old here.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-sam-portrait-recto.jpg', },
+      verso: { file: 'mckinstry-sam-portrait-verso.jpg' },
+      description:
+        'This is a formal oval vignette portrait of Sam McKinstry from between 1898 and 1903.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sam McKinstry',
+          hand: 'Austin Allison',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-samuel-small',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-adeline-portrait',
+      title: 'Adeline McKinstry',
+      titleSource: 'inscribed',
+      controlNumber: 'b.1.17.2',
+      format: 'mounted photograph',
+      studio: 'L.L. Hall',
+      place: 'Piper City, Illinois',
+      date: {
+        display: '[1901-1905]',
+        earliest: 1901,
+        latest: 1905,
+        basis: [
+          'Adeline appears to be between the ages of 18 and 22 here. That would place this between the years of 1901 and 1905.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-adeline-portrait-recto.jpg', },
+      verso: { file: 'mckinstry-adeline-portrait-verso.jpg' },
+      views: [
+        { file: 'mckinstry-adeline-portrait-recto-close.jpg', label: 'Closer view of portrait'}
+      ],
+      description:
+        'This is a formal oval vignette portrait of Adeline McKinstry from between 1901 and 1905.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Adeline McKinstry',
+          hand: 'unknown',
+        },
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sam\'s sister',
+          hand: 'unknown',
+        }
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-adeline',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ]
+    },
+    {
+      slug: 'minnie-loveta-eva-samm',
+      title: '[Minnie McKinstry, Loveta McKinstry, Eva West, Sammy McKinstry]',
+      titleSource: 'inscribed',
+      controlNumber: 'a.1.8.4',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '1922',
+        basis: [
+          'The verso inscription suggests Loveta was pregnant in this image. This would place the image squarely in 1922 when Loveta was pregnant with Jean. The verso has a date of 1924, but this is incorrect.',
+        ],
+        confidence: 'certain',
+      },
+      recto: { file: 'minnie-loveta-eva-sammy-recto.jpg', },
+      verso: { file: 'minnie-loveta-eva-sammy-verso.jpg' },
+      description:
+        'This is a snapshot depicting Minnie McKinstry, Loveta McKinstry, Eva West, and Sammy McKinstry. This photograph was likely taken in Hagerman, New Mexico in 1922.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Minnie left, Loveta center (pregnant), Eva and Sammy.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
         },
       ]
     },

@@ -614,6 +614,9 @@ export const PEOPLE: Person[] = [
     ],
     relations: [
       { type: 'spouse', person: 'mckinstry-samuel-small', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'osborn-mildred-adeline-mckinstry', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-austin', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-nannie-thomas', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'west-eva-swann-powell', basis: 'Established relationship', confidence: 'certain' },
@@ -630,7 +633,7 @@ export const PEOPLE: Person[] = [
     variants: ['McKinstry, Sam'],
     status: 'established',
     scopeNote:
-      'The "Mrs. Sam McKinestry" of Austin Swann\'s obituary is one of his daughters, so this is very likely her husband - but nothing consulted states it, and the relation is not entered.',
+      'The "Mrs. Sam McKinstry" of Austin Swann\'s obituary is one of his daughters, so this is very likely her husband - but nothing consulted states it, and the relation is not entered.',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
     sources: [
@@ -638,6 +641,9 @@ export const PEOPLE: Person[] = [
     ],
     relations: [
       { type: 'spouse', person: 'mckinstry-loveta-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'osborn-mildred-adeline-mckinstry', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-james', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-sarah-boyd', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'mckinstry-thomas', basis: 'Established relationship', confidence: 'certain' },
@@ -649,6 +655,75 @@ export const PEOPLE: Person[] = [
       { type: 'sibling', person: 'mckinstry-adeline', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'mckinstry-robert-frederick', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'west-edith-mary-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-sammy-nan-mckinstry',
+    authorized: 'Allison, Sammy Nan',
+    surname: 'Allison',
+    given: 'Sammy Nan McKinstry',
+    birth: '1920',
+    death: '2009',
+    variants: ['McKinstry, Sammy', 'Hewatt, Sammy', 'Sammy Allison', 'Allison, Sammy', 'Sammy McKinstry'],
+    status: 'established',
+    scopeNote:
+      'Sammy Nan McKinstry Allison was born on February 20, 1920 in Hagerman, New Mexico. She died on December 22, 2009 in Amarillo, Texas. She is buried in Muleshoe.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    sources: [
+      'Find a Grave memorial 45723671',
+    ],
+    relations: [
+      { type: 'parent', person: 'mckinstry-samuel-small', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'mckinstry-loveta-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'osborn-mildred-adeline-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-veta-jean-mckinstry',
+    authorized: 'Allison, Veta Jean McKinstry',
+    surname: 'Allison',
+    given: 'Veta Jean McKinstry',
+    birth: '1922',
+    death: '2020',
+    variants: ['McKinstry, Jean', 'Allison, Jean', 'Jean Allison', 'Veta Jean McKinstry', 'Jean McKinstry', 'Veta Jean Allison'],
+    status: 'established',
+    scopeNote:
+      'Veta Jean McKinstry Allison was born on November 8, 1922 in Hagerman, New Mexico. She died on June 20, 2020 in San Antonio, Texas. She is buried in Muleshoe.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    sources: [
+      'Find a Grave memorial 211790000',
+    ],
+    relations: [
+      { type: 'parent', person: 'mckinstry-samuel-small', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'mckinstry-loveta-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'osborn-mildred-adeline-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'osborn-mildred-adeline-mckinstry',
+    authorized: 'Osborn, Mildred Adeline McKinstry',
+    surname: 'Osborn',
+    given: 'Mildred Adeline McKinstry',
+    birth: '1927',
+    death: '2012',
+    variants: ['McKinstry, Mildred', 'Osborn, Mildred', 'Mildred Osborn', 'Mildred Adeline McKinstry', 'Mildred McKinstry', 'Mildred Adeline Osborn'],
+    status: 'established',
+    scopeNote:
+      'Mildred Adeline McKinstry Osborn was born on December 17, 1927 in Hagerman, New Mexico. She died on September 2, 2012 in Lubbock, Texas. She is buried in Lovington, New Mexico.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    sources: [
+      'Find a Grave memorial 96413628',
+    ],
+    relations: [
+      { type: 'parent', person: 'mckinstry-samuel-small', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'mckinstry-loveta-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -953,6 +1028,18 @@ export const PEOPLE: Person[] = [
       status: 'provisional',
       sources: ['Supplied with the musicians cabinet card; source unrecorded'],
     },
+    {
+    id: 'smith-eula-belle-girdner',
+    authorized: 'Smith, Eula Belle Girdner',
+    surname: 'Smith',
+    given: 'Eula Belle Girdner',
+    birth: '1890',
+    death: '1964',
+    status: 'established',
+    sources: [
+      'Findagrave record number 21144508',
+    ],
+  },
   // TODO: 'Jean' and 'Sammy' are given names only, with no surname on the
   // object. They stay as `as:` strings on the item until a heading can be
   // established - an authority record for a bare given name is not one.

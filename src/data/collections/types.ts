@@ -290,6 +290,17 @@ export interface Collection {
   series: Series[];
 
   /**
+   * KEY ITEMS. The slugs of the photographs that stand for this collection on
+   * the /collections guide, in order - the first is laid on top. Up to three
+   * are shown. OPTIONAL: omit it and the guide picks the earliest, a middle
+   * and the latest dated photograph, so the card shows the reach of the
+   * collection rather than whatever happens to be first in the box. Set it
+   * when one photograph plainly IS the collection. The build throws on a
+   * slug that is not one of this collection's own items.
+   */
+  keyItems?: string[];
+
+  /**
    * Applied to every item that does not state its own. THIS IS WHERE THE
    * REPETITION GOES: five hundred prints scanned the same way should say so
    * once, not five hundred times.

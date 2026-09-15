@@ -972,14 +972,22 @@ export const COLLECTION: Collection = {
       place: 'Texas',
       date: {
         // What prints. Square brackets mark an assessment.
-        display: '[1901-1905]',
-        earliest: 1901,
-        latest: 1905,
+        display: '[1909-1911]',
+        earliest: 1909,
+        latest: 1911,
         basis: [
           'Loveta appears to be between 8 and 12 years old, which would place this photograph between 1901 and 1905.',
         ],
         confidence: 'probable',
       },
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Mable left & Loveta',
+        },
+      ],
       depicts: [
         {
           person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
@@ -1033,6 +1041,14 @@ export const COLLECTION: Collection = {
         ],
         confidence: 'probable',
       },
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Arthur Waddle',
+        },
+      ],
       depicts: [
         {
           person: 'waddle-william-arthur',  // an id in people.ts. Build throws if unknown.
@@ -1114,6 +1130,696 @@ export const COLLECTION: Collection = {
           relation: 'Appears to be from the same session. Photographs are the same, small size.'
         },
       ],
+    },
+    {
+      slug: 'jacobia-flooding',
+      title: '[Flooding at Jacobia, Texas]',
+      controlNumber: 'a.1.3.4',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1922-1926]',
+        earliest: 1922,
+        latest: 1926,
+        basis: [
+          'There is no solid way to date this photograph. The verso suggests this was before the Austin Swann family moved west to New Mexico in the late 1900s, but the hairstyle of the child suggests 1920s. It may have been taken on a trip that the McKinstrys took to east Texas.',
+        ],
+        confidence: 'possible',
+      },
+       inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'After a flood when we still lived at Jacobia. This picture was teaken in flood waters north of the big pool.',
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'jacobia-flooding-recto.jpg' },
+      verso: { file: 'jacobia-flooding-verso.jpg' },
+      depicts: [
+        {
+          person: 'mckinstry-samuel-small',  // an id in people.ts. Build throws if unknown.
+          confidence: 'possible',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'No identification available.',
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'possible',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'No identification available.',
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'possible',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'No identification available.',
+        },
+      ],
+      description: 'This is a photograph of three people in a boat during a flood at Jacobia. The inscription on the verso does not offer a potential date or potential figures in the boat. The hairstyle matches that of Sammy and Jean McKinstry in the early to mid 1920s, but they never lived at Jacobia. Such hairstyles would not have been on children when the Swanns lived at Jacobia. I believe this is from a later flood. This photograph may depict Sam, Loveta, and Sammy McKinstry.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'girdner-c-e-1',
+      title: 'C.E. Girdner, 1953',
+      controlNumber: 'a.1.4.1',
+      titleSource: 'inscribed',
+      place: 'Hagerman, New Mexico',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1953-1954]',
+        earliest: 1953,
+        latest: 1954,
+        basis: [
+          'The verso of this photograph has a statement that indicates it was printed in 1954. The photograph itself shows an older C.E. Girdner. He died in October 1954, so it must be from before that date. A 1953 date is likely.',
+        ],
+        confidence: 'probable',
+      },
+       inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'C.E. Girdner',
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'girdner-c-e-1-recto.jpg' },
+      verso: { file: 'girdner-c-e-1-verso.jpg' },
+      views : [
+        { file: 'girdner-c-e-1-recto-enhanced.jpg', label: 'Color enhanced version'},
+      ],
+
+      depicts: [
+        {
+          person: 'girdner-charles-edgar',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ],
+      description: 'This is a photograph of a seated C.E. Girdner at the home of Sam and Loveta McKinstry. The photograph shows the interior of their home. This was likely taken in 1953.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-zirkle-major-1',
+      title: 'Minnie, Loveta, Glenn Zirkle, Eva, Mrs. Major',
+      controlNumber: 'a.1.4.3',
+      titleSource: 'supplied',
+      place: 'Dallas, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1940-1945]',
+        earliest: 1940,
+        latest: 1945,
+        basis: [
+          'This is an estimated date, since it shows Loveta, Minnie, and Eva later in life. A date past 1945 is possible, but it is impossible to ascertain.',
+        ],
+        confidence: 'probable',
+      },
+       inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'left to right: Minnie, Loveta, Glenn Zirkle, Eva, and Mrs. Major.',
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'swann-zirkle-major-1-recto.jpg' },
+      verso: { file: 'swann-zirkle-major-1-verso.jpg' },
+      depicts: [
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          as: 'Glenn Zirkle',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          as: 'Gertrude Major (Mrs. Major)',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ],
+      description: 'This is a photograph of Minnie McKinstry Swann, Loveta McKinstry Swann, Glenn Zirkle, Eva West, and Mrs. Major. Another photograph from this trip suggests it was taken in Dallas, Texas.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'baptism-in-pool',
+      title: '[Baptism in pool]',
+      controlNumber: 'a.1.4.4',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1907-1909]',
+        earliest: 1907,
+        latest: 1909,
+        basis: [
+          'This is an estimated date. The Swanns moved from Jacobia to New Mexico before 1909. This photograph is not certainly from Jacobia, but it matches the time frame. Certain features of the verso hint at a 1907 to 1909 date range.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'baptism-in-pool-recto.jpg' },
+      verso: { file: 'baptism-in-pool-verso.jpg' },
+      description: 'This photograph depicts a baptism in a pool likely in Jacobia, Texas. There are three main figures in the center of the image and then several people at the top and at the bottom of the picture. No one is identified.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-mable-girdner-eula',
+      title: '[Mable Swann and Eula Girdner]',
+      controlNumber: 'a.1.5.1',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1909-1911]',
+        earliest: 1909,
+        latest: 1911,
+        basis: [
+          'This is an estimated date. Based on the ages of those depicts, the date has been estimated to be between 1909 and 1911',
+        ],
+        confidence: 'probable',
+      },
+      depicts: [
+        {
+          person: 'waddle-mable-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'smith-eula-belle-girdner',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'swann-mable-girner-eula-recto.jpg' },
+      verso: { file: 'swann-mable-girner-eula-verso.jpg' },
+      description: 'This photograph depicts Mable Swann and Eula Girdner.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      related: [
+        {
+          slug: 'eula-girdner-loveta-swann-ila-hancock',
+          relation:
+            'Photographs appear to be taken at the same time.',
+        },
+      ]
+    },
+    {
+      slug: 'girdner-c-e-2',
+      title: 'Uncle Charley about 1930 at Sam McKinstry home',
+      controlNumber: 'a.1.5.4',
+      titleSource: 'inscribed',
+      place: 'Hagerman, New Mexico',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1930]',
+        basis: [
+          'Verso identifies a possible date.',
+        ],
+        confidence: 'probable',
+      },
+       inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Uncle Charley abt. 1930 at Sam McKinstry home.',
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'girdner-c-e-2-recto.jpg' },
+      verso: { file: 'girdner-c-e-2-verso.jpg' },
+      depicts: [
+        {
+          person: 'girdner-charles-edgar',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ],
+      description: 'This is a photograph of a seated C.E. Girdner at the home of Sam and Loveta McKinstry. The photograph shows the interior of their home. This was likely taken around 1930.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-loveta-and-mable-swann-2',
+      title: '[Loveta Swann and Mable Swann]',
+      controlNumber: 'a.1.6.1',
+      titleSource: 'supplied',
+      place: 'Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1910]',
+        basis: [
+          'Verso identifies 1910 as the date',
+        ],
+        confidence: 'probable',
+      },
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Mabel and Loveta (Swan)',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'waddle-mable-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ],
+      format: 'mounted photograph',
+      recto: { file: 'swann-loveta-and-mable-swann-2-recto.jpg' },
+      verso: { file: 'swann-loveta-and-mable-swann-2-verso.jpg' },
+      description: 'This is a portrait-style mounted photograph of Loveta and Mable Swann taken around 1910.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-zirkle-major-2',
+      title: 'Minnie McKinstry, Eva West, Mrs. Major, Eva Major, Loveta McKinstry',
+      controlNumber: 'a.1.6.3',
+      titleSource: 'supplied',
+      place: 'Dallas, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1940-1945]',
+        earliest: 1940,
+        latest: 1945,
+        basis: [
+          'This is an estimated date, since it shows Loveta, Minnie, and Eva later in life. A date past 1945 is possible, but it is impossible to ascertain.',
+        ],
+        confidence: 'probable',
+      },
+       inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Minnie, Eva, Major, Eva + Loveta. Taken in Dallas at Eva + Glenn Zirkle home.',
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'swann-zirkle-major-2-recto.jpg' },
+      verso: { file: 'swann-zirkle-major-2-verso.jpg' },
+      depicts: [
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          as: 'Eva Major Zirkle',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          as: 'Gertrude Major (Mrs. Major)',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ],
+      description: 'This is a photograph of Minnie McKinstry Swann, Loveta McKinstry Swann, Eva Major Zirkle, Eva West, and Mrs. Major. This photo was taken at the home of Eva and Glenn Zirkle.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'two-unknown-women',
+      title: '[Unknown women in stream]',
+      controlNumber: 'a.1.7.1',
+      titleSource: 'supplied',
+      place: 'Not identified',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1920-1925]',
+        earliest: 1920,
+        latest: 1925,
+        basis: [
+          'There is no date on this photograph. Minnie Swann McKinstry may be the woman on the right, but that is not certain. An early 1920s date is possible.',
+        ],
+        confidence: 'possible',
+      },
+      format: 'snapshot',
+      recto: { file: 'two-unknown-women-recto.jpg' },
+      verso: { file: 'two-unknown-women-verso.jpg' },
+      depicts: [
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'possible',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Possible based on likeness.',
+        },
+      ],
+      description: 'This photograph depicts two women standing in a stream. The woman on the right may be Minnie Swann McKinstry, but the photo is too blurry to definitively know.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'west-eva-swann-portrait',
+      title: 'Eva Swann West',
+      controlNumber: 'a.1.7.4',
+      titleSource: 'inscribed',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1900-1904]',
+        earliest: 1900,
+        latest: 1904,
+        basis: [
+          'Eva Swann appears to be between 14 and 18 in this portrait. This would date the photograph between 1900 and 1904.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'west-eva-swann-portrait-recto.jpg' },
+      verso: { file: 'west-eva-swann-portrait-verso.jpg' },
+      depicts: [
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ],
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Eva Swann West',
+        }
+      ],
+      description: 'This photograph depicts Eva Swann between the ages of 14 and 18, which would place this photograph between 1900 and 1904 while the family still resided in Jacobia, Texas.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-minnie-eva-loveta-annie-miller',
+      title: '[Minnie, Eva, and Loveta Swann and Annie Miller]',
+      controlNumber: 'a.1.8.1',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1910]',
+        basis: [
+          'Text on the verso suggests a date of about 1910. This seems likely.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'real photo postcard',
+      recto: { file: 'swann-minnie-eva-loveta-annie-miller-recto.jpg' },
+      verso: { file: 'swann-minnie-eva-loveta-annie-miller-verso.jpg' },
+      depicts: [
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          as: 'Annie Miller',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ],
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Loveta Swann, Eva ", Minnie ", Annie Miller (cousin)',
+        }
+      ],
+      description: 'This photograph depicts sisters Minnie, Eva, and Loveta Swann and a cousin Annie Miller. A date on the verso suggests this photograph was taken about 1910. Nothing disputes that.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'jacobia-picnic-1901',
+      title: 'Picnic in 1901 at Jacobia',
+      controlNumber: 'a.1.8.3',
+      titleSource: 'inscribed',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '1901',
+        basis: [
+          'Text on verso identifies date.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'jacobia-picnic-1901-recto.jpg' },
+      verso: { file: 'jacobia-picnic-1901-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Picnic in 1901 at Jacobia',
+        }
+      ],
+      description: 'This photograph depicts a picnic in Jacobia in 1901. Individuals cannot be identified from the picture.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'eula-girdner-loveta-swann-ila-hancock',
+      title: '[Eula Girdner, Loveta Swann, Ila Hancock]',
+      controlNumber: 'a.1.9.1',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '1901',
+        basis: [
+          'This is an estimated date. Based on the ages of those depicts, the date has been estimated to be between 1909 and 1911.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'eula-girdner-loveta-swann-ila-hancock-recto.jpg' },
+      verso: { file: 'eula-girdner-loveta-swann-ila-hancock-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Top row left to right: Eula Girdner, Loveta Swann, Eula Girdner, Ila Hancock.',
+        }
+      ],
+      description: 'This photograph depicts Eula Girdner, Loveta Swann, and Ila Hancock between the dates of 1909 and 1911.',
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'smith-eula-belle-girdner',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          as: 'Ila Hancock',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      related: [
+        {
+          slug: 'swann-mable-girdner-eula',
+          relation:
+            'Photographs appear to be taken at the same time.',
+        },
+      ],
+    },
+    {
+      slug: 'swann-loveta-baccalaureate',
+      title: 'Loveta\'s baccalaureate dress and hat',
+      controlNumber: 'a.1.9.2',
+      titleSource: 'inscribed',
+      place: 'Hagerman, New Mexico',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '1910',
+        basis: [
+          'The date is inscribed on the verso',
+        ],
+        confidence: 'certain',
+      },
+      format: 'real photo postcard',
+      recto: { file: 'swann-loveta-baccalaureate-dress-recto.jpg' },
+      verso: { file: 'swann-loveta-baccalaureate-dress-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Loveta\'s baccalaureate dress + hat. 17 yrs old. 1910',
+        }
+      ],
+      description: 'This photograph depicts Loveta Swann in her baccalaureate dress and hat in 1910. The family had moved to New Mexico by this date, so it was likely taken in New Mexico.',
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
     },
   ],
 };
