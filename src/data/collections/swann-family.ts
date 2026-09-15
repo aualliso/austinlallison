@@ -927,5 +927,193 @@ export const COLLECTION: Collection = {
         note: 'Photographer unidentified; unpublished.',
       },
     },
+    {
+      slug: 'swann-austin-portrait',
+      title: 'Portrait of Austin Swann',
+      controlNumber: 'a.1.1.1',
+      titleSource: 'supplied',
+      place: 'Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1890-1895]',
+        earliest: 1890,
+        latest: 1895,
+        basis: [
+          'There is nothing on this photograph to pinpoint a certain date. Austin Swann appears older in this photograph than the wedding photoraph from 1886. There is a complementary portrait of Nannie Swann likely taken at the same time as this one. She died in 1896, so these photos must be from before then.',
+        ],
+        confidence: 'probable',
+      },
+      depicts: [
+        {
+          person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Can confirm the identity.',
+        },
+      ],
+      format: 'tintype',
+      recto: { file: 'swann-austin-portrait-recto.jpg' },
+      views : [
+        { file: 'swann-austin-portrait-recto-enhanced.jpg', label: 'Color enhanced version'},
+      ],
+      description: 'This is a portrait of Austin Swann likely dating from between 1890 and 1895. ',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-loveta-and-mable-swann',
+      title: '[Loveta Swann and Mable Swann]',
+      controlNumber: 'a.1.1.2',
+      titleSource: 'supplied',
+      place: 'Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1901-1905]',
+        earliest: 1901,
+        latest: 1905,
+        basis: [
+          'Loveta appears to be between 8 and 12 years old, which would place this photograph between 1901 and 1905.',
+        ],
+        confidence: 'probable',
+      },
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          person: 'waddle-mable-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'swann-loveta-and-mable-recto.jpg' },
+      verso: { file: 'swann-loveta-and-mable-verso.jpg' },
+      description: 'This is a candid snapshot of Loveta Swann and Mable Swann, who was the daughter of John Milton Swann and Gussie Cody Swann. Both are wearing sombrero-style hats.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      related :[
+        {
+          slug: 'waddle-arthur-1',
+          relation: 'Appears to be from the same session. Photographs are the same, small size.'
+        },
+        {
+          slug: 'waddle-arthur-2',
+          relation: 'Appears to be from the same session. Photographs are the same, small size.'
+        },
+      ]
+    },
+    {
+      slug: 'waddle-arthur-1',
+      title: 'Arthur Waddle',
+      controlNumber: 'a.1.1.3',
+      titleSource: 'supplied',
+      place: 'Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1901-1905]',
+        earliest: 1901,
+        latest: 1905,
+        basis: [
+          'This photograph appears to be from the same session as the photograph that contains Loveta and Mable Swann.',
+        ],
+        confidence: 'probable',
+      },
+      depicts: [
+        {
+          person: 'waddle-william-arthur',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'waddle-arthur-portrait-recto.jpg' },
+      verso: { file: 'waddle-arthur-portrait-verso.jpg' },
+      description: 'This is a candid snapshot of Arthur Waddle. This photograph appears to be from the same session as others in this series. Arthur Waddle and Mable Swann later married.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      related :[
+        {
+          slug: 'swann-loveta-and-mable-swann',
+          relation: 'Appears to be from the same session. Photographs are the same, small size.'
+        },
+        {
+          slug: 'waddle-arthur-2',
+          relation: 'Appears to be from the same session. Photographs are the same, small size.'
+        },
+      ],
+    },
+    {
+      slug: 'waddle-arthur-2',
+      title: '[Arthur Waddle and unnamed friend]',
+      controlNumber: 'a.1.1.4',
+      titleSource: 'supplied',
+      place: 'Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1901-1905]',
+        earliest: 1901,
+        latest: 1905,
+        basis: [
+          'This photograph appears to be from the same session as the photograph that contains Loveta and Mable Swann and the photograph of only Arthur Waddle.',
+        ],
+        confidence: 'probable',
+      },
+      depicts: [
+        {
+          person: 'waddle-william-arthur',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+        },
+        {
+          as: 'unidentified male',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Not identified on verso.',
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'waddle-arthur-portrait-2-recto.jpg' },
+      verso: { file: 'waddle-arthur-portrait-2-verso.jpg' },
+      description: 'This is a candid snapshot of Arthur Waddle and another unidentified male. This photograph appears to be from the same session as others in this series. Arthur Waddle and Mable Swann later married.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      related :[
+        {
+          slug: 'swann-loveta-and-mable-swann',
+          relation: 'Appears to be from the same session. Photographs are the same, small size.'
+        },
+        {
+          slug: 'waddle-arthur-1',
+          relation: 'Appears to be from the same session. Photographs are the same, small size.'
+        },
+      ],
+    },
   ],
 };

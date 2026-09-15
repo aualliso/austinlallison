@@ -44,6 +44,16 @@ const label = (c2: string) =>
 const nameOf = (d: { person?: string; as?: string }) =>
   d.person ? naturalNameWithDates(personById.get(d.person)!) : (d.as as string);
 
+// A SHARED BASIS IS PRINTED ONCE, not once per person. item.identificationBasis
+// inherits to every depiction that sets none, which is right in the data and
+// unreadable on the page: three people off one verso means the same sentence
+// three times, and the fourteen-name verso on the Benjamin B. Thomas portrait
+// would mean it fourteen times. Hoisted, the per-person line carries only what
+// is TRUE OF THAT PERSON - and a basis that differs from the shared one stands
+// out instead of being buried in repetition.
+const bases = [...new Set(item.depicts.map((d) => d.basis))];
+const sharedBasis = item.depicts.length > 1 && bases.length === 1 ? bases[0] : null;
+
 const details = item.details ?? [];
 const alt = item.description ?? item.title;
 const altFor = (label: string, first: boolean) =>
@@ -74,6 +84,9 @@ const altFor = (label: string, first: boolean) =>
               sizes="(min-width: 1024px) 46vw, calc(100vw - 3.5rem)"
               data-face={f.key}
               data-big={f.img.detail}
+              data-study={f.img.study}
+              data-study-w={f.img.studyWidth}
+              data-title={n === 0 ? item.title : `${f.label} \u2014 ${item.title}`}
               width={f.img.width}
               height={f.img.height}
               alt={altFor(f.label, n === 0)}
@@ -174,19 +187,40 @@ const altFor = (label: string, first: boolean) =>
         {item.depicts.length > 0 && (
           <section class="mb-7">
             <h3 class={H3}>People</h3>
+
+            {sharedBasis && (
+              <p class="text-sm opacity-75 m-0 mb-2.5">
+                <span class={QUAL}>All identifications</span> &mdash; {sharedBasis}
+              </p>
+            )}
+
             <ul class="list-none p-0 m-0">
               {item.depicts.map((d) => (
                 <li class="border-t border-haze first:border-t-0 py-2.5 first:pt-0">
-                  <div class="text-[1.05rem]">
+                  {/* Name and POSITION on one line: you read the name and look
+                      straight back at the photograph, so the locator has to be
+                      where your eye already is. Quiet and mono, because it is
+                      apparatus rather than description. */}
+                  <div class="text-[1.05rem] flex flex-wrap items-baseline gap-x-2">
                     {d.person
                       ? <a href={personHref(d.person)} class={LINK}>{nameOf(d)}</a>
                       : <span class="italic opacity-60">{nameOf(d)}</span>}
+                    {d.position && (
+                      <span class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage">
+                        {d.position}
+                      </span>
+                    )}
                   </div>
-                  <div class="text-sm opacity-75 mt-0.5">
-                    {label(d.confidence) && <span class={QUAL}>{label(d.confidence)}</span>}
-                    {label(d.confidence) && <span> &mdash; </span>}
-                    {d.basis}
-                  </div>
+
+                  {/* Confidence always. Basis only where it is not the shared
+                      one already printed above. */}
+                  {(label(d.confidence) || d.basis !== sharedBasis) && (
+                    <div class="text-sm opacity-75 mt-0.5">
+                      {label(d.confidence) && <span class={QUAL}>{label(d.confidence)}</span>}
+                      {label(d.confidence) && d.basis !== sharedBasis && <span> &mdash; </span>}
+                      {d.basis !== sharedBasis && d.basis}
+                    </div>
+                  )}
                 </li>
               ))}
             </ul>
@@ -257,18 +291,52 @@ const altFor = (label: string, first: boolean) =>
     </div>
   </div>
 
-  <!-- EXAMINE -->
-  <div id="examine" hidden aria-modal="true" role="dialog" aria-label="Examine the photograph">
-    <div class="ex-bar">
-      <span id="ex-cap"></span>
-      <span class="ex-ctl">
-        <button type="button" data-ex="out" aria-label="Zoom out">&minus;</button>
-        <button type="button" data-ex="in" aria-label="Zoom in">+</button>
-        <button type="button" data-ex="fit">fit</button>
-        <button type="button" data-ex="close">close</button>
-      </span>
-    </div>
+  <!-- EXAMINE
+       The stage is the whole viewport and the chrome FLOATS OVER IT. The old
+       layout put a bar in normal flow above the stage, so a long description
+       wrapped to four lines and took that height off the photograph - the more
+       there was to say about a picture, the less of it you could see.
+
+       The description is no longer in the bar. The bar carries the title on one
+       line; the description lives in a panel that opens on request and is shut
+       by default. A detail button is the exception and opens its own caption,
+       because with a detail the caption IS the point. -->
+  <div
+    id="examine"
+    hidden
+    aria-modal="true"
+    role="dialog"
+    aria-label="Examine the photograph"
+    data-note={item.description ?? ''}
+  >
     <div id="ex-stage"><img id="ex-img" alt=""></div>
+
+    <div class="ex-top">
+      <p class="ex-title" id="ex-title"></p>
+      <div class="ex-ctl">
+        {faces.length > 1 && (
+          <span class="ex-group">
+            {faces.map((f, n) => (
+              <button
+                type="button"
+                data-ex-face={f.key}
+                class={`ex-face${n === 0 ? ' is-on' : ''}`}
+              >{f.label}</button>
+            ))}
+          </span>
+        )}
+        <span class="ex-group">
+          <button type="button" data-ex="out" aria-label="Zoom out">&minus;</button>
+          <span id="ex-pct" aria-live="polite">100%</span>
+          <button type="button" data-ex="in" aria-label="Zoom in">+</button>
+          <button type="button" data-ex="fit">Fit</button>
+        </span>
+        <button type="button" data-ex="info" aria-expanded="false" aria-controls="ex-note">Note</button>
+        <button type="button" data-ex="close" aria-label="Close">&#10005;</button>
+      </div>
+    </div>
+
+    <div id="ex-note" hidden><p id="ex-cap"></p></div>
   </div>
 </RootLayout>
 
@@ -293,43 +361,37 @@ const altFor = (label: string, first: boolean) =>
      controls - an id beats the UA stylesheet's [hidden] rule and the overlay
      is stuck open. Visibility rides on a class; #examine[hidden] is a belt
      for the same braces. */
+  /* THE GROUND IS DARK, and that is the main reason this looks better than it
+     did. A cream overlay puts the page's own paper-white next to the print's
+     paper-white, and the two compete - highlights stop reading as highlights
+     and the photograph looks washed. Against ink, the photograph is the only
+     lit thing on the screen, which is the whole point of examining it.
+
+     Still no filter, mix-blend-mode, mask-image or clip-path anywhere here.
+     The gradient on the bar is plain paint and the image still moves on
+     transform alone. */
   #examine {
     position: fixed;
     inset: 0;
     z-index: 60;
     display: none;
-    flex-direction: column;
-    background: var(--color-canvas, #F7F4EC);
+    background: #17150F;
+    color: #E8E2D6;
+    --ex-pad: clamp(0.55rem, 2vw, 1.1rem);
+    --ex-chrome: 3.7rem;
   }
-  #examine.is-open { display: flex; }
+  /* Block, not flex: the stage, the bar and the note are all positioned
+     against this box rather than stacked in flow. */
+  #examine.is-open { display: block; }
   #examine[hidden] { display: none; }
-  .ex-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.6rem 0.9rem;
-    border-bottom: 1px solid currentColor;
-    min-height: 2.9rem;
-  }
-  #ex-cap { opacity: 0.8; max-width: 60ch; font-size: 0.95rem; }
-  .ex-ctl { display: flex; gap: 0.3rem; flex-shrink: 0; }
-  .ex-ctl button {
-    font-family: ui-monospace, monospace;
-    font-size: 0.66rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    background: none;
-    border: 1px solid currentColor;
-    color: inherit;
-    padding: 0.3rem 0.6rem;
-    cursor: pointer;
-    border-radius: 2px;
-    opacity: 0.7;
-  }
-  .ex-ctl button:hover { opacity: 1; }
+
+  /* The stage is the entire overlay. The padding keeps a FITTED image clear of
+     the bar, while a zoomed one still pans across the full viewport. */
   #ex-stage {
-    flex: 1;
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    padding: var(--ex-chrome) var(--ex-pad) var(--ex-pad);
     overflow: hidden;
     display: flex;
     align-items: center;
@@ -338,12 +400,150 @@ const altFor = (label: string, first: boolean) =>
   }
   #ex-stage.can-pan { cursor: grab; }
   #ex-stage.can-pan:active { cursor: grabbing; }
-  #ex-img { -webkit-user-drag: none; user-select: none; }
   #ex-img {
     max-width: 100%;
     max-height: 100%;
     transform-origin: center center;
-    will-change: transform;
+    -webkit-user-drag: none;
+    user-select: none;
+    box-shadow: 0 1px 24px rgba(0, 0, 0, 0.55);
+  }
+  /* will-change ONLY WHILE MOVING, which is what it is for. Left on
+     permanently it pins the photograph in a compositor layer rasterised at its
+     fitted size - a 560px-wide texture that the GPU then stretches to whatever
+     the zoom says. That is the bug this whole pass is about: the layer is why
+     a 3178px file and a 1763px file looked identical at 6x. */
+  #ex-img.is-moving { will-change: transform; }
+
+  /* pointer-events: none on the bar itself, auto on its contents - so a drag
+     that starts over the gradient still reaches the stage and pans. */
+  .ex-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.9rem;
+    padding: var(--ex-pad);
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      rgba(10, 9, 6, 0.94),
+      rgba(10, 9, 6, 0.70) 58%,
+      rgba(10, 9, 6, 0)
+    );
+  }
+  .ex-top > * { pointer-events: auto; }
+
+  /* ONE LINE, ALWAYS. min-width: 0 is what actually lets it truncate - a flex
+     item will not shrink below its content without it, and the title would
+     push the controls off the right edge instead of ellipsing. */
+  .ex-title {
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    font-family: ui-monospace, monospace;
+    font-size: 0.67rem;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: #BDB4A0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .ex-ctl {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    flex-shrink: 0;
+  }
+  .ex-group {
+    display: flex;
+    align-items: center;
+    gap: 1px;
+  }
+  .ex-ctl button {
+    font-family: ui-monospace, monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: rgba(247, 244, 236, 0.07);
+    border: 1px solid rgba(247, 244, 236, 0.17);
+    color: #E8E2D6;
+    min-width: 2.3rem;
+    height: 2.3rem;
+    padding: 0 0.62rem;
+    cursor: pointer;
+    border-radius: 2px;
+  }
+  .ex-group button { border-radius: 0; }
+  .ex-group button:first-child { border-radius: 2px 0 0 2px; }
+  .ex-group button:last-child { border-radius: 0 2px 2px 0; }
+  .ex-ctl button:hover {
+    background: rgba(247, 244, 236, 0.16);
+    border-color: rgba(247, 244, 236, 0.42);
+  }
+  .ex-ctl button:focus-visible {
+    outline: 2px solid #C4785A;
+    outline-offset: 1px;
+  }
+  .ex-ctl button.is-on {
+    background: #9C5B3F;
+    border-color: #9C5B3F;
+    color: #F7F4EC;
+  }
+  /* An item with no description leaves nothing for the note to hold. Say so by
+     dimming the control rather than opening an empty panel. */
+  .ex-ctl button:disabled {
+    opacity: 0.32;
+    cursor: default;
+    background: none;
+  }
+  .ex-ctl button:disabled:hover { border-color: rgba(247, 244, 236, 0.17); }
+  #ex-pct {
+    font-family: ui-monospace, monospace;
+    font-size: 0.62rem;
+    letter-spacing: 0.06em;
+    color: #A79D89;
+    min-width: 3.1rem;
+    height: 2.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-block: 1px solid rgba(247, 244, 236, 0.17);
+    background: rgba(247, 244, 236, 0.04);
+  }
+
+  /* Floats over the photograph rather than sitting above it, so opening the
+     note costs no stage height. Capped in CH, because a description set the
+     full width of a 27-inch monitor is unreadable however much room there is. */
+  #ex-note {
+    position: absolute;
+    left: var(--ex-pad);
+    bottom: var(--ex-pad);
+    max-width: min(54ch, calc(100% - var(--ex-pad) * 2));
+    box-sizing: border-box;
+    padding: 0.8rem 1rem;
+    background: rgba(10, 9, 6, 0.90);
+    border: 1px solid rgba(247, 244, 236, 0.15);
+    border-left: 2px solid #9C5B3F;
+    border-radius: 2px;
+  }
+  #ex-note[hidden] { display: none; }
+  #ex-cap {
+    margin: 0;
+    font-size: 0.93rem;
+    line-height: 1.55;
+    color: #DCD5C6;
+  }
+
+  @media (max-width: 640px) {
+    #examine { --ex-chrome: 3.4rem; }
+    .ex-title { display: none; }
+    .ex-ctl { width: 100%; justify-content: flex-end; }
   }
   @media print {
     #examine, .examine-btn, [data-faces], .det-btn { display: none !important; }
@@ -365,6 +565,11 @@ const altFor = (label: string, first: boolean) =>
     const stage = document.getElementById('ex-stage')!;
     const img = document.getElementById('ex-img') as HTMLImageElement;
     const cap = document.getElementById('ex-cap')!;
+    const note = document.getElementById('ex-note') as HTMLElement;
+    const exTitle = document.getElementById('ex-title')!;
+    const pct = document.getElementById('ex-pct')!;
+    const infoBtn = document.querySelector<HTMLButtonElement>('[data-ex="info"]');
+    const exFaceBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-ex-face]'));
     const examineBtn = document.querySelector<HTMLButtonElement>('[data-examine]');
 
     // Start shut regardless of what the markup says.
@@ -382,13 +587,104 @@ const altFor = (label: string, first: boolean) =>
 
     let k = 1, tx = 0, ty = 0;
     let drag: { x: number; y: number } | null = null;
+
+    // TWO PLACES A ZOOM CAN LIVE, and the viewer uses both on purpose.
+    //
+    // transform: scale() is smooth and costs no layout, but the browser
+    // rasterises the element ONCE at its layout size and has the GPU stretch
+    // that texture. Whatever resolution the file behind it has is thrown away.
+    //
+    // A layout width costs a reflow but is rasterised at its real size, so the
+    // pixels actually arrive.
+    //
+    // So: transform WHILE THE GESTURE IS RUNNING, committed to layout width
+    // once it stops. Smooth while you move, sharp the moment you stop to read.
+    // `layoutK` is how much of the zoom is currently baked into the layout;
+    // the transform carries the remainder, k / layoutK.
+    let baseW = 0, baseH = 0;   // the fitted size, at k = 1
+    let layoutK = 1;
+    let settle = 0;
+
+    let bestW = 0;            // natural width of the largest file for this face
+    let studySrc = '';        // that file's url
+    let upgraded = false;     // has it been fetched for this open()
+    const inBtn = document.querySelector<HTMLButtonElement>('[data-ex="in"]');
+
+    const resetLayout = () => {
+      layoutK = 1;
+      img.style.width = '';
+      img.style.height = '';
+      img.style.maxWidth = '';
+      img.style.maxHeight = '';
+    };
+    // Reading offsetWidth with the inline sizing cleared gives the fit size.
+    const remeasure = () => {
+      resetLayout();
+      baseW = img.offsetWidth;
+      baseH = img.offsetHeight;
+    };
+
+    const maxK = () => {
+      if (!baseW || !bestW) return 4;
+      const dpr = window.devicePixelRatio || 1;
+      return Math.max(1, (bestW / baseW) * dpr);
+    };
+
+    // NEVER lay out larger than the file itself. Past 1:1 there are no more
+    // pixels to show, and a layer that big is the 200 MB decode that takes
+    // Firefox Android down - the transform can carry anything above it.
+    const commit = () => {
+      window.clearTimeout(settle);
+      // Drop the hint FIRST. An early return below is the common case - the
+      // zoom did not move enough to matter - and leaving will-change on would
+      // pin the layer exactly as before and reinstate the bug.
+      img.classList.remove('is-moving');
+      if (!baseW || !bestW) return;
+      const want = Math.min(k, bestW / baseW);
+      if (Math.abs(want - layoutK) < 0.01) return;
+      layoutK = want;
+      if (layoutK === 1) {
+        resetLayout();
+      } else {
+        img.style.maxWidth = 'none';
+        img.style.maxHeight = 'none';
+        img.style.width = `${Math.round(baseW * layoutK)}px`;
+        img.style.height = `${Math.round(baseH * layoutK)}px`;
+      }
+      paint();
+    };
+    const commitSoon = (ms = 140) => {
+      img.classList.add('is-moving');
+      window.clearTimeout(settle);
+      settle = window.setTimeout(commit, ms);
+    };
+
+    // THE ZOOM CEILING IS THE PIXELS WE ACTUALLY HAVE, not a flat 12x.
+
+    // Swap the pixels, keep the transform. Preloading through an Image() means
+    // the file is in cache before the src changes, so the picture does not
+    // blink out and back at whatever magnification you were reading at.
+    const upgrade = () => {
+      if (upgraded || !studySrc || studySrc === img.src) return;
+      upgraded = true;
+      const pre = new Image();
+      pre.addEventListener('load', () => {
+        if (overlay.hidden) return;
+        img.src = studySrc;
+        paint();
+      }, { once: true });
+      pre.src = studySrc;
+    };
     // Panning is CLAMPED to the image's own edges, so the photograph can never
     // be shoved off the stage and lost - whatever else goes wrong.
     const clamp = () => {
       if (k <= 1) { tx = 0; ty = 0; return; }
       const r = stage.getBoundingClientRect();
-      const w = img.offsetWidth * k;
-      const h = img.offsetHeight * k;
+      // baseW/baseH, NOT offsetWidth: once a zoom is committed the element's
+      // own width already carries layoutK, and multiplying by k again would
+      // clamp against a box several times too large.
+      const w = baseW * k;
+      const h = baseH * k;
       const maxX = Math.max(0, (w - r.width) / 2);
       const maxY = Math.max(0, (h - r.height) / 2);
       tx = Math.max(-maxX, Math.min(maxX, tx));
@@ -396,13 +692,43 @@ const altFor = (label: string, first: boolean) =>
     };
     const paint = () => {
       clamp();
-      img.style.transform = `translate(${tx}px, ${ty}px) scale(${k})`;
+      img.style.transform = `translate(${tx}px, ${ty}px) scale(${k / layoutK})`;
       stage.classList.toggle('can-pan', k > 1);
+      pct.textContent = `${Math.round(k * 100)}%`;
+      if (inBtn) inBtn.disabled = k >= maxK() - 0.001;
+      if (k > 1.5) upgrade();
     };
-    const fit = () => { k = 1; tx = 0; ty = 0; paint(); };
-    const open = (src: string, caption: string) => {
+    const fit = () => { k = 1; tx = 0; ty = 0; remeasure(); paint(); };
+
+    // The note is SHUT unless someone asks for it, with one exception: a detail
+    // button, where the caption is the reason you pressed it.
+    const showNote = (on: boolean) => {
+      const has = !!cap.textContent?.trim();
+      note.hidden = !(on && has);
+      infoBtn?.setAttribute('aria-expanded', String(!note.hidden));
+      infoBtn?.classList.toggle('is-on', !note.hidden);
+      if (infoBtn) infoBtn.disabled = !has;
+    };
+
+    const markFace = (key: string) =>
+      exFaceBtns.forEach((b) => b.classList.toggle('is-on', b.dataset.exFace === key));
+
+    const open = (
+      src: string,
+      title: string,
+      caption: string,
+      openNote = false,
+      big?: { src: string; width: number }
+    ) => {
       img.src = src;
+      upgraded = false;
+      studySrc = big?.src || '';
+      bestW = big?.width || 0;
+      baseW = 0; baseH = 0;
+      resetLayout();
+      exTitle.textContent = title;
       cap.textContent = caption;
+      showNote(openNote);
       overlay.hidden = false;
       overlay.classList.add('is-open');
       document.body.style.overflow = 'hidden';
@@ -414,34 +740,73 @@ const altFor = (label: string, first: boolean) =>
       overlay.hidden = true;
       document.body.style.overflow = '';
       img.removeAttribute('src');
+      note.hidden = true;
+      window.clearTimeout(settle);
+      img.classList.remove('is-moving');
+      resetLayout();
       k = 1; tx = 0; ty = 0;
     };
     const frame = (d: DOMStringMap) => {
       const r = stage.getBoundingClientRect();
-      const ir = img.getBoundingClientRect();
-      const bw = ir.width / k, bh = ir.height / k;
+      const bw = baseW, bh = baseH;
       const w = Number(d.w), h = Number(d.h), x = Number(d.x), y = Number(d.y);
-      k = Math.min(r.width / (bw * w / 100), r.height / (bh * h / 100)) * 0.92;
+      k = Math.min(
+        Math.min(r.width / (bw * w / 100), r.height / (bh * h / 100)) * 0.92,
+        maxK()
+      );
       tx = (0.5 - (x + w / 2) / 100) * bw * k;
       ty = (0.5 - (y + h / 2) / 100) * bh * k;
       paint();
+      commit();
     };
+    const bigOf = (f: HTMLImageElement) => ({
+      src: f.dataset.study || f.dataset.big || f.src,
+      width: Number(f.dataset.studyW) || 0,
+    });
+
     const faceSrc = (key: string) => {
       const f = faces.find((x) => x.dataset.face === key) || faces[0];
       return { src: f.dataset.big || f.src, alt: f.alt };
     };
 
+    const noteText = () => overlay.dataset.note || '';
+
     examineBtn?.addEventListener('click', () => {
       const on = faces.find((f) => f.classList.contains('is-on')) || faces[0];
-      open(on.dataset.big || on.src, on.alt);
+      markFace(on.dataset.face || 'recto');
+      open(on.dataset.big || on.src, on.dataset.title || on.alt, noteText(), false, bigOf(on));
     });
+
+    // Recto and verso are switchable WITHOUT leaving the viewer. Comparing the
+    // two is most of what a verso is for, and closing and reopening to do it
+    // threw away your zoom every time.
+    exFaceBtns.forEach((b) =>
+      b.addEventListener('click', () => {
+        const key = b.dataset.exFace || 'recto';
+        showFace(key);
+        markFace(key);
+        const f = faces.find((x) => x.dataset.face === key) || faces[0];
+        img.src = f.dataset.big || f.src;
+        upgraded = false;
+        const big = bigOf(f);
+        studySrc = big.src;
+        bestW = big.width;
+        exTitle.textContent = f.dataset.title || f.alt;
+        cap.textContent = noteText();
+        showNote(false);
+        fit();
+      })
+    );
 
     document.querySelectorAll<HTMLButtonElement>('.det-btn').forEach((b) => {
       b.addEventListener('click', () => {
         const key = b.dataset.face || 'recto';
         showFace(key);
         const { src } = faceSrc(key);
-        open(src, b.dataset.cap || '');
+        const f = faces.find((x) => x.dataset.face === key) || faces[0];
+        markFace(key);
+        open(src, f.dataset.title || f.alt, b.dataset.cap || '', true, bigOf(f));
+        upgrade();   // a detail IS a close crop; do not wait to be asked
         const go = () => { fit(); frame(b.dataset); };
         if (img.complete && img.naturalWidth) go();
         else img.addEventListener('load', go, { once: true });
@@ -452,9 +817,10 @@ const altFor = (label: string, first: boolean) =>
       const t = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-ex]');
       if (t) {
         if (t.dataset.ex === 'close') close();
-        if (t.dataset.ex === 'in') { k = Math.min(k * 1.4, 12); paint(); }
-        if (t.dataset.ex === 'out') { k = Math.max(k / 1.4, 1); paint(); }
+        if (t.dataset.ex === 'in') { k = Math.min(k * 1.4, maxK()); paint(); commit(); }
+        if (t.dataset.ex === 'out') { k = Math.max(k / 1.4, 1); paint(); commit(); }
         if (t.dataset.ex === 'fit') fit();
+        if (t.dataset.ex === 'info') showNote(note.hidden);
         return;
       }
       if (e.target === stage && k <= 1) close();
@@ -462,8 +828,9 @@ const altFor = (label: string, first: boolean) =>
     stage.addEventListener('wheel', (e) => {
       if (overlay.hidden) return;
       e.preventDefault();
-      k = Math.max(1, Math.min(12, k * (e.deltaY < 0 ? 1.12 : 1 / 1.12)));
+      k = Math.max(1, Math.min(maxK(), k * (e.deltaY < 0 ? 1.12 : 1 / 1.12)));
       paint();
+      commitSoon();
     }, { passive: false });
     // DRAGGING. The rule that matters is the `e.buttons` test in pointermove:
     // it asks the browser whether a button is CURRENTLY held rather than
@@ -472,13 +839,14 @@ const altFor = (label: string, first: boolean) =>
     // pointercancel fires instead - and any of those used to leave the drag
     // latched on, so the photograph followed the bare cursor around the
     // screen. State that can be read directly should never be remembered.
-    const endDrag = () => { drag = null; };
+    const endDrag = () => { drag = null; img.classList.remove('is-moving'); };
 
     stage.addEventListener('pointerdown', (e) => {
       if (e.button !== 0) return;                       // left button only
       if ((e.target as HTMLElement).closest('[data-ex]')) return;  // not the controls
       if (k <= 1) return;                               // nothing to pan yet
       drag = { x: e.clientX - tx, y: e.clientY - ty };
+      img.classList.add('is-moving');
       try { stage.setPointerCapture(e.pointerId); } catch { /* not fatal */ }
       e.preventDefault();
     });
@@ -497,9 +865,28 @@ const altFor = (label: string, first: boolean) =>
     stage.addEventListener('pointerleave', endDrag);
     window.addEventListener('pointerup', endDrag);
     window.addEventListener('blur', endDrag);
+    // maxK() needs a laid-out image, and at the moment open() runs there is
+    // not one yet. Repaint once each file lands so the ceiling and the state
+    // of the + button settle on real numbers.
+    img.addEventListener('load', () => {
+      if (overlay.hidden) return;
+      if (k === 1) remeasure();     // the fitted size is only knowable now
+      paint();
+      if (k > 1) commit();          // an upgraded file re-rasterises at size
+    });
+
+    // The fit size is a function of the viewport, so it stops being true when
+    // the viewport changes. Cheaper to refit than to try to preserve the view.
+    window.addEventListener('resize', () => { if (!overlay.hidden) fit(); });
+
     // The browser's own image drag competes for the same gesture.
     img.addEventListener('dragstart', (e) => e.preventDefault());
-    img.addEventListener('dblclick', () => { k = k > 1 ? 1 : 3; tx = 0; ty = 0; paint(); });
+    img.addEventListener('dblclick', () => {
+      k = k > 1 ? 1 : Math.min(3, maxK());
+      tx = 0; ty = 0;
+      paint();
+      commit();
+    });
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && !overlay.hidden) close();
     });
