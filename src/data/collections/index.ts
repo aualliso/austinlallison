@@ -24,6 +24,7 @@ import type {
   Confidence,
   Inscription,
   Region,
+  Relation,
   ResolvedItem,
   Surrogate,
 } from './types';
@@ -249,19 +250,134 @@ for (const p of PEOPLE) {
  * The joins
  * ------------------------------------------------------------------ */
 
+/* Faces ------------------------------------------------------------ */
+
+/**
+ * A FACE is a depiction that names a person AND records where they are. Each
+ * one becomes a small crop cut from the source scan at build time, by the
+ * endpoint at src/pages/collections/faces/[face].webp.ts. The crop is a real
+ * file, not the whole scan scaled up inside a small box, so a person page with
+ * thirty faces loads thirty small images rather than decoding thirty large
+ * ones - which a phone would feel.
+ */
+export type Face = {
+  /** '<person>--<item slug>', with -2, -3 if someone appears twice in one item. */
+  id: string;
+  person: string;
+  item: ResolvedItem;
+  /** Which view of the object the region is on: 'recto', 'verso', a view key. */
+  view: string;
+  file: string;
+  collection: string;
+  region: Region;
+  confidence: Confidence;
+  basis: string;
+};
+
+/** Crop size at 1x. 4:5, the proportion of a carte de visite portrait. */
+export const FACE_W = 240;
+export const FACE_H = 300;
+
+const faceByDepiction = new Map<string, Face>();
+export const FACES: Face[] = (() => {
+  const seen = new Map<string, number>();
+  const out: Face[] = [];
+  for (const item of ALL_ITEMS) {
+    item.depicts.forEach((d, n) => {
+      if (!d.person || !d.region) return;
+      const view = d.region.face ?? 'recto';
+      const surface = item.faces.find((f) => f.key === view);
+      if (!surface) return; // unreachable: checkBox() has already thrown
+      const base = `${d.person}--${item.slug}`;
+      const count = (seen.get(base) ?? 0) + 1;
+      seen.set(base, count);
+      const face: Face = {
+        id: count > 1 ? `${base}-${count}` : base,
+        person: d.person,
+        item,
+        view,
+        file: surface.surrogate.file,
+        collection: item.collection,
+        region: d.region,
+        confidence: d.confidence,
+        basis: d.basis,
+      };
+      out.push(face);
+      faceByDepiction.set(`${item.slug}#${n}`, face);
+    });
+  }
+  return out;
+})();
+
+export const faceById = new Map(FACES.map((f) => [f.id, f]));
+export const faceHref = (id: string, density: 1 | 2 = 1) =>
+  `/collections/faces/${id}${density === 2 ? '@2x' : ''}.webp`;
+
 export type Appearance = {
   item: ResolvedItem;
   confidence: Confidence;
   basis: string;
+  position?: string;
+  region?: Region;
+  /** Set when this appearance has a region, and so a face crop. */
+  face?: Face;
 };
 
 /** Every appearance of a person, across every collection. */
 export const appearancesOf = (personId: string): Appearance[] =>
   ALL_ITEMS.flatMap((item) =>
-    item.depicts
-      .filter((d) => d.person === personId)
-      .map((d) => ({ item, confidence: d.confidence, basis: d.basis }))
+    item.depicts.flatMap((d, n) =>
+      d.person === personId
+        ? [
+            {
+              item,
+              confidence: d.confidence,
+              basis: d.basis,
+              position: d.position,
+              region: d.region,
+              face: faceByDepiction.get(`${item.slug}#${n}`),
+            },
+          ]
+        : []
+    )
   );
+
+/* Relations, both ways ---------------------------------------------- */
+
+const INVERSE: Record<Relation['type'], Relation['type']> = {
+  child: 'parent',
+  parent: 'child',
+  spouse: 'spouse',
+  sibling: 'sibling',
+};
+
+export type Kin = Relation & {
+  /** False when the relation was recorded on the OTHER person's record. */
+  stated: boolean;
+};
+
+/**
+ * A person's relations, including the reciprocals. A relation is entered once,
+ * on either record - "child: Bud" on Benjamin's - and both pages show it. An
+ * authority file that makes you enter every reciprocal by hand is one that
+ * will be missing half of them by the hundredth person.
+ */
+export const relationsOf = (personId: string): Kin[] => {
+  const out = new Map<string, Kin>();
+  for (const r of personById.get(personId)?.relations ?? []) {
+    out.set(`${r.type}|${r.person}`, { ...r, stated: true });
+  }
+  for (const other of PEOPLE) {
+    for (const r of other.relations ?? []) {
+      if (r.person !== personId) continue;
+      const key = `${INVERSE[r.type]}|${other.id}`;
+      if (!out.has(key)) {
+        out.set(key, { type: INVERSE[r.type], person: other.id, basis: r.basis, confidence: r.confidence, stated: false });
+      }
+    }
+  }
+  return [...out.values()];
+};
 
 /** People who appear in at least one item, with their appearance count. */
 export const PEOPLE_WITH_ITEMS: { person: Person; appearances: Appearance[] }[] =
@@ -445,3 +561,28 @@ export const keyItemsOf = (slug: string, n = 3): ResolvedItem[] => {
 export { PEOPLE, personById, NAME_INDEX };
 export { heading, headingDates, naturalName, naturalNameWithDates } from './types';
 export type { Collection, Item, Person, ResolvedItem };
+
+/* ------------------------------------------------------------------ *
+ * A warning, not an error: a photograph dated wholly outside a person's
+ * exact life dates. It can be right - a post-mortem portrait, a copy of an
+ * older photograph - so the build carries on; but it is far more often a
+ * mistyped year or a wrong identification, and worth a second look.
+ * ------------------------------------------------------------------ */
+{
+  const year = (v?: string) => (v && /^\d{3,4}$/.test(v.trim()) ? Number(v) : undefined);
+  for (const p of PEOPLE) {
+    if ((p.dateType ?? 'exact') !== 'exact') continue;
+    const born = year(p.birth);
+    const died = year(p.death);
+    for (const a of appearancesOf(p.id)) {
+      const s = spanOf(a.item);
+      if (!s || s.openStart || s.openEnd) continue;
+      if (born !== undefined && s.to < born) {
+        console.warn(`[collections] ${a.item.slug}: dated ${s.from}-${s.to}, before ${p.id} was born (${born}).`);
+      }
+      if (died !== undefined && s.from > died) {
+        console.warn(`[collections] ${a.item.slug}: dated ${s.from}-${s.to}, after ${p.id} died (${died}).`);
+      }
+    }
+  }
+}

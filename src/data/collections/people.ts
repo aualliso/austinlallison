@@ -273,7 +273,7 @@ export const PEOPLE: Person[] = [
     surname: 'Sheram',
     given: 'Frances Thomas',
     birth: '1901',
-    death: '1901',
+    death: '1990',
     status: 'established',
     relations: [
       { type: 'parent', person: 'thomas-john', basis: 'Established relationship', confidence: 'certain' },

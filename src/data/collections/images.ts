@@ -68,6 +68,7 @@
 // second deployed file have to earn themselves; below about a third again as
 // many pixels, nobody can see the difference and the study rung is skipped.
 
+import path from 'node:path';
 import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
@@ -117,21 +118,14 @@ const STUDY = 5000;
 const STUDY_MIN_GAIN = 1.3;
 
 /**
- * `collection` is the collection slug, `file` the Surrogate's file name.
- *
- * THROWS when the file is not found. It used to fall back to /public, and
- * that was a mistake: the fallback served the untouched original, so a
- * mistyped file name produced a page that built cleanly and looked terrible,
- * with the only clue a console line in dev. A build that stops and names the
- * file is worth more than one that quietly ships an 8000px scan.
+ * The glob key for a collection file: exact match, then a match on case alone
+ * (with a warning), then a loud failure that names what the folder DOES hold.
+ * Shared by plate() and sourcePath() so both find files the same way.
  */
-export async function plate(
-  collection: string,
-  file: string,
-  _fallback?: { width?: number; height?: number }
-): Promise<Rendered> {
+function resolveKey(collection: string, file: string): string {
   const key = `/src/assets/collections/${collection}/${file}`;
   let mod = sources[key];
+  let found = key;
 
   // Second chance on case alone, so a build on Windows and a build on Linux
   // resolve the same file.
@@ -139,6 +133,7 @@ export async function plate(
     const near = byLowerKey.get(key.toLowerCase());
     if (near) {
       mod = sources[near];
+      found = near;
       console.warn(
         `[collections] ${file} matched only on case: the data says "${file}", ` +
           `the file on disk is "${near.split('/').pop()}". Rename one so they ` +
@@ -166,6 +161,24 @@ export async function plate(
     );
   }
 
+  return found;
+}
+
+/**
+ * `collection` is the collection slug, `file` the Surrogate's file name.
+ *
+ * THROWS when the file is not found. It used to fall back to /public, and
+ * that was a mistake: the fallback served the untouched original, so a
+ * mistyped file name produced a page that built cleanly and looked terrible,
+ * with the only clue a console line in dev. A build that stops and names the
+ * file is worth more than one that quietly ships an 8000px scan.
+ */
+export async function plate(
+  collection: string,
+  file: string,
+  _fallback?: { width?: number; height?: number }
+): Promise<Rendered> {
+  const mod = sources[resolveKey(collection, file)];
   const src = mod.default;
   // cap() prevents upscaling: a small original silently yields smaller rungs
   // rather than a blurry large one. Duplicates are dropped so a small source
@@ -214,3 +227,11 @@ export async function plate(
     height: src.height,
   };
 }
+
+/**
+ * The source scan's path on disk, for build-time work that reads the original
+ * directly - the face crops in /collections/faces/ are cut from it with sharp.
+ * BUILD ONLY: it resolves against the project root the build runs in.
+ */
+export const sourcePath = (collection: string, file: string): string =>
+  path.join(process.cwd(), resolveKey(collection, file));

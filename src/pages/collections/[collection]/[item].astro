@@ -103,10 +103,15 @@ type Mark = Region & {
   face: string;
   tag: string;
   caption: string;
+  /** Person marks: the name as a label carries it, with no dates. */
+  name: string;
+  /** 'Possible' or 'Unidentified' - only doubt is spelled out on a label. */
+  qual: string;
+  doubtful: boolean;
 };
 const marks: Mark[] = [];
 (item.details ?? []).forEach((d, n) =>
-  marks.push({ id: `detail-${n + 1}`, kind: 'detail', face: d.face, x: d.x, y: d.y, w: d.w, h: d.h, tag: `${n + 1}`, caption: d.caption })
+  marks.push({ id: `detail-${n + 1}`, kind: 'detail', face: d.face, x: d.x, y: d.y, w: d.w, h: d.h, tag: `${n + 1}`, caption: d.caption, name: '', qual: '', doubtful: false })
 );
 let personNo = 0;
 const personMark = new Map<number, Mark>();
@@ -123,6 +128,9 @@ item.depicts.forEach((d, n) => {
     h: d.region.h,
     tag: `${++personNo}`,
     caption: `${nameOf(d)}${conf ? ` ${EM} ${conf}` : ''}. ${d.basis.charAt(0).toUpperCase()}${d.basis.slice(1)}`,
+    name: d.person ? naturalName(personById.get(d.person)!) : (d.as as string),
+    qual: d.confidence === 'certain' || d.confidence === 'probable' ? '' : conf,
+    doubtful: !(d.confidence === 'certain' || d.confidence === 'probable'),
   };
   marks.push(m);
   personMark.set(n, m);
@@ -140,6 +148,9 @@ item.inscriptions.forEach((ins, n) => {
     h: ins.region.h,
     tag: '',
     caption: ins.text,
+    name: '',
+    qual: '',
+    doubtful: false,
   };
   marks.push(m);
   inscriptionMark.set(n, m);
@@ -375,8 +386,15 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
                     {marks
                       .filter((m) => m.face === f.key)
                       .map((m) => (
-                        <span class:list={['mark', `mark--${m.kind}`]} data-mark={m.id} style={box(m)} aria-hidden="true">
-                          {m.tag && <b class="mark-tag">{m.tag}</b>}
+                        <span class:list={['region-box', `region-box--${m.kind}`, { 'is-doubtful': m.doubtful }]} data-mark={m.id} style={box(m)} aria-hidden="true">
+                          {m.tag && (
+                            <b class="region-tag">
+                              <span class="tag-n">{m.tag}</span>
+                              {m.doubtful && <span class="tag-qmark">?</span>}
+                              {m.name && <span class="tag-name">{m.name}</span>}
+                              {m.qual && <span class="tag-q">{m.qual}</span>}
+                            </b>
+                          )}
                         </span>
                       ))}
                   </div>
@@ -687,8 +705,15 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
         <img id="ex-img" alt="" draggable="false" />
         <div class="ex-marks">
           {marks.map((m) => (
-            <span class:list={['ex-mark', `mark--${m.kind}`]} data-ex-mark={m.id} data-face={m.face} style={box(m)} aria-hidden="true">
-              {m.tag && <b class="mark-tag">{m.tag}</b>}
+            <span class:list={['ex-region', `region-box--${m.kind}`, { 'is-doubtful': m.doubtful }]} data-ex-mark={m.id} data-face={m.face} style={box(m)} aria-hidden="true">
+              {m.tag && (
+                <b class="region-tag">
+                  <span class="tag-n">{m.tag}</span>
+                  {m.doubtful && <span class="tag-qmark">?</span>}
+                  {m.name && <span class="tag-name">{m.name}</span>}
+                  {m.qual && <span class="tag-q">{m.qual}</span>}
+                </b>
+              )}
             </span>
           ))}
         </div>
@@ -822,42 +847,106 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
   }
 
   /* Marks. Plain positioned boxes: no clip-path, no mask. */
-  .mark,
-  .ex-mark {
+  /* NAMED region-box, not mark: a short, common class name is exactly the
+     kind a site-wide stylesheet may already use for something else, and a
+     global rule that sets visibility or display would win on properties this
+     block never mentions. */
+  .region-box,
+  .ex-region {
     position: absolute;
     left: var(--x);
     top: var(--y);
     width: var(--w);
     height: var(--h);
-    border: 1.5px solid #f7f4ec;
+    /* Two-tone, so it reads on a dark print AND on a pale albumen one: a
+       light line between two dark ones. A light line alone vanished into
+       cream mounts and faded sepia. */
+    border: 2px solid #f7f4ec;
     box-shadow:
-      0 0 0 1px rgb(23 21 15 / 0.55),
-      inset 0 0 0 1px rgb(23 21 15 / 0.35);
+      0 0 0 1.5px rgb(23 21 15 / 0.85),
+      inset 0 0 0 1px rgb(23 21 15 / 0.6);
     border-radius: 2px;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.2s ease;
   }
-  .mark--detail,
-  .mark--inscription {
+  .region-box--detail,
+  .region-box--inscription {
     border-style: dashed;
   }
-  .mark.is-lit,
-  .show-names .mark--person,
-  .regions-mode .mark {
+  /* On by a class set on the box itself, not by a class on an ancestor: the
+     toggle then depends on nothing but the box and this rule. */
+  .region-box.is-lit,
+  .region-box.is-named,
+  .regions-mode .region-box {
     opacity: 1;
   }
-  .mark-tag {
+  /* LABELS. A number always; the name as well wherever it has room - see
+     placeTags() in the script, which decides per box. A label sits above its
+     box, or below it when there is no room above. */
+  .region-tag {
     position: absolute;
-    left: -1px;
-    top: -1px;
-    transform: translateY(-100%);
+    left: -2px;
+    bottom: calc(100% + 2px);
+    display: flex;
+    align-items: baseline;
+    gap: 0.35em;
     min-width: 1.1rem;
-    padding: 0.05rem 0.3rem;
+    padding: 0.08rem 0.32rem 0.1rem;
     background: #17150f;
     color: #f7f4ec;
     font: 500 0.6rem/1.3 ui-monospace, monospace;
-    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+  }
+  .tag-below > .region-tag {
+    bottom: auto;
+    top: calc(100% + 2px);
+  }
+  .tag-qmark {
+    margin-left: -0.3em;
+    color: #e2a15c;
+  }
+  .tag-name,
+  .tag-q {
+    display: none;
+  }
+  .tag-full > .region-tag .tag-name,
+  .is-open > .region-tag .tag-name {
+    display: inline;
+    font: 500 0.82rem/1.1 var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+    letter-spacing: 0.01em;
+  }
+  .tag-full > .region-tag .tag-q,
+  .is-open > .region-tag .tag-q {
+    display: inline;
+    color: #e2a15c;
+    font-size: 0.55rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .tag-full > .region-tag .tag-qmark,
+  .is-open > .region-tag .tag-qmark {
+    display: none;
+  }
+  /* A face that is only possibly this person gets a broken outline, so doubt
+     reads even at a glance and in number-only labels. */
+  .region-box--person.is-doubtful {
+    border-style: dashed;
+  }
+  .region-box.is-open,
+  .ex-region.is-open {
+    z-index: 6;
+  }
+  /* With names showing, a box can be pointed at (its name opens) and pressed
+     (Examine opens on that face). Otherwise it stays out of the way. */
+  .region-box.is-named {
+    pointer-events: auto;
+    cursor: zoom-in;
+  }
+  .person.is-lit {
+    background: rgb(218 211 196 / 0.35);
+    box-shadow: -0.5rem 0 0 rgb(218 211 196 / 0.35);
   }
 
   .examine-btn {
@@ -1256,15 +1345,33 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     inset: 0;
     pointer-events: none;
   }
-  .ex-mark {
+  .ex-region {
     visibility: hidden;
+    /* Past the file's own pixels the frame is enlarged by transform, which
+       would thicken the outline and blow up the label. --tag-scale undoes
+       that, so both stay the same size on screen at any zoom. */
+    border-width: calc(2px * var(--tag-scale, 1));
   }
-  .ex-mark.on-face {
+  .ex-region .region-tag {
+    font-size: 0.66rem;
+    transform: scale(var(--tag-scale, 1));
+    transform-origin: left bottom;
+  }
+  .ex-region.tag-below .region-tag {
+    transform-origin: left top;
+  }
+  .ex-region .tag-name {
+    font-size: 0.95rem !important;
+  }
+  .ex-region.is-named {
+    pointer-events: auto;
+  }
+  .ex-region.on-face {
     visibility: visible;
   }
-  .ex-mark.is-active,
-  .show-names .ex-mark.mark--person,
-  .regions-mode .ex-mark {
+  .ex-region.is-active,
+  .ex-region.is-named,
+  .regions-mode .ex-region {
     opacity: 1;
   }
 
@@ -1510,8 +1617,8 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
   @media (prefers-reduced-motion: reduce) {
     .face,
     .face.is-on,
-    .mark,
-    .ex-mark,
+    .region-box,
+    .ex-region,
     .ex-toast {
       transition: none;
     }
@@ -1642,29 +1749,145 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       plateFace = key;
       plateFaces.forEach((f) => f.classList.toggle('is-on', f.dataset.face === key));
       faceBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.faceBtn === key)));
+      layoutPlateTags();
     };
     faceBtns.forEach((b) => b.addEventListener('click', () => showFace(b.dataset.faceBtn || 'recto'), { signal }));
 
+    /* Labels ---------------------------------------------------------- */
+    // PLACE THE NAMES. Largest faces first, each tries its full name; the
+    // name is kept only if the label stays inside the bounds and touches no
+    // other face and no label already placed. Otherwise that face keeps its
+    // number. So a portrait is named outright and a crowded back row stays
+    // numbered, with the People list as its key.
+    const hit = (a: DOMRect, b: DOMRect) =>
+      !(a.right <= b.left || a.left >= b.right || a.bottom <= b.top || a.top >= b.bottom);
+    const clearTags = (boxes: HTMLElement[]) =>
+      boxes.forEach((b) => b.classList.remove('tag-full', 'tag-below', 'is-open'));
+    const placeTags = (boxes: HTMLElement[], bounds: DOMRect) => {
+      const measure = (b: HTMLElement, full: boolean) => {
+        const tag = b.querySelector<HTMLElement>('.region-tag');
+        if (!tag) return null;
+        b.classList.toggle('tag-full', full);
+        b.classList.remove('tag-below');
+        let r = tag.getBoundingClientRect();
+        if (r.top < bounds.top) {
+          b.classList.add('tag-below');
+          r = tag.getBoundingClientRect();
+        }
+        return r;
+      };
+      // First every face takes its number, and that footprint is reserved:
+      // a name may not cover another face's number any more than its face.
+      const faces = boxes.map((b) => ({ b, r: b.getBoundingClientRect(), tag: measure(b, false) }));
+      [...faces]
+        .sort((x, y) => y.r.width * y.r.height - x.r.width * x.r.height)
+        .forEach((f) => {
+          if (!f.tag) return;
+          const below = f.b.classList.contains('tag-below');
+          const r = measure(f.b, true);
+          const clear =
+            !!r &&
+            r.left >= bounds.left - 1 &&
+            r.right <= bounds.right + 1 &&
+            r.bottom <= bounds.bottom + 1 &&
+            !faces.some((o) => o !== f && (hit(r, o.r) || (o.tag && hit(r, o.tag))));
+          if (clear && r) f.tag = r;
+          else {
+            f.b.classList.remove('tag-full');
+            f.b.classList.toggle('tag-below', below);
+          }
+        });
+    };
+
+    const mat = $('[data-mat]', root);
     const namesBtn = $<HTMLButtonElement>('[data-names]', root);
+    const plateNamed = () => namesBtn?.getAttribute('aria-pressed') === 'true';
+    const layoutPlateTags = () => {
+      if (!plateNamed() || !mat) return;
+      const shown = plateFaces.find((f) => f.classList.contains('is-on'));
+      if (shown) placeTags($$('.region-box--person', shown), mat.getBoundingClientRect());
+    };
     namesBtn?.addEventListener(
       'click',
       () => {
         const on = namesBtn.getAttribute('aria-pressed') !== 'true';
         namesBtn.setAttribute('aria-pressed', String(on));
-        root.classList.toggle('show-names', on);
+        const people = $$('.region-box--person', root);
+        // A box is drawn on the view its region is on. If none of them is on
+        // the view showing - the plate turned to the back, say - turn it to
+        // one that has them, or the button would seem to do nothing.
+        if (on && !people.some((b) => b.closest('.face')?.classList.contains('is-on'))) {
+          const view = people[0]?.closest<HTMLElement>('.face')?.dataset.face;
+          if (view) showFace(view);
+        }
+        people.forEach((b) => b.classList.toggle('is-named', on));
+        if (on) layoutPlateTags();
+        else clearTags(people);
       },
       { signal }
     );
+    if (mat) {
+      const plateRO = new ResizeObserver(() => layoutPlateTags());
+      plateRO.observe(mat);
+      signal.addEventListener('abort', () => plateRO.disconnect());
+    }
 
     // Point at a name, a transcription or a detail and its box lights on the
     // plate. If the box is on the other face, the plate turns to it.
     const light = (id: string | null) => {
-      $$('.mark.is-lit', root).forEach((m) => m.classList.remove('is-lit'));
+      $$('.region-box.is-lit', root).forEach((m) => {
+        m.classList.remove('is-lit', 'is-open');
+        if (!plateNamed()) clearTags([m]);
+      });
       if (!id) return;
       const m = markData.get(id);
       if (m && m.face !== plateFace) showFace(m.face);
-      $$(`[data-mark="${CSS.escape(id)}"]`, root).forEach((el) => el.classList.add('is-lit'));
+      $$(`[data-mark="${CSS.escape(id)}"]`, root).forEach((el) => {
+        el.classList.add('is-lit');
+        // One face lit from the list always shows its name: nothing else
+        // is on the plate for it to crowd.
+        if (plateNamed()) el.classList.add('is-open');
+        else if (mat) placeTags([el], mat.getBoundingClientRect());
+      });
     };
+
+    // The other direction: point at a face and its name opens and its row in
+    // the People list lights. Press it and Examine opens on that face.
+    const rowFor = (id: string) => root.querySelector<HTMLElement>(`[data-hover-mark="${CSS.escape(id)}"]`);
+    const boxFrom = (t: EventTarget | null) =>
+      t instanceof Element ? t.closest<HTMLElement>('.region-box--person.is-named') : null;
+    root.addEventListener(
+      'pointerover',
+      (e) => {
+        const b = boxFrom(e.target);
+        if (!b || !b.dataset.mark) return;
+        b.classList.add('is-open');
+        rowFor(b.dataset.mark)?.classList.add('is-lit');
+      },
+      { signal }
+    );
+    root.addEventListener(
+      'pointerout',
+      (e) => {
+        const b = boxFrom(e.target);
+        if (!b || !b.dataset.mark || b.contains(e.relatedTarget as Node | null)) return;
+        b.classList.remove('is-open');
+        rowFor(b.dataset.mark)?.classList.remove('is-lit');
+      },
+      { signal }
+    );
+    root.addEventListener(
+      'click',
+      (e) => {
+        if (regionsMode) return;
+        const b = boxFrom(e.target);
+        const m = b?.dataset.mark ? markData.get(b.dataset.mark) : undefined;
+        if (!m) return;
+        rowFor(m.id)?.classList.remove('is-lit');
+        open(m.face, { box: m, caption: m.caption, noteOpen: true, mark: m.id });
+      },
+      { signal }
+    );
     $$('[data-hover-mark]', root).forEach((el) => {
       const id = el.dataset.hoverMark;
       if (!id) return;
@@ -1771,6 +1994,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     const paint = () => {
       clampView();
       frameEl.style.transform = `translate(${tx}px, ${ty}px) scale(${k / layoutK})`;
+      frameEl.style.setProperty('--tag-scale', String(layoutK / k));
       stage.classList.toggle('can-pan', k > 1.001);
       pctEl.textContent = `${Math.round(k * 100)}%`;
       if (inBtn) inBtn.disabled = k >= maxK() - 0.001;
@@ -1791,6 +2015,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       }
       paint();
       syncHash();
+      layoutExTags();
     };
     const commitSoon = (ms = 160) => {
       frameEl.classList.add('is-moving');
@@ -1819,6 +2044,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       layout();
       paint();
       syncHash();
+      layoutExTags();
     };
 
     const frameTo = (r: Box) => {
@@ -1883,8 +2109,23 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       }
     };
 
-    const setActiveMark = (id: string | null) =>
+    // Examine labels are placed on what is actually on screen after each
+    // move settles: numbers at full view, names as faces grow to hold them.
+    const exNamesBtn = $<HTMLButtonElement>('[data-ex="names"]', dialog);
+    const layoutExTags = () => {
+      if (!dialog.open) return;
+      const people = exMarks.filter((m) => m.classList.contains('region-box--person'));
+      clearTags(people);
+      const named = exNamesBtn?.getAttribute('aria-pressed') === 'true';
+      const shown = people.filter((m) => m.classList.contains('on-face') && (named || m.classList.contains('is-active')));
+      if (!shown.length) return;
+      placeTags(shown, new DOMRect(area.cx - area.w / 2, area.cy - area.h / 2, area.w, area.h));
+    };
+
+    const setActiveMark = (id: string | null) => {
       exMarks.forEach((m) => m.classList.toggle('is-active', m.dataset.exMark === id));
+      layoutExTags();
+    };
 
     const otherFace = () => data.faces.find((f) => f.key !== face);
     const updateAside = () => {
@@ -2043,7 +2284,10 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
         if (action === 'names') {
           const on = t.getAttribute('aria-pressed') !== 'true';
           t.setAttribute('aria-pressed', String(on));
-          dialog.classList.toggle('show-names', on);
+          exMarks
+            .filter((m) => m.classList.contains('region-box--person'))
+            .forEach((m) => m.classList.toggle('is-named', on));
+          layoutExTags();
         }
         if (action === 'link') {
           syncHash();

@@ -1,10 +1,40 @@
 ---
 // src/pages/collections/names/[person].astro
-// One authority record: the heading, what it rests on, and every photograph
-// the person appears in, across collections.
+//
+// ONE AUTHORITY RECORD, read two ways. As a cataloguer's record: the
+// established heading, its status, see-from forms, sources, identifiers, and
+// the whole thing as MARC 21. As a person: their face in every photograph
+// where it is placed, in date order, with their age at the time; a line of
+// their life with the photographs set along it; a view that puts faces side
+// by side so an identification can be weighed; and their family.
+//
+// WHAT FEEDS IT
+//   FACES        every depiction with a `region` (index.ts). Each is a small
+//                crop file made at build time by faces/[face].webp.ts.
+//   relationsOf  relations from BOTH records, so a relation entered once
+//                appears on both pages.
+//
+// STANDING CONSTRAINTS
+//   No filter, blend, mask, clip-path or 3D. Motion is opacity and
+//   transform, and none of it runs under reduced motion. Listeners register
+//   against an AbortController that aborts on astro:before-swap.
+
 import RootLayout from '../../../layouts/RootLayout.astro';
-import { PEOPLE, personById, appearancesOf, personHref } from '../../../data/collections/index';
-import { heading, headingDates } from '../../../data/collections/types';
+import {
+  PEOPLE,
+  personById,
+  appearancesOf,
+  personHref,
+  relationsOf,
+  spanOf,
+  FACES,
+  FACE_W,
+  FACE_H,
+  faceHref,
+  collectionBySlug,
+} from '../../../data/collections/index';
+import type { Face, YearSpan } from '../../../data/collections/index';
+import { heading, headingDates, naturalName } from '../../../data/collections/types';
 import { plate } from '../../../data/collections/images';
 
 export function getStaticPaths() {
@@ -13,145 +43,1422 @@ export function getStaticPaths() {
 
 const { id } = Astro.props as { id: string };
 const p = personById.get(id)!;
-const appearances = appearancesOf(p.id);
+
+const EN = '\u2013';
+const site = Astro.site ?? Astro.url;
+const abs = (path: string) => new URL(path, site).href;
+const permalink = abs(personHref(p.id));
+const name = naturalName(p);
+const status = p.status ?? 'provisional';
+
+const RANK: Record<string, number> = { certain: 0, probable: 1, possible: 2, unidentified: 3 };
+const firm = (c: string) => c === 'certain' || c === 'probable';
+const label = (c: string) => (c === 'certain' ? '' : c.charAt(0).toUpperCase() + c.slice(1));
+const cap1 = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
+/* ------------------------------------------------------------------ *
+ * Life dates, as numbers
+ * ------------------------------------------------------------------ */
+const year = (v?: string) => (v && /^\d{3,4}$/.test(v.trim()) ? Number(v) : undefined);
+const born = year(p.birth);
+const died = year(p.death);
+const dateKind = p.dateType ?? 'exact';
+const dates = headingDates(p).replace(/(\d)-/g, `$1${EN}`);
+
+const lifeLine = (() => {
+  if (born === undefined && died === undefined) return '';
+  if (dateKind === 'active') return `Active ${born ?? ''}${EN}${died ?? ''}`;
+  const about = dateKind === 'approximate' ? 'about ' : '';
+  const parts = [];
+  if (born !== undefined) parts.push(`Born ${about}${born}`);
+  if (died !== undefined) parts.push(`died ${about}${died}`);
+  return cap1(parts.join(', '));
+})();
+
+// AGE AT THE TIME. A photograph dated 1885-1900 of someone born in 1834 was
+// taken at about 51 to 66. Only for exact or approximate birth years, never
+// for an 'active' span, and never for an open-ended date.
+const ageAt = (s: YearSpan | null): string => {
+  if (!s || born === undefined || dateKind === 'active' || s.openStart || s.openEnd) return '';
+  if (died !== undefined && s.from > died) return '';
+  const lo = Math.max(0, s.from - born);
+  const hi = Math.max(0, (died !== undefined ? Math.min(s.to, died) : s.to) - born);
+  if (hi < 1) return 'in infancy';
+  return lo === hi ? `aged about ${lo}` : `aged about ${lo}${EN}${hi}`;
+};
+
+/* ------------------------------------------------------------------ *
+ * Photographs, in date order (undated last)
+ * ------------------------------------------------------------------ */
+const appearances = appearancesOf(p.id)
+  .map((a, n) => ({ ...a, n, span: spanOf(a.item), key: `a${n}` }))
+  .sort((a, b) => {
+    const x = a.span ? a.span.from : Infinity;
+    const y = b.span ? b.span.from : Infinity;
+    return x - y || a.n - b.n;
+  });
 
 const thumbs = new Map(
   await Promise.all(
     appearances.map(
-      async (a) =>
-        [a.item.slug, await plate(a.item.collection, a.item.recto.file, a.item.recto)] as const
+      async (a) => [a.item.slug, await plate(a.item.collection, a.item.recto.file, a.item.recto)] as const
     )
   )
 );
+const collectionsHere = new Set(appearances.map((a) => a.item.collection));
 
-const H3 = 'font-mono text-[0.66rem] uppercase tracking-[0.15em] text-sage font-medium mb-2';
-const DT = 'font-mono text-[0.66rem] uppercase tracking-[0.12em] text-sage sm:w-36 sm:shrink-0 sm:pt-1';
-const ROW = 'flex flex-col sm:flex-row sm:gap-4 border-b border-haze py-2';
+/* ------------------------------------------------------------------ *
+ * Faces
+ * ------------------------------------------------------------------ */
+// The link from a face opens the item's viewer framed on it - the shareable
+// view URL the item page reads on arrival. The frame is the region grown so
+// the face sits in its surroundings rather than filling the screen.
+const viewLink = (f: Face) => {
+  const g = 2.4;
+  const w = Math.min(100, f.region.w * g);
+  const h = Math.min(100, f.region.h * g);
+  const x = Math.min(100 - w, Math.max(0, f.region.x + f.region.w / 2 - w / 2));
+  const y = Math.min(100 - h, Math.max(0, f.region.y + f.region.h / 2 - h / 2));
+  const r = (v: number) => Math.round(v * 10) / 10;
+  return `${f.item.href}#face=${encodeURIComponent(f.view)}&xywh=percent:${r(x)},${r(y)},${r(w)},${r(h)}`;
+};
+
+const faces = await Promise.all(
+  appearances
+    .filter((a) => a.face)
+    .map(async (a) => {
+      const f = a.face!;
+      const src = await plate(f.collection, f.file);
+      return {
+        f,
+        key: a.key,
+        span: a.span,
+        age: ageAt(a.span),
+        // Size of the region in source pixels: the bigger the face was
+        // photographed, the better it serves as the portrait.
+        area: (f.region.w / 100) * src.width * ((f.region.h / 100) * src.height),
+        link: viewLink(f),
+      };
+    })
+);
+
+const portrait = faces
+  .filter((x) => firm(x.f.confidence))
+  .sort((a, b) => RANK[a.f.confidence] - RANK[b.f.confidence] || b.area - a.area)[0];
+
+// WHAT TO COMPARE FIRST. If any placement is only possible, the strongest
+// placement beside the first possible one: that is the question the page can
+// help answer. Otherwise the earliest and latest faces, which show a life.
+const doubtful = faces.filter((x) => !firm(x.f.confidence));
+const datedFaces = faces.filter((x) => x.span);
+let comparePicks: string[] = [];
+let compareNote = '';
+if (faces.length >= 2) {
+  if (doubtful.length && portrait) {
+    comparePicks = [portrait.f.id, doubtful[0].f.id];
+    compareNote = 'A possible placement beside the strongest one.';
+  } else if (datedFaces.length >= 2) {
+    comparePicks = [datedFaces[0].f.id, datedFaces[datedFaces.length - 1].f.id];
+    compareNote = 'The earliest and the latest.';
+  } else {
+    comparePicks = [faces[0].f.id, faces[1].f.id];
+    compareNote = 'Two faces side by side.';
+  }
+}
+const COMPARE_MAX = 4;
+
+/* ------------------------------------------------------------------ *
+ * A life in photographs
+ * ------------------------------------------------------------------ */
+const OPEN_REACH = 15;
+const PAD = 5;
+const dated = appearances.filter((a) => a.span);
+const life = (() => {
+  if (!dated.length) return null;
+  const draw = dated.map((a) => {
+    const s = a.span!;
+    return { a, from: s.openStart ? s.to - OPEN_REACH : s.from, to: s.openEnd ? s.from + OPEN_REACH : s.to };
+  });
+  const lows = [...draw.map((d) => d.from), ...(born !== undefined ? [born] : [])];
+  const highs = [...draw.map((d) => d.to), ...(died !== undefined ? [died] : [])];
+  const lo = Math.floor((Math.min(...lows) - PAD) / 10) * 10;
+  let hi = Math.ceil((Math.max(...highs) + PAD + 1) / 10) * 10;
+  if (hi - lo < 40) hi = lo + 40;
+  const P = (y: number) => ((y - lo) / (hi - lo)) * 100;
+
+  const laneEnds: number[] = [];
+  const bars = draw
+    .sort((x, y) => x.from - y.from || x.to - y.to)
+    .map((d) => {
+      let lane = laneEnds.findIndex((end) => end + 2 <= d.from);
+      if (lane === -1) {
+        lane = laneEnds.length;
+        laneEnds.push(0);
+      }
+      laneEnds[lane] = d.to + 1;
+      return { ...d, lane, x: P(d.from), w: P(d.to + 1) - P(d.from) };
+    });
+
+  // The band of the life itself, behind the photographs. Exact dates get hard
+  // edges; approximate ones fade across five years either side; a missing
+  // death fades out toward the end of the axis rather than inventing one.
+  let band: { x: number; w: number; fl: number; fr: number; kind: string } | null = null;
+  if (born !== undefined || died !== undefined) {
+    const soft = dateKind !== 'exact';
+    const start = born !== undefined ? born - (soft ? PAD : 0) : lo;
+    const end = died !== undefined ? died + 1 + (soft ? PAD : 0) : hi;
+    const span = Math.max(1, end - start);
+    const fadeYears = (known: boolean) => (known ? (soft ? PAD * 2 : 0) : Math.min(30, span * 0.4));
+    band = {
+      x: P(start),
+      w: P(end) - P(start),
+      fl: (fadeYears(born !== undefined) / span) * 100,
+      fr: (fadeYears(died !== undefined) / span) * 100,
+      kind: dateKind,
+    };
+  }
+
+  const step = hi - lo > 120 ? 20 : 10;
+  const ticks = [];
+  for (let y = lo; y <= hi; y += 10) {
+    const labelled = (y - lo) % step === 0;
+    const age = born !== undefined && dateKind !== 'active' ? y - born : null;
+    const ageShown = age !== null && age >= 0 && (died === undefined || y <= died + PAD) && age <= 110;
+    ticks.push({ y, x: P(y), labelled, minor: labelled && ((y - lo) / step) % 2 === 1, age: ageShown ? age : null });
+  }
+  return {
+    lo,
+    hi,
+    bars,
+    lanes: Math.max(1, laneEnds.length),
+    band,
+    ticks,
+    birthX: born !== undefined ? P(born) : null,
+    deathX: died !== undefined ? P(died + 1) : null,
+  };
+})();
+
+/* ------------------------------------------------------------------ *
+ * Family
+ * ------------------------------------------------------------------ */
+const bestFaceOf = (pid: string) =>
+  FACES.filter((f) => f.person === pid && firm(f.confidence)).sort(
+    (a, b) => RANK[a.confidence] - RANK[b.confidence] || b.region.w * b.region.h - a.region.w * a.region.h
+  )[0];
+
+const kin = relationsOf(p.id)
+  .filter((k) => personById.has(k.person))
+  .map((k) => {
+    const other = personById.get(k.person)!;
+    return { ...k, other, face: bestFaceOf(k.person), dates: headingDates(other).replace(/(\d)-/g, `$1${EN}`) };
+  })
+  .sort((a, b) => (year(a.other.birth) ?? 9999) - (year(b.other.birth) ?? 9999) || naturalName(a.other).localeCompare(naturalName(b.other)));
+const kinOf = (type: string) => kin.filter((k) => k.type === type);
+const parents = kinOf('parent');
+const spouses = kinOf('spouse');
+const siblings = kinOf('sibling');
+const children = kinOf('child');
+const KIN_LABEL: Record<string, string> = { parent: 'Parent', child: 'Child', spouse: 'Spouse', sibling: 'Sibling' };
+
+/* ------------------------------------------------------------------ *
+ * Identifiers, links out
+ * ------------------------------------------------------------------ */
+const ids = p.identifiers ?? {};
+const link = (v: string, make: (x: string) => string) => (/^https?:\/\//.test(v) ? v : make(v.trim()));
+const identifiers = [
+  ids.viaf && { label: 'VIAF', value: ids.viaf, href: link(ids.viaf, (x) => `https://viaf.org/viaf/${x}`) },
+  ids.lccn && {
+    label: 'Library of Congress',
+    value: ids.lccn,
+    href: link(ids.lccn, (x) => `https://id.loc.gov/authorities/names/${x.replace(/\s+/g, '')}.html`),
+  },
+  ids.findagrave && {
+    label: 'Find a Grave',
+    value: ids.findagrave,
+    href: link(ids.findagrave, (x) => `https://www.findagrave.com/memorial/${x}`),
+  },
+  ids.familysearch && {
+    label: 'FamilySearch',
+    value: ids.familysearch,
+    href: link(ids.familysearch, (x) => `https://www.familysearch.org/tree/person/details/${x}`),
+  },
+].filter(Boolean) as { label: string; value: string; href: string }[];
+
+/* ------------------------------------------------------------------ *
+ * The record as MARC 21 authority fields. Leader and 008 are omitted: this
+ * is for reading and for copying into a record, not for loading as-is.
+ * ------------------------------------------------------------------ */
+type Sub = [string, string];
+const marc: { tag: string; ind: string; subs: Sub[] }[] = [];
+if (ids.lccn) marc.push({ tag: '010', ind: '  ', subs: [['a', ids.lccn]] });
+if (ids.viaf) marc.push({ tag: '024', ind: '7 ', subs: [['a', ids.viaf], ['2', 'viaf']] });
+for (const x of identifiers.filter((i) => i.label === 'Find a Grave' || i.label === 'FamilySearch')) {
+  marc.push({ tag: '024', ind: '7 ', subs: [['a', x.href], ['2', 'uri']] });
+}
+if ((born !== undefined || died !== undefined) && dateKind !== 'active') {
+  const edtf = (y: number) => `${y}${dateKind === 'approximate' ? '~' : ''}`;
+  const subs: Sub[] = [];
+  if (born !== undefined) subs.push(['f', edtf(born)]);
+  if (died !== undefined) subs.push(['g', edtf(died)]);
+  subs.push(['2', 'edtf']);
+  marc.push({ tag: '046', ind: '  ', subs });
+}
+{
+  const subs: Sub[] = [['a', `${p.authorized},`]];
+  const d = headingDates(p);
+  if (d) subs.push(['d', d]);
+  else if (p.qualifier) subs.push(['c', `(${p.qualifier})`]);
+  else subs[0][1] = p.authorized;
+  marc.push({ tag: '100', ind: '1 ', subs });
+}
+for (const v of p.variants ?? []) marc.push({ tag: '400', ind: '1 ', subs: [['a', v]] });
+for (const k of kin) {
+  const d = headingDates(k.other);
+  marc.push({
+    tag: '500',
+    ind: '1 ',
+    subs: [['w', 'r'], ['i', `${KIN_LABEL[k.type]}:`], ['a', d ? `${k.other.authorized},` : k.other.authorized], ...(d ? ([['d', d]] as Sub[]) : [])],
+  });
+}
+if (status === 'provisional') {
+  marc.push({ tag: '667', ind: '  ', subs: [['a', 'Provisional heading, resting on the collection\u2019s own objects.']] });
+}
+for (const s of p.sources ?? []) marc.push({ tag: '670', ind: '  ', subs: [['a', s]] });
+if (p.scopeNote) marc.push({ tag: '678', ind: '0 ', subs: [['a', p.scopeNote]] });
+marc.sort((a, b) => a.tag.localeCompare(b.tag));
+
+/* ------------------------------------------------------------------ *
+ * Neighbours, share image, structured data
+ * ------------------------------------------------------------------ */
+const ordered = [...PEOPLE].sort((a, b) => heading(a).localeCompare(heading(b)));
+const at = ordered.findIndex((x) => x.id === p.id);
+const prev = at > 0 ? ordered[at - 1] : null;
+const next = at < ordered.length - 1 ? ordered[at + 1] : null;
+
+const json = (v: unknown) => JSON.stringify(v).replace(/</g, '\\u003c');
+const personRef = (pid: string) => {
+  const o = personById.get(pid)!;
+  return { '@type': 'Person', name: naturalName(o), url: abs(personHref(pid)) };
+};
+const structured = json({
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': permalink,
+  url: permalink,
+  name,
+  alternateName: [heading(p), ...(p.variants ?? [])],
+  ...(dateKind === 'exact' && born !== undefined ? { birthDate: String(born) } : {}),
+  ...(dateKind === 'exact' && died !== undefined ? { deathDate: String(died) } : {}),
+  ...(p.scopeNote ? { description: p.scopeNote } : {}),
+  ...(portrait ? { image: abs(faceHref(portrait.f.id, 2)) } : {}),
+  ...(identifiers.length ? { sameAs: identifiers.map((i) => i.href) } : {}),
+  ...Object.fromEntries(
+    (['parent', 'children', 'spouse', 'sibling'] as const)
+      .map((prop) => {
+        const type = prop === 'children' ? 'child' : prop;
+        const list = kin.filter((k) => k.type === type && firm(k.confidence)).map((k) => personRef(k.person));
+        return [prop, list] as const;
+      })
+      .filter(([, list]) => list.length)
+  ),
+  subjectOf: appearances
+    .filter((a) => firm(a.confidence))
+    .map((a) => ({ '@type': 'Photograph', name: a.item.title, url: abs(a.item.href) })),
+});
+
+const pageData = json({ prev: prev ? personHref(prev.id) : null, next: next ? personHref(next.id) : null, max: COMPARE_MAX });
+
+const H2 = 'font-mono text-[0.66rem] uppercase tracking-[0.15em] text-sage font-medium mb-3';
+const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
 const QUAL = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-caprock';
-
-const label = (c: string) =>
-  c === 'certain' ? '' : c.charAt(0).toUpperCase() + c.slice(1);
-const dates = headingDates(p);
+const LINK = 'text-caprock hover:underline';
 ---
 
 <RootLayout
   title={`${heading(p)} | Names | Austin Allison`}
   description={`Authority record for ${heading(p)}: established heading, variant forms, sources, and the photographs in which the person appears.`}
+  image={portrait ? faceHref(portrait.f.id, 2) : undefined}
   prose={false}
 >
-  <div class="max-w-4xl mx-auto py-6 text-iron font-serif">
-    <nav class="font-mono text-[0.68rem] uppercase tracking-[0.1em] text-sage mb-4">
-      <a href="/collections/names" class="text-caprock hover:underline">Names</a>
-    </nav>
+  <script type="application/ld+json" is:inline set:html={structured} />
+  <script type="application/json" id="person-data" is:inline set:html={pageData} />
+  <noscript>
+    <style is:inline>
+      [data-js-only] { display: none !important; }
+    </style>
+  </noscript>
 
-    <div class="flex items-baseline gap-3 flex-wrap mb-4">
-      <h1 class="text-3xl font-medium tracking-tight">{heading(p)}</h1>
-      <span class="font-mono text-[0.6rem] uppercase tracking-[0.13em] text-sage border border-haze px-1.5 py-0.5 rounded-sm">
-        {p.status ?? 'provisional'} heading
-      </span>
+  <div class="person-page max-w-4xl mx-auto py-6 text-iron font-serif" data-person-page>
+    <div class="topline">
+      <nav class={MONO} aria-label="Breadcrumb">
+        <a href="/collections" class={LINK}>Collections</a>
+        <span class="opacity-50 mx-1.5" aria-hidden="true">/</span>
+        <a href="/collections/names" class={LINK}>Names</a>
+      </nav>
+      {ordered.length > 1 && (
+        <nav class={`pager ${MONO}`} aria-label="In the name authority file">
+          {prev ? (
+            <a href={personHref(prev.id)} class={LINK} rel="prev" data-astro-prefetch="viewport" title={heading(prev)}>
+              <span aria-hidden="true">&larr;</span> Previous
+            </a>
+          ) : (
+            <span class="opacity-40"><span aria-hidden="true">&larr;</span> Previous</span>
+          )}
+          <span class="opacity-80">{at + 1} of {ordered.length}</span>
+          {next ? (
+            <a href={personHref(next.id)} class={LINK} rel="next" data-astro-prefetch="viewport" title={heading(next)}>
+              Next <span aria-hidden="true">&rarr;</span>
+            </a>
+          ) : (
+            <span class="opacity-40">Next <span aria-hidden="true">&rarr;</span></span>
+          )}
+        </nav>
+      )}
     </div>
 
-    <dl class="border-t border-haze mb-7">
-      <div class={ROW}>
-        <dt class={DT}>Dates</dt>
-        <dd class="m-0 min-w-0 flex-1">{dates || <span class="italic opacity-60">not established</span>}</dd>
+    <!-- THE CARD -->
+    <header class:list={['card', { 'has-portrait': !!portrait }]}>
+      {portrait && (
+        <a href={portrait.link} class="portrait" title={`${portrait.f.item.title}${portrait.span ? `, ${portrait.f.item.date.display}` : ''}`}>
+          <img
+            src={faceHref(portrait.f.id, 2)}
+            srcset={`${faceHref(portrait.f.id)} 1x, ${faceHref(portrait.f.id, 2)} 2x`}
+            width={FACE_W}
+            height={FACE_H}
+            alt={`${name}, from ${portrait.f.item.title}`}
+            fetchpriority="high"
+            decoding="async"
+          />
+        </a>
+      )}
+      <div class="card-text">
+        <p class={MONO}>Name authority record</p>
+        <h1 class="name">{name}</h1>
+        <p class="life-line">
+          {lifeLine || <span class="italic opacity-60">Life dates not established</span>}
+        </p>
+        <div class="heading-line">
+          <span class="heading-form">{heading(p)}</span>
+          <span class:list={['status', `status--${status}`]}>{status}</span>
+        </div>
       </div>
+    </header>
+
+    <dl class="fields">
       {p.variants && p.variants.length > 0 && (
-        <div class={ROW}>
-          <dt class={DT}>Search also under</dt>
-          <dd class="m-0 min-w-0 flex-1" set:html={p.variants.join('<br>')} />
+        <div class="field">
+          <dt class={MONO}>Search also under</dt>
+          <dd><ul class="variants">{p.variants.map((v) => <li>{v}</li>)}</ul></dd>
         </div>
       )}
+      {p.qualifier && (
+        <div class="field">
+          <dt class={MONO}>Distinguished as</dt>
+          <dd>{p.qualifier}</dd>
+        </div>
+      )}
+      <div class="field">
+        <dt class={MONO}>Photographs</dt>
+        <dd>
+          {appearances.length === 0
+            ? <span class="italic opacity-60">None known</span>
+            : <>{appearances.length}{collectionsHere.size > 1 && <span class="opacity-70">, across {collectionsHere.size} collections</span>}{faces.length > 0 && <span class="opacity-70">; placed in {faces.length}</span>}</>}
+        </dd>
+      </div>
     </dl>
 
-    {p.scopeNote && <p class="mb-7">{p.scopeNote}</p>}
+    {p.scopeNote && <p class="scope">{p.scopeNote}</p>}
 
-    {p.sources && p.sources.length > 0 && (
-      <section class="mb-7">
-        <h3 class={H3}>Sources for this heading</h3>
-        <ul class="list-none p-0 m-0">
-          {p.sources.map((s) => (
-            <li class="relative pl-4 mb-1.5 text-[0.95rem] opacity-85 basis-line">{s}</li>
-          ))}
-        </ul>
+    <!-- A LIFE IN PHOTOGRAPHS -->
+    {life && (
+      <section class="section" aria-labelledby="life-h">
+        <h2 id="life-h" class={H2}>A life in photographs</h2>
+        <div class="life" style={`--lanes:${life.lanes}`} data-life>
+          <div class="life-rules" aria-hidden="true">
+            {life.ticks.map((t) => (
+              <span class:list={['tick', { minor: t.minor }]} style={`--x:${t.x}%`}>
+                {t.labelled && <b class="tick-year">{t.y}</b>}
+                {t.labelled && t.age !== null && <i class="tick-age">{t.age}</i>}
+              </span>
+            ))}
+          </div>
+          {life.band && (
+            <div
+              class:list={['band', `band--${life.band.kind}`]}
+              style={`--x:${life.band.x}%;--w:${life.band.w}%;--fl:${life.band.fl}%;--fr:${life.band.fr}%`}
+              aria-hidden="true"
+            ></div>
+          )}
+          {life.birthX !== null && dateKind === 'exact' && (
+            <span class="mark mark--birth" style={`--x:${life.birthX}%`} aria-hidden="true"><b>b. {born}</b></span>
+          )}
+          {life.deathX !== null && dateKind === 'exact' && (
+            <span class="mark mark--death" style={`--x:${life.deathX}%`} aria-hidden="true"><b>d. {died}</b></span>
+          )}
+          {/* A visual index: the same photographs are listed, with links, below.
+              Pointing at a line lights its face and its row. */}
+          <div class="life-bars" aria-hidden="true">
+            {life.bars.map((b) => (
+              <a
+                href={b.a.item.href}
+                tabindex="-1"
+                class:list={['bar', firm(b.a.confidence) ? 'firm' : 'soft', { 'open-start': b.a.span!.openStart, 'open-end': b.a.span!.openEnd }]}
+                style={`--x:${b.x}%;--w:${b.w}%;--y:${b.lane}`}
+                data-key={b.a.key}
+                title={`${b.a.item.title}, ${b.a.item.date.display}`}
+              ></a>
+            ))}
+          </div>
+        </div>
+        <div class="legend">
+          <span><i class="swatch"></i>Identified</span>
+          <span><i class="swatch soft"></i>Possibly this person</span>
+          {life.band && <span><i class="swatch-band"></i>{dateKind === 'active' ? 'Years active' : 'Lifetime'}</span>}
+          {life.ticks.some((t) => t.age !== null) && <span>Years, with age beneath</span>}
+          {appearances.length > dated.length && <span>{appearances.length - dated.length} undated, not drawn</span>}
+        </div>
       </section>
     )}
 
-    {p.relations && p.relations.length > 0 && (
-      <section class="mb-7">
-        <h3 class={H3}>Relations</h3>
-        <ul class="list-none p-0 m-0">
-          {p.relations.map((r) => (
-            <li class="border-t border-haze first:border-t-0 py-2.5 first:pt-0">
-              <div class="text-[1.05rem]">
-                <span class="capitalize">{r.type}</span>:{' '}
-                <a href={personHref(r.person)} class="text-caprock hover:underline">
-                  {heading(personById.get(r.person)!)}
+    <!-- FACES -->
+    {faces.length > 0 && (
+      <section class="section" aria-labelledby="faces-h">
+        <h2 id="faces-h" class={H2}>{faces.length === 1 ? 'The face' : 'Faces, by date'}</h2>
+        <p class="note">
+          Cut from each photograph where this person is placed in it, and never
+          retouched. {faces.length > 1 && 'Choose faces to compare them side by side.'}
+        </p>
+        <ol class="strip">
+          {faces.map((x) => (
+            <li class="strip-item" data-key={x.key}>
+              <a href={x.link} class="strip-face" aria-label={`${name} in ${x.f.item.title}. Open the photograph at this face.`}>
+                <img
+                  src={faceHref(x.f.id)}
+                  srcset={`${faceHref(x.f.id)} 1x, ${faceHref(x.f.id, 2)} 2x`}
+                  width={FACE_W}
+                  height={FACE_H}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                />
+                {!firm(x.f.confidence) && <span class="strip-flag">{label(x.f.confidence)}</span>}
+              </a>
+              <span class="strip-date font-mono">{x.f.item.date.display}</span>
+              {x.age && <span class="strip-age">{x.age}</span>}
+              {faces.length > 1 && (
+                <button
+                  type="button"
+                  class="pick"
+                  data-pick={x.f.id}
+                  aria-pressed={comparePicks.includes(x.f.id) ? 'true' : 'false'}
+                  data-js-only
+                >Compare</button>
+              )}
+            </li>
+          ))}
+        </ol>
+      </section>
+    )}
+
+    <!-- COMPARE -->
+    {faces.length > 1 && (
+      <section class="section compare" aria-labelledby="compare-h">
+        <h2 id="compare-h" class={H2}>Compare faces</h2>
+        <p class="note" data-compare-note>{compareNote}</p>
+        <div class="compare-grid">
+          {faces.map((x) => (
+            <figure class:list={['cmp', { 'is-picked': comparePicks.includes(x.f.id) }]} data-cmp={x.f.id} data-key={x.key}>
+              <a href={x.link} class="cmp-face">
+                <img
+                  src={faceHref(x.f.id, 2)}
+                  width={FACE_W}
+                  height={FACE_H}
+                  alt={`${name} in ${x.f.item.title}`}
+                  loading="lazy"
+                  decoding="async"
+                />
+              </a>
+              <figcaption>
+                <span class="cmp-title"><a href={x.f.item.href} class={LINK}>{x.f.item.title}</a></span>
+                <span class={`${MONO} block mt-1`}>{x.f.item.date.display}{x.age && <> &middot; {x.age}</>}</span>
+                <span class="cmp-basis">
+                  {label(x.f.confidence) && <span class={QUAL}>{label(x.f.confidence)}</span>}
+                  {label(x.f.confidence) && <> &mdash; </>}
+                  {x.f.basis}
+                </span>
+                <button type="button" class="cmp-remove" data-unpick={x.f.id} data-js-only>Remove</button>
+              </figcaption>
+            </figure>
+          ))}
+        </div>
+        <p class="sr-only" aria-live="polite" data-compare-status></p>
+      </section>
+    )}
+
+    <!-- FAMILY -->
+    {kin.length > 0 && (
+      <section class="section" aria-labelledby="family-h">
+        <h2 id="family-h" class={H2}>Family</h2>
+        <div class="tree">
+          {parents.length > 0 && (
+            <div class="gen gen--parents" role="list" aria-label="Parents">
+              {parents.map((k) => (
+                <a href={personHref(k.person)} class="kin" role="listitem">
+                  {k.face ? (
+                    <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" />
+                  ) : (
+                    <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
+                  )}
+                  <span class="kin-text">
+                    <span class="kin-role">Parent{label(k.confidence) && <> &middot; {label(k.confidence)}</>}</span>
+                    <span class="kin-name">{naturalName(k.other)}</span>
+                    {k.dates && <span class="kin-dates">{k.dates}</span>}
+                  </span>
                 </a>
+              ))}
+            </div>
+          )}
+          <div class="gen gen--self">
+            {siblings.length > 0 && (
+              <div class="side side--siblings" role="list" aria-label="Siblings">
+                {siblings.map((k) => (
+                  <a href={personHref(k.person)} class="kin kin--quiet" role="listitem">
+                    {k.face ? (
+                      <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" />
+                    ) : (
+                      <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
+                    )}
+                    <span class="kin-text">
+                      <span class="kin-role">Sibling{label(k.confidence) && <> &middot; {label(k.confidence)}</>}</span>
+                      <span class="kin-name">{naturalName(k.other)}</span>
+                      {k.dates && <span class="kin-dates">{k.dates}</span>}
+                    </span>
+                  </a>
+                ))}
               </div>
-              <div class="text-sm opacity-75 mt-0.5">
-                {label(r.confidence) && <span class={QUAL}>{label(r.confidence)}</span>}
-                {label(r.confidence) && <span> &mdash; </span>}
-                {r.basis}
+            )}
+            <div class="kin kin--self" aria-current="page">
+              {portrait ? (
+                <img src={faceHref(portrait.f.id)} srcset={`${faceHref(portrait.f.id)} 1x, ${faceHref(portrait.f.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" />
+              ) : (
+                <span class="kin-face kin-face--none" aria-hidden="true">{p.surname.charAt(0)}</span>
+              )}
+              <span class="kin-text">
+                <span class="kin-role">This record</span>
+                <span class="kin-name">{name}</span>
+                {dates && <span class="kin-dates">{dates}</span>}
+              </span>
+            </div>
+            {spouses.length > 0 && (
+              <div class="side side--spouses" role="list" aria-label="Spouses">
+                {spouses.map((k) => (
+                  <a href={personHref(k.person)} class="kin" role="listitem">
+                    {k.face ? (
+                      <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" />
+                    ) : (
+                      <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
+                    )}
+                    <span class="kin-text">
+                      <span class="kin-role">Spouse{label(k.confidence) && <> &middot; {label(k.confidence)}</>}</span>
+                      <span class="kin-name">{naturalName(k.other)}</span>
+                      {k.dates && <span class="kin-dates">{k.dates}</span>}
+                    </span>
+                  </a>
+                ))}
               </div>
+            )}
+          </div>
+          {children.length > 0 && (
+            <div class="gen gen--children" role="list" aria-label="Children">
+              {children.map((k) => (
+                <a href={personHref(k.person)} class="kin" role="listitem">
+                  {k.face ? (
+                    <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" />
+                  ) : (
+                    <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
+                  )}
+                  <span class="kin-text">
+                    <span class="kin-role">Child{label(k.confidence) && <> &middot; {label(k.confidence)}</>}</span>
+                    <span class="kin-name">{naturalName(k.other)}</span>
+                    {k.dates && <span class="kin-dates">{k.dates}</span>}
+                  </span>
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <h3 class={`${MONO} mt-6 mb-2`}>Grounds</h3>
+        <ul class="grounds">
+          {kin.map((k) => (
+            <li>
+              <span class="grounds-who">{KIN_LABEL[k.type]}: <a href={personHref(k.person)} class={LINK}>{naturalName(k.other)}</a></span>
+              <span class="grounds-why">
+                {label(k.confidence) && <span class={QUAL}>{label(k.confidence)}</span>}
+                {label(k.confidence) && <> &mdash; </>}
+                {k.basis}
+                {!k.stated && <span class="opacity-60"> (recorded under {naturalName(k.other)})</span>}
+              </span>
             </li>
           ))}
         </ul>
       </section>
     )}
 
-    {p.identifiers && (
-      <section class="mb-7">
-        <h3 class={H3}>Also known to</h3>
-        <ul class="list-none p-0 m-0 text-[0.95rem]">
-          {p.identifiers.viaf && <li>VIAF {p.identifiers.viaf}</li>}
-          {p.identifiers.lccn && <li>LCCN {p.identifiers.lccn}</li>}
-          {p.identifiers.findagrave && <li>Find a Grave {p.identifiers.findagrave}</li>}
-          {p.identifiers.familysearch && <li>FamilySearch {p.identifiers.familysearch}</li>}
-        </ul>
-      </section>
-    )}
-
-    <section>
-      <h3 class={H3}>Photographs</h3>
+    <!-- PHOTOGRAPHS -->
+    <section class="section" aria-labelledby="photos-h">
+      <h2 id="photos-h" class={H2}>Photographs</h2>
       {appearances.length === 0 ? (
         <p class="m-0 italic opacity-60">
           No photograph of this person is known. The record exists because the
           name is written on the back of one.
         </p>
       ) : (
-        <ul class="list-none p-0 m-0">
-          {appearances.map((a) => (
-            <li class="flex gap-5 border-t border-haze py-4 items-start">
-              <img
-                src={thumbs.get(a.item.slug)?.index}
-                srcset={thumbs.get(a.item.slug)?.indexSrcset}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                class="w-28 shrink-0 h-auto bg-haze border border-haze"
-              />
-              <div class="min-w-0 flex-1">
-                <a href={a.item.href} class="text-caprock hover:underline">{a.item.title}</a>
-                <div class="font-mono text-[0.65rem] uppercase tracking-[0.08em] text-sage mt-0.5">
-                  {a.item.date.display}
+        <ul class="photos">
+          {appearances.map((a) => {
+            const t = thumbs.get(a.item.slug)!;
+            const coll = collectionBySlug.get(a.item.collection)?.title ?? '';
+            const age = ageAt(a.span);
+            return (
+              <li class="photo" data-key={a.key}>
+                <a href={a.item.href} class="photo-thumb" tabindex="-1" aria-hidden="true">
+                  <img src={t.index} srcset={t.indexSrcset} width={t.width} height={t.height} alt="" loading="lazy" decoding="async" />
+                </a>
+                <div class="photo-text">
+                  <a href={a.item.href} class={`${LINK} photo-title`}>{a.item.title}</a>
+                  <div class={`${MONO} mt-1`}>
+                    {a.item.date.display}
+                    {coll && <> &middot; {coll}</>}
+                    {a.position && <> &middot; {a.position}</>}
+                  </div>
+                  {age && <div class="photo-age">{cap1(age)}</div>}
+                  <div class="photo-basis">
+                    {label(a.confidence) && <span class={QUAL}>{label(a.confidence)}</span>}
+                    {label(a.confidence) && <> &mdash; </>}
+                    {a.basis}
+                  </div>
+                  {a.face && (
+                    <a href={viewLink(a.face)} class="photo-find">Find the face in the photograph <span aria-hidden="true">&rarr;</span></a>
+                  )}
                 </div>
-                <div class="text-sm opacity-75 mt-0.5">
-                  {label(a.confidence) && <span class={QUAL}>{label(a.confidence)}</span>}
-                  {label(a.confidence) && <span> &mdash; </span>}
-                  {a.basis}
-                </div>
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       )}
     </section>
+
+    <!-- THE APPARATUS -->
+    <div class="apparatus">
+      {p.sources && p.sources.length > 0 && (
+        <section aria-labelledby="sources-h">
+          <h2 id="sources-h" class={H2}>Sources for this heading</h2>
+          <ul class="sources">
+            {p.sources.map((s) => <li>{s}</li>)}
+          </ul>
+        </section>
+      )}
+
+      {identifiers.length > 0 && (
+        <section aria-labelledby="ids-h">
+          <h2 id="ids-h" class={H2}>Also known to</h2>
+          <ul class="ids">
+            {identifiers.map((i) => (
+              <li>
+                <span class={MONO}>{i.label}</span>
+                <a href={i.href} class={LINK} rel="external noopener">{i.value}</a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+
+    <details class="marc">
+      <summary>
+        <span class={MONO}>View as a MARC 21 authority record</span>
+      </summary>
+      <pre class="marc-pre">{marc.map((f) => (
+        <span class="marc-line"><span class="marc-tag">{f.tag}</span> <span class="marc-ind">{f.ind.replace(/ /g, '\u2002')}</span> {f.subs.map(([code, value], n) => <>{n > 0 && ' '}<span class="marc-code">${code}</span> {value}</>)}</span>
+      ))}</pre>
+      <p class={`${MONO} mt-2`}>Leader and fixed fields omitted.</p>
+    </details>
   </div>
 </RootLayout>
 
-<style is:global>
-  .basis-line::before {
+<style>
+  .person-page {
+    --c-caprock: var(--color-caprock, #9c5b3f);
+    --c-sage: var(--color-sage, #7a8471);
+    --c-haze: var(--color-haze, #dad3c4);
+    --c-dust: var(--color-dust, #ede7da);
+    --c-iron: var(--color-iron, #3b3833);
+    --c-canvas: var(--color-canvas, #f7f4ec);
+  }
+
+  .topline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 1.25rem;
+  }
+  .pager {
+    display: flex;
+    gap: 0.9rem;
+    white-space: nowrap;
+  }
+
+  /* The card ------------------------------------------------------- */
+  .card {
+    display: grid;
+    gap: 1.25rem 1.75rem;
+    align-items: end;
+    padding-bottom: 1.25rem;
+    border-bottom: 2px solid var(--c-caprock);
+  }
+  .card.has-portrait {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+  /* A portrait as a print on a mount: the crop on a pale ground with a hair
+     line, not a circle-cropped avatar. These are photographs of people, and
+     the page treats them as objects. */
+  .portrait {
+    display: block;
+    width: clamp(6.5rem, 20vw, 9rem);
+    padding: 0.45rem;
+    background: var(--c-dust);
+    border: 1px solid var(--c-haze);
+    box-shadow: 0 10px 22px -16px rgb(59 56 51 / 0.55);
+  }
+  .portrait img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .name {
+    margin: 0.2rem 0 0;
+    font-size: clamp(2rem, 1.4rem + 2.6vw, 3rem);
+    font-weight: 500;
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+  .life-line {
+    margin: 0.45rem 0 0;
+    font-size: 1.15rem;
+    font-style: italic;
+    font-variant-numeric: oldstyle-nums;
+  }
+  .heading-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.4rem 0.75rem;
+    margin-top: 0.8rem;
+  }
+  .heading-form {
+    font-size: 1rem;
+    opacity: 0.85;
+  }
+  .status {
+    padding: 0.12rem 0.45rem 0.14rem;
+    border: 1px solid var(--c-haze);
+    border-radius: 2px;
+    color: var(--c-sage);
+    font: 500 0.58rem/1.3 ui-monospace, monospace;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+  .status--established {
+    background: var(--c-iron);
+    border-color: var(--c-iron);
+    color: var(--c-canvas);
+  }
+
+  .fields {
+    margin: 0 0 1.5rem;
+  }
+  .field {
+    display: grid;
+    gap: 0.15rem 1rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--c-haze);
+  }
+  @media (min-width: 40rem) {
+    .field {
+      grid-template-columns: 9rem minmax(0, 1fr);
+    }
+  }
+  .field dt {
+    padding-top: 0.25rem;
+  }
+  .field dd {
+    margin: 0;
+  }
+  .variants {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .scope {
+    max-width: 40rem;
+    margin: 0 0 1.5rem;
+    font-size: 1.05rem;
+    text-wrap: pretty;
+  }
+
+  /* Not `.block`: that is also a Tailwind utility, and a scoped rule of the
+     same name gave every `block` element on the page a section's margin. */
+  .section {
+    margin-top: 2.75rem;
+  }
+  .note {
+    max-width: 40rem;
+    margin: -0.25rem 0 1rem;
+    font-size: 0.95rem;
+    opacity: 0.78;
+    text-wrap: pretty;
+  }
+
+  /* A life in photographs ------------------------------------------ */
+  .life {
+    --pitch: 14px;
+    --top: 1.35rem;
+    --axis: 2.4rem;
+    position: relative;
+    height: calc(var(--top) + var(--lanes) * var(--pitch) + var(--axis));
+  }
+  .life-rules {
+    position: absolute;
+    inset: 0;
+  }
+  .tick {
+    position: absolute;
+    top: var(--top);
+    bottom: calc(var(--axis) - 0.35rem);
+    left: var(--x);
+    border-left: 1px solid rgb(218 211 196 / 0.9);
+  }
+  .tick-year,
+  .tick-age {
+    position: absolute;
+    left: 0;
+    transform: translateX(-50%);
+    font-family: ui-monospace, monospace;
+    white-space: nowrap;
+  }
+  .tick-year {
+    bottom: -1.05rem;
+    font-size: 0.62rem;
+    font-weight: 500;
+    color: var(--c-sage);
+  }
+  .tick-age {
+    bottom: -1.95rem;
+    font-size: 0.56rem;
+    font-style: normal;
+    color: var(--c-caprock);
+    opacity: 0.8;
+  }
+  .tick:first-child .tick-year,
+  .tick:first-child .tick-age {
+    transform: none;
+  }
+  .tick:last-child .tick-year,
+  .tick:last-child .tick-age {
+    transform: translateX(-100%);
+  }
+  @media (max-width: 40rem) {
+    .tick.minor .tick-year,
+    .tick.minor .tick-age {
+      visibility: hidden;
+    }
+  }
+  .band {
+    position: absolute;
+    top: var(--top);
+    left: var(--x);
+    width: var(--w);
+    height: calc(var(--lanes) * var(--pitch));
+    background: linear-gradient(
+      to right,
+      rgb(156 91 63 / 0) 0%,
+      rgb(156 91 63 / 0.1) var(--fl),
+      rgb(156 91 63 / 0.1) calc(100% - var(--fr)),
+      rgb(156 91 63 / 0) 100%
+    );
+  }
+  .band--active {
+    background: linear-gradient(
+      to right,
+      rgb(122 132 113 / 0) 0%,
+      rgb(122 132 113 / 0.14) var(--fl),
+      rgb(122 132 113 / 0.14) calc(100% - var(--fr)),
+      rgb(122 132 113 / 0) 100%
+    );
+  }
+  .mark {
+    position: absolute;
+    top: 0;
+    left: var(--x);
+    height: calc(var(--top) + var(--lanes) * var(--pitch));
+    border-left: 1px solid var(--c-caprock);
+  }
+  .mark b {
+    position: absolute;
+    top: 0;
+    font: 500 0.6rem/1 ui-monospace, monospace;
+    color: var(--c-caprock);
+    white-space: nowrap;
+  }
+  .mark--birth b {
+    left: 0.3rem;
+  }
+  .mark--death b {
+    right: 0.3rem;
+  }
+  .life-bars {
+    position: absolute;
+    top: var(--top);
+    left: 0;
+    right: 0;
+    height: calc(var(--lanes) * var(--pitch));
+  }
+  .bar {
+    --stripe: linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat;
+    --dash: repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 6px) 0 50% / 100% 2px no-repeat;
+    --cap-l: linear-gradient(currentColor, currentColor) 0 50% / 1.5px 8px no-repeat;
+    --cap-r: linear-gradient(currentColor, currentColor) 100% 50% / 1.5px 8px no-repeat;
+    position: absolute;
+    left: var(--x);
+    top: calc(var(--y) * var(--pitch));
+    width: var(--w);
+    min-width: 5px;
+    height: var(--pitch);
+    color: var(--c-caprock);
+    background: var(--stripe), var(--cap-l), var(--cap-r);
+    transition: opacity 0.2s ease;
+  }
+  .bar.soft {
+    color: var(--c-sage);
+  }
+  .bar.open-start {
+    background: var(--dash), var(--cap-r);
+  }
+  .bar.open-end {
+    background: var(--dash), var(--cap-l);
+  }
+  .life[data-dim] .bar {
+    opacity: 0.15;
+  }
+  .life[data-dim] .bar.is-lit {
+    opacity: 1;
+    color: var(--c-iron);
+  }
+
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.2rem;
+    margin-top: 0.4rem;
+    font: 0.6rem/1.4 ui-monospace, monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  .swatch {
+    display: inline-block;
+    width: 1.6rem;
+    height: 10px;
+    margin-right: 0.4rem;
+    vertical-align: -1px;
+    color: var(--c-caprock);
+    background:
+      linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat,
+      linear-gradient(currentColor, currentColor) 0 50% / 1.5px 8px no-repeat,
+      linear-gradient(currentColor, currentColor) 100% 50% / 1.5px 8px no-repeat;
+  }
+  .swatch.soft {
+    color: var(--c-sage);
+  }
+  .swatch-band {
+    display: inline-block;
+    width: 1.6rem;
+    height: 10px;
+    margin-right: 0.4rem;
+    vertical-align: -1px;
+    background: rgb(156 91 63 / 0.16);
+  }
+
+  /* Faces, by date -------------------------------------------------- */
+  .strip {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: 7.25rem;
+    gap: 1rem;
+    margin: 0;
+    padding: 0.25rem 0.1rem 0.9rem;
+    list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+  .strip-item {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    scroll-snap-align: start;
+  }
+  .strip-face {
+    position: relative;
+    display: block;
+    padding: 0.3rem;
+    background: var(--c-dust);
+    border: 1px solid var(--c-haze);
+    transition:
+      border-color 0.2s ease,
+      transform 0.25s ease;
+  }
+  .strip-face img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .strip-face:hover,
+  .strip-face:focus-visible,
+  .strip-item.is-lit .strip-face {
+    border-color: var(--c-caprock);
+    transform: translateY(-2px);
+    outline: none;
+  }
+  .strip-flag {
+    position: absolute;
+    left: 0.3rem;
+    bottom: 0.3rem;
+    padding: 0.1rem 0.3rem;
+    background: rgb(23 21 15 / 0.78);
+    color: #f0ead9;
+    font: 0.52rem/1.3 ui-monospace, monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .strip-date {
+    margin-top: 0.45rem;
+    font-size: 0.6rem;
+    color: var(--c-sage);
+  }
+  .strip-age {
+    font-size: 0.88rem;
+    font-style: italic;
+    line-height: 1.25;
+  }
+  .pick {
+    align-self: flex-start;
+    margin-top: 0.35rem;
+    padding: 0.18rem 0.45rem;
+    border: 1px solid var(--c-haze);
+    background: transparent;
+    color: var(--c-iron);
+    font: 500 0.56rem/1.2 ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .pick:hover {
+    border-color: var(--c-caprock);
+  }
+  .pick[aria-pressed='true'] {
+    background: var(--c-caprock);
+    border-color: var(--c-caprock);
+    color: var(--c-canvas);
+  }
+  .pick:focus-visible,
+  .cmp-remove:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
+  }
+
+  /* Compare -------------------------------------------------------- */
+  /* Two across even on a phone: a comparison is only one if the faces are
+     side by side. */
+  .compare-grid {
+    display: grid;
+    gap: 1.25rem 1rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  @media (min-width: 40rem) {
+    .compare-grid {
+      grid-template-columns: repeat(auto-fill, 13.5rem);
+    }
+  }
+  .cmp {
+    display: none;
+    margin: 0;
+  }
+  .cmp.is-picked {
+    display: block;
+  }
+  .cmp-face {
+    display: block;
+    padding: 0.5rem;
+    background: var(--c-dust);
+    border: 1px solid var(--c-haze);
+    box-shadow: 0 14px 26px -20px rgb(59 56 51 / 0.6);
+  }
+  .cmp.is-lit .cmp-face {
+    border-color: var(--c-caprock);
+  }
+  .cmp-face img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .cmp figcaption {
+    display: flex;
+    flex-direction: column;
+    margin-top: 0.6rem;
+  }
+  .cmp-title {
+    font-size: 1rem;
+    line-height: 1.25;
+  }
+  .cmp-basis {
+    margin-top: 0.35rem;
+    font-size: 0.88rem;
+    opacity: 0.8;
+  }
+  .cmp-remove {
+    align-self: flex-start;
+    margin-top: 0.5rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--c-sage);
+    font: 0.58rem/1.3 ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .cmp-remove:hover {
+    color: var(--c-caprock);
+  }
+
+  /* Family --------------------------------------------------------- */
+  /* Generations as rows, joined by a hair line down the middle. The person
+     sits in the middle row with siblings to one side and spouses to the
+     other. Rows wrap on a phone; the line still reads as descent. */
+  .tree {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .gen {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .gen + .gen {
+    position: relative;
+    margin-top: 1.5rem;
+  }
+  .gen + .gen::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -1.5rem;
+    height: 1.5rem;
+    border-left: 1px solid var(--c-haze);
+  }
+  .gen--self {
+    align-items: center;
+    gap: 1.25rem;
+  }
+  .side {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  .kin {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    width: 14.5rem;
+    max-width: 100%;
+    padding: 0.45rem 0.7rem 0.45rem 0.45rem;
+    border: 1px solid var(--c-haze);
+    background: rgb(218 211 196 / 0.12);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
+  }
+  a.kin:hover,
+  a.kin:focus-visible {
+    border-color: var(--c-caprock);
+    background: rgb(218 211 196 / 0.3);
+    outline: none;
+  }
+  .kin--quiet {
+    opacity: 0.88;
+  }
+  .kin--self {
+    border: 1px solid var(--c-iron);
+    background: var(--c-canvas);
+    box-shadow: 0 0 0 3px rgb(218 211 196 / 0.6);
+  }
+  .kin-face {
+    flex-shrink: 0;
+    width: 2.8rem;
+    height: 3.5rem;
+    object-fit: cover;
+    background: var(--c-dust);
+  }
+  .kin-face--none {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--c-haze);
+    color: var(--c-sage);
+    font-size: 1.4rem;
+  }
+  .kin-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+  .kin-role {
+    font: 0.55rem/1.3 ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  .kin-name {
+    font-size: 1.02rem;
+    line-height: 1.2;
+    color: var(--c-caprock);
+  }
+  .kin--self .kin-name {
+    color: var(--c-iron);
+  }
+  .kin-dates {
+    font-size: 0.85rem;
+    font-variant-numeric: oldstyle-nums;
+    opacity: 0.7;
+  }
+  .grounds {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .grounds li {
+    display: grid;
+    gap: 0.1rem 1rem;
+    padding: 0.5rem 0;
+    border-top: 1px solid var(--c-haze);
+  }
+  @media (min-width: 40rem) {
+    .grounds li {
+      grid-template-columns: 15rem minmax(0, 1fr);
+    }
+  }
+  .grounds-why {
+    font-size: 0.92rem;
+    opacity: 0.8;
+  }
+
+  /* Photographs ---------------------------------------------------- */
+  .photos {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .photo {
+    display: flex;
+    gap: 1.25rem;
+    padding: 1rem 0.5rem 1rem 0;
+    border-top: 1px solid var(--c-haze);
+    transition: background-color 0.2s ease;
+  }
+  .photo.is-lit {
+    background: rgb(218 211 196 / 0.22);
+  }
+  .photo-thumb {
+    display: flex;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    width: 6rem;
+    height: 7.5rem;
+    padding: 0.3rem;
+    background: var(--c-dust);
+    border: 1px solid var(--c-haze);
+  }
+  .photo-thumb img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+  }
+  .photo-text {
+    min-width: 0;
+    flex: 1;
+  }
+  .photo-title {
+    font-size: 1.08rem;
+  }
+  .photo-age {
+    margin-top: 0.3rem;
+    font-style: italic;
+  }
+  .photo-basis {
+    margin-top: 0.3rem;
+    font-size: 0.92rem;
+    opacity: 0.8;
+  }
+  .photo-find {
+    display: inline-block;
+    margin-top: 0.45rem;
+    color: var(--c-caprock);
+    font: 500 0.6rem/1.3 ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    text-decoration: none;
+  }
+  .photo-find:hover {
+    text-decoration: underline;
+  }
+
+  /* Apparatus ------------------------------------------------------ */
+  .apparatus {
+    display: grid;
+    gap: 2rem 2.5rem;
+    margin-top: 2.75rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid var(--c-haze);
+  }
+  @media (min-width: 48rem) {
+    .apparatus {
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+    }
+  }
+  .sources {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .sources li {
+    position: relative;
+    margin-bottom: 0.45rem;
+    padding-left: 1rem;
+    font-size: 0.95rem;
+    opacity: 0.88;
+  }
+  .sources li::before {
     content: '';
     position: absolute;
     left: 0;
@@ -160,4 +1467,170 @@ const dates = headingDates(p);
     border-top: 1px solid currentColor;
     opacity: 0.6;
   }
+  .ids {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .ids li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.2rem 1rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid var(--c-haze);
+  }
+
+  .marc {
+    margin-top: 2rem;
+    border-top: 1px solid var(--c-haze);
+    padding-top: 0.75rem;
+  }
+  .marc summary {
+    cursor: pointer;
+  }
+  .marc summary:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
+  }
+  .marc-pre {
+    margin: 0.75rem 0 0;
+    padding: 0.9rem 1rem;
+    overflow-x: auto;
+    background: #17150f;
+    color: #e8e2d6;
+    font: 0.78rem/1.7 ui-monospace, monospace;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .marc-line {
+    display: block;
+    padding-left: 5.5ch;
+    text-indent: -5.5ch;
+  }
+  .marc-tag {
+    color: #e2a15c;
+  }
+  .marc-ind {
+    color: #8f877a;
+  }
+  .marc-code {
+    color: #c4785a;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bar,
+    .strip-face,
+    .kin,
+    .photo {
+      transition: none;
+    }
+    .strip-face:hover,
+    .strip-face:focus-visible,
+    .strip-item.is-lit .strip-face {
+      transform: none;
+    }
+  }
+
+  @media print {
+    .pager,
+    .pick,
+    .cmp-remove,
+    .compare {
+      display: none !important;
+    }
+    .marc[open] .marc-pre,
+    .marc .marc-pre {
+      background: none;
+      color: inherit;
+    }
+  }
 </style>
+
+<script>
+  import { navigate } from 'astro:transitions/client';
+
+  function wire() {
+    const root = document.querySelector<HTMLElement>('[data-person-page]');
+    const dataEl = document.getElementById('person-data');
+    if (!root || !dataEl || root.dataset.wired) return;
+    root.dataset.wired = '1';
+
+    const ac = new AbortController();
+    const signal = ac.signal;
+    document.addEventListener('astro:before-swap', () => ac.abort(), { once: true });
+
+    const data = JSON.parse(dataEl.textContent || '{}') as { prev: string | null; next: string | null; max: number };
+    const $$ = <T extends Element = HTMLElement>(sel: string) => Array.from(root.querySelectorAll<T>(sel));
+
+    /* One photograph, lit everywhere it appears ------------------------- */
+    const keyed = $$('[data-key]');
+    const life = root.querySelector<HTMLElement>('[data-life]');
+    const light = (key: string | null) => {
+      keyed.forEach((el) => el.classList.toggle('is-lit', !!key && el.dataset.key === key));
+      life?.toggleAttribute('data-dim', !!key && keyed.some((el) => el.classList.contains('bar') && el.dataset.key === key));
+    };
+    keyed.forEach((el) => {
+      const key = el.dataset.key || null;
+      el.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') light(key); }, { signal });
+      el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') light(null); }, { signal });
+      el.addEventListener('focusin', () => light(key), { signal });
+      el.addEventListener('focusout', () => light(null), { signal });
+    });
+
+    /* Compare ----------------------------------------------------------- */
+    const picks = $$<HTMLButtonElement>('[data-pick]');
+    const figs = $$('[data-cmp]');
+    const note = root.querySelector<HTMLElement>('[data-compare-note]');
+    const status = root.querySelector<HTMLElement>('[data-compare-status]');
+    // A Set keeps the order faces were chosen in, so the oldest choice is the
+    // one that makes room when the comparison is full.
+    const chosen = new Set(figs.filter((f) => f.classList.contains('is-picked')).map((f) => f.dataset.cmp!));
+    const first = note?.textContent ?? '';
+    let touched = false;
+
+    const render = () => {
+      figs.forEach((f) => f.classList.toggle('is-picked', chosen.has(f.dataset.cmp!)));
+      picks.forEach((b) => b.setAttribute('aria-pressed', String(chosen.has(b.dataset.pick!))));
+      if (note) {
+        note.textContent =
+          chosen.size < 2
+            ? 'Choose another face above to set beside this one.'
+            : touched
+              ? `${chosen.size} faces side by side, in date order.`
+              : first;
+      }
+      if (note && chosen.size === 0) note.textContent = 'Choose faces above to compare them side by side.';
+    };
+    const toggle = (id: string) => {
+      touched = true;
+      if (chosen.has(id)) chosen.delete(id);
+      else {
+        if (chosen.size >= data.max) chosen.delete(chosen.values().next().value as string);
+        chosen.add(id);
+      }
+      render();
+      if (status) status.textContent = `${chosen.size} ${chosen.size === 1 ? 'face' : 'faces'} in the comparison.`;
+    };
+    picks.forEach((b) => b.addEventListener('click', () => toggle(b.dataset.pick!), { signal }));
+    $$<HTMLButtonElement>('[data-unpick]').forEach((b) => b.addEventListener('click', () => toggle(b.dataset.unpick!), { signal }));
+
+    /* Previous / next --------------------------------------------------- */
+    document.addEventListener(
+      'keydown',
+      (e) => {
+        if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if ((e.target as Element).closest('input, textarea, select, [contenteditable], .strip, pre')) return;
+        const href = e.key === 'ArrowLeft' ? data.prev : e.key === 'ArrowRight' ? data.next : null;
+        if (href) {
+          e.preventDefault();
+          navigate(href);
+        }
+      },
+      { signal }
+    );
+  }
+
+  document.addEventListener('astro:page-load', wire);
+</script>

@@ -89,7 +89,8 @@ export const COLLECTION: Collection = {
           confidence: 'unidentified',
           basis:
             'Named in the verso inscription as a member of the outfit, but the inscription does not say which figure he is - or whether he is in the frame at all.',
-        },
+          region: { face: 'recto', x: 47.3, y: 55.4, w: 0.9, h: 1.9 },
+          },
       ],
       related :[
         {
@@ -116,9 +117,10 @@ export const COLLECTION: Collection = {
     {
       slug: 'old-malcom-swann-gin',
       controlNumber: 'c.1.4.1',
-      title: 'The Old Malcom Swann Gin - at the home place',
+      title: 'Old Malcom Swann Gin',
       titleSource: 'inscribed',
       series: '',
+      place: 'Jacobia, Texas',
       format: 'mounted photograph',
       photographer: {
         name: 'Unknown',
@@ -126,7 +128,7 @@ export const COLLECTION: Collection = {
         basis: 'No studio imprint.',
       },
       date: {
-        display: '[after 1885]',
+        display: '[1885-1900]',
         earliest: 1885,
         latest: 1900,
         basis: [
@@ -134,7 +136,7 @@ export const COLLECTION: Collection = {
           'The gin is described as "old" by the person who wrote the caption, but that inscription is undated and may be much later than the exposure.',
           'Malcom Swann and Austin Swann are visible in this photograph. Austin Swann got married around 1886, but he looks older here than in his wedding picture.'
         ],
-        confidence: 'possible',
+        confidence: 'probable',
       },
       recto: {
         file: 'malcom-swann-gin-recto.jpg',
@@ -165,13 +167,15 @@ export const COLLECTION: Collection = {
           confidence: 'certain',
           basis:
             'The gin carries his name and an older man sits prominently at the center of the group. Nothing specifically identifies Malcom, but the figure sitting in the center matches what Malcom looked like.',
-        },
+          region: { face: 'recto', x: 50.7, y: 61.4, w: 2.9, h: 4.3 },
+          },
         {
           person: 'swann-austin',
           confidence: 'certain',
           basis:
             'A figure matching Austin Swann sits two spots to the right of Malcom.',
-        },
+          region: { face: 'recto', x: 62.4, y: 62.8, w: 2.5, h: 3.5 },
+          },
       ],
       needsWork: [
         'Where "the home place" is.',
@@ -224,6 +228,7 @@ export const COLLECTION: Collection = {
           confidence: 'certain',
           basis:
             'Supplied with the item; the source of the name is not recorded on the object.',
+          region: { face: 'recto', x: 35, y: 33.2, w: 12.2, h: 12.9 },
         },
       ],
       related: [
@@ -291,6 +296,7 @@ export const COLLECTION: Collection = {
           confidence: 'possible',
           basis:
             'Matches John Swann\'s appearance.',
+          region: { face: 'recto', x: 56.7, y: 48.6, w: 2.8, h: 4.2 },
         },
       ],
       related: [
@@ -347,6 +353,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Seated on left.',
+          region: { face: 'recto', x: 25, y: 25.9, w: 16.9, h: 17.9 },
         },
         {
           person: 'swann-nannie-thomas',  // an id in people.ts. Build throws if unknown.
@@ -356,6 +363,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Standing on right.',
+          region: { face: 'recto', x: 55.9, y: 7.3, w: 14.7, h: 16.2 },
         }
       ],
       format: 'mounted photograph',
@@ -401,6 +409,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso.',
+          region: { face: 'recto', x: 22.8, y: 33.6, w: 17.3, h: 23.9 },
         },
         {
           person: 'adair-fletcher-absalom',  // an id in people.ts. Build throws if unknown.
@@ -409,6 +418,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso.',
+          region: { face: 'recto', x: 35.7, y: 32, w: 14.7, h: 27.3 },
         }
       ],
       format: 'mounted photograph',
@@ -462,11 +472,13 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso.',
+          region: { face: 'recto', x: 28.8, y: 25.3, w: 11.6, h: 7.5 },
         },
         { 
           as: 'Mae McCoy',
           confidence: 'certain',
-          basis: 'No authority record yet. May be the only photo of her.'
+          basis: 'No authority record yet. May be the only photo of her.',
+          region: { face: 'recto', x: 60.3, y: 23.4, w: 13.6, h: 9.5 },
         },
       ],
       format: 'mounted photograph',
@@ -563,6 +575,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso.',
+          region: { face: 'recto', x: 55, y: 41, w: 6.2, h: 11.9 },
         },
         { 
           as: 'Ethel Brooks',
@@ -631,6 +644,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso.',
+          region: { face: 'recto', x: 33.7, y: 10.2, w: 26.4, h: 22.9 },
         },
       ],
       format: 'cabinet card',
@@ -703,6 +717,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso.',
+          region: { face: 'recto', x: 27.7, y: 26.2, w: 15.1, h: 11.5 },
         },
         {
           person: 'swann-nancy-atkinson',  // an id in people.ts. Build throws if unknown.
@@ -711,6 +726,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso.',
+          region: { face: 'recto', x: 62.1, y: 26.6, w: 18.2, h: 12.1 },
         },
         {
           person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
@@ -719,6 +735,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso.',
+          region: { face: 'recto', x: 51.7, y: 11.2, w: 17.6, h: 10.8 },
         },
         {
           person: 'girdner-lizzie-swann',  // an id in people.ts. Build throws if unknown.
@@ -727,6 +744,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso.',
+          region: { face: 'recto', x: 74.3, y: 15.3, w: 16.4, h: 13.4 },
         },
         {
           person: 'swann-john-milton',  // an id in people.ts. Build throws if unknown.
@@ -735,6 +753,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso.',
+          region: { face: 'recto', x: 12.3, y: 23, w: 17.1, h: 11.1 },
         },
         {
           person: 'bouknight-phebe-swann',  // an id in people.ts. Build throws if unknown.
@@ -743,6 +762,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso.',
+          region: { face: 'recto', x: 41.4, y: 26.9, w: 17.1, h: 12.5 },
         },
       ],
       format: 'tintype',
@@ -783,6 +803,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on note.',
+          region: { face: 'recto', x: 37.7, y: 30.1, w: 25.1, h: 24 },
         },
         {
           person: 'swann-annie',  // an id in people.ts. Build throws if unknown.
@@ -791,6 +812,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on note.',
+          region: { face: 'recto', x: 26.6, y: 54.5, w: 18.2, h: 19.5 },
         },
       ],
       format: 'ambrotype',
@@ -845,6 +867,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso. She is the older woman seated in the upper right frame.',
+          region: { face: 'recto', x: 67.7, y: 11.8, w: 7.3, h: 7.5 },
         },
         {
           person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
@@ -853,6 +876,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso. She is the girl on the right with the \'x\'',
+          region: { face: 'recto', x: 86.3, y: 16.9, w: 7.6, h: 8.8 },
         },
         {
           person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
@@ -861,6 +885,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso She is the girl on the left with the \'x\'.',
+          region: { face: 'recto', x: 62.8, y: 19.3, w: 8.7, h: 9.6 },
         },
         {
           person: 'swann-nancy-atkinson',  // an id in people.ts. Build throws if unknown.
@@ -869,6 +894,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Nancy C. Atkinson Swann may be the woman in the bottom left frame with an unknown boy.',
+          region: { face: 'recto', x: 18.8, y: 58.8, w: 11.3, h: 10.7 },
         },
       ],
       format: 'mounted photograph',
@@ -907,16 +933,19 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Nancy C. Atkinson Swann may be the woman standing on the right.',
+          region: { face: 'recto', x: 60.1, y: 24.7, w: 10.9, h: 10.5 },
         },
         {
           as: 'Fannie Bledsoe Atkinson',
           confidence: 'possible',
           basis: 'Seated woman. This possibly would be the second wife of David Atkinson, Nancy Atkinson Swann\'s father.',
+          region: { face: 'recto', x: 41.2, y: 38.4, w: 10.9, h: 10.2 },
         },
         {
           as: 'Artemissia Atkinson',
           confidence: 'possible',
           basis: 'Artemissia is one of the siblings of Nancy Atkinson Swann. The identify of this woman cannot be ascertained, but it is a possibility.',
+          region: { face: 'recto', x: 25.7, y: 26.8, w: 11.6, h: 10.1 },
         },
       ],
       format: 'tintype',
@@ -951,6 +980,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Can confirm the identity.',
+          region: { face: 'recto', x: 19.4, y: 19.8, w: 47.3, h: 51.1 },
         },
       ],
       format: 'tintype',
@@ -996,6 +1026,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 53.2, y: 38.9, w: 27.6, h: 32.2 },
         },
         {
           person: 'waddle-mable-swann',  // an id in people.ts. Build throws if unknown.
@@ -1004,6 +1035,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 17, y: 24.5, w: 30, h: 36.3 },
         },
       ],
       format: 'snapshot',
@@ -1057,6 +1089,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 28.8, y: 7.3, w: 43.8, h: 56.3 },
         },
       ],
       format: 'snapshot',
@@ -1102,6 +1135,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 49.7, y: 33.9, w: 34, h: 38.3 },
         },
         {
           as: 'unidentified male',  // an id in people.ts. Build throws if unknown.
@@ -1166,6 +1200,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'No identification available.',
+          region: { face: 'recto', x: 35.9, y: 31.6, w: 4.2, h: 5.7 },
         },
         {
           person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
@@ -1174,6 +1209,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'No identification available.',
+          region: { face: 'recto', x: 55, y: 31.9, w: 3.3, h: 4.1 },
         },
         {
           person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
@@ -1182,6 +1218,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'No identification available.',
+          region: { face: 'recto', x: 43.2, y: 36, w: 3.1, h: 4.4 },
         },
       ],
       description: 'This is a photograph of three people in a boat during a flood at Jacobia. The inscription on the verso does not offer a potential date or potential figures in the boat. The hairstyle matches that of Sammy and Jean McKinstry in the early to mid 1920s, but they never lived at Jacobia. Such hairstyles would not have been on children when the Swanns lived at Jacobia. I believe this is from a later flood. This photograph may depict Sam, Loveta, and Sammy McKinstry.',
@@ -1229,6 +1266,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 23.7, y: 30.8, w: 14.7, h: 13.7 },
         },
       ],
       description: 'This is a photograph of a seated C.E. Girdner at the home of Sam and Loveta McKinstry. The photograph shows the interior of their home. This was likely taken in 1953.',
@@ -1272,6 +1310,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 31, y: 27.7, w: 7.3, h: 12.4 },
         },
         {
           person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
@@ -1280,6 +1319,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 39.2, y: 26.5, w: 8.2, h: 11.8 },
         },
         {
           person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
@@ -1288,6 +1328,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 47.2, y: 26.8, w: 7.3, h: 11.5 },
         },
         {
           as: 'Glenn Zirkle',  // an id in people.ts. Build throws if unknown.
@@ -1296,6 +1337,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 45.2, y: 18.4, w: 5.8, h: 11.5 },
         },
         {
           as: 'Gertrude Major (Mrs. Major)',  // an id in people.ts. Build throws if unknown.
@@ -1304,6 +1346,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 53, y: 22.4, w: 8.7, h: 16.1 },
         },
       ],
       description: 'This is a photograph of Minnie McKinstry Swann, Loveta McKinstry Swann, Glenn Zirkle, Eva West, and Mrs. Major. Another photograph from this trip suggests it was taken in Dallas, Texas.',
@@ -1361,6 +1404,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 62.3, y: 15.5, w: 18.4, h: 20.5 },
         },
         {
           person: 'smith-eula-belle-girdner',  // an id in people.ts. Build throws if unknown.
@@ -1369,6 +1413,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 16.3, y: 6, w: 23.6, h: 26.5 },
         },
       ],
       format: 'snapshot',
@@ -1420,6 +1465,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 20.6, y: 49.6, w: 12.9, h: 19 },
         },
       ],
       description: 'This is a photograph of a seated C.E. Girdner at the home of Sam and Loveta McKinstry. The photograph shows the interior of their home. This was likely taken around 1930.',
@@ -1458,6 +1504,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 41.7, y: 44.2, w: 27.1, h: 21.3 },
         },
         {
           person: 'waddle-mable-swann',  // an id in people.ts. Build throws if unknown.
@@ -1466,6 +1513,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 27.4, y: 25.7, w: 23.8, h: 20.5 },
         },
       ],
       format: 'mounted photograph',
@@ -1512,6 +1560,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 28.3, y: 17.1, w: 9.6, h: 13.7 },
         },
         {
           person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
@@ -1520,6 +1569,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 61.9, y: 18, w: 8.7, h: 15 },
         },
         {
           person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
@@ -1528,6 +1578,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 35.9, y: 20.5, w: 8.7, h: 11.5 },
         },
         {
           as: 'Eva Major Zirkle',  // an id in people.ts. Build throws if unknown.
@@ -1536,6 +1587,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 51.2, y: 18, w: 9.6, h: 14 },
         },
         {
           as: 'Gertrude Major (Mrs. Major)',  // an id in people.ts. Build throws if unknown.
@@ -1544,6 +1596,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 45.4, y: 21.8, w: 8, h: 10.9 },
         },
       ],
       description: 'This is a photograph of Minnie McKinstry Swann, Loveta McKinstry Swann, Eva Major Zirkle, Eva West, and Mrs. Major. This photo was taken at the home of Eva and Glenn Zirkle.',
@@ -1579,6 +1632,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Possible based on likeness.',
+          region: { face: 'recto', x: 48.4, y: 25.3, w: 5.8, h: 9.6 },
         },
       ],
       description: 'This photograph depicts two women standing in a stream. The woman on the right may be Minnie Swann McKinstry, but the photo is too blurry to definitively know.',
@@ -1614,6 +1668,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 36.1, y: 25.4, w: 30.4, h: 26.7 },
         },
       ],
       inscriptions : [
@@ -1653,6 +1708,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 61.7, y: 22.5, w: 11.8, h: 22.1 },
         },
         {
           person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
@@ -1661,6 +1717,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 36.6, y: 22.8, w: 12.2, h: 20.4 },
         },
         {
           person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
@@ -1669,6 +1726,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 74.8, y: 26.2, w: 11.1, h: 19.4 },
         },
         {
           as: 'Annie Miller',  // an id in people.ts. Build throws if unknown.
@@ -1677,6 +1735,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 49.7, y: 23.9, w: 12.9, h: 21.5 },
         },
       ],
       inscriptions : [
@@ -1752,6 +1811,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 30.6, y: 17.9, w: 16.2, h: 18.1 },
         },
         {
           person: 'smith-eula-belle-girdner',  // an id in people.ts. Build throws if unknown.
@@ -1760,6 +1820,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 12.8, y: 18.6, w: 16.9, h: 17.7 },
         },
         {
           as: 'Ila Hancock',  // an id in people.ts. Build throws if unknown.
@@ -1768,6 +1829,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 15.2, y: 67.1, w: 12.7, h: 18.8 },
         },
       ],
       rights: {
@@ -1814,6 +1876,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 44.1, y: 6.2, w: 12.2, h: 12.4 },
         },
       ],
       rights: {

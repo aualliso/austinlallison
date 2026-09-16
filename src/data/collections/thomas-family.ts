@@ -81,7 +81,9 @@ export const COLLECTION: Collection = {
           confidence: 'probable',
           basis:
             'The verso names Benjamin Thomas and lists his children. It does not explicitly say the portrait is of him - but a name at the head of the back of a portrait normally identifies the sitter.',
-        },
+          region: { face: 'recto', x: 9.9, y: 18.8, w: 60.4, h: 54.9 },
+          },
+      
       ],
       related: [
         { slug: 'minerva-hunter-thomas-portrait', relation: 'Companion portrait, matching size and treatment' },
@@ -128,6 +130,7 @@ export const COLLECTION: Collection = {
           confidence: 'certain',
           basis:
             'The name of Minerva Hunter Thomas is on the verso.',
+          region: { face: 'recto', x: 15, y: 19.1, w: 55.6, h: 49.7 },
         },
       ],
       related: [
@@ -168,24 +171,28 @@ export const COLLECTION: Collection = {
           confidence: 'certain',
           basis:
             'The name of Minerva Hunter Thomas is on the verso.',
+          region: { face: 'recto', x: 63.9, y: 36.8, w: 4.7, h: 3.5 },
         },
         {
           person: 'thomas-benjamin-b',
           confidence: 'certain',
           basis:
             'The name of Ben Thomas is on the verso.',
+          region: { face: 'recto', x: 69.6, y: 33.9, w: 5.7, h: 4.6 },
         },
         {
           person: 'darby-mattie-thomas',
           confidence: 'certain',
           basis:
             'The name of Aunt Matt is on the verso.',
+          region: { face: 'recto', x: 55.9, y: 36.7, w: 4.1, h: 3.7 },
         },
         {
           person: 'mckinstry-loveta-swann',
           confidence: 'probable',
           basis:
             'A child that looks similar to Loveta is at the left of the photograph',
+          region: { face: 'recto', x: 37.9, y: 40.7, w: 3.4, h: 3.1 },
         }
       ],
     },
@@ -219,12 +226,14 @@ export const COLLECTION: Collection = {
           confidence: 'certain',
           basis:
             'The name of Minerva Hunter Thomas is on the verso.',
+          region: { face: 'recto', x: 40.8, y: 35.4, w: 7.3, h: 5.8 },
         },
         {
           person: 'thomas-benjamin-b',
           confidence: 'certain',
           basis:
             'The name of Ben Thomas is on the verso.',
+          region: { face: 'recto', x: 50.6, y: 32.1, w: 8.2, h: 6.9 },
         },
       ],
     },
@@ -260,18 +269,21 @@ export const COLLECTION: Collection = {
           confidence: 'certain',
           basis:
             'The name of Grandpa Thomas, better known as Benjamin, is on the verso.',
+          region: { face: 'recto', x: 51.2, y: 31.4, w: 8.4, h: 6.5 },
         },
         {
           person: 'thomas-sallie-foster',
           confidence: 'probable',
           basis:
             '"Sackie" from the verso is likely Sallie Thomas Foster.',
+          region: { face: 'recto', x: 70.3, y: 27.8, w: 5.8, h: 4.9 },
         },
         {
           person: 'sheram-frances-thomas',
           confidence: 'probable',
           basis:
             'Frances, the daughter of John and Sallie Thomas is likely the child mentioned.',
+          region: { face: 'recto', x: 63, y: 33.5, w: 7.3, h: 5.4 },
         },
       ],
       inscriptions: [
@@ -313,6 +325,7 @@ export const COLLECTION: Collection = {
           confidence: 'certain',
           basis:
             'The name of Mattie Thomas Darby is on the verso.',
+          region: { face: 'recto', x: 39.9, y: 27.2, w: 25.6, h: 40.3 },
         },
       ],
     },
@@ -345,6 +358,7 @@ export const COLLECTION: Collection = {
           confidence: 'certain',
           basis:
             'The name of Rockett Thomas Patterson is on the verso.',
+          region: { face: 'recto', x: 34.1, y: 28.2, w: 33.1, h: 28.7 },
         },
       ],
       inscriptions: [
@@ -395,25 +409,21 @@ export const COLLECTION: Collection = {
           confidence: 'probable',
           basis:
             'Supplied with the item; the source of the names is not recorded on the object.',
+          region: { face: 'recto', x: 18.3, y: 24.8, w: 14, h: 24.3 },
         },
         {
           person: 'naylor-charley',
           confidence: 'probable',
           basis: 'Supplied with the item; source not recorded on the object.',
+          region: { face: 'recto', x: 37, y: 8.4, w: 11.1, h: 22.6 },
         },
         {
           person: 'thomas-norphlet-bud',
           confidence: 'probable',
           basis:
             'Supplied with the item as "Bud Thomas". Identified with N. B. ("Bud") Thomas, named as a son of Benjamin Thomas on the verso of the Benjamin B. Thomas portrait - same nickname within a family group represented across this material, which is grounds for a link but not proof of one.',
-        },
-      ],
-      related: [
-        {
-          slug: 'benjamin-b-thomas-portrait',
-          relation:
-            'Verso names M. B. ("Bud") Thomas among Benjamin Thomas\u2019s children',
-        },
+          region: { face: 'recto', x: 60.6, y: 18.6, w: 13.6, h: 28.4 },
+          },
       ],
       needsWork: [
         'WHICH MAN IS WHICH. Three names, three figures, no stated order - the names are listed but not positioned, and guessing would be inventing a record.',
@@ -452,6 +462,7 @@ export const COLLECTION: Collection = {
           confidence: 'certain',
           basis:
             'The name of Mattie Thomas Darby is on the verso.',
+          region: { face: 'recto', x: 33.2, y: 18.2, w: 34.4, h: 30 },
         },
       ],
       inscriptions: [
