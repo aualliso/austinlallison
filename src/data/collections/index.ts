@@ -22,9 +22,15 @@ import type {
   Item,
   Person,
   Confidence,
+  Inscription,
+  Region,
   ResolvedItem,
   Surrogate,
 } from './types';
+
+/** The face an inscription's region is on when the region does not say. */
+export const inscriptionFace = (ins: Inscription): string =>
+  ins.region?.face ?? (ins.location === 'verso' ? 'verso' : 'recto');
 
 /** A view's label, reduced to a key: 'Case, open' -> 'case-open'. */
 const faceKey = (label: string) =>
@@ -87,14 +93,37 @@ export const ALL_ITEMS: ResolvedItem[] = COLLECTIONS.flatMap((c) =>
           `differ by more than punctuation.`
       );
     }
-    for (const det of i.details ?? []) {
-      if (!keys.has(det.face)) {
+    // Every box on the object - details, people, inscriptions - must name a
+    // face the item has and sit inside the picture. A region hanging off the
+    // edge is a mistyped number, and it would draw an outline around nothing.
+    const checkBox = (r: Region, face: string, what: string) => {
+      if (!keys.has(face)) {
         throw new Error(
-          `${i.slug}: detail "${det.caption}" is on face "${det.face}", which ` +
-            `this item does not have. Valid faces: ${[...keys].join(', ')}.`
+          `${i.slug}: ${what} is on face "${face}", which this item does not ` +
+            `have. Valid faces: ${[...keys].join(', ')}.`
         );
       }
+      const bad = [r.x, r.y, r.w, r.h].some((v) => !Number.isFinite(v) || v < 0 || v > 100);
+      if (bad || r.w === 0 || r.h === 0 || r.x + r.w > 100.5 || r.y + r.h > 100.5) {
+        throw new Error(
+          `${i.slug}: ${what} has a box that is empty or runs off the image ` +
+            `(x ${r.x}, y ${r.y}, w ${r.w}, h ${r.h}). Values are percentages, 0-100.`
+        );
+      }
+    };
+    for (const det of i.details ?? []) {
+      checkBox(det, det.face, `detail "${det.caption}"`);
     }
+    for (const dep of i.depicts ?? []) {
+      if (dep.region) {
+        checkBox(dep.region, dep.region.face ?? 'recto', `the region for "${dep.person ?? dep.as}"`);
+      }
+    }
+    (i.inscriptions ?? []).forEach((ins, n) => {
+      if (ins.region) {
+        checkBox(ins.region, ins.region.face ?? inscriptionFace(ins), `inscription ${n + 1}`);
+      }
+    });
 
     return {
       ...i,

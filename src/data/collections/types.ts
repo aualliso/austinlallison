@@ -75,6 +75,27 @@ export type RightsStatus =
  * Claims
  * ------------------------------------------------------------------ */
 
+/**
+ * A PLACE ON ONE VIEW OF THE OBJECT, as percentages of that image's width and
+ * height from the top left - the same convention as `details`, so a region
+ * survives a rescan at any resolution. Never type these by eye: open the item
+ * page with ?regions on the end of the URL, drag a box on the photograph (or
+ * Shift+drag inside Examine, where you can zoom in first), and the finished
+ * line is copied to the clipboard.
+ */
+export interface Region {
+  /**
+   * 'recto', 'verso', or the key of one of `views`. Omit it and a person's
+   * region is on the recto, and an inscription's is on the face its
+   * `location` names.
+   */
+  face?: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+}
+
 export interface Depiction {
   /** Key into PEOPLE. Omit when the person has no record yet. */
   person?: string;
@@ -90,6 +111,13 @@ export interface Depiction {
   basis?: string;
   /** Where in the frame, once known. Leave unset rather than guessing. */
   position?: string;
+  /**
+   * WHERE IN THE PICTURE, as a box. Optional, and worth it on any group
+   * photograph: the item page outlines the face when a reader points at the
+   * name, and Examine flies to it. `position` stays useful as words; this is
+   * the same claim made precise.
+   */
+  region?: Region;
 }
 
 export interface Inscription {
@@ -107,6 +135,8 @@ export interface Inscription {
    * the whole reason this flag exists.
    */
   datesSubjectNotObject?: boolean;
+  /** Where the writing is, so the transcription can be read against the ink. */
+  region?: Region;
 }
 
 export interface DateEstimate {
@@ -479,6 +509,36 @@ export const heading = (p: Person): string => {
   if (d) parts.push(d);
   else if (p.qualifier) parts.push(p.qualifier);
   return parts.join(', ');
+};
+
+/**
+ * The four rights statuses mapped to the standard statements digital libraries
+ * use, so the page can link to them and the structured data can carry a URI a
+ * machine understands. RightsStatements.org URIs are canonically http://.
+ * 'undetermined' is UND (evaluated, and could not be determined) rather than
+ * CNE (not evaluated), because choosing this status IS an evaluation.
+ */
+export const RIGHTS: Record<RightsStatus, { label: string; statement: string; uri: string }> = {
+  'public-domain': {
+    label: 'Public domain.',
+    statement: 'Public Domain Mark 1.0',
+    uri: 'https://creativecommons.org/publicdomain/mark/1.0/',
+  },
+  'no-known-restrictions': {
+    label: 'No known copyright restrictions.',
+    statement: 'No Known Copyright',
+    uri: 'http://rightsstatements.org/vocab/NKC/1.0/',
+  },
+  'in-copyright': {
+    label: 'In copyright.',
+    statement: 'In Copyright',
+    uri: 'http://rightsstatements.org/vocab/InC/1.0/',
+  },
+  undetermined: {
+    label: 'Rights undetermined.',
+    statement: 'Copyright Undetermined',
+    uri: 'http://rightsstatements.org/vocab/UND/1.0/',
+  },
 };
 
 export const CONFIDENCE_LABEL: Record<Confidence, string> = {

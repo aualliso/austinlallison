@@ -1,13 +1,49 @@
 ---
 // src/pages/collections/[collection]/[item].astro
-// The item record. The plate on the left, the description on the right, and
-// an Examine viewer over the top.
 //
-// PERFORMANCE NOTE, deliberate: nothing on this page uses filter, mix-blend-mode,
-// mask-image or clip-path. The viewer moves the image with transform alone.
+// THE ITEM RECORD. The plate on the left, the record on the right, and an
+// Examine viewer that opens over both.
+//
+// WHAT THIS PAGE DOES THAT A PHOTO PAGE USUALLY DOES NOT
+//   - REGIONS. A person, an inscription or a named detail can carry a box on
+//     the image. Point at the name and the face is outlined on the plate;
+//     press its number and Examine flies there. Identifications are tied to a
+//     place in the picture, not just listed beside it.
+//   - SHAREABLE VIEWS. Examine keeps its state in the URL as a W3C Media
+//     Fragment (#face=verso&xywh=percent:22,31,14,9), so "is this Bud?" can
+//     be sent as a link that opens on the face in question.
+//   - ?regions. An authoring mode: drag a box on the plate, or Shift+drag in
+//     Examine, and the finished `region: {...}` line is on the clipboard.
+//     Nobody should type percentages by eye again.
+//   - Front and back side by side, other photographs of the same people,
+//     the date drawn as an interval, a citation, and previous/next.
+//
+// STANDING CONSTRAINTS
+//   - No filter, mix-blend-mode, mask-image, clip-path or 3D anywhere. The
+//     viewer moves on transform and commits to layout size when it settles;
+//     outlines are plain positioned boxes.
+//   - The viewer is a native <dialog> opened with showModal(). That gives
+//     focus containment, Escape, focus return and the top layer for free, and
+//     it retires the "id selector sets display on a [hidden] element" bug
+//     this project has hit twice: nothing here styles the dialog's display.
+//   - Every listener is registered against an AbortController that aborts on
+//     astro:before-swap. ClientRouter keeps `window` and `document` across
+//     navigations, so listeners added there on each visit used to pile up.
+
 import RootLayout from '../../../layouts/RootLayout.astro';
-import { ALL_ITEMS, collectionBySlug, personById, personHref } from '../../../data/collections/index';
-import { naturalNameWithDates } from '../../../data/collections/types';
+import {
+  ALL_ITEMS,
+  collectionBySlug,
+  itemBySlug,
+  itemsOf,
+  personById,
+  personHref,
+  appearancesOf,
+  spanOf,
+  inscriptionFace,
+} from '../../../data/collections/index';
+import { naturalName, naturalNameWithDates, RIGHTS } from '../../../data/collections/types';
+import type { Region } from '../../../data/collections/types';
 import { plate } from '../../../data/collections/images';
 
 export function getStaticPaths() {
@@ -18,176 +54,471 @@ export function getStaticPaths() {
 }
 
 const { slug } = Astro.props as { slug: string };
-const item = ALL_ITEMS.find((i) => i.slug === slug)!;
+const item = itemBySlug.get(slug)!;
 const c = collectionBySlug.get(item.collection)!;
 
-// Every view of the object, rendered. The page no longer knows or cares
-// which of them is the "back".
+const EN = '\u2013';
+const EM = '\u2014';
+const site = Astro.site ?? Astro.url;
+const abs = (path: string) => new URL(path, site).href;
+const permalink = abs(item.href);
+
+/* ------------------------------------------------------------------ *
+ * Faces
+ * ------------------------------------------------------------------ */
 const faces = await Promise.all(
-  item.faces.map(async (f) => ({
-    ...f,
-    img: await plate(item.collection, f.surrogate.file, f.surrogate),
-  }))
+  item.faces.map(async (f, n) => {
+    const img = await plate(item.collection, f.surrogate.file, f.surrogate);
+    return {
+      ...f,
+      n,
+      img,
+      alt: n === 0 ? (item.description ?? item.title) : `${f.label}: ${item.title}`,
+      title: n === 0 ? item.title : `${f.label} ${EM} ${item.title}`,
+    };
+  })
 );
 
-const H3 = 'font-mono text-[0.66rem] uppercase tracking-[0.15em] text-sage font-medium mb-2';
+// The plate column is at most ~450px wide inside max-w-5xl, so the old 46vw
+// told a large monitor to fetch a file twice the size it would ever show.
+const SIZES = '(min-width: 1100px) 450px, (min-width: 1024px) calc(50vw - 4rem), calc(100vw - 4.5rem)';
+
+/* ------------------------------------------------------------------ *
+ * People, and the marks every region becomes
+ * ------------------------------------------------------------------ */
+const label = (conf: string) => (conf === 'certain' ? '' : conf.charAt(0).toUpperCase() + conf.slice(1));
+
+// Reading order: a list of who is in the picture, not an index.
+const nameOf = (d: { person?: string; as?: string }) =>
+  d.person ? naturalNameWithDates(personById.get(d.person)!) : (d.as as string);
+
+// A SHARED BASIS IS PRINTED ONCE, not once per person (see the note in the
+// People section below).
+const bases = [...new Set(item.depicts.map((d) => d.basis))];
+const sharedBasis = item.depicts.length > 1 && bases.length === 1 ? bases[0] : null;
+
+type Mark = Region & {
+  id: string;
+  kind: 'detail' | 'person' | 'inscription';
+  face: string;
+  tag: string;
+  caption: string;
+};
+const marks: Mark[] = [];
+(item.details ?? []).forEach((d, n) =>
+  marks.push({ id: `detail-${n + 1}`, kind: 'detail', face: d.face, x: d.x, y: d.y, w: d.w, h: d.h, tag: `${n + 1}`, caption: d.caption })
+);
+let personNo = 0;
+const personMark = new Map<number, Mark>();
+item.depicts.forEach((d, n) => {
+  if (!d.region) return;
+  const conf = label(d.confidence);
+  const m: Mark = {
+    id: `person-${n + 1}`,
+    kind: 'person',
+    face: d.region.face ?? 'recto',
+    x: d.region.x,
+    y: d.region.y,
+    w: d.region.w,
+    h: d.region.h,
+    tag: `${++personNo}`,
+    caption: `${nameOf(d)}${conf ? ` ${EM} ${conf}` : ''}. ${d.basis.charAt(0).toUpperCase()}${d.basis.slice(1)}`,
+  };
+  marks.push(m);
+  personMark.set(n, m);
+});
+const inscriptionMark = new Map<number, Mark>();
+item.inscriptions.forEach((ins, n) => {
+  if (!ins.region) return;
+  const m: Mark = {
+    id: `inscription-${n + 1}`,
+    kind: 'inscription',
+    face: inscriptionFace(ins),
+    x: ins.region.x,
+    y: ins.region.y,
+    w: ins.region.w,
+    h: ins.region.h,
+    tag: '',
+    caption: ins.text,
+  };
+  marks.push(m);
+  inscriptionMark.set(n, m);
+});
+const faceLabel = new Map(faces.map((f) => [f.key, f.label]));
+const box = (m: Region) => `--x:${m.x}%;--y:${m.y}%;--w:${m.w}%;--h:${m.h}%`;
+
+/* ------------------------------------------------------------------ *
+ * The date, as words and as an interval
+ * ------------------------------------------------------------------ */
+const span = spanOf(item);
+const approx = item.date.confidence === 'probable' || item.date.confidence === 'possible';
+const dateWords = !span
+  ? 'Undated'
+  : span.openStart
+    ? `In or before ${span.to}`
+    : span.openEnd
+      ? `In or after ${span.from}`
+      : span.from === span.to
+        ? `${approx ? 'About' : 'In'} ${span.from}`
+        : `Between ${span.from} and ${span.to}`;
+const OPEN_REACH = 15;
+const glyph = span
+  ? (() => {
+      const from = span.openStart ? span.to - OPEN_REACH : span.from;
+      const to = span.openEnd ? span.from + OPEN_REACH : span.to;
+      const lo = Math.floor(from / 10) * 10 - 10;
+      const hi = Math.ceil((to + 1) / 10) * 10 + 10;
+      const P = (y: number) => ((y - lo) / (hi - lo)) * 100;
+      const ticks = [];
+      for (let y = lo; y <= hi; y += 10) ticks.push({ y, x: P(y) });
+      return { lo, hi, x: P(from), w: P(to + 1) - P(from), ticks };
+    })()
+  : null;
+
+/* ------------------------------------------------------------------ *
+ * Citation, contact, neighbours
+ * ------------------------------------------------------------------ */
+const citeDate = !span
+  ? 'n.d.'
+  : span.openStart
+    ? `before ${span.to}`
+    : span.openEnd
+      ? `after ${span.from}`
+      : span.from === span.to
+        ? `${approx ? 'ca. ' : ''}${span.from}`
+        : `${span.from}${EN}${span.to}`;
+const maker = item.photographer
+  ? `${item.photographer.name}${item.photographer.confidence === 'certain' ? '' : ' (attributed)'}`
+  : item.studio;
+const citeTitle = item.title.replace(/\.$/, '');
+const citeRest = [
+  citeDate,
+  item.format ? item.format.charAt(0).toUpperCase() + item.format.slice(1) : null,
+  item.controlNumber ? `Control no. ${item.controlNumber}` : null,
+  `${c.title}, collection of Austin Allison`,
+].filter(Boolean) as string[];
+
+const mailto =
+  'mailto:hello@austinlallison.com' +
+  `?subject=${encodeURIComponent(`About ${item.controlNumber ? `${item.controlNumber}: ` : ''}${item.title}`)}` +
+  `&body=${encodeURIComponent(`I have something to add about this photograph.\n\n${item.title}\n${permalink}\n\n`)}`;
+
+const siblings = itemsOf(item.collection);
+const at = siblings.findIndex((i) => i.slug === item.slug);
+const prev = at > 0 ? siblings[at - 1] : null;
+const next = at >= 0 && at < siblings.length - 1 ? siblings[at + 1] : null;
+
+/* ------------------------------------------------------------------ *
+ * Other photographs of the same people, from any collection
+ * ------------------------------------------------------------------ */
+const ALSO_MAX = 6;
+const alsoIn = (
+  await Promise.all(
+    [...new Set(item.depicts.map((d) => d.person).filter((p): p is string => !!p))].map(async (pid) => {
+      const p = personById.get(pid)!;
+      const others = [
+        ...new Map(
+          appearancesOf(pid)
+            .filter((a) => a.item.slug !== item.slug)
+            .map((a) => [a.item.slug, a] as const)
+        ).values(),
+      ];
+      const thumbs = await Promise.all(
+        others.slice(0, ALSO_MAX).map(async (a) => ({
+          a,
+          r: await plate(a.item.collection, a.item.recto.file, a.item.recto),
+          coll: collectionBySlug.get(a.item.collection)?.title ?? '',
+        }))
+      );
+      return { pid, p, total: others.length, thumbs };
+    })
+  )
+).filter((x) => x.total > 0);
+
+/* ------------------------------------------------------------------ *
+ * What the script needs, and what machines read
+ * ------------------------------------------------------------------ */
+const json = (v: unknown) => JSON.stringify(v).replace(/</g, '\\u003c');
+const pageData = json({
+  note: item.description ?? '',
+  prev: prev?.href ?? null,
+  next: next?.href ?? null,
+  faces: faces.map((f) => ({
+    key: f.key,
+    label: f.label,
+    title: f.title,
+    alt: f.alt,
+    view: f.img.view,
+    big: f.img.detail,
+    study: f.img.study,
+    studyW: f.img.studyWidth,
+    w: f.img.width,
+    h: f.img.height,
+  })),
+  marks: marks.map(({ id, kind, face, x, y, w, h, caption }) => ({ id, kind, face, x, y, w, h, caption })),
+});
+
+const rights = RIGHTS[item.rights.status];
+const reliable = (conf: string) => conf === 'certain' || conf === 'probable';
+const structured = json({
+  '@context': 'https://schema.org',
+  '@type': 'Photograph',
+  '@id': permalink,
+  url: permalink,
+  name: item.title,
+  ...(item.description ? { description: item.description } : {}),
+  image: abs(faces[0].img.view),
+  ...(item.controlNumber ? { identifier: item.controlNumber } : {}),
+  ...(span
+    ? {
+        temporalCoverage: span.openStart
+          ? `../${span.to}`
+          : span.openEnd
+            ? `${span.from}/..`
+            : span.from === span.to
+              ? `${span.from}`
+              : `${span.from}/${span.to}`,
+      }
+    : {}),
+  ...(item.place ? { contentLocation: { '@type': 'Place', name: item.place } } : {}),
+  ...(maker ? { creator: { '@type': item.photographer ? 'Person' : 'Organization', name: maker } } : {}),
+  about: item.depicts
+    .filter((d) => d.person && reliable(d.confidence))
+    .map((d) => ({
+      '@type': 'Person',
+      name: naturalName(personById.get(d.person!)!),
+      url: abs(personHref(d.person!)),
+    })),
+  isPartOf: {
+    '@type': ['Collection', 'ArchiveComponent'],
+    name: c.title,
+    url: abs(`/collections/${c.slug}`),
+  },
+  license: rights.uri,
+});
+
+const H2 = 'font-mono text-[0.66rem] uppercase tracking-[0.15em] text-sage font-medium mb-2';
 const DT = 'font-mono text-[0.66rem] uppercase tracking-[0.12em] text-sage sm:w-36 sm:shrink-0 sm:pt-1';
 const ROW = 'flex flex-col sm:flex-row sm:gap-4 border-b border-haze py-2';
 const LINK = 'text-caprock hover:underline';
 const QUAL = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-caprock';
-
-const label = (c2: string) =>
-  c2 === 'certain' ? '' : c2.charAt(0).toUpperCase() + c2.slice(1);
-
-// Reading order here: this is a list of who is in the picture, not an index.
-// The inverted heading stays on the authority record, where it files.
-const nameOf = (d: { person?: string; as?: string }) =>
-  d.person ? naturalNameWithDates(personById.get(d.person)!) : (d.as as string);
-
-// A SHARED BASIS IS PRINTED ONCE, not once per person. item.identificationBasis
-// inherits to every depiction that sets none, which is right in the data and
-// unreadable on the page: three people off one verso means the same sentence
-// three times, and the fourteen-name verso on the Benjamin B. Thomas portrait
-// would mean it fourteen times. Hoisted, the per-person line carries only what
-// is TRUE OF THAT PERSON - and a basis that differs from the shared one stands
-// out instead of being buried in repetition.
-const bases = [...new Set(item.depicts.map((d) => d.basis))];
-const sharedBasis = item.depicts.length > 1 && bases.length === 1 ? bases[0] : null;
-
-const details = item.details ?? [];
-const alt = item.description ?? item.title;
-const altFor = (label: string, first: boolean) =>
-  first ? alt : `${label}: ${item.title}`;
+const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
 ---
 
 <RootLayout
   title={`${item.title} | ${c.title} | Austin Allison`}
   description={item.description ?? `${item.format ?? 'Photograph'} in ${c.title}.`}
+  image={faces[0].img.view}
   prose={false}
 >
-  <div class="max-w-5xl mx-auto py-6 text-iron font-serif">
-    <nav class="font-mono text-[0.68rem] uppercase tracking-[0.1em] text-sage mb-4">
-      <a href="/collections" class={LINK}>Collections</a>
-      <span class="opacity-50 mx-1.5">/</span>
-      <a href={`/collections/${c.slug}`} class={LINK}>{c.title}</a>
-    </nav>
+  <script type="application/ld+json" is:inline set:html={structured} />
+  <script type="application/json" id="item-data" is:inline set:html={pageData} />
+  <noscript>
+    <style is:inline>
+      .stack { display: block !important; }
+      .face { visibility: visible !important; opacity: 1 !important; margin-bottom: 1.25rem; }
+      [data-js-only] { display: none !important; }
+    </style>
+  </noscript>
 
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
+  <div class="item-page max-w-5xl mx-auto py-6 text-iron font-serif" data-item-page>
+    <!-- Where you are, and where the neighbours are -->
+    <div class="topline">
+      <nav class={`${MONO} min-w-0`} aria-label="Breadcrumb">
+        <a href="/collections" class={LINK}>Collections</a>
+        <span class="opacity-50 mx-1.5" aria-hidden="true">/</span>
+        <a href={`/collections/${c.slug}`} class={LINK}>{c.title}</a>
+      </nav>
+      {siblings.length > 1 && (
+        <nav class={`pager ${MONO}`} aria-label="In this collection">
+          {prev ? (
+            <a href={prev.href} class={LINK} rel="prev" data-astro-prefetch="viewport" title={prev.title}>
+              <span aria-hidden="true">&larr;</span> Previous
+            </a>
+          ) : (
+            <span class="opacity-40"><span aria-hidden="true">&larr;</span> Previous</span>
+          )}
+          <span class="pager-count">{at + 1} of {siblings.length}</span>
+          {next ? (
+            <a href={next.href} class={LINK} rel="next" data-astro-prefetch="viewport" title={next.title}>
+              Next <span aria-hidden="true">&rarr;</span>
+            </a>
+          ) : (
+            <span class="opacity-40">Next <span aria-hidden="true">&rarr;</span></span>
+          )}
+        </nav>
+      )}
+    </div>
 
+    <div class="layout">
       <!-- THE PLATE -->
-      <div class="lg:sticky lg:top-24">
-        <div class="relative bg-haze/25 border border-haze p-5 pb-8" data-mat>
-          {faces.map((f, n) => (
-            <img
-              src={f.img.view}
-              srcset={f.img.viewSrcset}
-              sizes="(min-width: 1024px) 46vw, calc(100vw - 3.5rem)"
-              data-face={f.key}
-              data-big={f.img.detail}
-              data-study={f.img.study}
-              data-study-w={f.img.studyWidth}
-              data-title={n === 0 ? item.title : `${f.label} \u2014 ${item.title}`}
-              width={f.img.width}
-              height={f.img.height}
-              alt={altFor(f.label, n === 0)}
-              loading={n === 0 ? 'eager' : 'lazy'}
-              class={`w-full h-auto plate-face${n === 0 ? ' is-on' : ''}`}
-            />
-          ))}
-          <button
-            type="button"
-            data-examine
-            hidden
-            class="examine-btn absolute right-2 bottom-2 font-mono text-[0.6rem] uppercase tracking-[0.12em] bg-canvas border border-haze text-iron px-2 py-1 rounded-sm hover:border-caprock hover:text-caprock"
-          >Examine &#8599;</button>
+      <div class="plate-col">
+        <div class="mat" data-mat>
+          <div class="stack">
+            {faces.map((f) => {
+              const attrs = {
+                src: f.img.view,
+                srcset: f.img.viewSrcset,
+                sizes: f.n === 0 ? SIZES : `auto, ${SIZES}`,
+                width: f.img.width,
+                height: f.img.height,
+                alt: f.alt,
+                loading: (f.n === 0 ? 'eager' : 'lazy') as 'eager' | 'lazy',
+                decoding: 'async' as const,
+                fetchpriority: (f.n === 0 ? 'high' : 'auto') as 'high' | 'auto',
+                draggable: 'false' as const,
+              };
+              return (
+                <figure class:list={['face', { 'is-on': f.n === 0 }]} data-face={f.key}>
+                  <div class="face-box" data-face-box={f.key}>
+                    {f.n === 0 ? <img {...attrs} transition:name={`plate-${item.slug}`} /> : <img {...attrs} />}
+                    {marks
+                      .filter((m) => m.face === f.key)
+                      .map((m) => (
+                        <span class:list={['mark', `mark--${m.kind}`]} data-mark={m.id} style={box(m)} aria-hidden="true">
+                          {m.tag && <b class="mark-tag">{m.tag}</b>}
+                        </span>
+                      ))}
+                  </div>
+                </figure>
+              );
+            })}
+          </div>
+          <button type="button" class="examine-btn" data-examine data-js-only>
+            <svg viewBox="0 0 20 20" aria-hidden="true">
+              <circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+              <path d="M12.6 12.6 17 17M8.5 6v5M6 8.5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            </svg>
+            Examine
+          </button>
         </div>
 
-        {faces.length > 1 && (
-          <div class="flex gap-1 mt-2 flex-wrap" data-faces>
-            {faces.map((f, n) => (
-              <button
-                type="button"
-                data-face={f.key}
-                class={`face-btn font-mono text-[0.66rem] uppercase tracking-[0.12em] border border-haze px-3 py-1 rounded-sm${n === 0 ? ' is-on' : ''}`}
-              >{f.label}</button>
-            ))}
+        {(faces.length > 1 || personMark.size > 0) && (
+          <div class="plate-tools" data-js-only>
+            {faces.length > 1 && (
+              <div class="seg" role="group" aria-label="View">
+                {faces.map((f) => (
+                  <button type="button" class="seg-btn" data-face-btn={f.key} aria-pressed={f.n === 0 ? 'true' : 'false'}>
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            {personMark.size > 0 && (
+              <button type="button" class="seg-btn seg-solo" data-names aria-pressed="false">
+                Names on the photograph
+              </button>
+            )}
           </div>
         )}
 
-        {details.length > 0 && (
-          <div class="mt-4">
-            <div class="flex items-center gap-1.5 flex-wrap">
-              <span class="font-mono text-[0.6rem] uppercase tracking-[0.13em] text-sage mr-1">Details</span>
-              {details.map((d, n) => (
-                <button
-                  type="button"
-                  class="det-btn font-mono text-[0.68rem] w-7 h-7 border border-haze rounded-full hover:border-caprock hover:text-caprock"
-                  data-face={d.face}
-                  data-x={d.x} data-y={d.y} data-w={d.w} data-h={d.h}
-                  data-cap={d.caption}
-                  aria-label={`Detail ${n + 1}: ${d.caption}`}
-                >{n + 1}</button>
-              ))}
-            </div>
-            <ol class="list-none p-0 mt-3 space-y-1">
-              {details.map((d, n) => (
-                <li class="flex gap-2 text-sm opacity-75">
-                  <span class="font-mono text-[0.68rem] text-caprock w-4 shrink-0">{n + 1}</span>
-                  <span>{d.caption}</span>
+        {(item.details ?? []).length > 0 && (
+          <div class="mt-5">
+            {/* A label, not a heading: this column comes before the h1 in the
+                document, and a heading here would put the outline out of order. */}
+            <p id="details-h" class={H2}>Details</p>
+            <ol class="locs" aria-labelledby="details-h">
+              {(item.details ?? []).map((d, n) => (
+                <li data-hover-mark={`detail-${n + 1}`}>
+                  <button type="button" class="loc" data-locate={`detail-${n + 1}`}>
+                    <span class="loc-n">{n + 1}</span>
+                    <span class="loc-cap">{d.caption}</span>
+                    {faces.length > 1 && <span class="loc-face">{faceLabel.get(d.face)}</span>}
+                  </button>
                 </li>
               ))}
             </ol>
           </div>
         )}
-
-
       </div>
 
       <!-- THE RECORD -->
-      <div>
-        <h1 class="text-3xl font-medium tracking-tight leading-tight mb-4">{item.title}</h1>
+      <div class="record">
+        <h1 class="text-3xl font-medium tracking-tight leading-tight mb-4 title">{item.title}</h1>
 
         <dl class="border-t border-haze mb-7">
           {item.controlNumber && (
-            <div class={ROW}><dt class={DT}>Control number</dt>
-              <dd class="m-0 min-w-0 flex-1 font-mono text-sm">{item.controlNumber}</dd></div>
+            <div class={ROW}>
+              <dt class={DT}>Control number</dt>
+              <dd class="m-0 min-w-0 flex-1 font-mono text-sm">{item.controlNumber}</dd>
+            </div>
           )}
           {item.format && (
-            <div class={ROW}><dt class={DT}>Format</dt><dd class="m-0 min-w-0 flex-1">{item.format}</dd></div>
+            <div class={ROW}>
+              <dt class={DT}>Format</dt>
+              <dd class="m-0 min-w-0 flex-1">{item.format}</dd>
+            </div>
           )}
           {item.dimensions && (
-            <div class={ROW}><dt class={DT}>Dimensions</dt><dd class="m-0 min-w-0 flex-1">{item.dimensions}</dd></div>
+            <div class={ROW}>
+              <dt class={DT}>Dimensions</dt>
+              <dd class="m-0 min-w-0 flex-1">{item.dimensions}</dd>
+            </div>
+          )}
+          {maker && (
+            <div class={ROW}>
+              <dt class={DT}>{item.photographer ? 'Photographer' : 'Studio'}</dt>
+              <dd class="m-0 min-w-0 flex-1">{maker}</dd>
+            </div>
           )}
           {item.place && (
-            <div class={ROW}><dt class={DT}>Place</dt><dd class="m-0 min-w-0 flex-1">{item.place}</dd></div>
+            <div class={ROW}>
+              <dt class={DT}>Place</dt>
+              <dd class="m-0 min-w-0 flex-1">{item.place}</dd>
+            </div>
           )}
-          <div class={ROW}><dt class={DT}>Date</dt><dd class="m-0 min-w-0 flex-1">{item.date.display}</dd></div>
-          <div class={ROW}><dt class={DT}>Collection</dt>
-            <dd class="m-0 min-w-0 flex-1"><a href={`/collections/${c.slug}`} class={LINK}>{c.title}</a></dd></div>
+          <div class={ROW}>
+            <dt class={DT}>Date</dt>
+            <dd class="m-0 min-w-0 flex-1">
+              <span class="date-words">{dateWords}</span>
+              {span && label(item.date.confidence) && <span class={`${QUAL} ml-2`}>{label(item.date.confidence)}</span>}
+              <span class="date-display font-mono">{item.date.display}</span>
+              {glyph && span && (
+                <span class="glyph" aria-hidden="true">
+                  <span class="glyph-track">
+                    {glyph.ticks.map((t) => <i class="glyph-tick" style={`--x:${t.x}%`}></i>)}
+                    <i
+                      class:list={['glyph-bar', { soft: item.date.confidence === 'possible', 'open-start': span.openStart, 'open-end': span.openEnd }]}
+                      style={`--x:${glyph.x}%;--w:${glyph.w}%`}
+                    ></i>
+                  </span>
+                  <span class="glyph-ends font-mono"><span>{glyph.lo}</span><span>{glyph.hi}</span></span>
+                </span>
+              )}
+            </dd>
+          </div>
+          <div class={ROW}>
+            <dt class={DT}>Collection</dt>
+            <dd class="m-0 min-w-0 flex-1"><a href={`/collections/${c.slug}`} class={LINK}>{c.title}</a></dd>
+          </div>
         </dl>
 
         {item.description && (
-          <section class="mb-7">
-            <h3 class={H3}>Description</h3>
-            <p class="m-0">{item.description}</p>
+          <section class="mb-7" aria-labelledby="desc-h">
+            <h2 id="desc-h" class={H2}>Description</h2>
+            <p class="m-0 prose-line">{item.description}</p>
           </section>
         )}
 
         {item.date.basis.length > 0 && (
-          <section class="mb-7">
-            <h3 class={H3}>Evidence for the date</h3>
+          <section class="mb-7" aria-labelledby="evidence-h">
+            <h2 id="evidence-h" class={H2}>Evidence for the date</h2>
             <ul class="list-none p-0 m-0">
               {item.date.basis.map((b) => (
-                <li class="relative pl-4 mb-1.5 text-[0.95rem] opacity-85 basis-line">{b}</li>
+                <li class="basis-line">{b}</li>
               ))}
             </ul>
           </section>
         )}
 
         {item.depicts.length > 0 && (
-          <section class="mb-7">
-            <h3 class={H3}>People</h3>
+          <section class="mb-7" aria-labelledby="people-h">
+            <h2 id="people-h" class={H2}>People</h2>
 
+            {/* A shared basis is printed once. item.identificationBasis
+                inherits to every depiction that sets none, which is right in
+                the data and unreadable on the page - fourteen names off one
+                verso would be the same sentence fourteen times. */}
             {sharedBasis && (
               <p class="text-sm opacity-75 m-0 mb-2.5">
                 <span class={QUAL}>All identifications</span> &mdash; {sharedBasis}
@@ -195,66 +526,77 @@ const altFor = (label: string, first: boolean) =>
             )}
 
             <ul class="list-none p-0 m-0">
-              {item.depicts.map((d) => (
-                <li class="border-t border-haze first:border-t-0 py-2.5 first:pt-0">
-                  {/* Name and POSITION on one line: you read the name and look
-                      straight back at the photograph, so the locator has to be
-                      where your eye already is. Quiet and mono, because it is
-                      apparatus rather than description. */}
-                  <div class="text-[1.05rem] flex flex-wrap items-baseline gap-x-2">
-                    {d.person
-                      ? <a href={personHref(d.person)} class={LINK}>{nameOf(d)}</a>
-                      : <span class="italic opacity-60">{nameOf(d)}</span>}
-                    {d.position && (
-                      <span class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage">
-                        {d.position}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Confidence always. Basis only where it is not the shared
-                      one already printed above. */}
-                  {(label(d.confidence) || d.basis !== sharedBasis) && (
-                    <div class="text-sm opacity-75 mt-0.5">
-                      {label(d.confidence) && <span class={QUAL}>{label(d.confidence)}</span>}
-                      {label(d.confidence) && d.basis !== sharedBasis && <span> &mdash; </span>}
-                      {d.basis !== sharedBasis && d.basis}
+              {item.depicts.map((d, n) => {
+                const m = personMark.get(n);
+                return (
+                  <li class="person" data-hover-mark={m?.id}>
+                    <div class="person-line">
+                      {m && (
+                        <button
+                          type="button"
+                          class="pin"
+                          data-locate={m.id}
+                          aria-label={`Show ${nameOf(d)} on the photograph`}
+                        >{m.tag}</button>
+                      )}
+                      {d.person ? (
+                        <a href={personHref(d.person)} class={LINK}>{nameOf(d)}</a>
+                      ) : (
+                        <span class="italic opacity-60">{nameOf(d)}</span>
+                      )}
+                      {d.position && <span class={MONO}>{d.position}</span>}
                     </div>
-                  )}
-                </li>
-              ))}
+                    {(label(d.confidence) || d.basis !== sharedBasis) && (
+                      <div class="text-sm opacity-75 mt-0.5">
+                        {label(d.confidence) && <span class={QUAL}>{label(d.confidence)}</span>}
+                        {label(d.confidence) && d.basis !== sharedBasis && <span> &mdash; </span>}
+                        {d.basis !== sharedBasis && d.basis}
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </section>
         )}
 
         {item.inscriptions.length > 0 && (
-          <section class="mb-7">
-            <h3 class={H3}>Inscriptions</h3>
+          <section class="mb-7" aria-labelledby="ins-h">
+            <h2 id="ins-h" class={H2}>Inscriptions</h2>
             <ul class="list-none p-0 m-0">
-              {item.inscriptions.map((ins) => (
-                <li class="border-t border-haze first:border-t-0 py-3 first:pt-0">
-                  <div class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage mb-1.5">
-                    {ins.location} &middot; {ins.medium}
-                  </div>
-                  <blockquote class="m-0 bg-haze/25 border-l-2 border-caprock px-3.5 py-2.5 whitespace-pre-line text-[1.02rem] leading-snug">{ins.text}</blockquote>
-                  {ins.note && <div class="text-sm opacity-75 mt-1.5">{ins.note}</div>}
-                  {ins.datesSubjectNotObject && (
-                    <div class="text-sm opacity-75 mt-1">
-                      <span class={QUAL}>Note</span> &mdash; this dates the subject, not the photograph.
+              {item.inscriptions.map((ins, n) => {
+                const m = inscriptionMark.get(n);
+                return (
+                  <li class="inscription" data-hover-mark={m?.id}>
+                    <div class="ins-head">
+                      <span class={MONO}>{ins.location} &middot; {ins.medium}</span>
+                      {m && (
+                        <button type="button" class="ins-show" data-locate={m.id}>
+                          Read against the {(faceLabel.get(m.face) ?? m.face).toLowerCase()}
+                        </button>
+                      )}
                     </div>
-                  )}
-                </li>
-              ))}
+                    <blockquote class="ins-text">{ins.text}</blockquote>
+                    {ins.hand && <div class="text-sm opacity-75 mt-1.5">Hand: {ins.hand}</div>}
+                    {ins.note && <div class="text-sm opacity-75 mt-1.5">{ins.note}</div>}
+                    {ins.datesSubjectNotObject && (
+                      <div class="text-sm opacity-75 mt-1">
+                        <span class={QUAL}>Note</span> &mdash; this dates the subject, not the photograph.
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
           </section>
         )}
 
         {item.related && item.related.length > 0 && (
-          <section class="mb-7">
-            <h3 class={H3}>Related</h3>
+          <section class="mb-7" aria-labelledby="related-h">
+            <h2 id="related-h" class={H2}>Related</h2>
             <ul class="list-none p-0 m-0">
               {item.related.map((r) => {
-                const other = ALL_ITEMS.find((x) => x.slug === r.slug)!;
+                const other = itemBySlug.get(r.slug)!;
                 return (
                   <li class="border-t border-haze first:border-t-0 py-2.5 first:pt-0">
                     <a href={other.href} class={LINK}>{other.title}</a>
@@ -266,87 +608,439 @@ const altFor = (label: string, first: boolean) =>
           </section>
         )}
 
-        {item.provenance && (
-          <section class="mb-7">
-            <h3 class={H3}>Provenance</h3><p class="m-0">{item.provenance}</p>
+        {alsoIn.length > 0 && (
+          <section class="mb-7" aria-labelledby="also-h">
+            <h2 id="also-h" class={H2}>Also in the collections</h2>
+            {alsoIn.map(({ pid, p, total, thumbs }) => (
+              <div class="also">
+                <p class="also-name">
+                  <a href={personHref(pid)} class={LINK}>{naturalName(p)}</a>
+                  <span class={`${MONO} ml-2`}>{total} more</span>
+                </p>
+                <ul class="also-row">
+                  {thumbs.map(({ a, r, coll }) => (
+                    <li>
+                      <a href={a.item.href} class="also-thumb" title={`${a.item.title} (${coll})`}>
+                        <img
+                          src={r.index}
+                          srcset={r.indexSrcset}
+                          width={r.width}
+                          height={r.height}
+                          alt={a.item.title}
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      </a>
+                      <span class="also-date font-mono">{a.item.date.display}</span>
+                    </li>
+                  ))}
+                </ul>
+                {total > thumbs.length && (
+                  <a href={personHref(pid)} class={`${LINK} text-sm`}>All photographs of {naturalName(p)}</a>
+                )}
+              </div>
+            ))}
           </section>
         )}
 
-        <section class="mb-7">
-          <h3 class={H3}>Rights</h3>
+        {item.provenance && (
+          <section class="mb-7" aria-labelledby="prov-h">
+            <h2 id="prov-h" class={H2}>Provenance</h2>
+            <p class="m-0">{item.provenance}</p>
+          </section>
+        )}
+
+        <section class="mb-7" aria-labelledby="rights-h">
+          <h2 id="rights-h" class={H2}>Rights</h2>
           <p class="m-0">
-            {item.rights.status === 'public-domain' && 'Public domain.'}
-            {item.rights.status === 'no-known-restrictions' && 'No known copyright restrictions.'}
-            {item.rights.status === 'in-copyright' && 'In copyright.'}
-            {item.rights.status === 'undetermined' && 'Rights undetermined.'}
+            {rights.label}
             {item.rights.note && <span> {item.rights.note}</span>}
+          </p>
+          <p class="m-0 mt-1 text-sm">
+            <a href={rights.uri} class={LINK} rel="license">{rights.statement}</a>
           </p>
         </section>
 
+        <section class="mb-7" aria-labelledby="cite-h">
+          <h2 id="cite-h" class={H2}>Cite this photograph</h2>
+          <p class="cite" data-cite>
+            {maker && <>{maker}. </>}{item.titleSource === 'inscribed' ? <i>{citeTitle}</i> : citeTitle}. {citeRest.join('. ')}. {permalink}<span data-accessed></span>.
+          </p>
+          <div class="cite-tools" data-js-only>
+            <button type="button" class="seg-btn" data-copy="cite">Copy citation</button>
+            <button type="button" class="seg-btn" data-copy="link">Copy link</button>
+            <span class={`${MONO} copy-note`} role="status" data-copy-note></span>
+          </div>
+        </section>
+
         <p class="mt-8 pt-3 border-t border-haze text-[0.92rem] opacity-70">
-          Can you add anything to this record?
-          <a href="mailto:hello@austinlallison.com" class={LINK}> Write to me </a>.
+          Can you add anything to this record? <a href={mailto} class={LINK}>Write to me</a>.
         </p>
       </div>
     </div>
   </div>
 
-  <!-- EXAMINE
-       The stage is the whole viewport and the chrome FLOATS OVER IT. The old
-       layout put a bar in normal flow above the stage, so a long description
-       wrapped to four lines and took that height off the photograph - the more
-       there was to say about a picture, the less of it you could see.
+  <!-- EXAMINE -->
+  <dialog id="examine" class="ex" aria-label="Examine the photograph">
+    <div class="ex-stage" id="ex-stage" tabindex="-1">
+      <div class="ex-frame" id="ex-frame">
+        <img id="ex-img" alt="" draggable="false" />
+        <div class="ex-marks">
+          {marks.map((m) => (
+            <span class:list={['ex-mark', `mark--${m.kind}`]} data-ex-mark={m.id} data-face={m.face} style={box(m)} aria-hidden="true">
+              {m.tag && <b class="mark-tag">{m.tag}</b>}
+            </span>
+          ))}
+        </div>
+      </div>
+    </div>
 
-       The description is no longer in the bar. The bar carries the title on one
-       line; the description lives in a panel that opens on request and is shut
-       by default. A detail button is the exception and opens its own caption,
-       because with a detail the caption IS the point. -->
-  <div
-    id="examine"
-    hidden
-    aria-modal="true"
-    role="dialog"
-    aria-label="Examine the photograph"
-    data-note={item.description ?? ''}
-  >
-    <div id="ex-stage"><img id="ex-img" alt=""></div>
+    {faces.length > 1 && (
+      <aside class="ex-aside" aria-label="The other view">
+        <p class="ex-aside-label" id="ex-aside-label"></p>
+        <button type="button" class="ex-aside-btn" data-ex="swap" aria-label="Switch to this view">
+          <img id="ex-aside-img" alt="" draggable="false" />
+        </button>
+      </aside>
+    )}
 
-    <div class="ex-top">
+    <div class="ex-top" id="ex-top">
       <p class="ex-title" id="ex-title"></p>
       <div class="ex-ctl">
         {faces.length > 1 && (
           <span class="ex-group">
-            {faces.map((f, n) => (
-              <button
-                type="button"
-                data-ex-face={f.key}
-                class={`ex-face${n === 0 ? ' is-on' : ''}`}
-              >{f.label}</button>
+            {faces.map((f) => (
+              <button type="button" data-ex-face={f.key} aria-pressed="false">{f.label}</button>
             ))}
           </span>
         )}
-        <span class="ex-group">
+        {faces.length > 1 && (
+          <button type="button" data-ex="compare" aria-pressed="false">Side by side</button>
+        )}
+        <span class="ex-group ex-zoom">
           <button type="button" data-ex="out" aria-label="Zoom out">&minus;</button>
-          <span id="ex-pct" aria-live="polite">100%</span>
+          <span id="ex-pct" class="ex-pct" aria-live="polite">100%</span>
           <button type="button" data-ex="in" aria-label="Zoom in">+</button>
-          <button type="button" data-ex="fit">Fit</button>
         </span>
+        <button type="button" data-ex="fit">Fit</button>
+        {personMark.size > 0 && (
+          <button type="button" data-ex="names" aria-pressed="false">Names</button>
+        )}
+        <button type="button" data-ex="link">Copy link</button>
         <button type="button" data-ex="info" aria-expanded="false" aria-controls="ex-note">Note</button>
         <button type="button" data-ex="close" aria-label="Close">&#10005;</button>
       </div>
     </div>
 
-    <div id="ex-note" hidden><p id="ex-cap"></p></div>
-  </div>
+    <div id="ex-note" class="ex-note" hidden><p id="ex-cap"></p></div>
+    <p class="ex-toast" id="ex-toast" role="status"></p>
+  </dialog>
 </RootLayout>
 
-<style is:global>
-  /* The plate faces. A cross-fade, NOT a 3D flip - a rotateY with
-     backface-visibility is the exact construct that made the home page slow
-     on Firefox Android. */
-  .plate-face { display: none; }
-  .plate-face.is-on { display: block; }
-  .face-btn.is-on { background: #9C5B3F; color: #F7F4EC; border-color: #9C5B3F; }
+<style>
+  .item-page {
+    --c-caprock: var(--color-caprock, #9c5b3f);
+    --c-sage: var(--color-sage, #7a8471);
+    --c-haze: var(--color-haze, #dad3c4);
+    --c-dust: var(--color-dust, #ede7da);
+    --c-iron: var(--color-iron, #3b3833);
+    --c-canvas: var(--color-canvas, #f7f4ec);
+  }
+
+  /* Top line ------------------------------------------------------ */
+  .topline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .pager {
+    display: flex;
+    align-items: baseline;
+    gap: 0.9rem;
+    white-space: nowrap;
+  }
+  .pager-count {
+    opacity: 0.8;
+  }
+
+  .layout {
+    display: grid;
+    gap: 2.5rem;
+    align-items: start;
+  }
+  @media (min-width: 1024px) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    }
+    .plate-col {
+      position: sticky;
+      top: calc(var(--header-h, 4.5rem) + 1rem);
+    }
+  }
+
+  /* The plate ----------------------------------------------------- */
+  .mat {
+    position: relative;
+    padding: 1.25rem 1.25rem 2.25rem;
+    background: rgb(218 211 196 / 0.25);
+    border: 1px solid var(--c-haze);
+  }
+  /* Every face in ONE grid cell, so the mat is as tall as the tallest face
+     and switching views never moves the page. The fade is opacity, and
+     visibility follows it so a hidden face leaves the accessibility tree and
+     takes no pointer events. */
+  .stack {
+    display: grid;
+  }
+  .face {
+    grid-area: 1 / 1;
+    align-self: center;
+    margin: 0;
+    opacity: 0;
+    visibility: hidden;
+    transition:
+      opacity 0.35s ease,
+      visibility 0s linear 0.35s;
+  }
+  .face.is-on {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.35s ease;
+  }
+  .face-box {
+    position: relative;
+  }
+  .face-box img {
+    display: block;
+    width: 100%;
+    height: auto;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+
+  /* Marks. Plain positioned boxes: no clip-path, no mask. */
+  .mark,
+  .ex-mark {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    height: var(--h);
+    border: 1.5px solid #f7f4ec;
+    box-shadow:
+      0 0 0 1px rgb(23 21 15 / 0.55),
+      inset 0 0 0 1px rgb(23 21 15 / 0.35);
+    border-radius: 2px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+  .mark--detail,
+  .mark--inscription {
+    border-style: dashed;
+  }
+  .mark.is-lit,
+  .show-names .mark--person,
+  .regions-mode .mark {
+    opacity: 1;
+  }
+  .mark-tag {
+    position: absolute;
+    left: -1px;
+    top: -1px;
+    transform: translateY(-100%);
+    min-width: 1.1rem;
+    padding: 0.05rem 0.3rem;
+    background: #17150f;
+    color: #f7f4ec;
+    font: 500 0.6rem/1.3 ui-monospace, monospace;
+    text-align: center;
+  }
+
+  .examine-btn {
+    position: absolute;
+    right: 0.5rem;
+    bottom: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.6rem;
+    background: var(--c-canvas);
+    border: 1px solid var(--c-haze);
+    border-radius: 2px;
+    color: var(--c-iron);
+    font: 500 0.62rem/1 ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .examine-btn svg {
+    width: 0.9rem;
+    height: 0.9rem;
+  }
+  .examine-btn:hover {
+    border-color: var(--c-caprock);
+    color: var(--c-caprock);
+  }
+
+  .plate-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
+  }
+  .seg {
+    display: inline-flex;
+  }
+  .seg-btn {
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--c-haze);
+    background: transparent;
+    color: var(--c-iron);
+    font: 500 0.64rem/1.2 ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .seg .seg-btn + .seg-btn {
+    margin-left: -1px;
+  }
+  .seg-btn:hover {
+    border-color: var(--c-caprock);
+    position: relative;
+  }
+  .seg-btn[aria-pressed='true'] {
+    background: var(--c-caprock);
+    border-color: var(--c-caprock);
+    color: var(--c-canvas);
+    position: relative;
+  }
+  .seg-btn:focus-visible,
+  .loc:focus-visible,
+  .pin:focus-visible,
+  .ins-show:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
+  }
+
+  /* Details list: the caption IS the button. */
+  .locs {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .loc {
+    display: flex;
+    align-items: baseline;
+    gap: 0.6rem;
+    width: 100%;
+    padding: 0.35rem 0.25rem;
+    border: 0;
+    border-top: 1px solid var(--c-haze);
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-size: 0.95rem;
+    text-align: left;
+    cursor: pointer;
+  }
+  .locs li:first-child .loc {
+    border-top: 0;
+  }
+  .loc:hover .loc-cap {
+    color: var(--c-caprock);
+  }
+  .loc-n {
+    flex-shrink: 0;
+    width: 1rem;
+    font: 500 0.68rem/1 ui-monospace, monospace;
+    color: var(--c-caprock);
+  }
+  .loc-cap {
+    flex: 1;
+  }
+  .loc-face {
+    flex-shrink: 0;
+    font: 0.58rem/1 ui-monospace, monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+
+  /* The record ---------------------------------------------------- */
+  .title,
+  .prose-line {
+    text-wrap: pretty;
+  }
+  .date-words {
+    font-size: 1.05rem;
+  }
+  .date-display {
+    display: block;
+    margin-top: 0.1rem;
+    font-size: 0.72rem;
+    opacity: 0.6;
+  }
+  .glyph {
+    display: block;
+    max-width: 17rem;
+    margin-top: 0.45rem;
+  }
+  .glyph-track {
+    position: relative;
+    display: block;
+    height: 12px;
+    border-bottom: 1px solid var(--c-haze);
+  }
+  .glyph-tick {
+    position: absolute;
+    left: var(--x);
+    bottom: -1px;
+    height: 5px;
+    border-left: 1px solid var(--c-haze);
+  }
+  /* The same interval glyph as the guide's chronology: a rule between caps. */
+  .glyph-bar {
+    --stripe: linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat;
+    --dash: repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 6px) 0 50% / 100% 2px no-repeat;
+    --cap-l: linear-gradient(currentColor, currentColor) 0 50% / 1.5px 8px no-repeat;
+    --cap-r: linear-gradient(currentColor, currentColor) 100% 50% / 1.5px 8px no-repeat;
+    position: absolute;
+    left: var(--x);
+    top: 0;
+    width: var(--w);
+    min-width: 5px;
+    height: 12px;
+    color: var(--c-caprock);
+    background: var(--stripe), var(--cap-l), var(--cap-r);
+  }
+  .glyph-bar.soft {
+    color: var(--c-sage);
+  }
+  .glyph-bar.open-start {
+    background: var(--dash), var(--cap-r);
+  }
+  .glyph-bar.open-end {
+    background: var(--dash), var(--cap-l);
+  }
+  .glyph-ends {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 0.2rem;
+    font-size: 0.58rem;
+    color: var(--c-sage);
+  }
+
+  .basis-line {
+    position: relative;
+    margin-bottom: 0.4rem;
+    padding-left: 1rem;
+    font-size: 0.95rem;
+    opacity: 0.85;
+  }
   .basis-line::before {
     content: '';
     position: absolute;
@@ -357,108 +1051,258 @@ const altFor = (label: string, first: boolean) =>
     opacity: 0.6;
   }
 
-  /* NEVER let an id selector set display on something the hidden attribute
-     controls - an id beats the UA stylesheet's [hidden] rule and the overlay
-     is stuck open. Visibility rides on a class; #examine[hidden] is a belt
-     for the same braces. */
-  /* THE GROUND IS DARK, and that is the main reason this looks better than it
-     did. A cream overlay puts the page's own paper-white next to the print's
-     paper-white, and the two compete - highlights stop reading as highlights
-     and the photograph looks washed. Against ink, the photograph is the only
-     lit thing on the screen, which is the whole point of examining it.
-
-     Still no filter, mix-blend-mode, mask-image or clip-path anywhere here.
-     The gradient on the bar is plain paint and the image still moves on
-     transform alone. */
-  #examine {
-    position: fixed;
-    inset: 0;
-    z-index: 60;
-    display: none;
-    background: #17150F;
-    color: #E8E2D6;
-    --ex-pad: clamp(0.55rem, 2vw, 1.1rem);
-    --ex-chrome: 3.7rem;
+  .person,
+  .inscription {
+    padding: 0.6rem 0;
+    border-top: 1px solid var(--c-haze);
   }
-  /* Block, not flex: the stage, the bar and the note are all positioned
-     against this box rather than stacked in flow. */
-  #examine.is-open { display: block; }
-  #examine[hidden] { display: none; }
+  .person:first-child,
+  .inscription:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+  .person-line {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.2rem 0.5rem;
+    font-size: 1.05rem;
+  }
+  .pin {
+    align-self: center;
+    min-width: 1.5rem;
+    height: 1.5rem;
+    padding: 0 0.3rem;
+    border: 1px solid var(--c-iron);
+    border-radius: 2px;
+    background: var(--c-iron);
+    color: var(--c-canvas);
+    font: 500 0.64rem/1 ui-monospace, monospace;
+    cursor: pointer;
+  }
+  .pin:hover {
+    background: var(--c-caprock);
+    border-color: var(--c-caprock);
+  }
+  .ins-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+    margin-bottom: 0.4rem;
+  }
+  .ins-show {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--c-caprock);
+    font: inherit;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+  .ins-show:hover {
+    text-decoration: underline;
+  }
+  .ins-text {
+    margin: 0;
+    padding: 0.65rem 0.9rem;
+    background: rgb(218 211 196 / 0.25);
+    border-left: 2px solid var(--c-caprock);
+    font-size: 1.02rem;
+    line-height: 1.4;
+    white-space: pre-line;
+  }
+  [data-hover-mark]:hover .ins-text {
+    background: rgb(218 211 196 / 0.45);
+  }
 
-  /* The stage is the entire overlay. The padding keeps a FITTED image clear of
-     the bar, while a zoomed one still pans across the full viewport. */
-  #ex-stage {
-    position: absolute;
-    inset: 0;
-    box-sizing: border-box;
-    padding: var(--ex-chrome) var(--ex-pad) var(--ex-pad);
-    overflow: hidden;
+  .also + .also {
+    margin-top: 1.1rem;
+  }
+  .also-name {
+    margin: 0 0 0.45rem;
+  }
+  .also-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin: 0 0 0.35rem;
+    padding: 0;
+    list-style: none;
+  }
+  .also-row li {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 4.75rem;
+  }
+  .also-thumb {
     display: flex;
     align-items: center;
     justify-content: center;
-    touch-action: none;
+    width: 4.75rem;
+    height: 5.5rem;
+    padding: 0.3rem;
+    background: var(--c-dust);
+    border: 1px solid var(--c-haze);
+    transition: border-color 0.2s ease;
   }
-  #ex-stage.can-pan { cursor: grab; }
-  #ex-stage.can-pan:active { cursor: grabbing; }
-  #ex-img {
+  .also-thumb:hover,
+  .also-thumb:focus-visible {
+    border-color: var(--c-caprock);
+    outline: none;
+  }
+  .also-thumb img {
     max-width: 100%;
     max-height: 100%;
-    transform-origin: center center;
-    -webkit-user-drag: none;
-    user-select: none;
-    box-shadow: 0 1px 24px rgba(0, 0, 0, 0.55);
+    width: auto;
+    height: auto;
   }
-  /* will-change ONLY WHILE MOVING, which is what it is for. Left on
-     permanently it pins the photograph in a compositor layer rasterised at its
-     fitted size - a 560px-wide texture that the GPU then stretches to whatever
-     the zoom says. That is the bug this whole pass is about: the layer is why
-     a 3178px file and a 1763px file looked identical at 6x. */
-  #ex-img.is-moving { will-change: transform; }
+  .also-date {
+    max-width: 100%;
+    margin-top: 0.2rem;
+    overflow: hidden;
+    font-size: 0.55rem;
+    color: var(--c-sage);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-  /* pointer-events: none on the bar itself, auto on its contents - so a drag
-     that starts over the gradient still reaches the stage and pans. */
+  .cite {
+    margin: 0;
+    padding: 0.7rem 0.9rem;
+    border: 1px solid var(--c-haze);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+  }
+  .cite-tools {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  .copy-note {
+    color: var(--c-caprock);
+  }
+
+  /* Examine ------------------------------------------------------- */
+  /* THE GROUND IS DARK: against ink the photograph is the only lit thing on
+     the screen, and its paper whites read as highlights instead of competing
+     with the page's own paper. Nothing below sets `display` on the dialog -
+     its visibility belongs to the [open] attribute alone. */
+  .ex {
+    --ex-pad: clamp(0.55rem, 2vw, 1.1rem);
+    --ex-chrome: 3.7rem;
+    --ex-aside: 0px;
+    --ex-aside-b: 0px;
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    background: #17150f;
+    color: #e8e2d6;
+    color-scheme: dark;
+  }
+  .ex::backdrop {
+    background: #17150f;
+  }
+  .ex-stage {
+    position: absolute;
+    inset: 0;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--ex-chrome) calc(var(--ex-pad) + var(--ex-aside)) calc(var(--ex-pad) + var(--ex-aside-b)) var(--ex-pad);
+    overflow: hidden;
+    touch-action: none;
+    outline: none;
+  }
+  .ex-stage.can-pan {
+    cursor: grab;
+  }
+  .ex-stage.can-pan:active {
+    cursor: grabbing;
+  }
+  .ex-frame {
+    position: relative;
+    flex: none;
+    transform-origin: center center;
+    box-shadow: 0 1px 24px rgb(0 0 0 / 0.55);
+  }
+  /* will-change ONLY while a gesture runs. Left on, it pins the photograph
+     in a layer rasterised at its fitted size and the GPU stretches that -
+     which is why a 3178px file once looked no sharper than a 1763px one. */
+  .ex-frame.is-moving {
+    will-change: transform;
+  }
+  .ex-frame img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .ex-marks {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .ex-mark {
+    visibility: hidden;
+  }
+  .ex-mark.on-face {
+    visibility: visible;
+  }
+  .ex-mark.is-active,
+  .show-names .ex-mark.mark--person,
+  .regions-mode .ex-mark {
+    opacity: 1;
+  }
+
   .ex-top {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: space-between;
-    gap: 0.9rem;
+    gap: 0.5rem 0.9rem;
     padding: var(--ex-pad);
     pointer-events: none;
-    background: linear-gradient(
-      to bottom,
-      rgba(10, 9, 6, 0.94),
-      rgba(10, 9, 6, 0.70) 58%,
-      rgba(10, 9, 6, 0)
-    );
+    background: linear-gradient(to bottom, rgb(10 9 6 / 0.94), rgb(10 9 6 / 0.7) 58%, rgb(10 9 6 / 0));
   }
-  .ex-top > * { pointer-events: auto; }
-
-  /* ONE LINE, ALWAYS. min-width: 0 is what actually lets it truncate - a flex
-     item will not shrink below its content without it, and the title would
-     push the controls off the right edge instead of ellipsing. */
+  .ex-top > * {
+    pointer-events: auto;
+  }
   .ex-title {
-    flex: 1;
+    flex: 1 1 12rem;
     min-width: 0;
     margin: 0;
-    font-family: ui-monospace, monospace;
-    font-size: 0.67rem;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-    color: #BDB4A0;
-    white-space: nowrap;
     overflow: hidden;
+    color: #bdb4a0;
+    font: 0.67rem/1.3 ui-monospace, monospace;
+    letter-spacing: 0.13em;
     text-overflow: ellipsis;
+    text-transform: uppercase;
+    white-space: nowrap;
   }
-
   .ex-ctl {
     display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
     align-items: center;
-    gap: 0.45rem;
-    flex-shrink: 0;
+    gap: 0.4rem;
   }
   .ex-group {
     display: flex;
@@ -466,433 +1310,1065 @@ const altFor = (label: string, first: boolean) =>
     gap: 1px;
   }
   .ex-ctl button {
-    font-family: ui-monospace, monospace;
-    font-size: 0.66rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    background: rgba(247, 244, 236, 0.07);
-    border: 1px solid rgba(247, 244, 236, 0.17);
-    color: #E8E2D6;
     min-width: 2.3rem;
     height: 2.3rem;
     padding: 0 0.62rem;
-    cursor: pointer;
+    border: 1px solid rgb(247 244 236 / 0.17);
     border-radius: 2px;
+    background: rgb(247 244 236 / 0.07);
+    color: #e8e2d6;
+    font: 0.64rem/1 ui-monospace, monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
   }
-  .ex-group button { border-radius: 0; }
-  .ex-group button:first-child { border-radius: 2px 0 0 2px; }
-  .ex-group button:last-child { border-radius: 0 2px 2px 0; }
+  .ex-group button {
+    border-radius: 0;
+  }
+  .ex-group > :first-child {
+    border-radius: 2px 0 0 2px;
+  }
+  .ex-group > :last-child {
+    border-radius: 0 2px 2px 0;
+  }
   .ex-ctl button:hover {
-    background: rgba(247, 244, 236, 0.16);
-    border-color: rgba(247, 244, 236, 0.42);
+    background: rgb(247 244 236 / 0.16);
+    border-color: rgb(247 244 236 / 0.42);
   }
-  .ex-ctl button:focus-visible {
-    outline: 2px solid #C4785A;
+  .ex-ctl button:focus-visible,
+  .ex-aside-btn:focus-visible {
+    outline: 2px solid #c4785a;
     outline-offset: 1px;
   }
-  .ex-ctl button.is-on {
-    background: #9C5B3F;
-    border-color: #9C5B3F;
-    color: #F7F4EC;
+  .ex-ctl button[aria-pressed='true'] {
+    background: #9c5b3f;
+    border-color: #9c5b3f;
+    color: #f7f4ec;
   }
-  /* An item with no description leaves nothing for the note to hold. Say so by
-     dimming the control rather than opening an empty panel. */
   .ex-ctl button:disabled {
     opacity: 0.32;
     cursor: default;
     background: none;
   }
-  .ex-ctl button:disabled:hover { border-color: rgba(247, 244, 236, 0.17); }
-  #ex-pct {
-    font-family: ui-monospace, monospace;
-    font-size: 0.62rem;
-    letter-spacing: 0.06em;
-    color: #A79D89;
-    min-width: 3.1rem;
-    height: 2.3rem;
+  .ex-pct {
     display: flex;
     align-items: center;
     justify-content: center;
-    border-block: 1px solid rgba(247, 244, 236, 0.17);
-    background: rgba(247, 244, 236, 0.04);
+    min-width: 3.1rem;
+    height: 2.3rem;
+    border-block: 1px solid rgb(247 244 236 / 0.17);
+    background: rgb(247 244 236 / 0.04);
+    color: #a79d89;
+    font: 0.62rem/1 ui-monospace, monospace;
+  }
+  /* Pinch is the zoom on a touch screen; the buttons only take room there.
+     And on a phone the title gives its row back to the photograph. */
+  @media (pointer: coarse) {
+    .ex-zoom {
+      display: none;
+    }
+  }
+  @media (max-width: 640px) {
+    .ex-title {
+      display: none;
+    }
   }
 
-  /* Floats over the photograph rather than sitting above it, so opening the
-     note costs no stage height. Capped in CH, because a description set the
-     full width of a 27-inch monitor is unreadable however much room there is. */
-  #ex-note {
+  .ex-note {
     position: absolute;
     left: var(--ex-pad);
-    bottom: var(--ex-pad);
-    max-width: min(54ch, calc(100% - var(--ex-pad) * 2));
+    bottom: calc(var(--ex-pad) + var(--ex-aside-b));
     box-sizing: border-box;
+    max-width: min(54ch, calc(100% - var(--ex-pad) * 2 - var(--ex-aside)));
+    max-height: 40vh;
+    overflow-y: auto;
     padding: 0.8rem 1rem;
-    background: rgba(10, 9, 6, 0.90);
-    border: 1px solid rgba(247, 244, 236, 0.15);
-    border-left: 2px solid #9C5B3F;
+    background: rgb(10 9 6 / 0.9);
+    border: 1px solid rgb(247 244 236 / 0.15);
+    border-left: 2px solid #9c5b3f;
     border-radius: 2px;
   }
-  #ex-note[hidden] { display: none; }
-  #ex-cap {
+  .ex-note p {
     margin: 0;
-    font-size: 0.93rem;
+    color: #dcd5c6;
+    font-size: 0.95rem;
     line-height: 1.55;
-    color: #DCD5C6;
+    white-space: pre-line;
   }
 
-  @media (max-width: 640px) {
-    #examine { --ex-chrome: 3.4rem; }
-    .ex-title { display: none; }
-    .ex-ctl { width: 100%; justify-content: flex-end; }
+  /* Side by side. The aside takes a column on a wide screen and a band at
+     the bottom on a narrow one; the stage's padding makes room for it. */
+  .ex-aside {
+    display: none;
   }
+  .ex.is-compare {
+    --ex-aside: min(34vw, 30rem);
+  }
+  /* Solid ground: a zoomed photograph pans under the aside, and without it
+     the two would show through each other. */
+  .ex.is-compare .ex-aside {
+    position: absolute;
+    top: var(--ex-chrome);
+    right: 0;
+    bottom: 0;
+    width: var(--ex-aside);
+    box-sizing: border-box;
+    padding: 0 var(--ex-pad) var(--ex-pad);
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    background: #17150f;
+  }
+  @media (max-width: 700px) {
+    .ex.is-compare {
+      --ex-aside: 0px;
+      --ex-aside-b: 36dvh;
+    }
+    .ex.is-compare .ex-aside {
+      top: auto;
+      left: 0;
+      width: auto;
+      height: var(--ex-aside-b);
+      padding-top: 0.5rem;
+    }
+  }
+  .ex-aside-label {
+    margin: 0;
+    color: #a79d89;
+    font: 0.6rem/1 ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .ex-aside-btn {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: 1px solid rgb(247 244 236 / 0.12);
+    background: rgb(247 244 236 / 0.03);
+    cursor: pointer;
+  }
+  .ex-aside-btn img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+  }
+
+  .ex-toast {
+    position: absolute;
+    left: 50%;
+    bottom: calc(var(--ex-pad) + var(--ex-aside-b));
+    max-width: calc(100% - 2rem);
+    margin: 0;
+    padding: 0.5rem 0.8rem;
+    border-radius: 2px;
+    background: #e8e2d6;
+    color: #17150f;
+    font: 0.66rem/1.4 ui-monospace, monospace;
+    letter-spacing: 0.04em;
+    opacity: 0;
+    transform: translate(-50%, 0.5rem);
+    transition:
+      opacity 0.2s ease,
+      transform 0.2s ease;
+    pointer-events: none;
+  }
+  .ex-toast.is-on {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  /* Authoring mode. Created by script, so these are global. */
+  :global(.region-pick) {
+    position: absolute;
+    z-index: 4;
+    border: 1.5px solid #e2a15c;
+    background: rgb(226 161 92 / 0.18);
+    pointer-events: none;
+  }
+  :global(.region-banner) {
+    position: fixed;
+    left: 50%;
+    bottom: 1rem;
+    z-index: 70;
+    transform: translateX(-50%);
+    max-width: calc(100% - 2rem);
+    padding: 0.55rem 0.9rem;
+    border-radius: 2px;
+    background: #17150f;
+    color: #f0ead9;
+    font: 0.68rem/1.45 ui-monospace, monospace;
+    letter-spacing: 0.03em;
+  }
+  .regions-mode .face-box {
+    cursor: crosshair;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .face,
+    .face.is-on,
+    .mark,
+    .ex-mark,
+    .ex-toast {
+      transition: none;
+    }
+  }
+
   @media print {
-    #examine, .examine-btn, [data-faces], .det-btn { display: none !important; }
-    .plate-face { display: block !important; }
+    .ex,
+    .examine-btn,
+    .plate-tools,
+    .cite-tools,
+    .pager {
+      display: none !important;
+    }
+    .stack {
+      display: block;
+    }
+    .face {
+      visibility: visible;
+      opacity: 1;
+      margin-bottom: 1rem;
+    }
+    .plate-col {
+      position: static;
+    }
+  }
+</style>
+
+<style is:global>
+  /* Page scroll stays put behind an open viewer - no script, no restoring. */
+  html:has(dialog.ex[open]) {
+    overflow: hidden;
   }
 </style>
 
 <script>
-  // Wired on astro:page-load, not at parse time: ClientRouter swaps the DOM
-  // without re-parsing, so a parse-time listener is lost on the second visit.
-  const wire = () => {
-    const mat = document.querySelector('[data-mat]');
-    if (!mat || (mat as HTMLElement).dataset.wired) return;
-    (mat as HTMLElement).dataset.wired = '1';
+  import { navigate } from 'astro:transitions/client';
 
-    const faces = Array.from(document.querySelectorAll<HTMLImageElement>('.plate-face'));
-    const faceBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('.face-btn'));
-    const overlay = document.getElementById('examine')!;
-    const stage = document.getElementById('ex-stage')!;
-    const img = document.getElementById('ex-img') as HTMLImageElement;
-    const cap = document.getElementById('ex-cap')!;
-    const note = document.getElementById('ex-note') as HTMLElement;
-    const exTitle = document.getElementById('ex-title')!;
-    const pct = document.getElementById('ex-pct')!;
-    const infoBtn = document.querySelector<HTMLButtonElement>('[data-ex="info"]');
-    const exFaceBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-ex-face]'));
-    const examineBtn = document.querySelector<HTMLButtonElement>('[data-examine]');
+  type FaceData = {
+    key: string;
+    label: string;
+    title: string;
+    alt: string;
+    view: string;
+    big: string;
+    study: string;
+    studyW: number;
+    w: number;
+    h: number;
+  };
+  type MarkData = {
+    id: string;
+    kind: string;
+    face: string;
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    caption: string;
+  };
+  type PageData = {
+    note: string;
+    prev: string | null;
+    next: string | null;
+    faces: FaceData[];
+    marks: MarkData[];
+  };
+  type Box = { x: number; y: number; w: number; h: number };
 
-    // Start shut regardless of what the markup says.
-    overlay.classList.remove('is-open');
-    overlay.hidden = true;
-    if (examineBtn) examineBtn.hidden = false;
+  const round1 = (n: number) => Math.round(n * 10) / 10;
+  const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
-    const showFace = (name: string) => {
-      faces.forEach((f) => f.classList.toggle('is-on', f.dataset.face === name));
-      faceBtns.forEach((b) => b.classList.toggle('is-on', b.dataset.face === name));
+  async function copyText(text: string, html?: string) {
+    try {
+      if (html && 'ClipboardItem' in window) {
+        await navigator.clipboard.write([
+          new ClipboardItem({
+            'text/plain': new Blob([text], { type: 'text/plain' }),
+            'text/html': new Blob([html], { type: 'text/html' }),
+          }),
+        ]);
+      } else {
+        await navigator.clipboard.writeText(text);
+      }
+      return true;
+    } catch {
+      window.prompt('Copy this:', text);
+      return false;
+    }
+  }
+
+  function wire() {
+    const root = document.querySelector<HTMLElement>('[data-item-page]');
+    const dataEl = document.getElementById('item-data');
+    const dialog = document.getElementById('examine') as HTMLDialogElement | null;
+    if (!root || !dataEl || !dialog || root.dataset.wired) return;
+    root.dataset.wired = '1';
+
+    // Everything below registers with this signal. ClientRouter keeps window
+    // and document across pages, so without it every visit to an item page
+    // added another set of resize/keydown/popstate listeners.
+    const ac = new AbortController();
+    const signal = ac.signal;
+    document.addEventListener('astro:before-swap', () => ac.abort(), { once: true });
+
+    const data = JSON.parse(dataEl.textContent || '{}') as PageData;
+    const faceData = new Map(data.faces.map((f) => [f.key, f]));
+    const markData = new Map(data.marks.map((m) => [m.id, m]));
+    const regionsMode = new URLSearchParams(location.search).has('regions');
+    // History handling below must only ever act on entries for THIS page.
+    // Back from a view opened on arrival goes to a different page, and that
+    // navigation belongs to ClientRouter, not to the viewer.
+    const here = location.pathname;
+
+    const $ = <T extends Element = HTMLElement>(sel: string, from: ParentNode = document) =>
+      from.querySelector<T>(sel);
+    const $$ = <T extends Element = HTMLElement>(sel: string, from: ParentNode = document) =>
+      Array.from(from.querySelectorAll<T>(sel));
+
+    /* ---------------------------------------------------------------- *
+     * The plate
+     * ---------------------------------------------------------------- */
+    const plateFaces = $$('.face', root);
+    const faceBtns = $$<HTMLButtonElement>('[data-face-btn]', root);
+    let plateFace = data.faces[0]?.key ?? 'recto';
+
+    const showFace = (key: string) => {
+      if (!faceData.has(key)) return;
+      plateFace = key;
+      plateFaces.forEach((f) => f.classList.toggle('is-on', f.dataset.face === key));
+      faceBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.faceBtn === key)));
     };
-    faceBtns.forEach((b) =>
-      b.addEventListener('click', () => showFace(b.dataset.face || 'recto'))
+    faceBtns.forEach((b) => b.addEventListener('click', () => showFace(b.dataset.faceBtn || 'recto'), { signal }));
+
+    const namesBtn = $<HTMLButtonElement>('[data-names]', root);
+    namesBtn?.addEventListener(
+      'click',
+      () => {
+        const on = namesBtn.getAttribute('aria-pressed') !== 'true';
+        namesBtn.setAttribute('aria-pressed', String(on));
+        root.classList.toggle('show-names', on);
+      },
+      { signal }
     );
 
-    let k = 1, tx = 0, ty = 0;
-    let drag: { x: number; y: number } | null = null;
+    // Point at a name, a transcription or a detail and its box lights on the
+    // plate. If the box is on the other face, the plate turns to it.
+    const light = (id: string | null) => {
+      $$('.mark.is-lit', root).forEach((m) => m.classList.remove('is-lit'));
+      if (!id) return;
+      const m = markData.get(id);
+      if (m && m.face !== plateFace) showFace(m.face);
+      $$(`[data-mark="${CSS.escape(id)}"]`, root).forEach((el) => el.classList.add('is-lit'));
+    };
+    $$('[data-hover-mark]', root).forEach((el) => {
+      const id = el.dataset.hoverMark;
+      if (!id) return;
+      el.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') light(id); }, { signal });
+      el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') light(null); }, { signal });
+      el.addEventListener('focusin', () => light(id), { signal });
+      el.addEventListener('focusout', () => light(null), { signal });
+    });
 
-    // TWO PLACES A ZOOM CAN LIVE, and the viewer uses both on purpose.
-    //
-    // transform: scale() is smooth and costs no layout, but the browser
-    // rasterises the element ONCE at its layout size and has the GPU stretch
-    // that texture. Whatever resolution the file behind it has is thrown away.
-    //
-    // A layout width costs a reflow but is rasterised at its real size, so the
-    // pixels actually arrive.
-    //
-    // So: transform WHILE THE GESTURE IS RUNNING, committed to layout width
-    // once it stops. Smooth while you move, sharp the moment you stop to read.
-    // `layoutK` is how much of the zoom is currently baked into the layout;
-    // the transform carries the remainder, k / layoutK.
-    let baseW = 0, baseH = 0;   // the fitted size, at k = 1
-    let layoutK = 1;
+    /* ---------------------------------------------------------------- *
+     * Examine
+     * ---------------------------------------------------------------- */
+    const stage = $('#ex-stage', dialog)!;
+    const frameEl = $('#ex-frame', dialog)!;
+    const img = $<HTMLImageElement>('#ex-img', dialog)!;
+    const titleEl = $('#ex-title', dialog)!;
+    const pctEl = $('#ex-pct', dialog)!;
+    const note = $('#ex-note', dialog)!;
+    const cap = $('#ex-cap', dialog)!;
+    const toastEl = $('#ex-toast', dialog)!;
+    const topBar = $('#ex-top', dialog)!;
+    const inBtn = $<HTMLButtonElement>('[data-ex="in"]', dialog);
+    const outBtn = $<HTMLButtonElement>('[data-ex="out"]', dialog);
+    const infoBtn = $<HTMLButtonElement>('[data-ex="info"]', dialog);
+    const compareBtn = $<HTMLButtonElement>('[data-ex="compare"]', dialog);
+    const exFaceBtns = $$<HTMLButtonElement>('[data-ex-face]', dialog);
+    const exMarks = $$('[data-ex-mark]', dialog);
+    const asideImg = $<HTMLImageElement>('#ex-aside-img', dialog);
+    const asideLabel = $('#ex-aside-label', dialog);
+
+    let face = data.faces[0]?.key ?? 'recto';
+    let k = 1; // zoom, relative to the fitted size
+    let tx = 0; // pan, px from the centre of the stage's content box
+    let ty = 0;
+    let layoutK = 1; // how much of k is baked into layout size
+    let fitW = 0;
+    let fitH = 0;
+    let area = { cx: 0, cy: 0, w: 0, h: 0 };
+    let bestW = 0;
+    let studySrc = '';
+    let upgraded = false;
     let settle = 0;
+    let compare = false;
+    let pushed = false; // did opening add a history entry
+    let toastTimer = 0;
 
-    let bestW = 0;            // natural width of the largest file for this face
-    let studySrc = '';        // that file's url
-    let upgraded = false;     // has it been fetched for this open()
-    const inBtn = document.querySelector<HTMLButtonElement>('[data-ex="in"]');
-
-    const resetLayout = () => {
-      layoutK = 1;
-      img.style.width = '';
-      img.style.height = '';
-      img.style.maxWidth = '';
-      img.style.maxHeight = '';
-    };
-    // Reading offsetWidth with the inline sizing cleared gives the fit size.
-    const remeasure = () => {
-      resetLayout();
-      baseW = img.offsetWidth;
-      baseH = img.offsetHeight;
+    const toast = (text: string) => {
+      const target = dialog.open ? toastEl : pageToast();
+      target.textContent = text;
+      target.classList.add('is-on');
+      window.clearTimeout(toastTimer);
+      toastTimer = window.setTimeout(() => target.classList.remove('is-on'), 2600);
     };
 
-    const maxK = () => {
-      if (!baseW || !bestW) return 4;
-      const dpr = window.devicePixelRatio || 1;
-      return Math.max(1, (bestW / baseW) * dpr);
+    // The stage's content box, which is where a fitted image is centred.
+    const measure = () => {
+      const r = stage.getBoundingClientRect();
+      const cs = getComputedStyle(stage);
+      const pl = parseFloat(cs.paddingLeft);
+      const pr = parseFloat(cs.paddingRight);
+      const pt = parseFloat(cs.paddingTop);
+      const pb = parseFloat(cs.paddingBottom);
+      const w = Math.max(1, r.width - pl - pr);
+      const h = Math.max(1, r.height - pt - pb);
+      area = { w, h, cx: r.left + pl + w / 2, cy: r.top + pt + h / 2 };
+      const f = faceData.get(face)!;
+      const s = Math.min(w / f.w, h / f.h);
+      fitW = f.w * s;
+      fitH = f.h * s;
     };
 
-    // NEVER lay out larger than the file itself. Past 1:1 there are no more
-    // pixels to show, and a layer that big is the 200 MB decode that takes
-    // Firefox Android down - the transform can carry anything above it.
+    // THE CEILING IS THE PIXELS WE HAVE: past 1:1 on the largest file there
+    // is nothing more to see, and zoom that keeps going would imply otherwise.
+    const maxK = () => Math.max(1, (bestW / Math.max(1, fitW)) * (window.devicePixelRatio || 1));
+
+    const clampView = () => {
+      k = clamp(k, 1, maxK());
+      const mx = Math.max(0, (fitW * k - area.w) / 2);
+      const my = Math.max(0, (fitH * k - area.h) / 2);
+      tx = clamp(tx, -mx, mx);
+      ty = clamp(ty, -my, my);
+    };
+
+    const layout = () => {
+      frameEl.style.width = `${Math.round(fitW * layoutK)}px`;
+      frameEl.style.height = `${Math.round(fitH * layoutK)}px`;
+    };
+
+    const upgrade = () => {
+      if (upgraded || !studySrc || img.getAttribute('src') === studySrc) return;
+      upgraded = true;
+      const want = studySrc;
+      const pre = new Image();
+      pre.addEventListener(
+        'load',
+        () => {
+          if (dialog.open && faceData.get(face)?.study === want) img.src = want;
+        },
+        { once: true }
+      );
+      pre.src = want;
+    };
+
+    const paint = () => {
+      clampView();
+      frameEl.style.transform = `translate(${tx}px, ${ty}px) scale(${k / layoutK})`;
+      stage.classList.toggle('can-pan', k > 1.001);
+      pctEl.textContent = `${Math.round(k * 100)}%`;
+      if (inBtn) inBtn.disabled = k >= maxK() - 0.001;
+      if (outBtn) outBtn.disabled = k <= 1.001;
+      if (k > 1.5) upgrade();
+    };
+
+    // TRANSFORM WHILE MOVING, LAYOUT SIZE WHEN STILL. A transform is smooth
+    // but rasterised once at layout size and stretched; a layout width is
+    // rasterised at real size. Never lay out past the file's own pixels.
     const commit = () => {
       window.clearTimeout(settle);
-      // Drop the hint FIRST. An early return below is the common case - the
-      // zoom did not move enough to matter - and leaving will-change on would
-      // pin the layer exactly as before and reinstate the bug.
-      img.classList.remove('is-moving');
-      if (!baseW || !bestW) return;
-      const want = Math.min(k, bestW / baseW);
-      if (Math.abs(want - layoutK) < 0.01) return;
-      layoutK = want;
-      if (layoutK === 1) {
-        resetLayout();
-      } else {
-        img.style.maxWidth = 'none';
-        img.style.maxHeight = 'none';
-        img.style.width = `${Math.round(baseW * layoutK)}px`;
-        img.style.height = `${Math.round(baseH * layoutK)}px`;
+      frameEl.classList.remove('is-moving');
+      const want = Math.min(k, Math.max(1, bestW / Math.max(1, fitW)));
+      if (Math.abs(want - layoutK) > 0.01) {
+        layoutK = want;
+        layout();
       }
       paint();
+      syncHash();
     };
-    const commitSoon = (ms = 140) => {
-      img.classList.add('is-moving');
+    const commitSoon = (ms = 160) => {
+      frameEl.classList.add('is-moving');
       window.clearTimeout(settle);
       settle = window.setTimeout(commit, ms);
     };
 
-    // THE ZOOM CEILING IS THE PIXELS WE ACTUALLY HAVE, not a flat 12x.
-
-    // Swap the pixels, keep the transform. Preloading through an Image() means
-    // the file is in cache before the src changes, so the picture does not
-    // blink out and back at whatever magnification you were reading at.
-    const upgrade = () => {
-      if (upgraded || !studySrc || studySrc === img.src) return;
-      upgraded = true;
-      const pre = new Image();
-      pre.addEventListener('load', () => {
-        if (overlay.hidden) return;
-        img.src = studySrc;
-        paint();
-      }, { once: true });
-      pre.src = studySrc;
-    };
-    // Panning is CLAMPED to the image's own edges, so the photograph can never
-    // be shoved off the stage and lost - whatever else goes wrong.
-    const clamp = () => {
-      if (k <= 1) { tx = 0; ty = 0; return; }
-      const r = stage.getBoundingClientRect();
-      // baseW/baseH, NOT offsetWidth: once a zoom is committed the element's
-      // own width already carries layoutK, and multiplying by k again would
-      // clamp against a box several times too large.
-      const w = baseW * k;
-      const h = baseH * k;
-      const maxX = Math.max(0, (w - r.width) / 2);
-      const maxY = Math.max(0, (h - r.height) / 2);
-      tx = Math.max(-maxX, Math.min(maxX, tx));
-      ty = Math.max(-maxY, Math.min(maxY, ty));
-    };
-    const paint = () => {
-      clamp();
-      img.style.transform = `translate(${tx}px, ${ty}px) scale(${k / layoutK})`;
-      stage.classList.toggle('can-pan', k > 1);
-      pct.textContent = `${Math.round(k * 100)}%`;
-      if (inBtn) inBtn.disabled = k >= maxK() - 0.001;
-      if (k > 1.5) upgrade();
-    };
-    const fit = () => { k = 1; tx = 0; ty = 0; remeasure(); paint(); };
-
-    // The note is SHUT unless someone asks for it, with one exception: a detail
-    // button, where the caption is the reason you pressed it.
-    const showNote = (on: boolean) => {
-      const has = !!cap.textContent?.trim();
-      note.hidden = !(on && has);
-      infoBtn?.setAttribute('aria-expanded', String(!note.hidden));
-      infoBtn?.classList.toggle('is-on', !note.hidden);
-      if (infoBtn) infoBtn.disabled = !has;
+    // Zoom about a point on screen, so what is under the cursor or between
+    // the fingers stays there.
+    const zoomAt = (nk: number, clientX = area.cx, clientY = area.cy) => {
+      const k0 = k;
+      nk = clamp(nk, 1, maxK());
+      const px = clientX - area.cx;
+      const py = clientY - area.cy;
+      tx = px - (px - tx) * (nk / k0);
+      ty = py - (py - ty) * (nk / k0);
+      k = nk;
+      paint();
     };
 
-    const markFace = (key: string) =>
-      exFaceBtns.forEach((b) => b.classList.toggle('is-on', b.dataset.exFace === key));
+    const fit = () => {
+      k = 1;
+      tx = 0;
+      ty = 0;
+      layoutK = 1;
+      layout();
+      paint();
+      syncHash();
+    };
 
-    const open = (
-      src: string,
-      title: string,
-      caption: string,
-      openNote = false,
-      big?: { src: string; width: number }
-    ) => {
-      img.src = src;
-      upgraded = false;
-      studySrc = big?.src || '';
-      bestW = big?.width || 0;
-      baseW = 0; baseH = 0;
-      resetLayout();
-      exTitle.textContent = title;
-      cap.textContent = caption;
-      showNote(openNote);
-      overlay.hidden = false;
-      overlay.classList.add('is-open');
-      document.body.style.overflow = 'hidden';
-      fit();
-    };
-    const close = () => {
-      drag = null;
-      overlay.classList.remove('is-open');
-      overlay.hidden = true;
-      document.body.style.overflow = '';
-      img.removeAttribute('src');
-      note.hidden = true;
-      window.clearTimeout(settle);
-      img.classList.remove('is-moving');
-      resetLayout();
-      k = 1; tx = 0; ty = 0;
-    };
-    const frame = (d: DOMStringMap) => {
-      const r = stage.getBoundingClientRect();
-      const bw = baseW, bh = baseH;
-      const w = Number(d.w), h = Number(d.h), x = Number(d.x), y = Number(d.y);
-      k = Math.min(
-        Math.min(r.width / (bw * w / 100), r.height / (bh * h / 100)) * 0.92,
-        maxK()
-      );
-      tx = (0.5 - (x + w / 2) / 100) * bw * k;
-      ty = (0.5 - (y + h / 2) / 100) * bh * k;
+    const frameTo = (r: Box) => {
+      layoutK = 1;
+      layout();
+      const nk = Math.min(area.w / ((fitW * r.w) / 100), area.h / ((fitH * r.h) / 100)) * 0.8;
+      k = clamp(nk, 1, maxK());
+      tx = (0.5 - (r.x + r.w / 2) / 100) * fitW * k;
+      ty = (0.5 - (r.y + r.h / 2) / 100) * fitH * k;
       paint();
       commit();
     };
-    const bigOf = (f: HTMLImageElement) => ({
-      src: f.dataset.study || f.dataset.big || f.src,
-      width: Number(f.dataset.studyW) || 0,
-    });
 
-    const faceSrc = (key: string) => {
-      const f = faces.find((x) => x.dataset.face === key) || faces[0];
-      return { src: f.dataset.big || f.src, alt: f.alt };
+    // What part of the image is on screen, as percentages - the inverse of
+    // frameTo, and what goes in the shareable URL.
+    const visibleBox = (): Box | null => {
+      if (k <= 1.001) return null;
+      const w = fitW * k;
+      const h = fitH * k;
+      const x0 = Math.max(0, w / 2 - tx - area.w / 2);
+      const x1 = Math.min(w, w / 2 - tx + area.w / 2);
+      const y0 = Math.max(0, h / 2 - ty - area.h / 2);
+      const y1 = Math.min(h, h / 2 - ty + area.h / 2);
+      return { x: (x0 / w) * 100, y: (y0 / h) * 100, w: ((x1 - x0) / w) * 100, h: ((y1 - y0) / h) * 100 };
     };
 
-    const noteText = () => overlay.dataset.note || '';
+    const buildHash = () => {
+      const v = visibleBox();
+      const parts = [`face=${encodeURIComponent(face)}`];
+      if (v) parts.push(`xywh=percent:${round1(v.x)},${round1(v.y)},${round1(v.w)},${round1(v.h)}`);
+      return `#${parts.join('&')}`;
+    };
+    // replaceState with the CURRENT state object, so ClientRouter's own
+    // bookkeeping (index, scroll) survives every update.
+    const syncHash = () => {
+      if (!dialog.open) return;
+      history.replaceState(history.state, '', `${location.pathname}${location.search}${buildHash()}`);
+    };
+    const parseHash = (): { face: string; box: Box | null } | null => {
+      const params = new URLSearchParams(location.hash.slice(1));
+      const f = params.get('face');
+      const xywh = params.get('xywh');
+      if (!f && !xywh) return null;
+      let parsed: Box | null = null;
+      if (xywh) {
+        const nums = xywh.replace(/^percent:/, '').split(',').map(Number);
+        if (nums.length === 4 && nums.every((n) => Number.isFinite(n)) && nums[2] > 0 && nums[3] > 0) {
+          parsed = { x: nums[0], y: nums[1], w: nums[2], h: nums[3] };
+        }
+      }
+      return { face: f && faceData.has(f) ? f : data.faces[0].key, box: parsed };
+    };
 
-    examineBtn?.addEventListener('click', () => {
-      const on = faces.find((f) => f.classList.contains('is-on')) || faces[0];
-      markFace(on.dataset.face || 'recto');
-      open(on.dataset.big || on.src, on.dataset.title || on.alt, noteText(), false, bigOf(on));
-    });
+    const setNote = (text: string, open: boolean) => {
+      cap.textContent = text;
+      const has = !!text.trim();
+      note.hidden = !(open && has);
+      if (infoBtn) {
+        infoBtn.disabled = !has;
+        infoBtn.setAttribute('aria-expanded', String(!note.hidden));
+        infoBtn.classList.toggle('is-on', !note.hidden);
+      }
+    };
 
-    // Recto and verso are switchable WITHOUT leaving the viewer. Comparing the
-    // two is most of what a verso is for, and closing and reopening to do it
-    // threw away your zoom every time.
-    exFaceBtns.forEach((b) =>
-      b.addEventListener('click', () => {
-        const key = b.dataset.exFace || 'recto';
-        showFace(key);
-        markFace(key);
-        const f = faces.find((x) => x.dataset.face === key) || faces[0];
-        img.src = f.dataset.big || f.src;
-        upgraded = false;
-        const big = bigOf(f);
-        studySrc = big.src;
-        bestW = big.width;
-        exTitle.textContent = f.dataset.title || f.alt;
-        cap.textContent = noteText();
-        showNote(false);
-        fit();
-      })
+    const setActiveMark = (id: string | null) =>
+      exMarks.forEach((m) => m.classList.toggle('is-active', m.dataset.exMark === id));
+
+    const otherFace = () => data.faces.find((f) => f.key !== face);
+    const updateAside = () => {
+      const o = otherFace();
+      if (!compare || !o || !asideImg || !asideLabel) return;
+      asideImg.src = o.view;
+      asideLabel.textContent = o.label;
+    };
+
+    const loadFace = (key: string) => {
+      const f = faceData.get(key) ?? data.faces[0];
+      face = f.key;
+      upgraded = false;
+      studySrc = f.study;
+      bestW = f.studyW || f.w;
+      img.alt = f.alt;
+      img.src = f.big;
+      titleEl.textContent = f.title;
+      exFaceBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.exFace === face)));
+      exMarks.forEach((m) => m.classList.toggle('on-face', m.dataset.face === face));
+      setActiveMark(null);
+      showFace(face);
+      updateAside();
+      k = 1;
+      tx = 0;
+      ty = 0;
+      layoutK = 1;
+      measure();
+      layout();
+      paint();
+    };
+
+    type OpenOpts = { box?: Box | null; caption?: string; noteOpen?: boolean; mark?: string; history?: 'push' | 'replace' | 'none' };
+    const open = (key: string, opts: OpenOpts = {}) => {
+      const wasOpen = dialog.open;
+      if (!wasOpen) dialog.showModal();
+      loadFace(key);
+
+      // THE HISTORY ENTRY GOES IN BEFORE ANY FRAMING. Framing commits, and a
+      // commit rewrites the hash of whatever entry is current - done first,
+      // that would stamp the view onto the PAGE's entry, the push below would
+      // find nothing to push, and the router's own fragment handling would
+      // then close the viewer it had just been asked to open.
+      if (!wasOpen) {
+        const url = `${location.pathname}${location.search}${buildHash()}`;
+        const mode = opts.history ?? 'push';
+        if (mode === 'push') {
+          // Through ClientRouter, not around it: its router then knows this
+          // is a same-page hash entry, so Back off it is an in-page step
+          // rather than a page transition that re-fetches and swaps the page.
+          navigate(url, { history: 'push', state: { examine: true } });
+          pushed = true;
+        } else if (mode === 'replace') {
+          history.replaceState({ ...(history.state ?? {}), examine: true }, '', url);
+          pushed = false;
+        } else {
+          pushed = true;
+        }
+      }
+
+      if (opts.box) frameTo(opts.box);
+      else syncHash();
+      if (opts.mark) setActiveMark(opts.mark);
+      setNote(opts.caption ?? data.note, !!opts.noteOpen);
+      stage.focus({ preventScroll: true });
+    };
+
+    // Closing, by any route - the button, Escape, the Back gesture.
+    dialog.addEventListener(
+      'close',
+      () => {
+        window.clearTimeout(settle);
+        frameEl.classList.remove('is-moving');
+        img.removeAttribute('src');
+        pointers.clear();
+        pinch = null;
+        panFrom = null;
+        setActiveMark(null);
+        if (pushed && history.state?.examine) {
+          // Our entry is on top: step back off it.
+          history.back();
+        } else if (location.pathname === here && location.hash) {
+          history.replaceState({ ...(history.state ?? {}), examine: false }, '', `${location.pathname}${location.search}`);
+        }
+        pushed = false;
+      },
+      { signal }
     );
 
-    document.querySelectorAll<HTMLButtonElement>('.det-btn').forEach((b) => {
-      b.addEventListener('click', () => {
-        const key = b.dataset.face || 'recto';
-        showFace(key);
-        const { src } = faceSrc(key);
-        const f = faces.find((x) => x.dataset.face === key) || faces[0];
-        markFace(key);
-        open(src, f.dataset.title || f.alt, b.dataset.cap || '', true, bigOf(f));
-        upgrade();   // a detail IS a close crop; do not wait to be asked
-        const go = () => { fit(); frame(b.dataset); };
-        if (img.complete && img.naturalWidth) go();
-        else img.addEventListener('load', go, { once: true });
-      });
-    });
+    // BACK CLOSES THE VIEWER. ClientRouter has already treated the step as
+    // an in-page hash move by the time this runs; all that is left is to
+    // bring the viewer into line with the entry we landed on.
+    window.addEventListener(
+      'popstate',
+      () => {
+        if (location.pathname !== here) return;
+        if (dialog.open && !history.state?.examine) {
+          pushed = false;
+          dialog.close();
+        } else if (!dialog.open && history.state?.examine) {
+          // Forward, back into a view.
+          const h = parseHash();
+          if (h) open(h.face, { box: h.box, history: 'none' });
+        }
+      },
+      { signal }
+    );
+    // A view link pasted into the address bar of this same page.
+    window.addEventListener(
+      'hashchange',
+      () => {
+        if (dialog.open || location.pathname !== here) return;
+        const h = parseHash();
+        if (h) open(h.face, { box: h.box, history: 'replace' });
+      },
+      { signal }
+    );
 
-    overlay.addEventListener('click', (e) => {
-      const t = (e.target as HTMLElement).closest<HTMLButtonElement>('[data-ex]');
-      if (t) {
-        if (t.dataset.ex === 'close') close();
-        if (t.dataset.ex === 'in') { k = Math.min(k * 1.4, maxK()); paint(); commit(); }
-        if (t.dataset.ex === 'out') { k = Math.max(k / 1.4, 1); paint(); commit(); }
-        if (t.dataset.ex === 'fit') fit();
-        if (t.dataset.ex === 'info') showNote(note.hidden);
-        return;
+    /* Buttons ---------------------------------------------------------- */
+    $('[data-examine]', root)?.addEventListener('click', () => open(plateFace), { signal });
+
+    $$<HTMLButtonElement>('[data-locate]', root).forEach((b) =>
+      b.addEventListener(
+        'click',
+        () => {
+          const m = markData.get(b.dataset.locate || '');
+          if (m) open(m.face, { box: m, caption: m.caption, noteOpen: true, mark: m.id });
+        },
+        { signal }
+      )
+    );
+
+    exFaceBtns.forEach((b) =>
+      b.addEventListener(
+        'click',
+        () => {
+          loadFace(b.dataset.exFace || 'recto');
+          setNote(data.note, false);
+          syncHash();
+        },
+        { signal }
+      )
+    );
+
+    dialog.addEventListener(
+      'click',
+      async (e) => {
+        const t = (e.target as Element).closest<HTMLButtonElement>('[data-ex]');
+        if (!t) return;
+        const action = t.dataset.ex;
+        if (action === 'close') dialog.close();
+        if (action === 'in') { zoomAt(k * 1.4); commit(); }
+        if (action === 'out') { zoomAt(k / 1.4); commit(); }
+        if (action === 'fit') fit();
+        if (action === 'info') setNote(cap.textContent || data.note, Boolean(note.hidden));
+        if (action === 'names') {
+          const on = t.getAttribute('aria-pressed') !== 'true';
+          t.setAttribute('aria-pressed', String(on));
+          dialog.classList.toggle('show-names', on);
+        }
+        if (action === 'link') {
+          syncHash();
+          if (await copyText(location.href)) toast('Link to this view copied');
+        }
+        if (action === 'compare' || action === 'swap') {
+          if (action === 'compare') {
+            compare = !compare;
+            dialog.classList.toggle('is-compare', compare);
+            compareBtn?.setAttribute('aria-pressed', String(compare));
+            updateAside();
+            const k0 = k;
+            const w0 = fitW;
+            measure();
+            const s = fitW / Math.max(1, w0);
+            tx *= s;
+            ty *= s;
+            k = k0;
+            layoutK = 1;
+            layout();
+            commit();
+          } else {
+            const o = otherFace();
+            if (o) {
+              loadFace(o.key);
+              setNote(data.note, false);
+              syncHash();
+            }
+          }
+        }
+      },
+      { signal }
+    );
+
+    /* Gestures --------------------------------------------------------- */
+    // Pointers are tracked by id, so two fingers are a pinch and one is a pan.
+    const pointers = new Map<number, { x: number; y: number }>();
+    let pinch: { d0: number; k0: number; mx: number; my: number; tx0: number; ty0: number } | null = null;
+    let panFrom: { x: number; y: number; tx0: number; ty0: number } | null = null;
+    let down = { x: 0, y: 0, t: 0 };
+    let lastTap = { x: 0, y: 0, t: 0 };
+    let picking = false;
+
+    const pair = () => {
+      const [a, b] = [...pointers.values()];
+      return { d: Math.hypot(a.x - b.x, a.y - b.y) || 1, mx: (a.x + b.x) / 2, my: (a.y + b.y) / 2 };
+    };
+    const startPan = () => {
+      const [p] = [...pointers.values()];
+      panFrom = p ? { x: p.x, y: p.y, tx0: tx, ty0: ty } : null;
+    };
+
+    stage.addEventListener(
+      'pointerdown',
+      (e) => {
+        if (picking || (e.target as Element).closest('button, a')) return;
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        try { stage.setPointerCapture(e.pointerId); } catch { /* not fatal */ }
+        pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (pointers.size === 1) {
+          down = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+          startPan();
+        } else if (pointers.size === 2) {
+          const p = pair();
+          pinch = { d0: p.d, k0: k, mx: p.mx, my: p.my, tx0: tx, ty0: ty };
+          panFrom = null;
+        }
+        frameEl.classList.add('is-moving');
+        e.preventDefault();
+      },
+      { signal }
+    );
+
+    stage.addEventListener(
+      'pointermove',
+      (e) => {
+        if (!pointers.has(e.pointerId)) return;
+        // Ask whether a button is held NOW rather than trusting that a
+        // pointerup arrived: a swallowed pointerup once left the photograph
+        // following the bare cursor around the screen.
+        if (e.pointerType === 'mouse' && e.buttons === 0) {
+          endPointer(e);
+          return;
+        }
+        pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (pinch && pointers.size >= 2) {
+          const p = pair();
+          const nk = clamp((pinch.k0 * p.d) / pinch.d0, 1, maxK());
+          const px = pinch.mx - area.cx;
+          const py = pinch.my - area.cy;
+          tx = px - (px - pinch.tx0) * (nk / pinch.k0) + (p.mx - pinch.mx);
+          ty = py - (py - pinch.ty0) * (nk / pinch.k0) + (p.my - pinch.my);
+          k = nk;
+          paint();
+        } else if (panFrom && k > 1.001) {
+          tx = panFrom.tx0 + (e.clientX - panFrom.x);
+          ty = panFrom.ty0 + (e.clientY - panFrom.y);
+          paint();
+        }
+      },
+      { signal }
+    );
+
+    const endPointer = (e: PointerEvent) => {
+      if (!pointers.has(e.pointerId)) return;
+      pointers.delete(e.pointerId);
+      if (pointers.size < 2) pinch = null;
+      if (pointers.size === 1) startPan();
+      if (pointers.size > 0) return;
+      panFrom = null;
+
+      // A double tap (or double click) zooms in on that spot, or back out.
+      const still = Math.hypot(e.clientX - down.x, e.clientY - down.y) < 10 && e.timeStamp - down.t < 300;
+      if (still && e.type === 'pointerup') {
+        const near = Math.hypot(e.clientX - lastTap.x, e.clientY - lastTap.y) < 30;
+        if (near && e.timeStamp - lastTap.t < 320) {
+          lastTap = { x: 0, y: 0, t: 0 };
+          if (k > 1.05) fit();
+          else zoomAt(Math.min(2.5, maxK()), e.clientX, e.clientY);
+        } else {
+          lastTap = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+        }
       }
-      if (e.target === stage && k <= 1) close();
-    });
-    stage.addEventListener('wheel', (e) => {
-      if (overlay.hidden) return;
-      e.preventDefault();
-      k = Math.max(1, Math.min(maxK(), k * (e.deltaY < 0 ? 1.12 : 1 / 1.12)));
-      paint();
-      commitSoon();
-    }, { passive: false });
-    // DRAGGING. The rule that matters is the `e.buttons` test in pointermove:
-    // it asks the browser whether a button is CURRENTLY held rather than
-    // trusting that a pointerup arrived. A pointerup can be swallowed - the
-    // pointer leaves the window, the browser starts its own image drag, a
-    // pointercancel fires instead - and any of those used to leave the drag
-    // latched on, so the photograph followed the bare cursor around the
-    // screen. State that can be read directly should never be remembered.
-    const endDrag = () => { drag = null; img.classList.remove('is-moving'); };
-
-    stage.addEventListener('pointerdown', (e) => {
-      if (e.button !== 0) return;                       // left button only
-      if ((e.target as HTMLElement).closest('[data-ex]')) return;  // not the controls
-      if (k <= 1) return;                               // nothing to pan yet
-      drag = { x: e.clientX - tx, y: e.clientY - ty };
-      img.classList.add('is-moving');
-      try { stage.setPointerCapture(e.pointerId); } catch { /* not fatal */ }
-      e.preventDefault();
-    });
-
-    stage.addEventListener('pointermove', (e) => {
-      if (!drag) return;
-      if (e.pointerType === 'mouse' && e.buttons === 0) { endDrag(); return; }
-      tx = e.clientX - drag.x;
-      ty = e.clientY - drag.y;
-      paint();
-    });
-
-    stage.addEventListener('pointerup', endDrag);
-    stage.addEventListener('pointercancel', endDrag);
-    stage.addEventListener('lostpointercapture', endDrag);
-    stage.addEventListener('pointerleave', endDrag);
-    window.addEventListener('pointerup', endDrag);
-    window.addEventListener('blur', endDrag);
-    // maxK() needs a laid-out image, and at the moment open() runs there is
-    // not one yet. Repaint once each file lands so the ceiling and the state
-    // of the + button settle on real numbers.
-    img.addEventListener('load', () => {
-      if (overlay.hidden) return;
-      if (k === 1) remeasure();     // the fitted size is only knowable now
-      paint();
-      if (k > 1) commit();          // an upgraded file re-rasterises at size
-    });
-
-    // The fit size is a function of the viewport, so it stops being true when
-    // the viewport changes. Cheaper to refit than to try to preserve the view.
-    window.addEventListener('resize', () => { if (!overlay.hidden) fit(); });
-
-    // The browser's own image drag competes for the same gesture.
-    img.addEventListener('dragstart', (e) => e.preventDefault());
-    img.addEventListener('dblclick', () => {
-      k = k > 1 ? 1 : Math.min(3, maxK());
-      tx = 0; ty = 0;
-      paint();
       commit();
+    };
+    stage.addEventListener('pointerup', endPointer, { signal });
+    stage.addEventListener('pointercancel', endPointer, { signal });
+    stage.addEventListener('lostpointercapture', endPointer, { signal });
+
+    stage.addEventListener(
+      'wheel',
+      (e) => {
+        e.preventDefault();
+        const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? area.h : 1;
+        // ctrlKey is how a trackpad pinch arrives: finer steps.
+        const factor = Math.exp(-e.deltaY * unit * (e.ctrlKey ? 0.01 : 0.0018));
+        zoomAt(k * factor, e.clientX, e.clientY);
+        commitSoon();
+      },
+      { passive: false, signal }
+    );
+
+    dialog.addEventListener(
+      'keydown',
+      (e) => {
+        if (e.altKey || e.ctrlKey || e.metaKey) return;
+        const step = e.shiftKey ? 160 : 48;
+        let handled = true;
+        switch (e.key) {
+          case 'ArrowLeft': tx += step; paint(); commitSoon(); break;
+          case 'ArrowRight': tx -= step; paint(); commitSoon(); break;
+          case 'ArrowUp': ty += step; paint(); commitSoon(); break;
+          case 'ArrowDown': ty -= step; paint(); commitSoon(); break;
+          case '+':
+          case '=': zoomAt(k * 1.4); commit(); break;
+          case '-':
+          case '_': zoomAt(k / 1.4); commit(); break;
+          case '0': fit(); break;
+          default: handled = false;
+        }
+        if (handled) e.preventDefault();
+      },
+      { signal }
+    );
+
+    img.addEventListener('dragstart', (e) => e.preventDefault(), { signal });
+
+    // Keep the view when the viewport changes - including the phone URL bar
+    // sliding in and out, which used to throw away a zoom mid-read.
+    window.addEventListener(
+      'resize',
+      () => {
+        if (!dialog.open) return;
+        const w0 = fitW;
+        measure();
+        const s = fitW / Math.max(1, w0);
+        tx *= s;
+        ty *= s;
+        layoutK = 1;
+        layout();
+        commitSoon(60);
+      },
+      { signal }
+    );
+
+    // The bar wraps to two rows on a narrow screen; the stage keeps clear of
+    // however tall it actually is.
+    const ro = new ResizeObserver(() => {
+      dialog.style.setProperty('--ex-chrome', `${Math.ceil(topBar.getBoundingClientRect().height)}px`);
     });
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !overlay.hidden) close();
-    });
-  };
+    ro.observe(topBar);
+    signal.addEventListener('abort', () => ro.disconnect());
+
+    /* ---------------------------------------------------------------- *
+     * Citation and links
+     * ---------------------------------------------------------------- */
+    const accessed = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    $$('[data-accessed]', root).forEach((el) => (el.textContent = ` (accessed ${accessed})`));
+    const copyNote = $('[data-copy-note]', root);
+    $$<HTMLButtonElement>('[data-copy]', root).forEach((b) =>
+      b.addEventListener(
+        'click',
+        async () => {
+          const cite = $('[data-cite]', root)!;
+          let ok = false;
+          if (b.dataset.copy === 'cite') {
+            const clean = cite.cloneNode(true) as HTMLElement;
+            clean.querySelectorAll('*').forEach((n) => [...n.attributes].forEach((a) => n.removeAttribute(a.name)));
+            ok = await copyText(cite.textContent!.replace(/\s+/g, ' ').trim(), clean.innerHTML);
+          } else {
+            ok = await copyText(`${location.origin}${location.pathname}`);
+          }
+          if (copyNote && ok) {
+            copyNote.textContent = b.dataset.copy === 'cite' ? 'Citation copied' : 'Link copied';
+            window.setTimeout(() => (copyNote.textContent = ''), 2400);
+          }
+        },
+        { signal }
+      )
+    );
+
+    // Previous / next with the arrow keys, when nothing else wants them.
+    document.addEventListener(
+      'keydown',
+      (e) => {
+        if (dialog.open || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+        if ((e.target as Element).closest('input, textarea, select, [contenteditable]')) return;
+        const href = e.key === 'ArrowLeft' ? data.prev : e.key === 'ArrowRight' ? data.next : null;
+        if (href) {
+          e.preventDefault();
+          navigate(href);
+        }
+      },
+      { signal }
+    );
+
+    /* ---------------------------------------------------------------- *
+     * ?regions - the authoring mode
+     * ---------------------------------------------------------------- */
+    let pageToastEl: HTMLElement | null = null;
+    function pageToast() {
+      if (!pageToastEl) {
+        pageToastEl = document.createElement('p');
+        pageToastEl.className = 'region-banner';
+        pageToastEl.setAttribute('role', 'status');
+        root!.append(pageToastEl);
+      }
+      return pageToastEl;
+    }
+
+    const attachPicker = (host: HTMLElement, faceOf: () => string, needShift: boolean) => {
+      let start: { x: number; y: number } | null = null;
+      let boxEl: HTMLElement | null = null;
+      let current: Box = { x: 0, y: 0, w: 0, h: 0 };
+      // getBoundingClientRect already includes any transform, so this is
+      // right at any zoom.
+      const rel = (e: PointerEvent) => {
+        const r = host.getBoundingClientRect();
+        return { x: clamp((e.clientX - r.left) / r.width, 0, 1) * 100, y: clamp((e.clientY - r.top) / r.height, 0, 1) * 100 };
+      };
+      host.addEventListener(
+        'pointerdown',
+        (e) => {
+          if ((needShift && !e.shiftKey) || e.button !== 0) return;
+          e.preventDefault();
+          e.stopPropagation();
+          picking = true;
+          start = rel(e);
+          boxEl = document.createElement('span');
+          boxEl.className = 'region-pick';
+          host.append(boxEl);
+          try { host.setPointerCapture(e.pointerId); } catch { /* not fatal */ }
+        },
+        { capture: true, signal }
+      );
+      host.addEventListener(
+        'pointermove',
+        (e) => {
+          if (!start || !boxEl) return;
+          e.stopPropagation();
+          const p = rel(e);
+          current = { x: Math.min(start.x, p.x), y: Math.min(start.y, p.y), w: Math.abs(p.x - start.x), h: Math.abs(p.y - start.y) };
+          Object.assign(boxEl.style, { left: `${current.x}%`, top: `${current.y}%`, width: `${current.w}%`, height: `${current.h}%` });
+        },
+        { capture: true, signal }
+      );
+      const finish = async (e: PointerEvent) => {
+        if (!start || !boxEl) return;
+        e.stopPropagation();
+        const el = boxEl;
+        start = null;
+        boxEl = null;
+        picking = false;
+        if (current.w < 0.4 || current.h < 0.4) {
+          el.remove();
+          return;
+        }
+        const line = `region: { face: '${faceOf()}', x: ${round1(current.x)}, y: ${round1(current.y)}, w: ${round1(current.w)}, h: ${round1(current.h)} },`;
+        await copyText(line);
+        toast(`Copied  ${line}`);
+        window.setTimeout(() => el.remove(), 5000);
+      };
+      host.addEventListener('pointerup', finish, { capture: true, signal });
+      host.addEventListener('pointercancel', finish, { capture: true, signal });
+    };
+
+    if (regionsMode) {
+      root.classList.add('regions-mode');
+      dialog.classList.add('regions-mode');
+      $$('.face-box', root).forEach((fb) => attachPicker(fb, () => fb.dataset.faceBox || 'recto', false));
+      attachPicker(frameEl, () => face, true);
+      $$('.face-box img', root).forEach((i) => i.addEventListener('dragstart', (e) => e.preventDefault(), { signal }));
+      toast('Region mode: drag on the photograph to copy a region. In Examine, zoom in and Shift+drag.');
+    }
+
+    /* ---------------------------------------------------------------- *
+     * Arriving on a shared view
+     * ---------------------------------------------------------------- */
+    const arrival = parseHash();
+    if (arrival) {
+      const go = () => open(arrival.face, { box: arrival.box, history: 'replace' });
+      if (document.readyState === 'complete') requestAnimationFrame(go);
+      else window.addEventListener('load', go, { once: true, signal });
+    }
+  }
 
   document.addEventListener('astro:page-load', wire);
-  if (document.readyState !== 'loading') wire();
-  else document.addEventListener('DOMContentLoaded', wire);
 </script>
