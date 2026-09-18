@@ -66,6 +66,7 @@ export const COLLECTION: Collection = {
           confidence: 'certain',
           basis:
             'Matches Sam McKinstry',
+          region: { face: 'recto', x: 19.7, y: 8.8, w: 11.8, h: 17.9 },
         },
       ],
       rights: {
@@ -126,6 +127,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Standing, first from left.',
+          region: { face: 'recto', x: 15.9, y: 23.8, w: 11.8, h: 15.5 },
         },
         {
           person: 'mckinstry-adeline',  // an id in people.ts. Build throws if unknown.
@@ -135,6 +137,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Standing, second from left.',
+          region: { face: 'recto', x: 30.3, y: 21, w: 10.7, h: 15.2 },
         },
         {
           person: 'mckinstry-james-daubin',  // an id in people.ts. Build throws if unknown.
@@ -144,6 +147,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Standing, third from left.',
+          region: { face: 'recto', x: 40.3, y: 31.2, w: 10, h: 14.4 },
         },
         {
           person: 'mckinstry-william-boyd',  // an id in people.ts. Build throws if unknown.
@@ -153,6 +157,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Standing, fourth from left.',
+          region: { face: 'recto', x: 48.8, y: 22.1, w: 12, h: 15.2 },
         },
         {
           person: 'mckinstry-samuel-small',  // an id in people.ts. Build throws if unknown.
@@ -162,6 +167,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Standing, fifth from left.',
+          region: { face: 'recto', x: 64.1, y: 28.5, w: 12, h: 14.9 },
         },
         {
           person: 'cole-elizabeth-mckinstry',  // an id in people.ts. Build throws if unknown.
@@ -171,6 +177,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Standing, sixth from left.',
+          region: { face: 'recto', x: 74.8, y: 24.9, w: 11.1, h: 16.3 },
         },
         {
           person: 'mckinstry-john-henry',  // an id in people.ts. Build throws if unknown.
@@ -180,6 +187,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Standing, seventh from left.',
+          region: { face: 'recto', x: 85.4, y: 31.2, w: 11.6, h: 14.9 },
         },
         {
           person: 'mckinstry-harrison-lee',  // an id in people.ts. Build throws if unknown.
@@ -189,6 +197,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Sitting, first from left.',
+          region: { face: 'recto', x: 5.7, y: 48.7, w: 13.3, h: 17.1 },
         },
         {
           person: 'mckinstry-sarah-boyd',  // an id in people.ts. Build throws if unknown.
@@ -198,6 +207,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Sitting, second from left.',
+          region: { face: 'recto', x: 24.3, y: 50.9, w: 12.2, h: 18.8 },
         },
         {
           person: 'west-edith-mary-mckinstry',  // an id in people.ts. Build throws if unknown.
@@ -207,6 +217,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Sitting, third from left.',
+          region: { face: 'recto', x: 41.9, y: 58.6, w: 11.3, h: 18.2 },
         },
         {
           person: 'mckinstry-james',  // an id in people.ts. Build throws if unknown.
@@ -216,6 +227,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Sitting, fourth from left.',
+          region: { face: 'recto', x: 59.9, y: 51.1, w: 12.2, h: 19.1 },
         },
         {
           person: 'mckinstry-thomas',  // an id in people.ts. Build throws if unknown.
@@ -225,6 +237,7 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Named on verso.',
           position: 'Sitting, fifth from left.',
+          region: { face: 'recto', x: 83.4, y: 52, w: 13.6, h: 19.4 },
         },
       ],
     },
@@ -307,6 +320,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'It is supposed the man kneeling on the cow may be Sam McKinstry.',
+          region: { face: 'color-enhanced-version', x: 40.5, y: 26, w: 5.4, h: 7.8 },
         },
       ],
       description:
@@ -337,11 +351,12 @@ export const COLLECTION: Collection = {
       depicts: [
         {
           person: 'mckinstry-samuel-small',  // an id in people.ts. Build throws if unknown.
-          confidence: 'certain',  // REQUIRED on every depiction
+          confidence: 'possible',  // REQUIRED on every depiction
           // Omit to inherit identificationBasis. If neither exists, the
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 54.3, y: 39.6, w: 16.2, h: 32.9 },
         },
       ],
       description:
@@ -426,6 +441,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 20.1, y: 32.7, w: 12.9, h: 9.6 },
         },
         {
           person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
@@ -434,6 +450,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 49.4, y: 31.7, w: 10.9, h: 9.6 },
         },
         {
           as: 'Edith Thomas Bowles',  // an id in people.ts. Build throws if unknown.
@@ -442,6 +459,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 37.9, y: 29.6, w: 11.8, h: 10.5 },
         },
       ]
     },
@@ -477,6 +495,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 63.2, y: 20.6, w: 6.4, h: 10 },
         },
       ]
     },
@@ -519,6 +538,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 28.1, y: 25, w: 38.4, h: 30.7 },
         },
       ]
     },
@@ -570,11 +590,12 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 34.6, y: 32.7, w: 29.3, h: 26 },
         },
       ]
     },
     {
-      slug: 'minnie-loveta-eva-samm',
+      slug: 'minnie-loveta-eva-sammy',
       title: '[Minnie McKinstry, Loveta McKinstry, Eva West, Sammy McKinstry]',
       titleSource: 'inscribed',
       controlNumber: 'a.1.8.4',
@@ -610,6 +631,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 21.7, y: 25, w: 12.2, h: 10.4 },
         },
         {
           person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
@@ -618,6 +640,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 40.6, y: 26.1, w: 13.3, h: 10.5 },
         },
         {
           person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
@@ -626,6 +649,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 62.6, y: 25.2, w: 12.7, h: 12.3 },
         },
         {
           person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
@@ -634,8 +658,194 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
+          region: { face: 'recto', x: 62.1, y: 49.7, w: 15.1, h: 12.3 },
         },
       ]
+    },
+    {
+      slug: 'mckinstry-sammy-and-jean-1',
+      title: '[Sammy and Jean, 1922]',
+      titleSource: 'inscribed',
+      controlNumber: 'a.1.11.1',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '1922',
+        basis: [
+          'The verso dates this photograph in 1922',
+        ],
+        confidence: 'certain',
+      },
+      recto: { file: 'mckinstry-sammy-and-jean-1-recto.jpg', },
+      verso: { file: 'mckinstry-sammy-and-jean-1-verso.jpg' },
+      description:
+        'This is a photograph of Sammy and Jean McKinstry in 1922 at the home of Sam and Loveta McKinstry.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sammy and Jean, 1922.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 44, y: 45.7, w: 6.2, h: 9.6 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 52, y: 49.4, w: 6, h: 7.4 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-jean-swann-austin-1',
+      title: '[Jean McKinstry and Austin Swann]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.11.2',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '1924',
+        basis: [
+          'Jean appears to be no more than two years old in this image. This would place the image in 1924.',
+        ],
+        confidence: 'certain',
+      },
+      recto: { file: 'mckinstry-jean-swann-austin-1-recto.jpg', },
+      verso: { file: 'mckinstry-jean-swann-austin-1-verso.jpg' },
+      description:
+        'This is a photograph of Veta Jean McKinstry and Austin Swann. Jean is wearing the baby dress of Austin Swann in this image.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Papa\'s dress.',
+          hand: 'unknown',
+        },
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Papa Swann and Jean McKinstry in Papa\'s baby dress..',
+          hand: 'unknown',
+        }
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 39.4, y: 30.4, w: 11.6, h: 8.7 },
+        },
+        {
+          person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 50.1, y: 28.6, w: 13.8, h: 11.7 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-sammy-and-jean-with-flowers',
+      title: '[Sammy and Jean Mckinstry with flowers]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.11.3',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1925-1926]',
+        basis: [
+          'Jean appears to be three or four years old in this image, which places it between 1925 and 1926.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-sammy-and-jean-with-flowers-recto.jpg', },
+      verso: { file: 'mckinstry-sammy-and-jean-with-flowers-verso.jpg' },
+      description:
+        'This photograph depicts Sammy and Jean McKinstry in front of flowers.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sammy and Jean.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 64.3, y: 19.1, w: 6.8, h: 11 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 35.8, y: 28.1, w: 6.6, h: 10.9 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-christmas-1',
+      title: '[Christmas at the McKinstry home in Hagerman]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.11.4',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1920-1925]',
+        basis: [
+          'There is no way to solidly date this photograph. There is a child\'s chair in the background, which suggests the McKinstrys had at least one child by that time. I assigned this a date of 1920 through 1925.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-christmas-1-recto.jpg', },
+      verso: { file: 'mckinstry-christmas-1-verso.jpg' },
+      description:
+        'This photograph depicts a Christmas scene at the McKinstry home in Hagerman, New Mexico during the first half of the 1920s.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Christmas in our home on the farm at Hagerman, N.M.',
+          hand: 'unknown',
+        },
+      ],
     },
   ],
 };

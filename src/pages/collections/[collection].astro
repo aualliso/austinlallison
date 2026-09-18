@@ -2,8 +2,29 @@
 // src/pages/collections/[collection].astro
 // The collection record: what this body of material is, where it came from,
 // and an inventory of it by series.
+//
+// THE ORDER OF THE INVENTORY. Within a series the default is ARRANGEMENT
+// order - control numbers read as numbers, so c.1.2.10 follows c.1.2.9 -
+// which is the order the material is actually in, and what a finding aid
+// lists. It is not the order records happen to sit in the data file, which is
+// what this page showed before and which drifts as records are added.
+// Readers can re-sort by date or by title. Both orders are worked out here
+// and carried on each row; the buttons move the rows themselves rather than
+// re-ordering them in CSS, so what a screen reader and the Tab key follow
+// stays the same as what the eye sees. With no JavaScript the page still
+// lists in arrangement order.
 import RootLayout from '../../layouts/RootLayout.astro';
-import { COLLECTIONS, itemsOf, collectionBySlug, depictedNames } from '../../data/collections/index';
+import {
+  COLLECTIONS,
+  itemsOf,
+  collectionBySlug,
+  depictedNames,
+  extentOf,
+  compareArrangement,
+  compareChronology,
+  compareTitles,
+} from '../../data/collections/index';
+import type { ResolvedItem } from '../../data/collections/index';
 import { plate } from '../../data/collections/images';
 
 export function getStaticPaths() {
@@ -13,6 +34,11 @@ export function getStaticPaths() {
 const { collection } = Astro.params;
 const c = collectionBySlug.get(collection!)!;
 const items = itemsOf(c.slug);
+
+const EN = '\u2013';
+const plural = (n: number, one: string, many = `${one}s`) =>
+  `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
+const years = (a: number, b: number) => (a === b ? `${a}` : `${a}${EN}${b}`);
 
 const thumbs = new Map(
   await Promise.all(
@@ -26,6 +52,7 @@ const thumbs = new Map(
 const H2 =
   'font-mono text-xs uppercase tracking-[0.16em] text-sage font-medium border-b border-haze pb-1.5 mt-10 mb-4';
 const DT = 'font-mono text-[0.66rem] uppercase tracking-[0.12em] text-sage sm:w-36 sm:shrink-0 sm:pt-1';
+const ROW = 'flex flex-col sm:flex-row sm:gap-4 border-b border-haze py-2';
 
 // Series that actually have something in them, plus anything unfiled.
 const grouped = c.series
@@ -33,15 +60,49 @@ const grouped = c.series
   .filter((s) => s.items.length > 0);
 const unfiled = items.filter((i) => !i.series || !c.series.some((s) => s.id === i.series));
 
+// Each series is listed in arrangement order, and carries the rank of every
+// item in the other two orders so the buttons can rearrange it in place.
+const rankIn = (list: ResolvedItem[], cmp: (a: ResolvedItem, b: ResolvedItem) => number) => {
+  const order = new Map<string, number>();
+  [...list].sort(cmp).forEach((i, n) => order.set(i.slug, n + 1));
+  return order;
+};
+const sections = [
+  ...grouped,
+  ...(unfiled.length ? [{ id: 'unfiled', title: 'Items', scope: undefined, items: unfiled }] : []),
+].map((s) => {
+  const arranged = [...s.items].sort(compareArrangement);
+  const byDate = rankIn(s.items, compareChronology);
+  const byTitle = rankIn(s.items, compareTitles);
+  return {
+    ...s,
+    items: arranged.map((i, n) => ({
+      item: i,
+      arr: n + 1,
+      date: byDate.get(i.slug) ?? 0,
+      title: byTitle.get(i.slug) ?? 0,
+    })),
+  };
+});
+
+const extent = extentOf(items);
+const sortable = sections.some((s) => s.items.length > 1);
 const custodyKnown = !/^TODO/i.test(c.custody);
 ---
 
 <RootLayout
   title={`${c.title} | Collections | Austin Allison`}
   description={c.scope}
+  image={items[0] ? thumbs.get(items[0].slug)?.view : undefined}
   prose={false}
 >
-  <div class="max-w-4xl mx-auto py-6 text-iron font-serif">
+  <noscript>
+    <style is:inline>
+      [data-js-only] { display: none !important; }
+    </style>
+  </noscript>
+
+  <div class="collection max-w-4xl mx-auto py-6 text-iron font-serif" data-collection>
     <nav class="font-mono text-[0.68rem] uppercase tracking-[0.1em] text-sage mb-4">
       <a href="/collections" class="text-caprock hover:underline">Collections</a>
     </nav>
@@ -50,7 +111,7 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     <p class="text-lg max-w-2xl opacity-90">{c.scope}</p>
 
     <dl class="mt-6 border-t border-haze">
-      <div class="flex flex-col sm:flex-row sm:gap-4 border-b border-haze py-2">
+      <div class={ROW}>
         <dt class={DT}>Custody</dt>
         <dd class="m-0 min-w-0 flex-1">
           {custodyKnown
@@ -58,59 +119,229 @@ const custodyKnown = !/^TODO/i.test(c.custody);
             : <span class="font-mono text-[0.62rem] uppercase tracking-[0.1em] text-caprock">To be recorded</span>}
         </dd>
       </div>
-      <div class="flex flex-col sm:flex-row sm:gap-4 border-b border-haze py-2">
-        <dt class={DT}>Extent</dt><dd class="m-0 min-w-0 flex-1">{items.length} items</dd>
+      <div class={ROW}>
+        <dt class={DT}>Extent</dt>
+        <dd class="m-0 min-w-0 flex-1">{plural(items.length, 'photograph')}</dd>
       </div>
+      {extent && (
+        <div class={ROW}>
+          <dt class={DT}>Dates</dt>
+          <dd class="m-0 min-w-0 flex-1">
+            {years(extent.from, extent.to)}
+            {extent.bulk && <span class="opacity-70">, bulk {years(extent.bulk.from, extent.bulk.to)}</span>}
+            {extent.undated > 0 && <span class="opacity-70">; {extent.undated} undated</span>}
+          </dd>
+        </div>
+      )}
       {c.lines.length > 0 && (
-        <div class="flex flex-col sm:flex-row sm:gap-4 border-b border-haze py-2">
+        <div class={ROW}>
           <dt class={DT}>Lines</dt><dd class="m-0 min-w-0 flex-1">{c.lines.join(', ')}</dd>
         </div>
       )}
       {c.places.length > 0 && (
-        <div class="flex flex-col sm:flex-row sm:gap-4 border-b border-haze py-2">
+        <div class={ROW}>
           <dt class={DT}>Places</dt><dd class="m-0 min-w-0 flex-1">{c.places.join(', ')}</dd>
         </div>
       )}
       {c.arrangement && (
-        <div class="flex flex-col sm:flex-row sm:gap-4 border-b border-haze py-2">
+        <div class={ROW}>
           <dt class={DT}>Arrangement</dt><dd class="m-0 min-w-0 flex-1">{c.arrangement}</dd>
         </div>
       )}
     </dl>
 
-    {[...grouped, ...(unfiled.length ? [{ id: '_', title: 'Items', scope: undefined, items: unfiled }] : [])].map((s) => (
+    {sortable && (
+      <div class="sorter" data-js-only>
+        <span class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage">Order</span>
+        <div class="seg" role="group" aria-label="Order of the inventory">
+          <button type="button" class="seg-btn" data-order="arr" aria-pressed="true">As arranged</button>
+          <button type="button" class="seg-btn" data-order="date" aria-pressed="false">By date</button>
+          <button type="button" class="seg-btn" data-order="title" aria-pressed="false">By title</button>
+        </div>
+        <p class="sr-only" aria-live="polite" data-order-status></p>
+      </div>
+    )}
+
+    {items.length === 0 && (
+      <p class="mt-10 italic opacity-70">Nothing in this collection has been described yet.</p>
+    )}
+
+    {sections.map((s) => (
       <section>
         <h2 class={H2} id={s.id}>{s.title}</h2>
         {s.scope && <p class="text-sm opacity-75 -mt-2 mb-3">{s.scope}</p>}
-        <ul class="list-none p-0 m-0">
-          {s.items.map((i) => (
-            <li class="flex gap-5 border-t border-haze py-4 items-start">
-              <img
-                src={thumbs.get(i.slug)?.index}
-                srcset={thumbs.get(i.slug)?.indexSrcset}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                class="w-28 shrink-0 h-auto bg-haze border border-haze"
-              />
-              <div class="min-w-0 flex-1">
-                <a href={i.href} class="text-caprock hover:underline">{i.title}</a>
-                <div class="font-mono text-[0.65rem] uppercase tracking-[0.08em] text-sage mt-0.5">
-                  {i.controlNumber && <span>{i.controlNumber} &middot; </span>}
-                  {i.format && <span>{i.format} &middot; </span>}
-                  <span>{i.date.display}</span>
-                  {i.verso && <span> &middot; verso</span>}
+        <ul class="inventory" data-list>
+          {s.items.map((row) => {
+            const i = row.item;
+            const t = thumbs.get(i.slug)!;
+            return (
+              <li class="entry" data-arr={row.arr} data-date={row.date} data-title={row.title}>
+                <img
+                  src={t.index}
+                  srcset={t.indexSrcset}
+                  alt=""
+                  width="112"
+                  height="144"
+                  loading="lazy"
+                  decoding="async"
+                  class="entry-thumb"
+                />
+                <div class="min-w-0 flex-1">
+                  <a href={i.href} class="entry-link text-caprock">{i.title}</a>
+                  <div class="font-mono text-[0.65rem] uppercase tracking-[0.08em] text-sage mt-0.5">
+                    {i.controlNumber && <span>{i.controlNumber} &middot; </span>}
+                    {i.format && <span>{i.format} &middot; </span>}
+                    <span>{i.date.display}</span>
+                    {i.verso && <span> &middot; verso</span>}
+                  </div>
+                  <div class="text-sm opacity-75 mt-0.5">
+                    {i.depicts.length > 0
+                      ? depictedNames(i).join(', ')
+                      : <span class="italic opacity-70">no one named</span>}
+                  </div>
                 </div>
-                <div class="text-sm opacity-75 mt-0.5">
-                  {i.depicts.length > 0
-                    ? depictedNames(i).join(', ')
-                    : <span class="italic opacity-70">no one named</span>}
-                </div>
-              </div>
-            </li>
-          ))}
+              </li>
+            );
+          })}
         </ul>
       </section>
     ))}
   </div>
 </RootLayout>
+
+<style>
+  .collection {
+    --c-caprock: var(--color-caprock, #9c5b3f);
+    --c-sage: var(--color-sage, #7a8471);
+    --c-haze: var(--color-haze, #dad3c4);
+    --c-dust: var(--color-dust, #ede7da);
+    --c-iron: var(--color-iron, #3b3833);
+  }
+
+  .sorter {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.9rem;
+    margin-top: 1.75rem;
+  }
+  .seg {
+    display: inline-flex;
+  }
+  .seg-btn {
+    padding: 0.3rem 0.75rem;
+    border: 1px solid var(--c-haze);
+    background: transparent;
+    color: var(--c-iron);
+    font: 500 0.64rem/1.2 ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .seg-btn + .seg-btn {
+    margin-left: -1px;
+  }
+  .seg-btn:hover {
+    position: relative;
+    border-color: var(--c-caprock);
+  }
+  .seg-btn[aria-pressed='true'] {
+    position: relative;
+    background: var(--c-caprock);
+    border-color: var(--c-caprock);
+    color: var(--color-canvas, #f7f4ec);
+  }
+  .seg-btn:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
+  }
+
+  .inventory {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .entry {
+    position: relative;
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+    padding: 1rem 0.5rem 1rem 0;
+    border-top: 1px solid var(--c-haze);
+    transition: background-color 0.2s ease;
+  }
+  .entry:hover,
+  .entry:focus-within {
+    background: rgb(218 211 196 / 0.2);
+  }
+  .entry:focus-within {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
+  }
+  /* A fixed sleeve: rows keep their height before the images arrive, and a
+     portrait cabinet card and a landscape gin print read as one size of
+     object rather than one width. */
+  .entry-thumb {
+    flex-shrink: 0;
+    width: 7rem;
+    height: 9rem;
+    padding: 0.25rem;
+    object-fit: contain;
+    background: rgb(218 211 196 / 0.4);
+    border: 1px solid var(--c-haze);
+  }
+  /* The whole row is the link, and one link per row for the keyboard. */
+  .entry-link {
+    text-decoration: none;
+  }
+  .entry-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+  .entry-link:focus {
+    outline: none;
+  }
+  .entry:hover .entry-link {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .entry {
+      transition: none;
+    }
+  }
+</style>
+
+<script>
+  function wire() {
+    const root = document.querySelector<HTMLElement>('[data-collection]');
+    if (!root || root.dataset.wired) return;
+    root.dataset.wired = '1';
+    const ac = new AbortController();
+    document.addEventListener('astro:before-swap', () => ac.abort(), { once: true });
+
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-order]'));
+    const status = root.querySelector<HTMLElement>('[data-order-status]');
+    buttons.forEach((b) =>
+      b.addEventListener(
+        'click',
+        () => {
+          const order = (b.dataset.order ?? 'arr') as 'arr' | 'date' | 'title';
+          root.querySelectorAll<HTMLElement>('[data-list]').forEach((list) => {
+            const rows = Array.from(list.querySelectorAll<HTMLElement>('.entry'));
+            rows
+              .sort((x, y) => Number(x.dataset[order] ?? 0) - Number(y.dataset[order] ?? 0))
+              .forEach((row) => list.append(row));
+          });
+          buttons.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+          if (status) status.textContent = `Inventory ordered ${b.textContent?.trim().toLowerCase()}.`;
+        },
+        { signal: ac.signal }
+      )
+    );
+  }
+
+  document.addEventListener('astro:page-load', wire);
+</script>

@@ -333,6 +333,19 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
   </noscript>
 
   <div class="item-page max-w-5xl mx-auto py-6 text-iron font-serif" data-item-page>
+    {/* THE CATALOGUE SHEET. Screen readers and browsers ignore these; they
+        appear only on paper, where a printed record needs to say where it
+        came from and how to get back to it. */}
+    <div class="sheet-head" aria-hidden="true">
+      <div class="sheet-rule">
+        <span>{c.title}</span>
+        <span>Collection of Austin Allison</span>
+      </div>
+      <div class="sheet-title">
+        <h2>{item.title}</h2>
+        {item.controlNumber && <span class="sheet-no">{item.controlNumber}</span>}
+      </div>
+    </div>
     <!-- Where you are, and where the neighbours are -->
     <div class="topline">
       <nav class={`${MONO} min-w-0`} aria-label="Breadcrumb">
@@ -381,6 +394,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
               };
               return (
                 <figure class:list={['face', { 'is-on': f.n === 0 }]} data-face={f.key}>
+                  <figcaption class="face-cap" aria-hidden="true">{f.label}</figcaption>
                   <div class="face-box" data-face-box={f.key}>
                     {f.n === 0 ? <img {...attrs} transition:name={`plate-${item.slug}`} /> : <img {...attrs} />}
                     {marks
@@ -562,14 +576,14 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
                       ) : (
                         <span class="italic opacity-60">{nameOf(d)}</span>
                       )}
+                      {/* The qualifier reads as part of the name, not as a
+                          line of its own: a column of PROBABLE under every
+                          name turned a list of people into a data dump. */}
+                      {label(d.confidence) && <span class={QUAL}>{label(d.confidence)}</span>}
                       {d.position && <span class={MONO}>{d.position}</span>}
                     </div>
-                    {(label(d.confidence) || d.basis !== sharedBasis) && (
-                      <div class="text-sm opacity-75 mt-0.5">
-                        {label(d.confidence) && <span class={QUAL}>{label(d.confidence)}</span>}
-                        {label(d.confidence) && d.basis !== sharedBasis && <span> &mdash; </span>}
-                        {d.basis !== sharedBasis && d.basis}
-                      </div>
+                    {d.basis !== sharedBasis && (
+                      <div class="text-sm opacity-75 mt-0.5">{d.basis}</div>
                     )}
                   </li>
                 );
@@ -694,7 +708,16 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
         <p class="mt-8 pt-3 border-t border-haze text-[0.92rem] opacity-70">
           Can you add anything to this record? <a href={mailto} class={LINK}>Write to me</a>.
         </p>
+
+        <p class={`${MONO} mt-4 record-json`}>
+          <a href={`${item.href}/record.json`} class={LINK}>This record as JSON</a>
+        </p>
       </div>
+    </div>
+
+    <div class="sheet-foot" aria-hidden="true">
+      <span>{item.controlNumber ? `${item.controlNumber} \u00b7 ` : ''}{item.title}</span>
+      <span>{permalink}</span>
     </div>
   </div>
 
@@ -807,11 +830,13 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
   }
 
   /* The plate ----------------------------------------------------- */
+  /* The photograph on the paper, with its own hairline and a shallow
+     shadow - the same treatment as the plates on the collections guide. A
+     tinted mat behind a print that already carries a mount was two frames
+     arguing. */
   .mat {
     position: relative;
-    padding: 1.25rem 1.25rem 2.25rem;
-    background: rgb(218 211 196 / 0.25);
-    border: 1px solid var(--c-haze);
+    padding: 0 0 2.5rem;
   }
   /* Every face in ONE grid cell, so the mat is as tall as the tallest face
      and switching views never moves the page. The fade is opacity, and
@@ -842,6 +867,10 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     display: block;
     width: 100%;
     height: auto;
+    border: 1px solid rgb(59 56 51 / 0.16);
+    box-shadow:
+      0 1px 1px rgb(59 56 51 / 0.14),
+      0 14px 24px -18px rgb(59 56 51 / 0.5);
     user-select: none;
     -webkit-user-drag: none;
   }
@@ -951,8 +980,8 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
 
   .examine-btn {
     position: absolute;
-    right: 0.5rem;
-    bottom: 0.5rem;
+    right: 0;
+    bottom: 0;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -1157,21 +1186,30 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     gap: 0.2rem 0.5rem;
     font-size: 1.05rem;
   }
+  /* Outlined, not filled: the number is a reference mark, and a column of
+     solid black squares carried more weight than the names beside them. */
   .pin {
     align-self: center;
     min-width: 1.5rem;
     height: 1.5rem;
     padding: 0 0.3rem;
-    border: 1px solid var(--c-iron);
+    border: 1px solid var(--c-haze);
     border-radius: 2px;
-    background: var(--c-iron);
-    color: var(--c-canvas);
+    background: transparent;
+    color: var(--c-sage);
     font: 500 0.64rem/1 ui-monospace, monospace;
     cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease,
+      color 0.2s ease;
   }
-  .pin:hover {
+  .pin:hover,
+  .person:hover .pin,
+  .person.is-lit .pin {
     background: var(--c-caprock);
     border-color: var(--c-caprock);
+    color: var(--c-canvas);
   }
   .ins-head {
     display: flex;
@@ -1615,6 +1653,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .pin,
     .face,
     .face.is-on,
     .region-box,
@@ -1624,24 +1663,184 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     }
   }
 
+  /* ---------------------------------------------------------------- *
+   * THE CATALOGUE SHEET
+   *
+   * What comes out of a printer is not a screenshot of a web page: it is the
+   * record on paper, to be filed with someone's family papers. So the page
+   * becomes one column, both views of the object are shown with their labels,
+   * the faces keep their numbered boxes so the sheet is its own key, and the
+   * citation, the control number and the permalink are on it, because a
+   * printed sheet with no way back to its source is an orphan.
+   * ---------------------------------------------------------------- */
+  .sheet-head,
+  .sheet-foot,
+  .face-cap {
+    display: none;
+  }
+
   @media print {
+    @page {
+      margin: 16mm 15mm;
+    }
     .ex,
     .examine-btn,
     .plate-tools,
     .cite-tools,
-    .pager {
+    .pager,
+    .record-json,
+    .photo-find,
+    .ins-show,
+    .pin {
       display: none !important;
     }
-    .stack {
+    .item-page {
+      max-width: none;
+      padding: 0;
+      font-size: 10.5pt;
+      color: #000;
+    }
+    /* A sheet of paper is white. Tints that carry meaning on screen only
+       cost ink here. */
+    .ins-text {
+      background: none;
+      border-left: 1pt solid #000;
+    }
+    .photo-thumb,
+    .cite {
+      background: none;
+    }
+    /* Other photographs of the same people belong on their own pages, not on
+       this object's sheet - they ran to three pages of thumbnails. */
+    section[aria-labelledby='also-h'] {
+      display: none;
+    }
+    .topline {
+      display: none;
+    }
+    .sheet-head {
       display: block;
+      margin-bottom: 6mm;
+    }
+    .sheet-rule,
+    .sheet-foot {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+      font-family: var(--mono);
+      font-size: 7.5pt;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .sheet-rule {
+      padding-bottom: 2.5mm;
+      border-bottom: 0.5pt solid #000;
+    }
+    /* The sheet's own heading, so the object is not the first thing on the
+       page with no idea what it is. */
+    .sheet-title {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 6mm;
+      margin-top: 4mm;
+    }
+    .sheet-title h2 {
+      margin: 0;
+      font-size: 16pt;
+      font-weight: 500;
+      line-height: 1.15;
+    }
+    .sheet-no {
+      font-family: var(--mono);
+      font-size: 9pt;
+      white-space: nowrap;
+    }
+    h1.title {
+      display: none;
+    }
+    .sheet-foot {
+      margin-top: 8mm;
+      padding-top: 3mm;
+      border-top: 0.5pt solid #000;
+      text-transform: none;
+      overflow-wrap: anywhere;
+      /* Follow the record rather than starting a page of its own. */
+      break-before: avoid;
+    }
+    /* One column, in reading order: title and record first, plates after. */
+    .layout {
+      display: block;
+    }
+    .plate-col {
+      position: static;
+      break-inside: avoid;
+    }
+    .record {
+      display: flow-root;
+      margin-top: 7mm;
+    }
+    .mat {
+      padding: 0;
+      background: none;
+      border: 0;
+    }
+    /* Both views, one after the other, each with its label. */
+    .stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6mm;
+      align-items: flex-start;
     }
     .face {
       visibility: visible;
       opacity: 1;
-      margin-bottom: 1rem;
+      grid-area: auto;
+      max-width: 48%;
+      break-inside: avoid;
     }
-    .plate-col {
-      position: static;
+    .face-box img {
+      max-height: 11cm;
+      width: auto;
+      border: 0.5pt solid #000;
+    }
+    .face-cap {
+      display: block;
+      margin-bottom: 1.5mm;
+      font-family: var(--mono);
+      font-size: 7pt;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    /* The sheet is its own key: every identified face keeps its number. */
+    .region-box--person {
+      opacity: 1;
+      border-color: #fff;
+      box-shadow: 0 0 0 0.5pt #000;
+    }
+    .region-tag {
+      background: #000;
+      color: #fff;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .locs,
+    .person,
+    .inscription,
+    section {
+      break-inside: avoid;
+    }
+    .cite {
+      border: 0.5pt solid #000;
+      font-size: 9pt;
+    }
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+    .also,
+    .also-row {
+      break-inside: avoid;
     }
   }
 </style>
@@ -1650,6 +1849,26 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
   /* Page scroll stays put behind an open viewer - no script, no restoring. */
   html:has(dialog.ex[open]) {
     overflow: hidden;
+  }
+
+  @media print {
+    html,
+    body {
+      background: #fff;
+    }
+    /* THE SITE'S FURNITURE IS NOT PART OF THE RECORD. The Horizon header and
+       the Caprock footer are rendered by RootLayout, outside this page's
+       scoped styles, so they are hidden from here - otherwise they land in
+       the middle of the sheet wherever the page happens to break. */
+    body > header,
+    body > footer,
+    body > nav,
+    body > .site-header,
+    body > .site-footer,
+    main > header,
+    main > footer {
+      display: none !important;
+    }
   }
 </style>
 

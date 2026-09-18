@@ -19,6 +19,7 @@
 
 import type {
   Collection,
+  DateEstimate,
   Item,
   Person,
   Confidence,
@@ -52,6 +53,180 @@ const REGISTERED: Collection[] = [
 export const COLLECTIONS: Collection[] = [...REGISTERED].sort((a, b) =>
   a.title.localeCompare(b.title)
 );
+
+/* ------------------------------------------------------------------ *
+ * Filing titles
+ * ------------------------------------------------------------------ */
+
+/** Leading articles that are not filed on. English, and the Spanish forms
+ *  that turn up in place names out here. */
+const ARTICLES = new Set(['a', 'an', 'the', 'el', 'la', 'los', 'las', 'un', 'una']);
+
+/**
+ * THE TITLE AS IT FILES, which is not the title as it prints. Square brackets
+ * say a title was supplied rather than taken from the object; they say nothing
+ * about where it belongs in a list, and '[' sorting ahead of every letter is
+ * how a whole collection of supplied titles ends up in a block of its own. A
+ * leading article is dropped for the same reason a MARC nonfiling indicator
+ * exists. The displayed title is never altered.
+ *
+ *   '[Men at the Swann gin]'  ->  'men at the swann gin'
+ *   'The gin at Celeste'      ->  'gin at celeste'
+ */
+export const filingTitle = (title: string): string => {
+  const t = title
+    .replace(/[\[\]{}()"'\u2018\u2019\u201c\u201d]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .toLowerCase();
+  const words = t.split(' ');
+  return words.length > 1 && ARTICLES.has(words[0]) ? words.slice(1).join(' ') : t;
+};
+
+/** Numbers file as numbers, so 'Gin no. 2' comes before 'Gin no. 10'. */
+const collator = new Intl.Collator('en', { numeric: true, sensitivity: 'base' });
+
+/** Sort items, or anything else with a title, the way a catalogue files them. */
+export const compareTitles = (a: { title: string }, b: { title: string }) =>
+  collator.compare(filingTitle(a.title), filingTitle(b.title));
+
+/**
+ * ARRANGEMENT ORDER: the order the material is in, not an alphabet. A control
+ * number IS an arrangement - box, folder, item - so numbered items file by it,
+ * each part read as a number so c.1.2.10 follows c.1.2.9 instead of c.1.2.1.
+ * Items with no number yet follow, earliest first, then by filing title.
+ */
+export const compareArrangement = (a: ResolvedItem, b: ResolvedItem) => {
+  if (a.controlNumber && b.controlNumber) return collator.compare(a.controlNumber, b.controlNumber);
+  if (a.controlNumber) return -1;
+  if (b.controlNumber) return 1;
+  return compareChronology(a, b);
+};
+
+/** Earliest first; a tighter date before a looser one that starts with it. */
+export const compareChronology = (a: ResolvedItem, b: ResolvedItem) => {
+  const x = spanOf(a);
+  const y = spanOf(b);
+  return (
+    (x ? x.from : Infinity) - (y ? y.from : Infinity) ||
+    (x ? x.to : Infinity) - (y ? y.to : Infinity) ||
+    compareTitles(a, b)
+  );
+};
+
+/* ------------------------------------------------------------------ *
+ * Reading a date statement
+ * ------------------------------------------------------------------ */
+
+/**
+ * How wide "ca." is when a display says it and the numbers are left out. No
+ * cataloguing standard fixes this, so it is a house rule, stated once, here.
+ * Give earliest/latest whenever the evidence says something narrower.
+ */
+export const CIRCA_YEARS = 5;
+
+type ReadDate = {
+  earliest?: number;
+  latest?: number;
+  /** 'range' = the words state both ends; 'year' = one year; 'open' = one bound. */
+  kind: 'range' | 'year' | 'open' | 'undated';
+};
+
+/**
+ * The years a date statement states, read from the words alone. Brackets say
+ * where the date came from and a question mark says how sure it is - neither
+ * changes WHICH years, so both are set aside before reading. Returns null for
+ * anything it does not recognise; it never guesses.
+ *
+ *   1890, [1890], [1890?]             1890
+ *   [ca. 1890], circa 1890            1885-1895 (CIRCA_YEARS)
+ *   [189-], [189-?], 1890s            1890-1899
+ *   [18--]                            1800-1899
+ *   1885-1900, [1885x1900]            1885-1900
+ *   [between 1885 and 1900]           1885-1900
+ *   [1914 or 1915]                    1914-1915
+ *   [not before 1885], after 1885     1885-
+ *   [not after 1900], before 1900     -1900
+ *   [n.d.], undated                   undated
+ *   June 3, 1890                      1890 (one year anywhere in the text)
+ */
+export const readDate = (display: string): ReadDate | null => {
+  let t = display
+    .toLowerCase()
+    .replace(/[\[\]?]/g, ' ')
+    .replace(/[\u2013\u2014]/g, '-')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (/^(n\.? ?d\.?|undated|no date|date unknown)$/.test(t)) return { kind: 'undated' };
+
+  let circa = false;
+  t = t.replace(/^(ca\.?|c\.|circa|approximately|approx\.?|about)\s*/, () => {
+    circa = true;
+    return '';
+  });
+
+  const Y = '(1\\d{3}|20\\d{2})';
+  let m: RegExpMatchArray | null;
+  const range = (a: string, b: string): ReadDate => ({ earliest: Number(a), latest: Number(b), kind: 'range' });
+
+  if ((m = t.match(new RegExp(`^between ${Y} and ${Y}$`)))) return range(m[1], m[2]);
+  if ((m = t.match(new RegExp(`^${Y} ?(?:-|x|to) ?${Y}$`)))) return range(m[1], m[2]);
+  if ((m = t.match(new RegExp(`^${Y} or ${Y}$`)))) return range(m[1], m[2]);
+  if ((m = t.match(new RegExp(`^(?:not after|no later than|before) ${Y}$`)))) return { latest: Number(m[1]), kind: 'open' };
+  if ((m = t.match(new RegExp(`^(?:not before|no earlier than|after) ${Y}$`)))) return { earliest: Number(m[1]), kind: 'open' };
+  if ((m = t.match(/^(1\d{2}|20\d)(?:-|0s)$/))) return range(`${m[1]}0`, `${m[1]}9`);
+  if ((m = t.match(/^(1\d|20)--$/))) return range(`${m[1]}00`, `${m[1]}99`);
+
+  const years = t.match(new RegExp(`\\b${Y}\\b`, 'g')) ?? [];
+  if (years.length === 1) {
+    const y = Number(years[0]);
+    return circa
+      ? { earliest: y - CIRCA_YEARS, latest: y + CIRCA_YEARS, kind: 'range' }
+      : { earliest: y, latest: y, kind: 'year' };
+  }
+  return null;
+};
+
+/**
+ * THE NUMBERS ARE WHAT SORT. `display` is what a reader sees; `earliest` and
+ * `latest` are what every list, chronology and age is computed from. So:
+ *   - numbers given: they win, always. The build warns only when they
+ *     contradict a range the display states outright - [189-] with
+ *     earliest 1880 is a typo in one field or the other.
+ *   - numbers left out: they are read from the display, for the forms
+ *     readDate() knows. A plain 1890 and a bracketed [1890?] then sort
+ *     together, instead of every date without numbers falling to the end
+ *     of every list as though it were undated.
+ *   - neither possible: a display with a year in it that cannot be read is
+ *     reported, so nothing drops out of the chronology in silence.
+ */
+const resolveDate = (slug: string, date?: DateEstimate): DateEstimate => {
+  if (!date) return UNDATED_ESTIMATE;
+  const read = readDate(date.display);
+  if (date.earliest !== undefined || date.latest !== undefined) {
+    if (read && (read.kind === 'range' || read.kind === 'year')) {
+      const lo = date.earliest ?? date.latest!;
+      const hi = date.latest ?? date.earliest!;
+      const disjoint = hi < read.earliest! || lo > read.latest!;
+      const statedEnds = read.kind === 'range' && !/ca\.?|circa|approx|about/i.test(date.display);
+      if (disjoint || (statedEnds && (lo !== read.earliest || hi !== read.latest))) {
+        console.warn(
+          `[collections] ${slug}: date reads "${date.display}" but earliest/latest are ` +
+            `${date.earliest ?? '-'}/${date.latest ?? '-'}. One of the two is probably mistyped.`
+        );
+      }
+    }
+    return date;
+  }
+  if (read && read.kind !== 'undated') return { ...date, earliest: read.earliest, latest: read.latest };
+  if (!read && /\d{3}/.test(date.display)) {
+    console.warn(
+      `[collections] ${slug}: could not read a date from "${date.display}". Add earliest/latest, ` +
+        `or it sorts as undated.`
+    );
+  }
+  return date;
+};
 
 /**
  * Every item, with the collection's defaults folded in. Pages read THIS, so
@@ -132,7 +307,7 @@ export const ALL_ITEMS: ResolvedItem[] = COLLECTIONS.flatMap((c) =>
       faces,
       href: `/collections/${c.slug}/${i.slug}`,
       titleSource: i.titleSource ?? 'supplied',
-      date: i.date ?? UNDATED_ESTIMATE,
+      date: resolveDate(i.slug, i.date),
       place: i.place ?? d.place,
       recto: withCapture(i.recto),
       verso: i.verso ? withCapture(i.verso) : undefined,

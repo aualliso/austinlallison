@@ -1002,11 +1002,11 @@ export const COLLECTION: Collection = {
       place: 'Texas',
       date: {
         // What prints. Square brackets mark an assessment.
-        display: '[1909-1911]',
-        earliest: 1909,
-        latest: 1911,
+        display: '[1903-1907]',
+        earliest: 1903,
+        latest: 1907,
         basis: [
-          'Loveta appears to be between 8 and 12 years old, which would place this photograph between 1901 and 1905.',
+          'Loveta appears to be between 10 and 14 years old, which would place this photograph between 1903 and 1907.',
         ],
         confidence: 'probable',
       },
@@ -1319,7 +1319,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 39.2, y: 26.5, w: 8.2, h: 11.8 },
+          region: { face: 'recto', x: 40.2, y: 27, w: 6.3, h: 9.8 },
         },
         {
           person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
@@ -1328,7 +1328,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 47.2, y: 26.8, w: 7.3, h: 11.5 },
+          region: { face: 'recto', x: 47.9, y: 27.4, w: 5.6, h: 9.2 },
         },
         {
           as: 'Glenn Zirkle',  // an id in people.ts. Build throws if unknown.
@@ -1337,7 +1337,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 45.2, y: 18.4, w: 5.8, h: 11.5 },
+          region: { face: 'recto', x: 45.7, y: 19.3, w: 3.9, h: 8.3 },
         },
         {
           as: 'Gertrude Major (Mrs. Major)',  // an id in people.ts. Build throws if unknown.
@@ -1346,7 +1346,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 53, y: 22.4, w: 8.7, h: 16.1 },
+          region: { face: 'recto', x: 54.4, y: 24.1, w: 5.7, h: 10.7 },
         },
       ],
       description: 'This is a photograph of Minnie McKinstry Swann, Loveta McKinstry Swann, Glenn Zirkle, Eva West, and Mrs. Major. Another photograph from this trip suggests it was taken in Dallas, Texas.',
@@ -1624,17 +1624,6 @@ export const COLLECTION: Collection = {
       format: 'snapshot',
       recto: { file: 'two-unknown-women-recto.jpg' },
       verso: { file: 'two-unknown-women-verso.jpg' },
-      depicts: [
-        {
-          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
-          confidence: 'possible',  // REQUIRED on every depiction
-          // Omit to inherit identificationBasis. If neither exists, the
-          // build throws - a name with no grounds is the one thing this
-          // schema will not store.
-          basis: 'Possible based on likeness.',
-          region: { face: 'recto', x: 48.4, y: 25.3, w: 5.8, h: 9.6 },
-        },
-      ],
       description: 'This photograph depicts two women standing in a stream. The woman on the right may be Minnie Swann McKinstry, but the photo is too blurry to definitively know.',
       rights: {
         status: 'public-domain',
@@ -1877,6 +1866,286 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Identified on verso.',
           region: { face: 'recto', x: 44.1, y: 6.2, w: 12.2, h: 12.4 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'girdner-c-e-child',
+      title: '[C.E. Girdner as a child]',
+      titleSource: 'supplied',
+      place: 'Hunt County, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '1883-1887',
+        basis: [
+          'C.E. Girdner is estimated to be between 8 and 12 in this photograph, which would place it between 1883 and 1887.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'tintype',
+      recto: { file: 'girdner-c-e-young-recto.jpg' },
+      description: 'This is a photograph of a young C.E. Girdner. His age is estimated to be between 8 and 12 years old. This tintype is in a dual folding frame with a photograph of a young Nannie Swann, whom he would later marry.',
+      depicts: [
+        {
+          person: 'girdner-charles-edgar',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Matches likeness in other photographs.',
+          region: { face: 'recto', x: 33.7, y: 25.1, w: 17.8, h: 13.7 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'girdner-nannie-swann-young',
+      title: '[Nannie Swann]',
+      titleSource: 'supplied',
+      place: 'Hunt County, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '1885-1888',
+        basis: [
+          'Nannie Swann is estimated to be between 7 and 10 years old here. That would date this photograph to between 1885 and 1888.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'tintype',
+      recto: { file: 'girdner-nannie-swann-young.jpg' },
+      description: 'This is a photograph of a young Nannie Swann. Her age is estimated to be between 7 and 10 years old. This tintype is in a dual folding frame with a photograph of a young C.E. Girdner, whom she would later marry.',
+      depicts: [
+        {
+          person: 'girdner-nannie-atkinson-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Matches likeness in other photographs.',
+          region: { face: 'recto', x: 33, y: 11.9, w: 20.9, h: 16 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'unknown-group',
+      title: '[Unknown group of four]',
+      controlNumber: 'a.1.9.3',
+      titleSource: 'supplied',
+      place: 'Not identified',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1914-1920]',
+        earliest: 1914,
+        latest: 1920,
+        basis: [
+          'Clothing styles seem to suggest a timeframe of 1914 to 1920. No identifiable people are in this photo to compare.',
+        ],
+        confidence: 'possible',
+      },
+      format: 'snapshot',
+      recto: { file: 'unknown-group-recto.jpg' },
+      verso: { file: 'unknown-group-verso.jpg' },
+      description: 'This photograph depicts two women and two men playing croquet in a mountain environment. This photograph may be related to another one taken in similar settings.',
+      related :[
+        {
+          slug: 'two-unknown-women',
+          relation: ''
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-minnie-young',
+      title: '[Minnie Swann as a child]',
+      controlNumber: 'a.1.9.4',
+      titleSource: 'inscribed',
+      place: 'Hunt County, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1897-1900]',
+        earliest: 1897,
+        latest: 1900,
+        basis: [
+          'Minnie Swann appears to be between the ages of 7 and 10, which would place this photograph between the dates of 1897 and 1900.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-minnie-young-recto.jpg' },
+      verso: { file: 'swann-minnie-young-verso.jpg' },
+      description: 'This photograph depicts Minnie Swann as a child. She appears to be between the ages of 7 and 10, which would likely place this photograph between the dates of 1897 and 1900. The family still lived in Jacobia at this time.',
+      depicts: [
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Minnie Swann is identified on the verso.',
+          region: { face: 'recto', x: 37.9, y: 28, w: 28.9, h: 27 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'girdner-nannie-swann-greenville-centennial',
+      title: 'Nannie Girdner at Greenville Centennial',
+      controlNumber: 'a.1.10.2',
+      titleSource: 'inscribed',
+      place: 'Greenville, Hunt County, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '1950',
+        basis: [
+          'The city of Greenville, Texas celebrated its centennial in May of 1950. This photograph must have been taken then.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'girdner-nannie-swann-greenville-centennial-recto.jpg' },
+      verso: { file: 'girdner-nannie-swann-greenville-centennial-verso.jpg' },
+      description: 'This photograph shows Nannie Swann Girdner at the centennial celebration in Greenville, Texas in 1950.',
+      depicts: [
+        {
+          person: 'girdner-nannie-atkinson-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Nannie Girdner is identified on the verso.',
+          region: { face: 'recto', x: 47, y: 23, w: 11.8, h: 10.1 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'girls-in-wagon',
+      title: '[Group of six girls in a wagon]',
+      controlNumber: 'a.1.10.3',
+      titleSource: 'supplied',
+      place: 'Hagerman, New Mexico',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '1909',
+        basis: [
+          'The verso of this photograph identifies a 1909 date.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'girls-in-wagon-recto.jpg' },
+      verso: { file: 'girls-in-wagon-verso.jpg' },
+      description: 'This photograph depicts six girls on top of hay in a wagon. The verso of this photograph identifies some one as "me," but it is unclear if this would be Loveta Swann or Mable Swann. Mable\'s name is at the top, but other information suggests this may be Loveta. The verso inscription also says "Tere are only a few of the N.M. toughs." By this time the Austin Swann family had moved to New Mexico, so I believe this photograph was taken there, making it more likely that this photograph depicts Loveta.',
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Someone is identified as "me" on the verso. I believe it to be Loveta Swann.',
+          region: { face: 'recto', x: 42.2, y: 13.8, w: 5.4, h: 8.3 },
+        },
+        {
+          as: '"Evilee"',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Someone is identified as "me" on the verso. I believe it to be Loveta Swann.',
+          region: { face: 'recto', x: 47.7, y: 15.4, w: 3.5, h: 6 },
+        },
+        {
+          as: 'Bernice',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Someone is identified as "me" on the verso. I believe it to be Loveta Swann.',
+          region: { face: 'recto', x: 52, y: 15.8, w: 3.4, h: 6 },
+        },
+        {
+          as: 'Edith',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Someone is identified as "me" on the verso. I believe it to be Loveta Swann.',
+          region: { face: 'recto', x: 56.7, y: 14.9, w: 2.8, h: 4.8 },
+        },
+        {
+          as: '"Mince"',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Someone is identified as "me" on the verso. I believe it to be Loveta Swann.',
+          region: { face: 'recto', x: 61.3, y: 15.1, w: 2.2, h: 4.2 },
+        },
+        {
+          as: 'Ada W."',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Someone is identified as "me" on the verso. I believe it to be Loveta Swann.',
+          region: { face: 'recto', x: 61.3, y: 15.1, w: 2.2, h: 4.2 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-austin-in-field',
+      title: '[Austin Swann in field]',
+      controlNumber: 'a.1.10.4',
+      titleSource: 'supplied',
+      place: 'Hagerman, New Mexico',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '1910-1920',
+        earliest: 1910,
+        latest: 1920,
+        basis: [
+          'This photograph depicts Austin Swann later in life. It is estimated he is between 50 and 60 years old, which would place this photograph between 1910 and 1920.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'real photo postcard',
+      recto: { file: 'swann-austin-in-field-recto.jpg' },
+      verso: { file: 'swann-austin-in-field-recto.jpg' },
+      description: 'This photograph depicts Austin Swann standing in the middle of a sorghum field. He appears to be 50 or 60 years old in this image, which would place it between 1910 and 1920 after the Swanns moved to New Mexico.',
+      depicts: [
+        {
+          person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Austin Swann is identified on the verso.',
+          region: { face: 'recto', x: 24.1, y: 37.2, w: 7.6, h: 5.4 },
         },
       ],
       rights: {

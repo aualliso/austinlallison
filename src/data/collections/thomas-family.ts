@@ -430,7 +430,7 @@ export const COLLECTION: Collection = {
         'Image the verso: a cabinet card usually carries a studio imprint, which would give a place and often a date range.',
       ],
     },
-        {
+    {
       slug: 'thomas-matt',
       controlNumber: 'c.1.19.3',
       title: '[Aunt Matt Thomas Darby]',
@@ -472,6 +472,46 @@ export const COLLECTION: Collection = {
           // Transcribe AS WRITTEN, spelling included. \n for line breaks.
           text: 'Aunt Matt Thomas Darby',
           hand: 'Potentially Loveta Swann McKinstry.',   // whose hand, when you can say
+        },
+      ],
+
+    },
+    {
+      slug: 'thomas-nannie-young',
+      controlNumber: 'a.1.10.1',
+      title: '[Nannie Thomas]',
+      titleSource: 'supplied',
+      format: 'tintype',
+      date: {
+        display: '[1866-1868]',
+        earliest: 1866,
+        latest: 1868,
+        basis: ['Photograph depicts a young girl between the age of 2 and 4.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'thomas-nannie-young-recto.jpg',
+      },
+       verso: {
+        file: 'thomas-nannie-young-verso.jpg',
+      },
+      description:
+        'This photograph depicts a young girl between the ages of 2 and 4. The verso of this image denotes that this is a photograph of Eva Swann, but the format, clothing, and face do not match that of Eva or the time period that this photograph would have been produced. I suggest that this photograph may be of Nannie Thomas Swann, the mother of Eva Swann, as a young girl. I believe the face matches more closely to Nannie than her daughter, Eva.',
+      depicts: [
+        {
+          person: 'swann-nannie-thomas',
+          confidence: 'probable',
+          basis:
+            'The verso denotes someone different, but I do not believe this matches Eva Swann. ',
+          region: { face: 'recto', x: 31.9, y: 15.1, w: 33.6, h: 30.5 },
+        },
+      ],
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Eva Swann',
         },
       ],
 

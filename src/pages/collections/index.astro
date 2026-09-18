@@ -8,7 +8,7 @@
 //   2. Finder               names (INCLUDING variant forms), titles, places,
 //                           and years matched against date INTERVALS
 //   3. Holdings             one card per collection, its key photographs laid
-//                           out as prints on a mat
+//                           with one photograph shown whole
 //   4. Chronology           every dated photograph drawn as the span of years
 //                           it could have been made in - the schema's claim
 //                           that a date is an interval, made visible
@@ -115,27 +115,24 @@ const maxCell = Math.max(1, ...surnames.flatMap((r) => r.perCollection));
 const crossing = surnames.filter((r) => r.perCollection.filter(Boolean).length > 1).length;
 
 /* ---------------------------------------------------------------- *
- * 3. Holdings. Prints on the mat are sized server-side from their real
- * aspect ratios: the row gets the combined ratio, each print a share of
- * its width, so every print is the same height with no letterboxing and
- * no JavaScript.
+ * 3. Holdings. One ENTRY per collection, and the photographs stand on a
+ * SHELF: the key print large, the other key items beside it, all of them at
+ * their true proportions and aligned along one hairline, the way objects sit
+ * on a viewing table. The mixed shapes are the point - a cabinet card, a
+ * snapshot and a tintype are not the same size, and a grid of equal boxes
+ * spends its time hiding that. The record reads above the shelf: title and
+ * scope at the left, the figures flush right in mono.
  * ---------------------------------------------------------------- */
-const OVERLAP = 0.2; // of print height
 const cards = COLLECTIONS.map((c) => {
   const items = itemsOf(c.slug);
-  const keys = keyItemsOf(c.slug);
-  const ratios = keys.map((i) => {
-    const r = renderOf(i.slug);
-    return r.width / r.height;
-  });
-  const rowRatio = ratios.reduce((s, a) => s + a, 0) - OVERLAP * Math.max(0, keys.length - 1);
-  const prints = keys.map((item, n) => ({
-    item,
-    r: renderOf(item.slug),
-    width: (ratios[n] / rowRatio) * 100,
-    shift: n === 0 ? 0 : (OVERLAP / rowRatio) * 100,
-  }));
-  return { c, count: items.length, extent: extentOf(items), prints, rowRatio };
+  const keys = keyItemsOf(c.slug, 4);
+  return {
+    c,
+    count: items.length,
+    extent: extentOf(items),
+    key: keys[0] ? { item: keys[0], r: renderOf(keys[0].slug) } : null,
+    strip: keys.slice(1, 4).map((item) => ({ item, r: renderOf(item.slug) })),
+  };
 });
 
 /* ---------------------------------------------------------------- *
@@ -248,7 +245,7 @@ const placeholder =
  * Share image and structured data
  * ---------------------------------------------------------------- */
 const shareImage =
-  cards.find((c) => c.prints.length)?.prints[0].r.view ??
+  cards.find((c) => c.key)?.key?.r.view ??
   (ALL_ITEMS[0] ? renderOf(ALL_ITEMS[0].slug).view : undefined);
 
 const site = Astro.site ?? Astro.url;
@@ -364,50 +361,77 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     <!-- 3. Holdings -->
     <section aria-labelledby="holdings-h" class="mt-12">
       <h2 id="holdings-h" class={H2}>Holdings</h2>
-      <div class="cards">
-        {cards.map(({ c, count, extent: e, prints, rowRatio }) => (
-          <article class="card" data-collection={c.slug}>
-            <div class="card-in">
-              <div class="mat" aria-hidden="true">
-                {prints.length > 0 ? (
-                  <div class="prints" style={`--ratio:${rowRatio.toFixed(4)}`}>
-                    {prints.map(({ item, r, width, shift }) => (
-                      <img
-                        class="print"
-                        style={`--pw:${width.toFixed(3)}%;--shift:${shift.toFixed(3)}%`}
-                        src={r.index}
-                        srcset={r.indexSrcset}
-                        width={r.width}
-                        height={r.height}
-                        alt=""
-                        loading="lazy"
-                        decoding="async"
-                        transition:name={`plate-${item.slug}`}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <span class="mat-empty">Nothing described yet</span>
-                )}
-              </div>
-              <div class="card-body">
-                <h3 class="card-title">
-                  <a href={`/collections/${c.slug}`} class="card-link">{c.title}</a>
+      <div class="entries">
+        {cards.map(({ c, count, extent: e, key, strip }, n) => (
+          <article class="entry" data-collection={c.slug}>
+            <div class="entry-mark" aria-hidden="true">{String(n + 1).padStart(2, '0')}</div>
+            <div class="entry-head">
+              <div class="entry-text">
+                <p class="entry-eyebrow">Collection</p>
+                <h3 class="entry-title">
+                  <a href={`/collections/${c.slug}`} class="entry-link">{c.title}</a>
                 </h3>
-                <p class="card-meta">
-                  {plural(count, 'photograph')}
-                  {e && <span> &middot; {years(e.from, e.to)}</span>}
-                </p>
-                <p class="card-scope">{c.scope}</p>
-                {(c.lines.length > 0 || c.places.length > 0) && (
-                  <p class="card-foot">
-                    {c.lines.length > 0 && <span>{c.lines.join(', ')}</span>}
-                    {c.lines.length > 0 && c.places.length > 0 && <span> &middot; </span>}
-                    {c.places.length > 0 && <span>{c.places.join('; ')}</span>}
-                  </p>
+                <p class="entry-scope">{c.scope}</p>
+              </div>
+
+              <div class="entry-figures">
+                <p class="fig-line"><b>{count.toLocaleString('en-US')}</b> {count === 1 ? 'photograph' : 'photographs'}</p>
+                {e && <p class="fig-line"><b>{years(e.from, e.to)}</b></p>}
+                {e?.bulk && <p class="fig-line fig-quiet">bulk <b>{years(e.bulk.from, e.bulk.to)}</b></p>}
+                {e && axis && (
+                  /* The collection's span drawn on the same axis as the
+                     chronology below, so the entries can be read against one
+                     another at a glance. */
+                  <span class="spark" aria-hidden="true">
+                    <span class="spark-run" style={`--x:${pct(e.from).toFixed(2)}%;--w:${(pct(e.to + 1) - pct(e.from)).toFixed(2)}%`}></span>
+                    {e.bulk && (
+                      <span class="spark-bulk" style={`--x:${pct(e.bulk.from).toFixed(2)}%;--w:${(pct(e.bulk.to + 1) - pct(e.bulk.from)).toFixed(2)}%`}></span>
+                    )}
+                  </span>
                 )}
+                {c.places.length > 0 && <p class="fig-line fig-quiet">{c.places.join('; ')}</p>}
               </div>
             </div>
+
+            <div class="shelf">
+              {key ? (
+                <img
+                  class="plate plate--key"
+                  style={`--ar:${(key.r.width / key.r.height).toFixed(4)}`}
+                  src={key.r.view}
+                  srcset={key.r.viewSrcset}
+                  sizes="(min-width: 48rem) 340px, 62vw"
+                  width={key.r.width}
+                  height={key.r.height}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  transition:name={`plate-${key.item.slug}`}
+                />
+              ) : (
+                <span class="plate-empty">Nothing described yet</span>
+              )}
+              {strip.map(({ item, r }) => (
+                <img
+                  class="plate plate--small"
+                  style={`--ar:${(r.width / r.height).toFixed(4)}`}
+                  src={r.index}
+                  srcset={r.indexSrcset}
+                  sizes="(min-width: 48rem) 150px, 26vw"
+                  width={r.width}
+                  height={r.height}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  transition:name={`plate-${item.slug}`}
+                />
+              ))}
+            </div>
+
+            <p class="entry-foot">
+              <span>{c.lines.length > 0 ? c.lines.join(', ') : ''}</span>
+              <span class="entry-go">Browse the collection <span class="entry-arrow" aria-hidden="true">&rarr;</span></span>
+            </p>
           </article>
         ))}
       </div>
@@ -728,155 +752,235 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   }
 
   /* 3. Holdings --------------------------------------------------- */
-  .cards {
-    display: grid;
-    gap: 1.5rem;
-    grid-template-columns: repeat(auto-fill, minmax(min(100%, 16.5rem), 1fr));
+  .entries {
+    border-top: 1px solid var(--c-haze);
   }
-  .card {
+  /* A folder number in the gutter, the record and the shelf indented from
+     it: the entry has a left edge to read from, and nothing runs into the
+     margins of the page. */
+  .entry {
     position: relative;
-    container-type: inline-size;
-    border: 1px solid var(--c-haze);
-    border-top: 3px solid var(--c-caprock);
-    background: rgb(218 211 196 / 0.1);
+    display: grid;
+    gap: 0 1.5rem;
+    padding: 2.5rem 1.25rem 1.75rem;
+    border-bottom: 1px solid var(--c-haze);
     transition: background-color 0.25s ease;
   }
-  .card:hover,
-  .card:focus-within {
-    background: rgb(218 211 196 / 0.24);
+  @media (min-width: 48rem) {
+    .entry {
+      grid-template-columns: 4.25rem minmax(0, 1fr);
+      padding: 2.75rem 1.75rem 2rem;
+    }
   }
-  .card:focus-within {
-    outline: 2px solid var(--c-caprock);
-    outline-offset: 3px;
+  .entry > :not(.entry-mark) {
+    grid-column: -2;
   }
-  .card-in {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
-  .mat {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 12rem;
-    padding: 0 1.25rem;
-    overflow: hidden;
-    background: var(--c-dust);
-    border-bottom: 1px solid var(--c-haze);
-  }
-  .mat-empty {
-    font-style: italic;
-    opacity: 0.6;
-  }
-  .prints {
-    display: flex;
-    align-items: stretch;
-    width: min(88%, calc(8.5rem * var(--ratio)));
-    aspect-ratio: var(--ratio);
-  }
-  .print {
-    position: relative;
-    display: block;
-    width: var(--pw);
-    height: 100%;
-    margin-left: calc(var(--shift) * -1);
-    object-fit: cover;
-    box-shadow:
-      0 1px 1px rgb(59 56 51 / 0.2),
-      0 10px 18px -12px rgb(59 56 51 / 0.55);
-    transform: translate(var(--dx, 0), var(--dy, 0)) rotate(var(--r, 0deg));
-    transition: transform 0.5s cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-  .print:nth-child(1) {
-    --r: -2.5deg;
-    z-index: 3;
-  }
-  .print:nth-child(2) {
-    --r: 1.75deg;
-    --dy: 2px;
-    z-index: 2;
-  }
-  .print:nth-child(3) {
-    --r: -0.75deg;
-    z-index: 1;
-  }
-  .card:hover .print:nth-child(1),
-  .card:focus-within .print:nth-child(1) {
-    --dx: -0.6rem;
-    --r: -4.5deg;
-  }
-  .card:hover .print:nth-child(2),
-  .card:focus-within .print:nth-child(2) {
-    --dy: -5px;
-    --r: 0.5deg;
-  }
-  .card:hover .print:nth-child(3),
-  .card:focus-within .print:nth-child(3) {
-    --dx: 0.6rem;
-    --r: 2.5deg;
-  }
-  .card-body {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    gap: 0.4rem;
-    padding: 1rem 1.15rem 1.1rem;
-  }
-  .card-title {
-    font-size: 1.3rem;
+  .entry-mark {
+    grid-row: 1 / span 3;
+    margin-bottom: 0.5rem;
+    font-size: clamp(1.6rem, 1rem + 2vw, 2.6rem);
     font-weight: 500;
-    line-height: 1.15;
+    line-height: 0.9;
+    font-variant-numeric: lining-nums tabular-nums;
+    color: var(--c-haze);
+    letter-spacing: -0.02em;
+  }
+  .entry:hover .entry-mark {
+    color: rgb(156 91 63 / 0.55);
+  }
+  @media (max-width: 47.99rem) {
+    .entry-mark {
+      grid-row: auto;
+      grid-column: 1;
+      margin-bottom: 0.25rem;
+    }
+  }
+  .entry:hover,
+  .entry:focus-within {
+    background: rgb(218 211 196 / 0.14);
+  }
+  .entry:focus-within {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 4px;
+  }
+
+  .entry-head {
+    display: grid;
+    gap: 0.75rem 2.5rem;
+  }
+  @media (min-width: 48rem) {
+    .entry-head {
+      grid-template-columns: minmax(0, 1fr) 14rem;
+      align-items: end;
+    }
+  }
+  .entry-eyebrow {
+    margin: 0 0 0.35rem;
+    font-family: var(--mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  .entry-title {
+    margin: 0 0 0.4rem;
+    font-size: clamp(1.7rem, 1.1rem + 2vw, 2.5rem);
+    font-weight: 500;
+    line-height: 1.04;
+    letter-spacing: -0.012em;
     text-wrap: balance;
   }
-  .card-link {
-    color: var(--c-caprock);
+  .entry-link {
+    color: var(--c-iron);
     text-decoration: none;
   }
-  .card-link::after {
+  .entry-link::after {
     content: '';
     position: absolute;
     inset: 0;
-    z-index: 5;
   }
-  .card-link:focus {
+  .entry-link:focus {
     outline: none;
   }
-  .card:hover .card-link {
-    text-decoration: underline;
-    text-decoration-thickness: 1px;
-    text-underline-offset: 0.15em;
+  .entry:hover .entry-link {
+    color: var(--c-caprock);
   }
-  .card-meta,
-  .card-foot {
+  .entry-scope {
+    max-width: 46ch;
+    margin: 0;
+    font-size: 1.02rem;
+    line-height: 1.5;
+    opacity: 0.88;
+    text-wrap: pretty;
+  }
+  /* The figures, flush right and set in mono, read as a column of record
+     values rather than a sentence. */
+  .entry-figures {
     font-family: var(--mono);
-    font-size: 0.62rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    line-height: 1.9;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  @media (min-width: 48rem) {
+    .entry-figures {
+      text-align: right;
+    }
+  }
+  .fig-line {
+    margin: 0;
+  }
+  .fig-line b {
+    color: var(--c-iron);
+    font-weight: 500;
+    font-variant-numeric: lining-nums tabular-nums;
+  }
+  .fig-quiet b {
+    color: var(--c-sage);
+  }
+  .spark {
+    position: relative;
+    display: block;
+    height: 7px;
+    margin: 0.35rem 0 0.5rem;
+    border-bottom: 1px solid var(--c-haze);
+  }
+  .spark-run,
+  .spark-bulk {
+    position: absolute;
+    left: var(--x);
+    width: var(--w);
+    min-width: 3px;
+  }
+  .spark-run {
+    top: 2px;
+    height: 3px;
+    background: rgb(156 91 63 / 0.5);
+  }
+  .spark-bulk {
+    top: 0;
+    height: 7px;
+    background: var(--c-caprock);
+  }
+
+  /* THE SHELF. Objects of different shapes standing on one line. A margin
+     from a site-wide img rule would push them off it, so these are pinned. */
+  .shelf {
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(0.75rem, 2.2vw, 2rem);
+    margin-top: 1.9rem;
+    padding-bottom: 1.6rem;
+    border-bottom: 1px solid var(--c-haze);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .shelf::-webkit-scrollbar {
+    display: none;
+  }
+  .plate {
+    display: block;
+    flex: none;
+    margin: 0;
+    width: auto;
+    border: 1px solid rgb(59 56 51 / 0.16);
+    background: rgb(247 244 236 / 0.6);
+    box-shadow:
+      0 1px 1px rgb(59 56 51 / 0.14),
+      0 14px 24px -18px rgb(59 56 51 / 0.5);
+    transition:
+      transform 0.35s ease,
+      box-shadow 0.35s ease;
+  }
+  /* WIDTH IS CAPPED THROUGH THE HEIGHT, never with max-width. Give a
+     replaced element a fixed height and a max-width and the browser does not
+     rebalance: it squashes the picture to the narrower box and keeps the
+     height, so a landscape print comes out the same shape as a portrait one.
+     Each plate carries its own ratio as --ar, and the height is lowered until
+     the width fits - so nothing is ever stretched, and a wide print simply
+     stands shorter on the shelf, as it would on a table. */
+  .plate--key {
+    height: min(clamp(11rem, 30vw, 20.5rem), calc(min(21rem, 40vw) / var(--ar, 1)));
+  }
+  .plate--small {
+    height: min(clamp(6rem, 15vw, 10rem), calc(min(7.5rem, 14vw) / var(--ar, 1)));
+  }
+  .entry:hover .plate,
+  .entry:focus-within .plate {
+    transform: translateY(-3px);
+    box-shadow:
+      0 1px 1px rgb(59 56 51 / 0.16),
+      0 20px 30px -20px rgb(59 56 51 / 0.55);
+  }
+  .plate-empty {
+    align-self: center;
+    font-style: italic;
+    opacity: 0.6;
+  }
+
+  .entry-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.3rem 1.5rem;
+    margin: 0.75rem 0 0;
+    font-family: var(--mono);
+    font-size: 0.6rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--c-sage);
   }
-  .card-scope {
-    font-size: 0.95rem;
-    opacity: 0.8;
-    text-wrap: pretty;
+  .entry-go {
+    color: var(--c-caprock);
   }
-  .card-foot {
-    margin-top: auto;
-    padding-top: 0.65rem;
-    border-top: 1px dotted var(--c-haze);
-    letter-spacing: 0.06em;
+  .entry-arrow {
+    display: inline-block;
+    transition: transform 0.3s ease;
   }
-  /* A card with room to spare puts the mat beside the text, not above it. */
-  @container (min-width: 34rem) {
-    .card-in {
-      flex-direction: row;
-    }
-    .mat {
-      width: 46%;
-      height: auto;
-      min-height: 13rem;
-      border-bottom: 0;
-      border-right: 1px solid var(--c-haze);
-    }
+  .entry:hover .entry-arrow {
+    transform: translateX(0.3rem);
   }
 
   /* 4. Chronology ------------------------------------------------- */
@@ -1158,11 +1262,17 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .print,
+    .entry,
+    .plate,
+    .entry-arrow,
     .bar,
-    .card,
     .facet {
       transition: none;
+    }
+    .entry:hover .plate,
+    .entry:focus-within .plate,
+    .entry:hover .entry-arrow {
+      transform: none;
     }
   }
 </style>

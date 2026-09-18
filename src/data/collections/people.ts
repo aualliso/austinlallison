@@ -659,7 +659,7 @@ export const PEOPLE: Person[] = [
   },
   {
     id: 'allison-sammy-nan-mckinstry',
-    authorized: 'Allison, Sammy Nan',
+    authorized: 'Allison, Sammy Nan McKinstry',
     surname: 'Allison',
     given: 'Sammy Nan McKinstry',
     birth: '1920',
