@@ -592,10 +592,31 @@ export const PEOPLE: Person[] = [
       'Find a Grave memorial 52582949, as linked from Austin Swann\'s memorial (7284582) as his child: "Minnie Swann McKinstry 1890-1964"; the memorial page itself not yet read',
     ],
     relations: [
+      { type: 'spouse', person: 'mckinstry-james-daubin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'smith-peggy-mckinstry', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-austin', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-nannie-thomas', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'west-eva-swann-powell', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'mckinstry-loveta-swann', basis: 'Established relationship', confidence: 'certain' },
+    ],
+  },
+  {
+    id: 'smith-peggy-mckinstry',
+    authorized: 'Smith, Peggy McKinstry',
+    surname: 'Smith',
+    given: 'Peggy McKinstry',
+    variants: ['McKinstry, Peggy', 'Peggy McKinstry', 'Peggy Smith'],
+    birth: '1926',
+    death: '1981',
+    status: 'established',
+    scopeNote:
+      'Daughter of James Daubin McKinstry and Minnie Swann McKinstry',
+    sources: [
+      'Find a Grave memorial 52582986.',
+    ],
+    relations: [
+      { type: 'parent', person: 'mckinstry-james-daubin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'mckinstry-minnie-swann', basis: 'Established relationship', confidence: 'certain' },
     ],
   },
   {
@@ -894,6 +915,8 @@ export const PEOPLE: Person[] = [
       'Find a Grave memorial 52582948.',
     ],
     relations: [
+      { type: 'spouse', person: 'mckinstry-minnie-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'smith-peggy-mckinstry', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-james', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-sarah-boyd', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'mckinstry-thomas', basis: 'Established relationship', confidence: 'certain' },

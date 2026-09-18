@@ -710,6 +710,12 @@ export const COLLECTION: Collection = {
           basis: 'Identified on verso.',
           region: { face: 'recto', x: 52, y: 49.4, w: 6, h: 7.4 },
         },
+      ],
+      related :[
+        {
+          slug: 'mckinstry-sammy-and-jean-5',
+          relation: 'Photograph appears to be from same session.'
+        },
       ]
     },
     {
@@ -846,6 +852,831 @@ export const COLLECTION: Collection = {
           hand: 'unknown',
         },
       ],
+    },
+    {
+      slug: 'mckinstry-third-home',
+      title: '[Third home of Sam and Loveta McKinstry]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.12.1',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1920-1922]',
+        earliest: 1920,
+        latest: 1922,
+        basis: [
+          'The verso of this photograph suggests that Jean and Mildred McKinstry were born here, but not Sammy. This would mean that the McKinstrys had this house moved sometime between February 1920 and November 1922.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-third-home-recto.jpg', },
+      verso: { file: 'mckinstry-third-home-verso.jpg' },
+      description:
+        'This photograph depicts the third home of Sam and Loveta McKintsty being moved from Greenfield, New Mexico to Hagerman.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Our third home being moved \n from Greenfield, N.M. to our farm at \n Hagerman, N.M.\n\nThis was where we lived when \n two of our daughters were born. \n Sammy Nan was born in our second home.',
+          hand: 'unknown',
+        },
+      ],
+    },
+    {
+      slug: 'mckinstry-minnie-first-car',
+      title: '[Minnie McKinstry and first Ford car]',
+      titleSource: 'inscribed',
+      controlNumber: 'a.1.12.4',
+      format: 'snapshot',
+      place: 'New Mexico',
+      date: {
+        display: '[1925-1928]',
+        earliest: 1925,
+        latest: 1928,
+        basis: [
+          'This photograph shows a mid-1920s Ford car. Evidence suggests it is a model between 1925 and 1928.',
+        ],
+        confidence: 'certain',
+      },
+      recto: { file: 'mckinstry-minnie-first-car-recto.jpg', },
+      verso: { file: 'mckinstry-minnie-first-car-verso.jpg' },
+      description:
+        'This photograph depicts Minnie Swann McKinstry next to a Ford car. The photograph is undated, but it was likely taken between 1925 and 1928 based on the age of Minnie and the model of the car.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Minnie first Ford car.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 42.2, y: 16.2, w: 6.5, h: 11.1 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-sammy-jean-snow-bank',
+      title: 'Sammy and Jean in a snow bank',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.13.1',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1924-1925]',
+        earliest: 1924,
+        latest: 1925,
+        basis: [
+          'Jean appears to be about two years old here. Sammy appears to be four or five. This places the photograph between 1924 and 1925',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-sammy-jean-snow-bank-recto.jpg', },
+      verso: { file: 'mckinstry-sammy-jean-snow-bank-verso.jpg' },
+      description:
+        'This photograph depicts Sammy and Jean McKinstry standing in a snow bank. The location of this photograph is unidentified, but it was likely taken in Hagerman.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sammy and Jean in a snow bank.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 33.2, y: 25.1, w: 10.6, h: 8.6 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 48.7, y: 37.8, w: 10.4, h: 8.6 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-jean-peggy-dirk',
+      title: '[Jean and Peggy McKinstry with Dirk the dog]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.13.2',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1927-1928]',
+        earliest: 1927,
+        latest: 1928,
+        basis: [
+          'The verso supplies the dates of 1927 or 1928. Nothing disputes that.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jean-peggy-dirk-recto.jpg', },
+      verso: { file: 'mckinstry-jean-peggy-dirk-verso.jpg' },
+      description:
+        'This photograph depicts Jean McKinstry pushing Peggy McKinstry in a whicker stroller. Dirk the dog can be seen on the ground.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Jean, Peggy, and Dirk (dog).',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 46.4, y: 23.7, w: 7.1, h: 11.9 },
+        },
+        {
+          person: 'smith-peggy-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 60.1, y: 37.5, w: 9.8, h: 13.2 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-jean-rocking-chair',
+      title: '[Jean McKinstry next to rocking chair]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.13.3',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1925-1926]',
+        earliest: 1925,
+        latest: 1926,
+        basis: [
+          'There is no date associated with this photograph, but Jean appears to be three or four years old in this photograph.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jean-rocking-chair-recto.jpg', },
+      verso: { file: 'mckinstry-jean-rocking-chair-verso.jpg' },
+      description:
+        'This photoraph depicts Jean McKinstry standing on a porch next to a rocking chair.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Jean.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 33, y: 18.2, w: 8.1, h: 12.7 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-sammy-and-jean-2',
+      title: '[Sammy and Jean McKinstry next to fireplace]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.13.4',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1922-1923]',
+        earliest: 1922,
+        latest: 1923,
+        basis: [
+          'There is no date associated with this photograph, but Jean appears to be a relatively new newborn here, suggesting a late 1922 or early 1923 date.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-sammy-and-jean-2-recto.jpg', },
+      verso: { file: 'mckinstry-sammy-and-jean-2-verso.jpg' },
+      description:
+        'This photograph depicts Sammy and Jean McKinstry next to a fireplace in the home of their parents, Sam and Loveta McKinstry',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sammy & Jean.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 52.1, y: 53.4, w: 7.3, h: 12 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 43.4, y: 72.7, w: 7.9, h: 11.7 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-sammy-and-jean-3',
+      title: '[Sammy and Jean McKinstry next to fireplace]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.14.1',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1923]',
+        basis: [
+          'There is no date associated with this photograph, but Jean appears to be less than one year old at the time with was taken, which suggests a 1923 date.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-sammy-and-jean-3-recto.jpg', },
+      verso: { file: 'mckinstry-sammy-and-jean-3-verso.jpg' },
+      description:
+        'This photograph depicts Sammy and Jean McKinstry on a porch. Sammy is holding Jean.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sammy left & Jean.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 45.8, y: 22, w: 12, h: 9.5 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 35.1, y: 24.6, w: 11.6, h: 11.1 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-sammy-and-jean-4',
+      title: '[Sammy and Jean McKinstry riding tricycles]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.14.2',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1924]',
+        basis: [
+          'Jean appears to be less than two years old here, placing the photograph in 1924.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-sammy-and-jean-4-recto.jpg', },
+      verso: { file: 'mckinstry-sammy-and-jean-4-verso.jpg' },
+      description:
+        'This photograph depicts Sammy and Jean McKinstry riding tricycles near a tree.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sammy left & Jean.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 34.9, y: 43.1, w: 9.8, h: 7.2 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 54, y: 42.3, w: 8.9, h: 9.4 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-christmas-loveta-sammy-jean',
+      title: '[Christmas at the McKinstry home]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.14.4',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1924]',
+        basis: [
+          'Jean appears to be two years old here, which places this at Christmas in 1924.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-christmas-loveta-sammy-jean-recto.jpg', },
+      verso: { file: 'mckinstry-christmas-loveta-sammy-jean-verso.jpg' },
+      description:
+        'This photograph depicts Loveta Swann McKinstry holding Jean and Sammy at Christmas in 1924 at the McKinstry home in Hagerman, New Mexico.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Jean left, Loveta & Sammy.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 44.2, y: 30.9, w: 4.1, h: 7.6 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 50.4, y: 30.8, w: 3.8, h: 5.8 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 38.4, y: 29.4, w: 4.9, h: 7.6 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-jean-peggy-1',
+      title: '[Jean and Peggy McKinstry]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.15.1',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1926-1927]',
+        earliest: 1926,
+        latest: 1927,
+        basis: [
+          'The verso says Peggy McKinstry is five months old here. This would place this photograph in late 1926 or early 1927',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jean-peggy-1-recto.jpg', },
+      verso: { file: 'mckinstry-jean-peggy-1-verso.jpg' },
+      description:
+        'This photograph depicts Jean and Peggy McKinstry. Peggy is in a chair with Jean on the left.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Jean & Peggy five mos. old.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 21.8, y: 37.2, w: 11.4, h: 9.9 },
+        },
+        {
+          person: 'smith-peggy-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 52.7, y: 37.2, w: 14, h: 9.5 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-sammy-and-jean-5',
+      title: '[Sammy and Jean McKinstry in a chair]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.14.3',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1922]',
+        basis: [
+          'Jean appears to be only a few months old here, which places the photograph in late 1922 or early 1923.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-sammy-and-jean-5-recto.jpg', },
+      verso: { file: 'mckinstry-sammy-and-jean-5-verso.jpg' },
+      description:
+        'This photograph depicts Sammy and Jean McKinstry sitting on a chair.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sammy & Jean.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 40.7, y: 46.9, w: 7.4, h: 10.1 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 57.6, y: 47.1, w: 5.4, h: 5.9 },
+        },
+      ],
+      related :[
+        {
+          slug: 'mckinstry-sammy-and-jean-1',
+          relation: 'Photograph appears to be from same session.'
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-jean-two-years-old',
+      title: 'Jean McKinstry two years old',
+      titleSource: 'inscribed',
+      controlNumber: 'a.1.15.2',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1924-1925]',
+        earliest: 1924,
+        latest: 1925,
+        basis: [
+          'Jean is labeled as being two years old in this photograph, which places it in late 1924 or early 1925.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jean-two-years-old-recto.jpg', },
+      verso: { file: 'mckinstry-jean-two-years-old-verso.jpg' },
+      description:
+        'This photoraph depicts Jean McKinstry standing next to a structure.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Jean McKinstry 2 years old.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 42.4, y: 29.5, w: 13.4, h: 13 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-sammy-and-jean-6',
+      title: '[Sammy and Jean McKinstry standing next to a porch]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.15.3',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1925-1926]',
+        earliest: 1925,
+        latest: 1926,
+        basis: [
+          'Jean appears to be about three years old here, which places this photograph in 1925 or 1926',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-sammy-and-jean-6-recto.jpg', },
+      verso: { file: 'mckinstry-sammy-and-jean-6-verso.jpg' },
+      description:
+        'This photograph depict Sammy and Jean McKinstry standing next to a porch at their home in Hagerman, New Mexico.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sammy & Jean.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 37.3, y: 16.1, w: 8.3, h: 16.7 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 45.6, y: 30.6, w: 9.6, h: 13.3 },
+        },
+      ],
+    },
+    {
+      slug: 'mckinstry-jean-peggy-2',
+      title: '[Jean and Peggy McKinstry]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.16.1',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1926-1927]',
+        earliest: 1926,
+        latest: 1927,
+        basis: [
+          'The verso says Peggy McKinstry is five months old here. This would place this photograph in late 1926 or early 1927',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jean-peggy-2-recto.jpg', },
+      verso: { file: 'mckinstry-jean-peggy-2-verso.jpg' },
+      description:
+        'This photograph depicts Jean and Peggy McKinstry. Peggy is the baby in the box and Jean is to the right.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Jean & Peggy five mos. old.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 52.9, y: 19.9, w: 7.9, h: 11.4 },
+        },
+        {
+          person: 'smith-peggy-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 35.5, y: 42.5, w: 9.1, h: 13.3 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-jean-dress-1',
+      title: '[Jean McKinstry in her mother\'s dress]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.16.2',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      studio: 'Rodden Studio',
+      date: {
+        display: '[1923-1924]',
+        earliest: 1923,
+        latest: 1924,
+        basis: [
+          'Jean appears to be less than two years old here, which places the photograph in 1923 or 1924.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jean-dress-1-recto.jpg', },
+      verso: { file: 'mckinstry-jean-dress-1-verso.jpg' },
+      description:
+        'This photograph depicts Jean McKinstry in her mother\'s dress standing in front of a car.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Mama\'s dress sure is tight \n Jean Allison.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 47.9, y: 14.9, w: 22.4, h: 17.1 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-jean-small-tub',
+      title: '[Jean McKinstry in a small tub]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.16.3',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1923]',
+        basis: [
+          'Jean is less than one year old in this photoraph, which places it firmly in 1923.',
+        ],
+        confidence: 'certain',
+      },
+      recto: { file: 'mckinstry-jean-small-tub-recto.jpg', },
+      verso: { file: 'mckinstry-jean-small-tub-verso.jpg' },
+      description:
+        'This photograph depicts Jean McKinstry in a small tub on the front porch of a house.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sammy or Jean. \n 1923.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 42.8, y: 29, w: 20.5, h: 14.8 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-jean-peggy-tree',
+      title: '[Jean and Peggy McKinstry standing next to a tree]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.16.4',
+      format: 'snapshot',
+      place: 'Not identified',
+      date: {
+        display: '[1935-1938]',
+        earliest: 1935,
+        latest: 1938,
+        basis: [
+          'There is no date associated with this photoraph, but Jean appears to be 13 to 15 years old here. This places the date of the photograph between 1935 and 1938.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jean-peggy-tree-recto.jpg', },
+      verso: { file: 'mckinstry-jean-peggy-tree-verso.jpg' },
+      description:
+        'This photograph depicts Jean and Peggy McKinstry standing next to a tree. There is no date on this photograph. There is no location.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Jean & Peggy at the bottom',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 40.5, y: 41.7, w: 9.6, h: 8.8 },
+        },
+        {
+          person: 'smith-peggy-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 35.7, y: 51.4, w: 11.8, h: 11 },
+        },
+      ]
     },
   ],
 };

@@ -2153,5 +2153,76 @@ export const COLLECTION: Collection = {
         note: 'Photographer unidentified; unpublished.',
       },
     },
+    {
+      slug: 'swann-zirkle-2',
+      title: '[Minnie Swann McKinstry, Loveta Swann McKinstry, Glenn Zirkle, Eva Swann West]',
+      controlNumber: 'a.1.12.3',
+      titleSource: 'supplied',
+      place: 'Dallas, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1940-1945]',
+        earliest: 1940,
+        latest: 1945,
+        basis: [
+          'This is an estimated date, since it shows Loveta, Minnie, and Eva later in life. A date past 1945 is possible, but it is impossible to ascertain.',
+        ],
+        confidence: 'probable',
+      },
+       inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'left to right: \n Minnie, Loveta \n Glenn Zirkle \n Eva. \n\n 1930.',
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'swann-zirkle-2-recto.jpg' },
+      verso: { file: 'swann-zirkle-2-verso.jpg' },
+      depicts: [
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 28.8, y: 20.3, w: 6.7, h: 11 },
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 36.4, y: 19.8, w: 6.6, h: 12.8 },
+        },
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 54.6, y: 19.4, w: 7.1, h: 11.2 },
+        },
+        {
+          as: 'Glenn Zirkle',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 45.7, y: 14.2, w: 5.9, h: 10.3 },
+        },
+      ],
+      description: 'This is a photograph of Minnie McKinstry Swann, Loveta McKinstry Swann, Glenn Zirkle, Eva West, and Mrs. Major. Another photograph from this trip suggests it was taken in Dallas, Texas.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
   ],
 };
