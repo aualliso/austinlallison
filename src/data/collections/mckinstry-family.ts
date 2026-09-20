@@ -1678,5 +1678,338 @@ export const COLLECTION: Collection = {
         },
       ]
     },
+    {
+      slug: 'mckinstry-sammy-on-ground',
+      title: '[Sammy McKinstry on the ground]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.17.1',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '1920',
+        basis: [
+          'The date is on the verso.',
+        ],
+        confidence: 'certain',
+      },
+      recto: { file: 'mckinstry-sammy-on-ground-recto.jpg', },
+      verso: { file: 'mckinstry-sammy-on-ground-verso.jpg' },
+      description:
+        'This photograph depicts Sammy McKinstry on the ground as a young infant.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sammy McKinstry, later Sammy Allison \n 1920.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 42, y: 25.1, w: 15, h: 26.1 },
+        },
+      ],
+    },
+    {
+      slug: 'mckinstry-jean-peggy-3',
+      title: '[Jean and Peggy McKinstry]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.17.2',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1926-1927]',
+        earliest: 1926,
+        latest: 1927,
+        basis: [
+          'The verso says Peggy McKinstry is five months old here. This would place this photograph in late 1926 or early 1927',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jean-peggy-3-recto.jpg', },
+      verso: { file: 'mckinstry-jean-peggy-3-verso.jpg' },
+      description:
+        'This photograph depicts Jean and Peggy McKinstry. Peggy is the baby in the highchair and Jean is to the left.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Jean & Peggy five mos. old.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 16.5, y: 19.3, w: 19, h: 14.2 },
+        },
+        {
+          person: 'smith-peggy-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 47, y: 39.4, w: 14.8, h: 11.6 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-jean-peggy-4',
+      title: '[Jean and Peggy McKinstry]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.17.3',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1936-1938]',
+        earliest: 1936,
+        latest: 1938,
+        basis: [
+          'There is no date associated with this photograph, but Jean appears to be between 14 and 16 years old, placing this between 1936 and 1938.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jean-peggy-4-recto.jpg', },
+      verso: { file: 'mckinstry-jean-peggy-4-verso.jpg' },
+      description:
+        'This photograph depicts Jean and Peggy McKinstry next to the Sam and Loveta McKinstry home in Hagerman, New Mexico.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Peggy and Jean.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 63.7, y: 35.1, w: 4.4, h: 3.7 },
+        },
+        {
+          person: 'smith-peggy-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 72.9, y: 40.5, w: 2.8, h: 3.3 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-peggy-sammy-jean-mildred',
+      title: '[Peggy, Sammy, Jean, and Mildred McKinstry]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.17.4',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '1929',
+        basis: [
+          'This photograph has the date of 1929 on the verso.',
+        ],
+        confidence: 'certain',
+      },
+      recto: { file: 'mckinstry-peggy-sammy-jean-mildred-recto.jpg', },
+      verso: { file: 'mckinstry-peggy-sammy-jean-mildred-verso.jpg' },
+      description:
+        'This photograph depicts Peggy, Sammy, Jean, and Mildred McKinstry in 1929. They are stanindg in front of a road and a fence.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Peggy, Sammy, Jean + Mildred \n 1929.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'smith-peggy-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 28.8, y: 28.1, w: 6.1, h: 8.6 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 40.2, y: 12.2, w: 6.3, h: 8.8 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 55.2, y: 18.2, w: 6.6, h: 8.4 },
+        },
+        {
+          person: 'osborn-mildred-adeline-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 68.3, y: 35.6, w: 4.7, h: 7.7 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-sammy-jean-peggy-mildred',
+      title: '[Sammy, Jean, Peggy, and Mildred McKinstry]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.18.1',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1930]',
+        basis: [
+          'There is no date supplied with this photograph, but Mildred appears to be three years old, which would place this photograph in 1930..',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-sammy-jean-peggy-mildred-recto.jpg', },
+      verso: { file: 'mckinstry-sammy-jean-peggy-mildred-verso.jpg' },
+      description:
+        'This photograph depicts Sammy, Jean, Peggy, and Mildred McKinstry. They are standing in the foreground of a mountain or ridge.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Sammy, Jean, Peggy + Mildred.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 35.5, y: 10, w: 7, h: 11.9 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 42.7, y: 16.5, w: 7.5, h: 12.8 },
+        },
+        {
+          person: 'smith-peggy-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 50.7, y: 30.6, w: 7.8, h: 11.4 },
+        },
+        {
+          person: 'osborn-mildred-adeline-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 59.4, y: 37.1, w: 6.3, h: 8.9 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-swann-group',
+      title: '[McKinstry-Swann group]',
+      titleSource: 'supplied',
+      controlNumber: 'a.1.18.2',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1922]',
+        basis: [
+          'There is no date on this photograph, but it is likely from 1922. Sammy appears to be two years old here.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-swann-group-recto.jpg', },
+      verso: { file: 'mckinstry-swann-group-verso.jpg' },
+      description:
+        'This photograph depicts a group of McKinstry and Swann men and women. Eva Swann West and Minnie Swann McKinstry are plainly visible, as is Sammy McKinstry. The others are difficult to identify. The two men could be Sam and Jim McKinstry, but they could be brothers, as well. The other women are also unidentified.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 40.9, y: 37.8, w: 5, h: 8.7 },
+        },
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 46.6, y: 20.9, w: 5, h: 8.8 },
+        },
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 38, y: 24.6, w: 5.2, h: 7.6 },
+        },
+      ]
+    },
   ],
 };

@@ -153,7 +153,9 @@ export const COLLECTION: Collection = {
         basis: 'No imprint or signature visible in the surrogate.',
       },
       date: {
-        display: '[before 1909]',
+        display: '[1900-1909]',
+        earliest: 1900,
+        latest: 1909,
         basis: ['Nothing on the object dates it. This must be before Benjamin B. Thomas died in 1909.'],
         confidence: 'unidentified',
       },
@@ -208,7 +210,9 @@ export const COLLECTION: Collection = {
         basis: 'No imprint or signature visible in the surrogate.',
       },
       date: {
-        display: '[before 1909]',
+        display: '[1900-1909]',
+        earliest: 1900,
+        latest: 1909,
         basis: ['Nothing on the object dates it. This must be before Benjamin B. Thomas died in 1909.'],
         confidence: 'unidentified',
       },

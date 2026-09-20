@@ -13,6 +13,17 @@
 // re-ordering them in CSS, so what a screen reader and the Tab key follow
 // stays the same as what the eye sees. With no JavaScript the page still
 // lists in arrangement order.
+//
+// FINDING YOUR WAY IN A LARGE COLLECTION (2026-09):
+//   - CONTENTS at the head: each series with its count and date span, as
+//     jump links - the container list of a finding aid - plus the names.
+//   - A FILTER over the inventory: title, names (with see-from forms),
+//     place, format, control number, description, and years matched
+//     against date intervals. Everything it searches is already on the
+//     page; nothing is fetched. ?q= in the address keeps it, so a filtered
+//     inventory can be sent as a link.
+//   - NAMES IN THIS COLLECTION: every person in it, alphabetical by the
+//     authority heading, with a count, linked to their authority record.
 import RootLayout from '../../layouts/RootLayout.astro';
 import {
   COLLECTIONS,
@@ -23,6 +34,11 @@ import {
   compareArrangement,
   compareChronology,
   compareTitles,
+  spanOf,
+  personById,
+  personHref,
+  headingDates,
+  PEOPLE_WITH_ITEMS,
 } from '../../data/collections/index';
 import type { ResolvedItem } from '../../data/collections/index';
 import { plate } from '../../data/collections/images';
@@ -86,6 +102,55 @@ const sections = [
 });
 
 const extent = extentOf(items);
+
+// What the filter searches, folded the way the script folds a query:
+// accents off, lower case, punctuation to spaces.
+const fold = (v: string) =>
+  v
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+const hayOf = (i: ResolvedItem) =>
+  fold(
+    [
+      i.title,
+      i.controlNumber,
+      i.format,
+      i.place,
+      i.date.display,
+      i.description,
+      ...depictedNames(i),
+      ...i.depicts.flatMap((d) => (d.person ? personById.get(d.person)?.variants ?? [] : [])),
+    ]
+      .filter(Boolean)
+      .join(' ')
+  );
+// A year in the filter matches the date INTERVAL, as everywhere else in the
+// collections. Open ends reach 15 years, the same reach the guide uses.
+const REACH = 15;
+const yearsOfItem = (i: ResolvedItem) => {
+  const sp = spanOf(i);
+  if (!sp) return null;
+  return { a: sp.openStart ? sp.to - REACH : sp.from, b: sp.openEnd ? sp.from + REACH : sp.to };
+};
+
+// Contents: every series with its figures.
+const contents = sections.map((s) => {
+  const e = extentOf(s.items.map((r) => r.item));
+  return { id: s.id, title: s.title, n: s.items.length, years: e ? years(e.from, e.to) : '' };
+});
+
+// Names in this collection, filed by the authority heading - this is an
+// index, so the inverted form is the right one here.
+const names = PEOPLE_WITH_ITEMS.map(({ person, appearances }) => ({
+  p: person,
+  n: new Set(appearances.filter((a) => a.item.collection === c.slug).map((a) => a.item.slug)).size,
+}))
+  .filter((x) => x.n > 0)
+  .sort((a, b) => a.p.authorized.localeCompare(b.p.authorized));
+const NAMES_ID = 'collection-names';
 const sortable = sections.some((s) => s.items.length > 1);
 const custodyKnown = !/^TODO/i.test(c.custody);
 ---
@@ -150,6 +215,47 @@ const custodyKnown = !/^TODO/i.test(c.custody);
       )}
     </dl>
 
+    {(contents.length > 1 || names.length > 0) && (
+      <nav class="contents" aria-labelledby="contents-h">
+        <h2 id="contents-h" class={H2}>Contents</h2>
+        <ol class="contents-list">
+          {contents.length > 1 &&
+            contents.map((s) => (
+              <li class="contents-row" data-contents={s.id}>
+                <a href={`#${s.id}`} class="contents-link">{s.title}</a>
+                <span class="contents-fig">
+                  <span data-contents-n data-total={s.n}>{plural(s.n, 'photograph')}</span>
+                  {s.years && <span> &middot; {s.years}</span>}
+                </span>
+              </li>
+            ))}
+          {names.length > 0 && (
+            <li class="contents-row">
+              <a href={`#${NAMES_ID}`} class="contents-link">Names in this collection</a>
+              <span class="contents-fig">{plural(names.length, 'name')}</span>
+            </li>
+          )}
+        </ol>
+      </nav>
+    )}
+
+    {items.length > 1 && (
+      <div class="filter" data-js-only>
+        <label for="coll-filter" class="tool-label">Filter the inventory</label>
+        <div class="filter-field">
+          <input
+            id="coll-filter"
+            type="search"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="A name, a title, a place, or a year"
+            data-filter
+          />
+        </div>
+        <p class="filter-status" aria-live="polite" data-filter-status></p>
+      </div>
+    )}
+
     {sortable && (
       <div class="sorter" data-js-only>
         <span class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage">Order</span>
@@ -166,16 +272,29 @@ const custodyKnown = !/^TODO/i.test(c.custody);
       <p class="mt-10 italic opacity-70">Nothing in this collection has been described yet.</p>
     )}
 
+    <p class="filter-empty" hidden data-filter-empty>
+      Nothing in this collection matches. Try fewer words, or a decade such as 1890s.
+    </p>
+
     {sections.map((s) => (
-      <section>
+      <section data-section={s.id}>
         <h2 class={H2} id={s.id}>{s.title}</h2>
         {s.scope && <p class="text-sm opacity-75 -mt-2 mb-3">{s.scope}</p>}
         <ul class="inventory" data-list>
           {s.items.map((row) => {
             const i = row.item;
             const t = thumbs.get(i.slug)!;
+            const yr = yearsOfItem(i);
             return (
-              <li class="entry" data-arr={row.arr} data-date={row.date} data-title={row.title}>
+              <li
+                class="entry"
+                data-arr={row.arr}
+                data-date={row.date}
+                data-title={row.title}
+                data-hay={hayOf(i)}
+                data-a={yr ? yr.a : undefined}
+                data-b={yr ? yr.b : undefined}
+              >
                 <img
                   src={t.index}
                   srcset={t.indexSrcset}
@@ -206,6 +325,27 @@ const custodyKnown = !/^TODO/i.test(c.custody);
         </ul>
       </section>
     ))}
+
+    {names.length > 0 && (
+      <section aria-labelledby={NAMES_ID}>
+        <h2 id={NAMES_ID} class={H2}>Names in this collection</h2>
+        <p class="text-sm opacity-75 -mt-2 mb-3">
+          Headings as they stand in the <a href="/collections/names" class="text-caprock hover:underline">name authority file</a>.
+          Figures are photographs in this collection.
+        </p>
+        <ul class="names">
+          {names.map(({ p, n }) => {
+            const d = headingDates(p);
+            return (
+              <li>
+                <a href={personHref(p.id)} class="names-link">{p.authorized}{d ? `, ${d}` : ''}</a>
+                <span class="names-n">{n}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    )}
   </div>
 </RootLayout>
 
@@ -216,6 +356,136 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     --c-haze: var(--color-haze, #dad3c4);
     --c-dust: var(--color-dust, #ede7da);
     --c-iron: var(--color-iron, #3b3833);
+  }
+
+  /* Anything this page hides with the `hidden` attribute stays hidden:
+     .entry sets display, and a class selector outranks the browser's own
+     [hidden] rule - the bug this project has hit twice already. */
+  .collection [hidden] {
+    display: none !important;
+  }
+
+  /* Contents ------------------------------------------------------ */
+  .contents-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .contents-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.1rem 1rem;
+    padding: 0.4rem 0;
+    border-bottom: 1px dotted var(--c-haze);
+    transition: opacity 0.2s ease;
+  }
+  .contents-row.is-empty {
+    opacity: 0.4;
+  }
+  .contents-link {
+    color: var(--c-caprock);
+    text-decoration: none;
+  }
+  .contents-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+  .contents-fig {
+    font-family: ui-monospace, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+    white-space: nowrap;
+  }
+
+  /* Filter -------------------------------------------------------- */
+  .filter {
+    max-width: 30rem;
+    margin-top: 2rem;
+  }
+  .tool-label {
+    display: block;
+    font-family: ui-monospace, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  .filter input {
+    width: 100%;
+    padding: 0.4rem 0.2rem;
+    border: 0;
+    border-bottom: 1.5px solid var(--c-iron);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 1.1rem;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .filter input::placeholder {
+    color: var(--c-sage);
+    font-style: italic;
+  }
+  .filter input:focus {
+    outline: none;
+    border-bottom-color: var(--c-caprock);
+    box-shadow: 0 1.5px 0 0 var(--c-caprock);
+  }
+  .filter-status {
+    min-height: 1.3em;
+    margin: 0.35rem 0 0;
+    font-family: ui-monospace, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--c-sage);
+  }
+  .filter-empty {
+    margin-top: 2rem;
+    font-style: italic;
+    opacity: 0.75;
+  }
+
+  /* Names in this collection ------------------------------------- */
+  .names {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    columns: 1;
+    column-gap: 2.5rem;
+  }
+  @media (min-width: 40rem) {
+    .names {
+      columns: 2;
+    }
+  }
+  .names li {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.3rem 0;
+    border-bottom: 1px dotted var(--c-haze);
+    break-inside: avoid;
+  }
+  .names-link {
+    color: var(--c-caprock);
+    text-decoration: none;
+  }
+  .names-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+  }
+  .names-n {
+    flex-shrink: 0;
+    font-family: ui-monospace, monospace;
+    font-size: 0.72rem;
+    color: var(--c-sage);
   }
 
   .sorter {
@@ -322,6 +592,7 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     const ac = new AbortController();
     document.addEventListener('astro:before-swap', () => ac.abort(), { once: true });
 
+    wireFilter(root, ac.signal);
     const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-order]'));
     const status = root.querySelector<HTMLElement>('[data-order-status]');
     buttons.forEach((b) =>
@@ -340,6 +611,87 @@ const custodyKnown = !/^TODO/i.test(c.custody);
         },
         { signal: ac.signal }
       )
+    );
+  }
+
+  // THE FILTER. Every word must begin some word of the row's record; a
+  // four-digit year, or a decade like 1890s, must overlap the row's date
+  // interval. Rows that fail are hidden, series with nothing left are
+  // hidden, and the contents say how many of each series are showing.
+  function wireFilter(root: HTMLElement, signal: AbortSignal) {
+    const input = root.querySelector<HTMLInputElement>('[data-filter]');
+    if (!input) return;
+    const status = root.querySelector<HTMLElement>('[data-filter-status]');
+    const empty = root.querySelector<HTMLElement>('[data-filter-empty]');
+    const sections = Array.from(root.querySelectorAll<HTMLElement>('[data-section]'));
+    const rows = Array.from(root.querySelectorAll<HTMLElement>('.entry'));
+    const total = rows.length;
+    const fold = (v: string) =>
+      v
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
+    const hay = new Map(rows.map((r) => [r, (r.dataset.hay ?? '').split(' ')]));
+    const plural = (n: number, one: string) => `${n.toLocaleString('en-US')} ${n === 1 ? one : `${one}s`}`;
+
+    const apply = (q: string) => {
+      const words = fold(q).split(' ').filter(Boolean);
+      const dates = words.filter((w) => /^\d{4}s?$/.test(w));
+      const text = words.filter((w) => !dates.includes(w));
+      let shown = 0;
+      rows.forEach((r) => {
+        const h = hay.get(r) ?? [];
+        let ok = text.every((t) => h.some((x) => x.startsWith(t)));
+        if (ok && dates.length) {
+          const a = r.dataset.a === undefined ? NaN : Number(r.dataset.a);
+          const b = r.dataset.b === undefined ? NaN : Number(r.dataset.b);
+          ok = dates.every((d) => {
+            const from = Number(d.slice(0, 4));
+            const to = d.endsWith('s') ? from + 9 : from;
+            return !Number.isNaN(a) && !Number.isNaN(b) && b >= from && a <= to;
+          });
+        }
+        r.hidden = !ok;
+        if (ok) shown++;
+      });
+      sections.forEach((s) => {
+        const n = Array.from(s.querySelectorAll<HTMLElement>('.entry')).filter((r) => !r.hidden).length;
+        s.hidden = n === 0;
+        const row = root.querySelector<HTMLElement>(`[data-contents="${CSS.escape(s.dataset.section ?? '')}"]`);
+        const fig = row?.querySelector<HTMLElement>('[data-contents-n]');
+        if (row && fig) {
+          const t = Number(fig.dataset.total ?? 0);
+          fig.textContent = words.length ? `${n} of ${plural(t, 'photograph')}` : plural(t, 'photograph');
+          row.classList.toggle('is-empty', words.length > 0 && n === 0);
+        }
+      });
+      if (empty) empty.hidden = !(words.length && shown === 0);
+      if (status) status.textContent = words.length ? `Showing ${shown} of ${plural(total, 'photograph')}` : '';
+      // Keep it in the address, so a filtered inventory is a link.
+      const url = new URL(location.href);
+      if (words.length) url.searchParams.set('q', q.trim());
+      else url.searchParams.delete('q');
+      history.replaceState(history.state, '', url);
+    };
+
+    const start = new URLSearchParams(location.search).get('q');
+    if (start) {
+      input.value = start;
+      apply(start);
+    }
+    input.addEventListener('input', () => apply(input.value), { signal });
+    input.addEventListener(
+      'keydown',
+      (e) => {
+        if (e.key === 'Escape' && input.value) {
+          e.preventDefault();
+          input.value = '';
+          apply('');
+        }
+      },
+      { signal }
     );
   }
 

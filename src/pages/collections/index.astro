@@ -5,13 +5,15 @@
 // nothing on this page is hand-maintained:
 //
 //   1. Descriptive summary  extent, inclusive and bulk dates, names, surnames
-//   2. Finder               names (INCLUDING variant forms), titles, places,
-//                           and years matched against date INTERVALS
+//   2. Finder               names (INCLUDING variant forms) from a small
+//                           inline index; photographs from Pagefind, with
+//                           years matched against date INTERVALS
 //   3. Holdings             one card per collection, its key photographs laid
 //                           with one photograph shown whole
-//   4. Chronology           every dated photograph drawn as the span of years
-//                           it could have been made in - the schema's claim
-//                           that a date is an interval, made visible
+//   4. Chronology           a histogram: each dated photograph spread evenly
+//                           across the years it could have been made in, so a
+//                           date as an interval still shapes the chart. Pick
+//                           a decade to see its photographs.
 //   5. Surnames             a crosswalk of families against collections,
 //                           which is what "arranged by custody, not by
 //                           family" looks like in practice
@@ -25,10 +27,20 @@
 //   - Script is wired on astro:page-load and guarded, so it survives
 //     ClientRouter navigation.
 //
-// SCALE. Written for tens to a few hundred items. Past that, two things
-// should change: the chronology becomes a weighted histogram (a line per
-// photograph stops being legible), and the finder's inline index should
-// hand over to Pagefind (the JSON grows with every item).
+// SCALE. Rewritten 2026-09 for thousands of items. The page no longer
+// carries a line, a thumbnail or an index entry per photograph: the chart is
+// one path per series, and photographs are found through PAGEFIND, whose
+// index is built after `astro build` and fetched in small pieces as someone
+// types. The item pages declare what Pagefind reads (see [item].astro:
+// data-pagefind-body, the collection / surname / year filters, the start
+// sort). In `astro dev` there is no index, so photograph search and the
+// decade panel say so and names still work.
+//
+// BUILD: package.json needs  "build": "astro build && pagefind --site dist"
+// and  npm i -D pagefind.  Cloudflare runs `npm run build`, so that is all.
+//
+// The surname crosswalk (5) is still one row per surname; at several hundred
+// surnames it will want the same treatment.
 
 import RootLayout from '../../layouts/RootLayout.astro';
 import {
@@ -40,10 +52,8 @@ import {
   spanOf,
   extentOf,
   personHref,
-  depictedNames,
   naturalName,
   headingDates,
-  personById,
 } from '../../data/collections/index';
 import { plate } from '../../data/collections/images';
 import type { Rendered } from '../../data/collections/images';
@@ -60,15 +70,20 @@ const H2 =
  * Images. Rendered once per item; the item pages ask getImage() for the
  * same transforms, so this page adds no files to the build.
  * ---------------------------------------------------------------- */
+// Only the photographs this page actually shows are rendered: each
+// collection's key items, and one fallback for the share image. It used to
+// render every item for the chronology's loupe - at thousands of items that
+// was thousands of getImage() calls for pictures nobody saw here.
+const keysOf = new Map(COLLECTIONS.map((c) => [c.slug, keyItemsOf(c.slug, 4)]));
+const shown = new Map(
+  [...[...keysOf.values()].flat(), ...(ALL_ITEMS[0] ? [ALL_ITEMS[0]] : [])].map((i) => [i.slug, i])
+);
 const renders = new Map<string, Rendered>(
   await Promise.all(
-    ALL_ITEMS.map(
-      async (i) => [i.slug, await plate(i.collection, i.recto.file, i.recto)] as const
-    )
+    [...shown.values()].map(async (i) => [i.slug, await plate(i.collection, i.recto.file, i.recto)] as const)
   )
 );
 const renderOf = (slug: string) => renders.get(slug) as Rendered;
-const collectionTitle = new Map(COLLECTIONS.map((c) => [c.slug, c.title]));
 
 /* ---------------------------------------------------------------- *
  * 1. Summary
@@ -125,7 +140,7 @@ const crossing = surnames.filter((r) => r.perCollection.filter(Boolean).length >
  * ---------------------------------------------------------------- */
 const cards = COLLECTIONS.map((c) => {
   const items = itemsOf(c.slug);
-  const keys = keyItemsOf(c.slug, 4);
+  const keys = keysOf.get(c.slug) ?? [];
   return {
     c,
     count: items.length,
@@ -138,10 +153,9 @@ const cards = COLLECTIONS.map((c) => {
 /* ---------------------------------------------------------------- *
  * 4. Chronology
  * ---------------------------------------------------------------- */
-const LANE_GAP = 2; // years kept clear between two photographs sharing a lane
-// How far an open-ended date ("after 1890") is drawn past its one known year.
-// Not a claim about when it ends - the dashes say it is open - just enough
-// line to show which way it runs without a dashed rule swamping the chart.
+// How far an open-ended date ("after 1890") is spread past its one known
+// year. Not a claim about when it ends - just a reach, so an open date adds a
+// thin wash over the years after it rather than a spike on its one year.
 const OPEN_REACH = 15;
 let axis: { lo: number; hi: number } | null = null;
 if (extent) {
@@ -152,39 +166,68 @@ if (extent) {
 }
 const pct = (y: number) => (axis ? ((y - axis.lo) / (axis.hi - axis.lo)) * 100 : 0);
 
-const laneEnds: number[] = [];
-const bars = axis
+// THE WEIGHTED HISTOGRAM. A photograph dated 1885-1894 adds a tenth of a
+// photograph to each of those ten years; one dated 1890 adds a whole one to
+// 1890. The height of a year is therefore an ESTIMATE of how many were made
+// in it, and a loosely dated print cannot fake a spike. `cover` counts, per
+// year, every photograph that COULD date from it - the other honest number.
+const collIndex = new Map(COLLECTIONS.map((c, n) => [c.slug, n]));
+const surnameIndex = new Map(surnames.map((r, n) => [r.key, n]));
+const spreads = axis
   ? ALL_ITEMS.flatMap((i) => {
       const s = spanOf(i);
       if (!s || !axis) return [];
-      const from = s.openStart ? Math.max(axis.lo, s.to - OPEN_REACH) : s.from;
-      const to = s.openEnd ? Math.min(axis.hi - 1, s.from + OPEN_REACH) : s.to;
-      return [{ i, s, from, to }];
+      const from = Math.max(axis.lo, s.openStart ? s.to - OPEN_REACH : s.from);
+      const to = Math.min(axis.hi - 1, s.openEnd ? s.from + OPEN_REACH : s.to);
+      if (to < from) return [];
+      const firm = i.date.confidence === 'certain' || i.date.confidence === 'probable';
+      const sn = [...(surnamesOnItem.get(i.slug) ?? [])]
+        .map((k) => surnameIndex.get(k))
+        .filter((n): n is number => n !== undefined);
+      return [{ from, to, firm, c: collIndex.get(i.collection) ?? -1, s: sn }];
     })
-      .sort((a, b) => a.from - b.from || a.to - b.to || a.i.title.localeCompare(b.i.title))
-      .map((b) => {
-        let lane = laneEnds.findIndex((end) => end + LANE_GAP <= b.from);
-        if (lane === -1) {
-          lane = laneEnds.length;
-          laneEnds.push(0);
-        }
-        laneEnds[lane] = b.to + 1;
-        const firm = b.i.date.confidence === 'certain' || b.i.date.confidence === 'probable';
-        return {
-          ...b,
-          lane,
-          firm,
-          x: pct(b.from),
-          w: pct(b.to + 1) - pct(b.from),
-          r: renderOf(b.i.slug),
-          surnames: `|${[...(surnamesOnItem.get(b.i.slug) ?? [])].join('|')}|`,
-          coll: collectionTitle.get(b.i.collection) ?? '',
-        };
-      })
   : [];
-const undated = ALL_ITEMS.length - bars.length;
-const earliest = bars[0];
-
+const undated = ALL_ITEMS.length - spreads.length;
+const YEARS = axis ? axis.hi - axis.lo : 0;
+const firmW = new Array<number>(YEARS).fill(0);
+const softW = new Array<number>(YEARS).fill(0);
+const cover = new Array<number>(YEARS).fill(0);
+for (const sp of spreads) {
+  const share = 1 / (sp.to - sp.from + 1);
+  for (let y = sp.from; y <= sp.to; y++) {
+    const k = y - (axis as { lo: number }).lo;
+    (sp.firm ? firmW : softW)[k] += share;
+    cover[k] += 1;
+  }
+}
+const peak = Math.max(0.0001, ...firmW.map((f, k) => f + softW[k]));
+// One path per series in a 0..YEARS x 0..100 box, drawn with
+// preserveAspectRatio="none" so it fills whatever width the page gives it.
+const H = 100;
+const BAR = YEARS > 160 ? 1 : 0.86;
+const r2 = (v: number) => Math.round(v * 100) / 100;
+const histPath = (base: number[], top: number[]) =>
+  top
+    .map((v, k) => {
+      if (v <= 0) return '';
+      const y0 = H - (base[k] / peak) * H;
+      const h = (v / peak) * H;
+      return `M${k} ${r2(y0)}v${r2(-h)}h${BAR}v${r2(h)}z`;
+    })
+    .join('');
+const zeros = new Array<number>(YEARS).fill(0);
+const firmPath = histPath(zeros, firmW);
+const softPath = histPath(firmW, softW);
+const decades = axis
+  ? Array.from({ length: YEARS / 10 }, (_, n) => {
+      const from = (axis as { lo: number }).lo + n * 10;
+      let est = 0;
+      let could = 0;
+      for (let k = n * 10; k < n * 10 + 10; k++) est += firmW[k] + softW[k];
+      could = spreads.filter((sp) => sp.to >= from && sp.from <= from + 9).length;
+      return { from, est: Math.round(est), could, x: pct(from), w: pct(from + 10) - pct(from) };
+    })
+  : [];
 const ticks: { year: number; x: number; label: boolean; minor: boolean }[] = [];
 if (axis) {
   const step = axis.hi - axis.lo > 120 ? 20 : 10;
@@ -193,10 +236,27 @@ if (axis) {
     ticks.push({ year: y, x: pct(y), label, minor: label && ((y - axis.lo) / step) % 2 === 1 });
   }
 }
+// For the client: enough to redraw the histogram for any collection or
+// surname, and to read a year's figures under the pointer. Compact on
+// purpose - [from, to, firm, collection, surnames] per photograph, no titles,
+// no images; those come from Pagefind when someone asks for a decade.
+const chronJson = JSON.stringify({
+  lo: axis?.lo ?? 0,
+  n: YEARS,
+  peak,
+  bar: BAR,
+  firm: firmW.map(r2),
+  soft: softW.map(r2),
+  cover,
+  items: spreads.map((sp) => [sp.from, sp.to, sp.firm ? 1 : 0, sp.c, sp.s]),
+}).replace(/</g, '\\u003c');
 
 /* ---------------------------------------------------------------- *
  * 2. Finder index. Short keys because it ships in the page.
  * ---------------------------------------------------------------- */
+// Names stay inline: the authority file is hundreds of records, not
+// thousands, and name search has to work in dev and on the first keystroke.
+// Photographs moved to Pagefind.
 const finder = {
   people: PEOPLE_WITH_ITEMS.map(({ person: p, appearances }) => ({
     n: naturalName(p),
@@ -207,28 +267,6 @@ const finder = {
     // person's own name; a hit at 2+ came through a variant.
     f: [p.authorized, naturalName(p), ...(p.variants ?? [])],
   })),
-  items: ALL_ITEMS.map((i) => {
-    const s = spanOf(i);
-    return {
-      t: i.title,
-      h: i.href,
-      d: i.date.display,
-      k: collectionTitle.get(i.collection) ?? '',
-      // Names in reading order AND every see-from form, so "Bud" finds the
-      // photographs of M. B. Thomas as well as his authority record.
-      x: [
-        i.controlNumber,
-        i.place,
-        i.format,
-        ...depictedNames(i),
-        ...i.depicts.flatMap((d) => (d.person ? personById.get(d.person)?.variants ?? [] : [])),
-      ]
-        .filter(Boolean)
-        .join(' '),
-      a: s ? s.from : null,
-      b: s ? s.to : null,
-    };
-  }),
 };
 const finderJson = JSON.stringify(finder).replace(/</g, '\\u003c');
 
@@ -281,6 +319,12 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
 >
   <script type="application/ld+json" is:inline set:html={structuredJson} />
   <script type="application/json" id="guide-finder" is:inline set:html={finderJson} />
+  <script type="application/json" id="guide-chron" is:inline set:html={chronJson} />
+  <noscript>
+    <style is:inline>
+      [data-js-only] { display: none !important; }
+    </style>
+  </noscript>
 
   <div class="guide max-w-4xl mx-auto py-6 text-iron font-serif" data-guide>
     <header class="border-b-2 border-caprock pb-4 mb-6">
@@ -438,38 +482,47 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     </section>
 
     <!-- 4. Chronology -->
-    {axis && bars.length > 0 && (
+    {axis && spreads.length > 0 && (
       <section aria-labelledby="chron-h" class="mt-14" data-chron>
         <h2 id="chron-h" class={H2}>Chronology</h2>
         <p class="note">
-          Each line is one photograph, drawn across the years in which it could
-          have been made. A short line is closely dated; a long one is not.
+          How many photographs were made in each year, as far as the dates
+          allow. A photograph dated only to a span of years is spread evenly
+          across it, so a loosely dated print adds a little to many years
+          rather than all of itself to one. Choose a decade to see its
+          photographs.
         </p>
 
-        <div class="facets">
-          <div class="facet-row" role="group" aria-label="Show photographs from a collection">
-            <span class="facet-label" aria-hidden="true">Collection</span>
-            <button type="button" class="facet" aria-pressed="true" data-facet="all" data-label="All photographs">All</button>
-            {COLLECTIONS.map((c) => (
-              <button type="button" class="facet" aria-pressed="false" data-facet="c" data-value={c.slug} data-label={c.title}>
-                {c.title}
-              </button>
-            ))}
-          </div>
-          {surnames.length > 0 && (
-            <div class="facet-row" role="group" aria-label="Show photographs of a family">
-              <span class="facet-label" aria-hidden="true">Surname</span>
-              {surnames.map((r) => (
-                <button type="button" class="facet" aria-pressed="false" data-facet="s" data-value={r.key} data-label={r.surname}>
-                  {r.surname}<span class="facet-n" aria-hidden="true">{r.items}</span>
+        <div class="facets" data-js-only>
+          {COLLECTIONS.length > 1 && (
+            <div class="facet-row" role="group" aria-label="Show photographs from a collection">
+              <span class="facet-label" aria-hidden="true">Collection</span>
+              <button type="button" class="facet" aria-pressed="true" data-facet="c" data-value="" data-label="All collections">All</button>
+              {COLLECTIONS.map((c, n) => (
+                <button type="button" class="facet" aria-pressed="false" data-facet="c" data-value={String(n)} data-slug={c.slug} data-label={c.title}>
+                  {c.title}
                 </button>
               ))}
             </div>
           )}
+          {surnames.length > 0 && (
+            <div class="facet-row">
+              {/* A native select, not a row of buttons: it holds three
+                  surnames or three hundred in the same space, and it is
+                  already keyboard- and screen-reader-complete. */}
+              <label for="chron-surname" class="facet-label">Surname</label>
+              <select id="chron-surname" class="facet-select" data-surname>
+                <option value="">All surnames</option>
+                {surnames.map((r, n) => (
+                  <option value={String(n)} data-key={r.key}>{r.surname} ({r.items})</option>
+                ))}
+              </select>
+            </div>
+          )}
         </div>
 
-        <div class="chron">
-          <div class="plot" style={`--lanes:${laneEnds.length}`} data-plot>
+        <div class="hist" data-hist>
+          <div class="hist-plot">
             <div class="rules" aria-hidden="true">
               {ticks.map((t) => (
                 <span class:list={['tick', { minor: t.minor }]} style={`--x:${t.x.toFixed(3)}%`}>
@@ -477,57 +530,57 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
                 </span>
               ))}
             </div>
-            <div
-              class="bars"
-              role="group"
-              aria-label={`${plural(bars.length, 'dated photograph')}, earliest first. Arrow keys move between them.`}
+            <svg
+              class="hist-svg"
+              viewBox={`0 0 ${YEARS} ${H}`}
+              preserveAspectRatio="none"
+              role="img"
+              aria-label={`Photographs by year, ${axis.lo} to ${axis.hi - 1}. The decade list below gives the figures.`}
+              data-hist-svg
             >
-              {bars.map((b, n) => (
-                <a
-                  href={b.i.href}
-                  class:list={['bar', b.firm ? 'firm' : 'soft', { 'open-start': b.s.openStart, 'open-end': b.s.openEnd, 'is-current': n === 0 }]}
-                  tabindex={n === 0 ? 0 : -1}
-                  style={`--x:${b.x.toFixed(3)}%;--w:${b.w.toFixed(3)}%;--y:${b.lane}`}
-                  aria-label={`${b.i.title}, ${b.i.date.display}, ${b.coll}`}
-                  data-c={b.i.collection}
-                  data-s={b.surnames}
-                  data-title={b.i.title}
-                  data-date={b.i.date.display}
-                  data-coll={b.coll}
-                  data-src={b.r.index}
-                  data-srcset={b.r.indexSrcset}
-                  data-w={b.r.width}
-                  data-h={b.r.height}
-                ></a>
-              ))}
-            </div>
+              <path class="h-firm" d={firmPath} data-h-firm />
+              <path class="h-soft" d={softPath} data-h-soft />
+              <path class="h-lit" d="" data-h-lit />
+            </svg>
+            <span class="hist-cursor" aria-hidden="true" hidden data-hist-cursor></span>
           </div>
-
-          <aside class="loupe" aria-hidden="true">
-            <p class="loupe-kicker" data-loupe-kicker>Earliest</p>
-            <div class="loupe-frame">
-              <img
-                src={earliest.r.index}
-                srcset={earliest.r.indexSrcset}
-                width={earliest.r.width}
-                height={earliest.r.height}
-                alt=""
-                loading="lazy"
-                decoding="async"
-                data-loupe-img
-              />
-            </div>
-            <p class="loupe-title" data-loupe-title>{earliest.i.title}</p>
-            <p class="loupe-meta" data-loupe-meta>{earliest.i.date.display} &middot; {earliest.coll}</p>
-          </aside>
+          <p class="hist-readout" aria-hidden="true" data-hist-readout>&nbsp;</p>
         </div>
 
         <div class="legend">
-          <span><i class="swatch firm"></i>Certain or probable</span>
-          <span><i class="swatch soft"></i>Possible</span>
-          <span><i class="swatch open"></i>Open-ended</span>
-          {undated > 0 && <span>{plural(undated, 'photograph')} undated, not drawn</span>}
+          <span><i class="swatch firm"></i>Certain or probable date</span>
+          <span><i class="swatch soft"></i>Possible date</span>
+          {undated > 0 && <span>{plural(undated, 'photograph')} undated, not counted</span>}
         </div>
+
+        {/* The decades are the way in, for every kind of reader: real buttons
+            with real figures, so the chart itself can stay a picture. */}
+        <div class="decades" role="group" aria-label="Browse by decade">
+          {decades.map((d) => (
+            <button
+              type="button"
+              class="decade"
+              aria-pressed="false"
+              aria-controls="decade-panel"
+              data-decade={d.from}
+              disabled={d.could === 0}
+            >
+              <span class="decade-y">{d.from}s</span>
+              <span class="decade-n" data-decade-n>{d.could > 0 ? `~${d.est}` : '\u2013'}</span>
+            </button>
+          ))}
+        </div>
+
+        <div id="decade-panel" class="panel" hidden data-panel>
+          <div class="panel-head">
+            <h3 class="panel-title" data-panel-title></h3>
+            <button type="button" class="panel-close" data-panel-close aria-label="Close the decade">&#10005;</button>
+          </div>
+          <ul class="panel-grid" data-panel-grid></ul>
+          <p class="panel-note" data-panel-note hidden></p>
+          <button type="button" class="panel-more" data-panel-more hidden>Show more</button>
+        </div>
+
         <p class="sr-only" aria-live="polite" data-chron-status></p>
       </section>
     )}
@@ -986,7 +1039,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   /* 4. Chronology ------------------------------------------------- */
   .facets {
     display: grid;
-    gap: 0.5rem;
+    gap: 0.6rem;
     margin: 1.1rem 0 1.25rem;
   }
   .facet-row {
@@ -998,7 +1051,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   .facet-label {
     width: 5.5rem;
     font-family: var(--mono);
-    font-size: 0.6rem;
+    font-size: 0.66rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--c-sage);
@@ -1024,34 +1077,38 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     border-color: var(--c-iron);
     color: var(--c-canvas);
   }
-  .facet:focus-visible {
+  .facet:focus-visible,
+  .facet-select:focus-visible,
+  .decade:focus-visible,
+  .panel-close:focus-visible,
+  .panel-more:focus-visible {
     outline: 2px solid var(--c-caprock);
     outline-offset: 2px;
   }
-  .facet-n {
-    margin-left: 0.4rem;
-    font-family: var(--mono);
-    font-size: 0.62rem;
-    opacity: 0.7;
+  .facet-select {
+    min-width: 14rem;
+    max-width: 100%;
+    padding: 0.25rem 0.5rem;
+    border: 1px solid var(--c-haze);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 0.95rem;
   }
 
-  .chron {
-    display: grid;
-    gap: 1.25rem;
-  }
-  @media (min-width: 48rem) {
-    .chron {
-      grid-template-columns: minmax(0, 1fr) 12.5rem;
-    }
-  }
-  .plot {
-    --pitch: 12px;
+  /* The histogram. Everything here is a positioned box or an SVG path. */
+  .hist-plot {
     position: relative;
-    height: calc(var(--lanes) * var(--pitch) + 2.5rem);
+    height: 11rem;
+    padding-bottom: 1.5rem;
+    cursor: crosshair;
+    touch-action: pan-y;
   }
   .rules {
     position: absolute;
     inset: 0;
+    pointer-events: none;
   }
   .tick {
     position: absolute;
@@ -1066,7 +1123,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     left: 0;
     transform: translateX(-50%);
     font-family: var(--mono);
-    font-size: 0.62rem;
+    font-size: 0.66rem;
     font-weight: 500;
     letter-spacing: 0.04em;
     color: var(--c-sage);
@@ -1083,134 +1140,224 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       visibility: hidden;
     }
   }
-  .bars {
-    position: absolute;
-    top: 0.5rem;
-    left: 0;
-    right: 0;
-    height: calc(var(--lanes) * var(--pitch));
+  .hist-svg {
+    position: relative;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    border-bottom: 1px solid var(--c-iron);
   }
-  /* A date as an interval: a rule between two caps, the way an error bar is
-     drawn. Open-ended dates lose the cap on their open side and go dashed. */
-  .bar {
-    --stripe: linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat;
-    --dash: repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 6px) 0 50% / 100% 2px no-repeat;
-    --cap-l: linear-gradient(currentColor, currentColor) 0 50% / 1.5px 8px no-repeat;
-    --cap-r: linear-gradient(currentColor, currentColor) 100% 50% / 1.5px 8px no-repeat;
+  .h-firm {
+    fill: var(--c-caprock);
+  }
+  .h-soft {
+    fill: var(--c-caprock);
+    fill-opacity: 0.38;
+  }
+  .h-lit {
+    fill: var(--c-caprock);
+  }
+  /* With a collection or surname chosen, the whole run steps back to a
+     ground and the chosen share is drawn over it in full colour. */
+  .hist[data-dim] .h-firm,
+  .hist[data-dim] .h-soft {
+    fill: var(--c-haze);
+    fill-opacity: 1;
+  }
+  .hist-cursor {
     position: absolute;
+    top: 0;
+    bottom: 1.5rem;
     left: var(--x);
-    top: calc(var(--y) * var(--pitch));
     width: var(--w);
-    min-width: 5px;
-    height: var(--pitch);
-    color: var(--c-caprock);
-    background: var(--stripe), var(--cap-l), var(--cap-r);
-    transition: opacity 0.2s ease;
+    background: rgb(59 56 51 / 0.1);
+    border-left: 1px solid rgb(59 56 51 / 0.45);
+    pointer-events: none;
   }
-  .bar.soft {
-    color: var(--c-sage);
-  }
-  .bar.open-start {
-    background: var(--dash), var(--cap-r);
-  }
-  .bar.open-end {
-    background: var(--dash), var(--cap-l);
-  }
-  .bar:hover,
-  .bar.is-current {
-    color: var(--c-iron);
-    z-index: 2;
-  }
-  .bar:focus-visible {
-    outline: 2px solid var(--c-caprock);
-    outline-offset: 1px;
-    z-index: 3;
-  }
-  .plot[data-dim] .bar {
-    opacity: 0.12;
-  }
-  .plot[data-dim] .bar.is-lit {
-    opacity: 1;
-  }
-
-  .loupe {
-    display: none;
-  }
-  @media (min-width: 48rem) {
-    .loupe {
-      display: block;
-      position: sticky;
-      top: calc(var(--header-h, 0px) + 1rem);
-      align-self: start;
-    }
-  }
-  .loupe-kicker,
-  .loupe-meta {
+  .hist-readout {
+    min-height: 1.4em;
+    margin: 0.35rem 0 0;
     font-family: var(--mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--c-sage);
-  }
-  .loupe-frame {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 12.5rem;
-    margin-top: 0.35rem;
-    padding: 0.85rem;
-    background: var(--c-dust);
-    border: 1px solid var(--c-haze);
-  }
-  .loupe-frame img {
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: 100%;
-    box-shadow:
-      0 1px 1px rgb(59 56 51 / 0.2),
-      0 10px 18px -12px rgb(59 56 51 / 0.55);
-  }
-  .loupe-title {
-    margin-top: 0.6rem;
-    font-size: 1.02rem;
-    line-height: 1.25;
-    text-wrap: balance;
-  }
-  .loupe-meta {
-    margin-top: 0.25rem;
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--c-iron);
   }
 
   .legend {
     display: flex;
     flex-wrap: wrap;
     gap: 0.4rem 1.25rem;
-    margin-top: 0.9rem;
+    margin-top: 0.6rem;
     font-family: var(--mono);
-    font-size: 0.6rem;
+    font-size: 0.66rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--c-sage);
   }
   .swatch {
     display: inline-block;
-    width: 1.75rem;
-    height: 10px;
+    width: 0.8rem;
+    height: 0.8rem;
     margin-right: 0.45rem;
     vertical-align: -1px;
-    color: var(--c-caprock);
-    background:
-      linear-gradient(currentColor, currentColor) 0 50% / 100% 2px no-repeat,
-      linear-gradient(currentColor, currentColor) 0 50% / 1.5px 8px no-repeat,
-      linear-gradient(currentColor, currentColor) 100% 50% / 1.5px 8px no-repeat;
+    background: var(--c-caprock);
   }
   .swatch.soft {
+    background: rgb(156 91 63 / 0.38);
+  }
+
+  /* Decades: the way in. */
+  .decades {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 1.1rem;
+  }
+  .decade {
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 4.5rem;
+    padding: 0.3rem 0.55rem 0.35rem;
+    border: 1px solid var(--c-haze);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .decade:hover:not(:disabled) {
+    border-color: var(--c-caprock);
+  }
+  .decade:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+  .decade[aria-pressed='true'] {
+    background: var(--c-iron);
+    border-color: var(--c-iron);
+    color: var(--c-canvas);
+  }
+  .decade-y {
+    font-size: 1rem;
+    line-height: 1.15;
+  }
+  .decade-n {
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.04em;
+    opacity: 0.75;
+  }
+
+  .panel {
+    margin-top: 1.25rem;
+    padding: 1rem 0 0;
+    border-top: 2px solid var(--c-caprock);
+  }
+  .panel-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 0.9rem;
+  }
+  .panel-title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 500;
+  }
+  .panel-close {
+    padding: 0.15rem 0.45rem;
+    border: 1px solid var(--c-haze);
+    background: transparent;
+    color: inherit;
+    font-size: 0.8rem;
+    cursor: pointer;
+  }
+  .panel-close:hover {
+    border-color: var(--c-caprock);
+  }
+  .panel-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+    gap: 1rem 0.9rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .panel-grid :global(.pcard) {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+  }
+  /* The same fixed sleeve as the inventory: a cabinet card and a wide group
+     print read as one size of object, and the grid never jumps as images
+     arrive. */
+  .panel-grid :global(.pcard-sleeve) {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 4 / 5;
+    padding: 0.4rem;
+    background: rgb(218 211 196 / 0.4);
+    border: 1px solid var(--c-haze);
+    transition: border-color 0.2s ease;
+  }
+  .panel-grid :global(.pcard:hover .pcard-sleeve),
+  .panel-grid :global(.pcard:focus-visible .pcard-sleeve) {
+    border-color: var(--c-caprock);
+  }
+  .panel-grid :global(.pcard:focus-visible) {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
+  }
+  .panel-grid :global(.pcard img) {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+  }
+  .panel-grid :global(.pcard-title) {
+    display: block;
+    margin-top: 0.4rem;
+    font-size: 0.95rem;
+    line-height: 1.25;
+  }
+  .panel-grid :global(.pcard:hover .pcard-title) {
+    color: var(--c-caprock);
+  }
+  .panel-grid :global(.pcard-meta) {
+    display: block;
+    margin-top: 0.15rem;
+    font-family: var(--mono);
+    font-size: 0.66rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: var(--c-sage);
   }
-  .swatch.open {
-    background:
-      repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 6px) 0 50% / 100% 2px no-repeat,
-      linear-gradient(currentColor, currentColor) 0 50% / 1.5px 8px no-repeat;
+  .panel-note {
+    margin: 0.75rem 0 0;
+    font-style: italic;
+    opacity: 0.8;
+  }
+  .panel-more {
+    margin-top: 1rem;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid var(--c-haze);
+    background: transparent;
+    color: var(--c-iron);
+    font: 500 0.7rem/1.2 var(--mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .panel-more:hover {
+    border-color: var(--c-caprock);
   }
 
   /* 5. Surnames --------------------------------------------------- */
@@ -1265,8 +1412,9 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     .entry,
     .plate,
     .entry-arrow,
-    .bar,
-    .facet {
+    .facet,
+    .decade,
+    .panel-grid :global(.pcard img) {
       transition: none;
     }
     .entry:hover .plate,
@@ -1281,16 +1429,17 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   import { navigate } from 'astro:transitions/client';
 
   type PersonEntry = { n: string; d: string; h: string; c: number; f: string[] };
-  type PhotoEntry = {
-    t: string;
-    h: string;
-    d: string;
-    k: string;
-    x: string;
-    a: number | null;
-    b: number | null;
+  type Result = { kind: string; main: string; see: string; meta: string; href: string };
+  type Chron = {
+    lo: number;
+    n: number;
+    peak: number;
+    bar: number;
+    firm: number[];
+    soft: number[];
+    cover: number[];
+    items: [number, number, number, number, number[]][];
   };
-  type Result = { kind: string; main: string; see: string; meta: string; href: string; rank: number };
 
   const norm = (s: string) =>
     s
@@ -1300,108 +1449,304 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       .replace(/[^a-z0-9]+/g, ' ')
       .trim();
 
-  const count = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+  const count = (n: number, one: string, many = `${one}s`) =>
+    `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
 
+  /* ---------------------------------------------------------------- *
+   * PAGEFIND. Loaded on first use, never on page load. The index only
+   * exists after `astro build && pagefind --site dist`, so in `astro dev`
+   * the import fails and everything that needs it says so plainly.
+   * ---------------------------------------------------------------- */
+  type PFData = { url: string; meta: Record<string, string | undefined> };
+  type PFResult = { id: string; data: () => Promise<PFData> };
+  type PFSearch = { results: PFResult[] };
+  type Pagefind = {
+    options?: (o: Record<string, unknown>) => Promise<void>;
+    search: (q: string | null, o?: Record<string, unknown>) => Promise<PFSearch | null>;
+  };
+  const PAGEFIND_URL = '/pagefind/pagefind.js';
+  let pfLoad: Promise<Pagefind | null> | null = null;
+  const pagefind = () => {
+    if (!pfLoad) {
+      pfLoad = import(/* @vite-ignore */ PAGEFIND_URL)
+        .then(async (m: Pagefind) => {
+          await m.options?.({ baseUrl: '/' });
+          return m;
+        })
+        .catch(() => null);
+    }
+    return pfLoad;
+  };
+
+  // "1890" is one year; "1890s" is ten. Each is matched against the YEAR
+  // filter every item page carries for every year its date interval covers,
+  // so a photograph dated 1885-1900 is found by 1890 though no year on it
+  // reads 1890 - the same rule the inline finder used to apply itself.
+  const yearsOf = (w: string) => {
+    const from = Number(w.slice(0, 4));
+    const n = w.endsWith('s') ? 10 : 1;
+    return Array.from({ length: n }, (_, k) => String(from + k));
+  };
+  const dateFilter = (dates: string[]) =>
+    dates.length === 1
+      ? { year: { any: yearsOf(dates[0]) } }
+      : { all: dates.map((d) => ({ year: { any: yearsOf(d) } })) };
+
+  const el = (tag: string, cls: string, text = '') => {
+    const node = document.createElement(tag);
+    node.className = cls;
+    node.textContent = text;
+    return node;
+  };
+
+  /* ---------------------------------------------------------------- *
+   * 4. Chronology
+   * ---------------------------------------------------------------- */
   function initChronology(root: HTMLElement) {
-    const plot = root.querySelector<HTMLElement>('[data-plot]');
-    if (!plot) return;
-    const bars = [...plot.querySelectorAll<HTMLAnchorElement>('.bar')];
+    const hist = root.querySelector<HTMLElement>('[data-hist]');
+    const src = document.getElementById('guide-chron');
+    if (!hist || !src) return;
+    let C: Chron;
+    try {
+      C = JSON.parse(src.textContent || '{}');
+    } catch {
+      return;
+    }
+    if (!C.n) return;
+
+    const plot = hist.querySelector<HTMLElement>('.hist-plot')!;
+    const svg = hist.querySelector<SVGSVGElement>('[data-hist-svg]')!;
+    const lit = hist.querySelector<SVGPathElement>('[data-h-lit]')!;
+    const cursor = hist.querySelector<HTMLElement>('[data-hist-cursor]')!;
+    const readout = hist.querySelector<HTMLElement>('[data-hist-readout]')!;
     const status = root.querySelector<HTMLElement>('[data-chron-status]');
-    const img = root.querySelector<HTMLImageElement>('[data-loupe-img]');
-    const kicker = root.querySelector<HTMLElement>('[data-loupe-kicker]');
-    const title = root.querySelector<HTMLElement>('[data-loupe-title]');
-    const meta = root.querySelector<HTMLElement>('[data-loupe-meta]');
+    const collBtns = [...root.querySelectorAll<HTMLButtonElement>('[data-facet="c"]')];
+    const surSel = root.querySelector<HTMLSelectElement>('[data-surname]');
+    const decadeBtns = [...root.querySelectorAll<HTMLButtonElement>('[data-decade]')];
+    const panel = root.querySelector<HTMLElement>('[data-panel]')!;
+    const pTitle = panel.querySelector<HTMLElement>('[data-panel-title]')!;
+    const pGrid = panel.querySelector<HTMLUListElement>('[data-panel-grid]')!;
+    const pNote = panel.querySelector<HTMLElement>('[data-panel-note]')!;
+    const pMore = panel.querySelector<HTMLButtonElement>('[data-panel-more]')!;
+    const pClose = panel.querySelector<HTMLButtonElement>('[data-panel-close]')!;
 
-    let current = bars.find((b) => b.classList.contains('is-current')) ?? null;
-    const show = (bar: HTMLAnchorElement) => {
-      if (bar === current) return;
-      current?.classList.remove('is-current');
-      bar.classList.add('is-current');
-      current = bar;
-      const d = bar.dataset;
-      if (img && d.src) {
-        img.width = Number(d.w);
-        img.height = Number(d.h);
-        // srcset outranks src: replace it first or the old photograph stays.
-        img.srcset = d.srcset ?? '';
-        img.src = d.src;
+    // Committed facet state. Collection is an index into COLLECTIONS, surname
+    // an index into the surnames list; '' means all.
+    let coll = '';
+    let sur = '';
+    const collBtn = (v: string) => collBtns.find((b) => (b.dataset.value ?? '') === v);
+    const surOpt = () => (surSel && sur ? surSel.selectedOptions[0] : null);
+    const filterLabel = () =>
+      [coll ? collBtn(coll)?.dataset.label : '', sur ? surOpt()?.textContent?.replace(/\s*\(\d+\)$/, '') : '']
+        .filter(Boolean)
+        .join(', ');
+
+    // The year arrays under the current facets. With none set they are the
+    // server's own figures; otherwise they are rebuilt from the compact item
+    // list, spread by exactly the same rule.
+    let W = C.firm.map((f, k) => f + C.soft[k]);
+    let COV = C.cover;
+    const rebuild = (c: string, s: string) => {
+      if (!c && !s) {
+        W = C.firm.map((f, k) => f + C.soft[k]);
+        COV = C.cover;
+        return false;
       }
-      if (kicker) kicker.textContent = 'Photograph';
-      if (title) title.textContent = d.title ?? '';
-      if (meta) meta.textContent = `${d.date ?? ''} \u00b7 ${d.coll ?? ''}`;
+      W = new Array(C.n).fill(0);
+      COV = new Array(C.n).fill(0);
+      for (const [from, to, , ci, sn] of C.items) {
+        if (c && ci !== Number(c)) continue;
+        if (s && !sn.includes(Number(s))) continue;
+        const share = 1 / (to - from + 1);
+        for (let y = from; y <= to; y++) {
+          W[y - C.lo] += share;
+          COV[y - C.lo] += 1;
+        }
+      }
+      return true;
     };
-    const barFrom = (t: EventTarget | null) =>
-      t instanceof Element ? t.closest<HTMLAnchorElement>('.bar') : null;
-
-    plot.addEventListener('pointerover', (e) => {
-      const b = barFrom(e.target);
-      if (b) show(b);
-    });
-    plot.addEventListener('focusin', (e) => {
-      const b = barFrom(e.target);
-      if (b) show(b);
-    });
-
-    // One tab stop for the whole chart; arrows walk it in date order.
-    plot.addEventListener('keydown', (e) => {
-      const i = bars.indexOf(document.activeElement as HTMLAnchorElement);
-      if (i < 0) return;
-      const moves: Record<string, number> = {
-        ArrowRight: i + 1,
-        ArrowDown: i + 1,
-        ArrowLeft: i - 1,
-        ArrowUp: i - 1,
-        Home: 0,
-        End: bars.length - 1,
-      };
-      if (!(e.key in moves)) return;
-      e.preventDefault();
-      const next = bars[Math.max(0, Math.min(bars.length - 1, moves[e.key]))];
-      bars[i].tabIndex = -1;
-      next.tabIndex = 0;
-      next.focus();
-    });
-
-    const facets = [...root.querySelectorAll<HTMLButtonElement>('[data-facet]')];
-    const testFor = (btn: HTMLButtonElement | null) => {
-      const v = btn?.dataset.value ?? '';
-      if (btn?.dataset.facet === 'c') return (b: HTMLElement) => b.dataset.c === v;
-      if (btn?.dataset.facet === 's') return (b: HTMLElement) => (b.dataset.s ?? '').includes(`|${v}|`);
-      return null;
-    };
-    const apply = (btn: HTMLButtonElement | null, announce: boolean) => {
-      const test = testFor(btn);
-      let lit = 0;
-      bars.forEach((b) => {
-        const on = !!test && test(b);
-        b.classList.toggle('is-lit', on);
-        if (on) lit++;
+    const r2 = (v: number) => Math.round(v * 100) / 100;
+    const draw = (c: string, s: string) => {
+      const on = rebuild(c, s);
+      hist.toggleAttribute('data-dim', on);
+      lit.setAttribute(
+        'd',
+        on
+          ? W.map((v, k) => {
+              if (v <= 0) return '';
+              const h = (v / C.peak) * 100;
+              return `M${k} 100v${r2(-h)}h${C.bar}v${r2(h)}z`;
+            }).join('')
+          : ''
+      );
+      decadeBtns.forEach((b) => {
+        const k0 = Number(b.dataset.decade) - C.lo;
+        let est = 0;
+        let could = 0;
+        for (let k = k0; k < k0 + 10; k++) est += W[k] ?? 0;
+        for (const [from, to, , ci, sn] of C.items) {
+          if (c && ci !== Number(c)) continue;
+          if (s && !sn.includes(Number(s))) continue;
+          if (to >= k0 + C.lo && from <= k0 + C.lo + 9) could++;
+        }
+        const n = b.querySelector<HTMLElement>('[data-decade-n]');
+        if (n) n.textContent = could ? `~${Math.round(est)}` : '\u2013';
+        b.disabled = could === 0;
+        b.setAttribute(
+          'aria-label',
+          could
+            ? `${b.dataset.decade}s: about ${Math.round(est)} made, ${count(could, 'photograph')} could date from it`
+            : `${b.dataset.decade}s: none`
+        );
       });
-      plot.toggleAttribute('data-dim', !!test);
-      if (announce && status) {
-        status.textContent = test
-          ? `${btn?.dataset.label}: ${count(lit, 'photograph')} highlighted in the chronology.`
-          : 'Showing every photograph.';
+    };
+
+    /* The readout under the pointer --------------------------------- */
+    const about = (v: number) => (v <= 0 ? 'none' : v < 1 ? 'under one' : `about ${Math.round(v)}`);
+    const yearAt = (clientX: number) => {
+      const r = svg.getBoundingClientRect();
+      const k = Math.floor(((clientX - r.left) / r.width) * C.n);
+      return Math.max(0, Math.min(C.n - 1, k));
+    };
+    plot.addEventListener('pointermove', (e) => {
+      const k = yearAt(e.clientX);
+      cursor.style.setProperty('--x', `${(k / C.n) * 100}%`);
+      cursor.style.setProperty('--w', `${(1 / C.n) * 100}%`);
+      cursor.hidden = false;
+      readout.textContent = `${C.lo + k}: ${about(W[k])} made; ${count(COV[k], 'photograph')} could date from it`;
+    });
+    plot.addEventListener('pointerleave', () => {
+      cursor.hidden = true;
+      readout.textContent = '\u00a0';
+    });
+    plot.addEventListener('click', (e) => {
+      const y = C.lo + yearAt(e.clientX);
+      const d = Math.floor(y / 10) * 10;
+      const b = decadeBtns.find((x) => Number(x.dataset.decade) === d);
+      if (b && !b.disabled) openDecade(d);
+    });
+
+    /* The decade panel, from Pagefind ------------------------------- */
+    const PAGE = 24;
+    let openAt: number | null = null;
+    let found: PFResult[] = [];
+    let shown = 0;
+    let seq = 0;
+    const card = (d: PFData) => {
+      const li = document.createElement('li');
+      const a = el('a', 'pcard') as HTMLAnchorElement;
+      a.href = d.url;
+      const sleeve = el('span', 'pcard-sleeve');
+      if (d.meta.image) {
+        const img = document.createElement('img');
+        img.src = d.meta.image;
+        img.alt = '';
+        img.loading = 'lazy';
+        img.decoding = 'async';
+        sleeve.append(img);
+      }
+      a.append(sleeve, el('span', 'pcard-title', d.meta.title ?? ''));
+      a.append(el('span', 'pcard-meta', [d.meta.date, coll ? '' : d.meta.collection].filter(Boolean).join(' \u00b7 ')));
+      li.append(a);
+      return li;
+    };
+    const more = async (mine: number) => {
+      const batch = await Promise.all(found.slice(shown, shown + PAGE).map((r) => r.data()));
+      if (mine !== seq) return;
+      pGrid.append(...batch.map(card));
+      shown += batch.length;
+      pMore.hidden = shown >= found.length;
+      pMore.textContent = `Show more (${(found.length - shown).toLocaleString('en-US')})`;
+    };
+    const openDecade = async (from: number) => {
+      const mine = ++seq;
+      openAt = from;
+      decadeBtns.forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.decade) === from)));
+      panel.hidden = false;
+      pGrid.replaceChildren();
+      pNote.hidden = true;
+      pMore.hidden = true;
+      const label = filterLabel();
+      pTitle.textContent = `The ${from}s${label ? ` \u00b7 ${label}` : ''}`;
+      const pf = await pagefind();
+      if (mine !== seq) return;
+      if (!pf) {
+        pNote.textContent =
+          'The photograph index is made when the site is built, so the decades open on the published site, not in development.';
+        pNote.hidden = false;
+        return;
+      }
+      const filters: Record<string, unknown> = { year: { any: yearsOf(`${from}s`) } };
+      if (coll) filters.collection = collBtn(coll)?.dataset.slug ?? '';
+      if (sur) filters.surname = surOpt()?.dataset.key ?? '';
+      const res = await pf.search(null, { filters, sort: { start: 'asc' } });
+      if (mine !== seq) return;
+      found = res?.results ?? [];
+      shown = 0;
+      pTitle.textContent = `The ${from}s${label ? ` \u00b7 ${label}` : ''} \u00b7 ${count(found.length, 'photograph')}`;
+      if (status) status.textContent = `The ${from}s: ${count(found.length, 'photograph')}.`;
+      if (!found.length) {
+        pNote.textContent = 'Nothing described from this decade yet.';
+        pNote.hidden = false;
+        return;
+      }
+      await more(mine);
+    };
+    const closePanel = () => {
+      seq++;
+      const was = decadeBtns.find((b) => Number(b.dataset.decade) === openAt);
+      openAt = null;
+      panel.hidden = true;
+      decadeBtns.forEach((b) => b.setAttribute('aria-pressed', 'false'));
+      was?.focus();
+    };
+    decadeBtns.forEach((b) =>
+      b.addEventListener('click', () => {
+        const d = Number(b.dataset.decade);
+        if (openAt === d) closePanel();
+        else openDecade(d);
+      })
+    );
+    pMore.addEventListener('click', () => more(seq));
+    pClose.addEventListener('click', closePanel);
+
+    /* Facets ---------------------------------------------------------- */
+    const commit = () => {
+      draw(coll, sur);
+      const label = filterLabel();
+      if (status) status.textContent = label ? `Chronology showing ${label}.` : 'Chronology showing every photograph.';
+      if (openAt !== null) {
+        const b = decadeBtns.find((x) => Number(x.dataset.decade) === openAt);
+        if (b && !b.disabled) openDecade(openAt);
+        else closePanel();
       }
     };
-    let committed = facets.find((f) => f.dataset.facet === 'all') ?? null;
-    facets.forEach((btn) => {
+    collBtns.forEach((btn) => {
       btn.addEventListener('click', () => {
-        committed = btn;
-        facets.forEach((f) => f.setAttribute('aria-pressed', String(f === btn)));
-        apply(btn, true);
+        coll = btn.dataset.value ?? '';
+        collBtns.forEach((f) => f.setAttribute('aria-pressed', String(f === btn)));
+        commit();
       });
       // Hover previews; only a click commits. Mouse only - on touch a
       // preview would stick with no way to leave it.
       btn.addEventListener('pointerenter', (e) => {
-        if (e.pointerType === 'mouse') apply(btn, false);
+        if (e.pointerType === 'mouse') draw(btn.dataset.value ?? '', sur);
       });
       btn.addEventListener('pointerleave', (e) => {
-        if (e.pointerType === 'mouse') apply(committed, false);
+        if (e.pointerType === 'mouse') draw(coll, sur);
       });
     });
+    surSel?.addEventListener('change', () => {
+      sur = surSel.value;
+      commit();
+    });
+
+    draw('', '');
   }
 
+  /* ---------------------------------------------------------------- *
+   * 2. Finder
+   * ---------------------------------------------------------------- */
   function initFinder(root: HTMLElement) {
     const input = root.querySelector<HTMLInputElement>('[data-finder-input]');
     const list = root.querySelector<HTMLUListElement>('[data-finder-list]');
@@ -1409,14 +1754,13 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     const source = document.getElementById('guide-finder');
     if (!input || !list || !source) return;
 
-    let data: { people: PersonEntry[]; items: PhotoEntry[] };
+    let data: { people: PersonEntry[] };
     try {
       data = JSON.parse(source.textContent || '{}');
     } catch {
       return;
     }
     const people = (data.people ?? []).map((p) => ({ ...p, keys: p.f.map(norm) }));
-    const photos = (data.items ?? []).map((p) => ({ ...p, hay: norm(`${p.t} ${p.k} ${p.d} ${p.x}`) }));
 
     // Every query word must begin some word in the target.
     const matches = (hay: string, words: string[]) => {
@@ -1424,52 +1768,28 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       return words.every((q) => w.some((x) => x.startsWith(q)));
     };
 
-    const search = (q: string): Result[] => {
-      const words = norm(q).split(' ').filter(Boolean);
-      if (!words.length) return [];
-      // "1890" or "1890s" is a date, and a date matches an INTERVAL: a
-      // photograph dated 1885-1900 is a match for 1890 even though no year
-      // on it reads 1890.
-      const dates = words.filter((w) => /^\d{4}s?$/.test(w));
-      const text = words.filter((w) => !dates.includes(w));
+    const namesFor = (text: string[]): Result[] => {
       const out: Result[] = [];
-
-      if (!dates.length) {
-        for (const p of people) {
-          const hit = p.keys.findIndex((k) => matches(k, text));
-          if (hit === -1) continue;
-          out.push({
-            kind: 'Name',
-            main: p.d ? `${p.n}, ${p.d}` : p.n,
-            see: hit >= 2 ? `found as ${p.f[hit]}` : '',
-            meta: count(p.c, 'photograph'),
-            href: p.h,
-            rank: 0,
-          });
-        }
-      }
-      for (const ph of photos) {
-        if (text.length && !matches(ph.hay, text)) continue;
-        const outside = dates.some((d) => {
-          const from = Number(d.slice(0, 4));
-          const to = d.endsWith('s') ? from + 9 : from;
-          return ph.a === null || ph.b === null || ph.b < from || ph.a > to;
+      for (const p of people) {
+        const hit = p.keys.findIndex((k) => matches(k, text));
+        if (hit === -1) continue;
+        out.push({
+          kind: 'Name',
+          main: p.d ? `${p.n}, ${p.d}` : p.n,
+          see: hit >= 2 ? `found as ${p.f[hit]}` : '',
+          meta: count(p.c, 'photograph'),
+          href: p.h,
         });
-        if (outside) continue;
-        out.push({ kind: 'Photograph', main: ph.t, see: '', meta: `${ph.d} \u00b7 ${ph.k}`, href: ph.h, rank: 1 });
       }
-      return out.sort((a, b) => a.rank - b.rank).slice(0, 10);
+      return out;
     };
 
+    const MAX = 10;
     let results: Result[] = [];
     let active = -1;
+    let seq = 0;
+    let timer = 0;
 
-    const el = (tag: string, cls: string, text = '') => {
-      const node = document.createElement(tag);
-      node.className = cls;
-      node.textContent = text;
-      return node;
-    };
     const close = () => {
       list.hidden = true;
       input.setAttribute('aria-expanded', 'false');
@@ -1488,21 +1808,12 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       input.setAttribute('aria-activedescendant', opts[active].id);
       opts[active].scrollIntoView({ block: 'nearest' });
     };
-    const render = () => {
-      const q = input.value;
-      results = search(q);
+    const paint = (rs: Result[], note: string) => {
+      results = rs;
       active = -1;
       list.replaceChildren();
       input.removeAttribute('aria-activedescendant');
-      if (!q.trim()) {
-        close();
-        if (status) status.textContent = '';
-        return;
-      }
-      if (!results.length) {
-        list.append(el('li', 'opt-empty', 'Nothing found under that name, title or date.'));
-      }
-      results.forEach((r, n) => {
+      rs.forEach((r, n) => {
         const li = el('li', 'opt');
         li.id = `finder-opt-${n}`;
         li.setAttribute('role', 'option');
@@ -1516,20 +1827,82 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
         li.addEventListener('click', () => go(r.href));
         list.append(li);
       });
+      if (note) list.append(el('li', 'opt-empty', note));
       list.hidden = false;
       input.setAttribute('aria-expanded', 'true');
-      if (status) status.textContent = results.length ? `${count(results.length, 'match', 'matches')}.` : 'No matches.';
     };
 
-    input.addEventListener('input', render);
+    const run = async () => {
+      const mine = ++seq;
+      const q = input.value;
+      const words = norm(q).split(' ').filter(Boolean);
+      if (!words.length) {
+        close();
+        if (status) status.textContent = '';
+        return;
+      }
+      const dates = words.filter((w) => /^\d{4}s?$/.test(w));
+      const text = words.filter((w) => !dates.includes(w));
+      // A date is not a name, so a query with a year in it is photographs only.
+      const names = dates.length ? [] : namesFor(text);
+      // Names first, at once, while Pagefind is fetched.
+      paint(names.slice(0, MAX), 'Searching the photographs\u2026');
+
+      const pf = await pagefind();
+      if (mine !== seq) return;
+      let photos: Result[] = [];
+      let total = 0;
+      let note = '';
+      if (!pf) {
+        note = 'Photograph search opens on the published site.';
+      } else {
+        const opts: Record<string, unknown> = {};
+        if (dates.length) opts.filters = dateFilter(dates);
+        if (!text.length) opts.sort = { start: 'asc' };
+        const res = await pf.search(text.length ? text.join(' ') : null, opts);
+        if (mine !== seq) return;
+        const found = res?.results ?? [];
+        total = found.length;
+        // Share the ten places: names keep at least five if they have them.
+        const nNames = Math.min(names.length, Math.max(5, MAX - total));
+        const nPhotos = Math.min(total, MAX - nNames);
+        const top = await Promise.all(found.slice(0, nPhotos).map((r) => r.data()));
+        if (mine !== seq) return;
+        photos = top.map((d) => ({
+          kind: 'Photograph',
+          main: d.meta.title ?? d.url,
+          see: '',
+          meta: [d.meta.date, d.meta.collection].filter(Boolean).join(' \u00b7 '),
+          href: d.url,
+        }));
+        const shownNames = names.slice(0, nNames);
+        if (total > photos.length) note = `${count(total - photos.length, 'more photograph')} \u2014 add a word or a year to narrow it.`;
+        const all = [...shownNames, ...photos];
+        paint(all, all.length ? note : 'Nothing found under that name, title or date.');
+        if (status) {
+          status.textContent = all.length
+            ? `${count(shownNames.length, 'name')} and ${count(total, 'photograph')}.`
+            : 'No matches.';
+        }
+        return;
+      }
+      paint(names.slice(0, MAX), names.length ? note : `Nothing found among the names. ${note}`);
+      if (status) status.textContent = `${count(names.length, 'name')}.`;
+    };
+
+    input.addEventListener('input', () => {
+      window.clearTimeout(timer);
+      timer = window.setTimeout(run, 120);
+    });
     input.addEventListener('focus', () => {
-      if (input.value.trim()) render();
+      pagefind(); // start fetching the index before the first keystroke lands
+      if (input.value.trim()) run();
     });
     input.addEventListener('blur', close);
     input.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        if (list.hidden) render();
+        if (list.hidden) run();
         highlight(active + 1);
       } else if (e.key === 'ArrowUp') {
         e.preventDefault();

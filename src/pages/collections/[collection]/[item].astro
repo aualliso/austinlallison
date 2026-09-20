@@ -15,8 +15,19 @@
 //   - ?regions. An authoring mode: drag a box on the plate, or Shift+drag in
 //     Examine, and the finished `region: {...}` line is on the clipboard.
 //     Nobody should type percentages by eye again.
+//   - EXAMINE behaves like a modern photo viewer: it opens instantly on the
+//     image the page already holds and sharpens when the detail file is
+//     decoded; pinch, wheel and trackpad each do what that device does
+//     elsewhere (two-finger scroll pans; Safari's trackpad pinch included);
+//     zooms and fly-tos animate and a flung pan glides; a swipe down closes
+//     and a swipe across turns to the next view; R rotates (for sideways
+//     inscriptions), F goes full screen, and an overview shows where you
+//     are once zoomed. Reduced motion lands everything instantly.
 //   - Front and back side by side, other photographs of the same people,
 //     the date drawn as an interval, a citation, and previous/next.
+//   - LAYOUT BY ORIENTATION. Portrait items sit beside the record (7:5, the
+//     plate sticky); landscape items take the full width above it. Either
+//     way the plate is capped to the window's height (--plate-max-h).
 //
 // STANDING CONSTRAINTS
 //   - No filter, mix-blend-mode, mask-image, clip-path or 3D anywhere. The
@@ -79,9 +90,26 @@ const faces = await Promise.all(
   })
 );
 
-// The plate column is at most ~450px wide inside max-w-5xl, so the old 46vw
-// told a large monitor to fetch a file twice the size it would ever show.
-const SIZES = '(min-width: 1100px) 450px, (min-width: 1024px) calc(50vw - 4rem), calc(100vw - 4.5rem)';
+// THE LAYOUT FOLLOWS THE OBJECT. A portrait card sits beside its record, the
+// plate held in place while the record scrolls. A landscape print gets the
+// full width above the record: in a half-width column a wide group
+// photograph was about 300px tall, which is no way to look for a face.
+// Decided by the recto, the view the item is represented by. 1.2 keeps
+// near-square prints beside the record, where they sat before.
+const WIDE_AT = 1.2;
+const wide = faces[0].img.width >= faces[0].img.height * WIDE_AT;
+// A seven-line record has no description, people, details or inscriptions.
+// Then the facts stand alone rather than in the narrow half of a split.
+const hasMain = !!item.description || item.depicts.length > 0 || (item.details ?? []).length > 0 || item.inscriptions.length > 0;
+
+// Upper bounds, from the container (max-w-6xl, 72rem) less the page's own
+// 4.5rem of side padding and, when split, the 2.5rem gap and the 7:5 split.
+// A tall portrait is often held narrower still by the height cap (see
+// --plate-max-h), so these can overshoot by a rung on a short laptop screen;
+// sizes cannot express that cap without per-image media queries.
+const SIZES = wide
+  ? '(min-width: 1224px) 1152px, calc(100vw - 4.5rem)'
+  : '(min-width: 1224px) 650px, (min-width: 1024px) calc((100vw - 7rem) * 0.58), calc(100vw - 4.5rem)';
 
 /* ------------------------------------------------------------------ *
  * People, and the marks every region becomes
@@ -308,12 +336,36 @@ const structured = json({
   license: rights.uri,
 });
 
-const H2 = 'font-mono text-[0.66rem] uppercase tracking-[0.15em] text-sage font-medium mb-2';
-const DT = 'font-mono text-[0.66rem] uppercase tracking-[0.12em] text-sage sm:w-36 sm:shrink-0 sm:pt-1';
+/* ------------------------------------------------------------------ *
+ * Search: the filters and extra text Pagefind indexes from this page
+ * ------------------------------------------------------------------ */
+// Every year the date interval covers, so a search for 1890 finds a
+// photograph dated 1885-1900. Open ends reach 15 years, the same reach the
+// guide's chronology spreads them over.
+const PF_REACH = 15;
+const pfYears = span
+  ? (() => {
+      const from = span.openStart ? span.to - PF_REACH : span.from;
+      const to = span.openEnd ? span.from + PF_REACH : span.to;
+      return Array.from({ length: Math.max(0, to - from + 1) }, (_, k) => from + k);
+    })()
+  : [];
+// Surname keys as the guide builds them: trimmed, lower case.
+const pfSurnames = [
+  ...new Set(
+    item.depicts.flatMap((d) => (d.person ? [personById.get(d.person)!.surname.trim().toLowerCase()] : [])).filter(Boolean)
+  ),
+];
+const pfVariants = [
+  ...new Set(item.depicts.flatMap((d) => (d.person ? personById.get(d.person)!.variants ?? [] : []))),
+];
+
+const H2 = 'sec-h';
+const DT = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage sm:w-36 sm:shrink-0 sm:pt-1';
 const ROW = 'flex flex-col sm:flex-row sm:gap-4 border-b border-haze py-2';
 const LINK = 'text-caprock hover:underline';
-const QUAL = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-caprock';
-const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
+const QUAL = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-caprock';
+const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
 ---
 
 <RootLayout
@@ -332,11 +384,11 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     </style>
   </noscript>
 
-  <div class="item-page max-w-5xl mx-auto py-6 text-iron font-serif" data-item-page>
+  <div class="item-page max-w-6xl mx-auto py-6 text-iron font-serif" data-item-page data-pagefind-body>
     {/* THE CATALOGUE SHEET. Screen readers and browsers ignore these; they
         appear only on paper, where a printed record needs to say where it
         came from and how to get back to it. */}
-    <div class="sheet-head" aria-hidden="true">
+    <div class="sheet-head" aria-hidden="true" data-pagefind-ignore>
       <div class="sheet-rule">
         <span>{c.title}</span>
         <span>Collection of Austin Allison</span>
@@ -347,7 +399,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       </div>
     </div>
     <!-- Where you are, and where the neighbours are -->
-    <div class="topline">
+    <div class="topline" data-pagefind-ignore>
       <nav class={`${MONO} min-w-0`} aria-label="Breadcrumb">
         <a href="/collections" class={LINK}>Collections</a>
         <span class="opacity-50 mx-1.5" aria-hidden="true">/</span>
@@ -374,7 +426,30 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       )}
     </div>
 
-    <div class="layout">
+    {/* The title leads, above both columns. Below the photograph on a phone,
+        or under a full-width landscape print, it arrived after the thing it
+        names. */}
+    <h1 class="text-3xl font-medium tracking-tight leading-tight mb-6 title">{item.title}</h1>
+
+    {/* WHAT PAGEFIND READS, and nothing else sees. Pagefind builds the site's
+        photograph search from these pages after `astro build`: the h1 is the
+        result's title, the text of the record is what is searched, and this
+        block carries the rest. Ignored for indexing, but its metadata,
+        filters and sort key still count. See collections/index.astro. */}
+    <div hidden data-pagefind-ignore>
+      <span data-pagefind-meta={`image:${faces[0].img.index}`}></span>
+      <span data-pagefind-meta={`date:${item.date.display}`}></span>
+      <span data-pagefind-meta={`collection:${c.title}`}></span>
+      <span data-pagefind-filter={`collection:${c.slug}`}></span>
+      {pfSurnames.map((k) => <span data-pagefind-filter={`surname:${k}`}></span>)}
+      {pfYears.map((y) => <span data-pagefind-filter={`year:${y}`}></span>)}
+      {pfYears.length > 0 && <span data-pagefind-sort={`start:${pfYears[0]}`}></span>}
+    </div>
+    {/* See-from forms, so a search for "Bud" finds the photographs of M. B.
+        Thomas. In the text Pagefind indexes, invisible to everyone else. */}
+    {pfVariants.length > 0 && <span class="sr-only" aria-hidden="true">{pfVariants.join('; ')}</span>}
+
+    <div class:list={['layout', wide ? 'layout--wide' : 'layout--split']}>
       <!-- THE PLATE -->
       <div class="plate-col">
         <div class="mat" data-mat>
@@ -395,7 +470,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
               return (
                 <figure class:list={['face', { 'is-on': f.n === 0 }]} data-face={f.key}>
                   <figcaption class="face-cap" aria-hidden="true">{f.label}</figcaption>
-                  <div class="face-box" data-face-box={f.key}>
+                  <div class="face-box" data-face-box={f.key} style={`--ar:${(f.img.width / f.img.height).toFixed(4)}`}>
                     {f.n === 0 ? <img {...attrs} transition:name={`plate-${item.slug}`} /> : <img {...attrs} />}
                     {marks
                       .filter((m) => m.face === f.key)
@@ -416,306 +491,323 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
               );
             })}
           </div>
-          <button type="button" class="examine-btn" data-examine data-js-only>
+        </div>
+
+        {/* One row of controls under the plate. Examine used to float at the
+            mat's corner, which is the column's corner - once the height cap
+            holds a portrait narrower than its column, that left the button
+            stranded in empty space beside the print. */}
+        <div class="plate-tools" data-js-only data-pagefind-ignore>
+          <button type="button" class="examine-btn" data-examine>
             <svg viewBox="0 0 20 20" aria-hidden="true">
               <circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5" />
               <path d="M12.6 12.6 17 17M8.5 6v5M6 8.5h5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
             </svg>
             Examine
           </button>
-        </div>
-
-        {(faces.length > 1 || personMark.size > 0) && (
-          <div class="plate-tools" data-js-only>
-            {faces.length > 1 && (
-              <div class="seg" role="group" aria-label="View">
-                {faces.map((f) => (
-                  <button type="button" class="seg-btn" data-face-btn={f.key} aria-pressed={f.n === 0 ? 'true' : 'false'}>
-                    {f.label}
-                  </button>
-                ))}
-              </div>
-            )}
-            {personMark.size > 0 && (
-              <button type="button" class="seg-btn seg-solo" data-names aria-pressed="false">
-                Names on the photograph
-              </button>
-            )}
-          </div>
-        )}
-
-        {(item.details ?? []).length > 0 && (
-          <div class="mt-5">
-            {/* A label, not a heading: this column comes before the h1 in the
-                document, and a heading here would put the outline out of order. */}
-            <p id="details-h" class={H2}>Details</p>
-            <ol class="locs" aria-labelledby="details-h">
-              {(item.details ?? []).map((d, n) => (
-                <li data-hover-mark={`detail-${n + 1}`}>
-                  <button type="button" class="loc" data-locate={`detail-${n + 1}`}>
-                    <span class="loc-n">{n + 1}</span>
-                    <span class="loc-cap">{d.caption}</span>
-                    {faces.length > 1 && <span class="loc-face">{faceLabel.get(d.face)}</span>}
-                  </button>
-                </li>
+          {faces.length > 1 && (
+            <div class="seg" role="group" aria-label="View">
+              {faces.map((f) => (
+                <button type="button" class="seg-btn" data-face-btn={f.key} aria-pressed={f.n === 0 ? 'true' : 'false'}>
+                  {f.label}
+                </button>
               ))}
-            </ol>
-          </div>
-        )}
+            </div>
+          )}
+          {personMark.size > 0 && (
+            <button type="button" class="seg-btn seg-solo" data-names aria-pressed="false">
+              Names on the photograph
+            </button>
+          )}
+        </div>
       </div>
 
       <!-- THE RECORD -->
-      <div class="record">
-        <h1 class="text-3xl font-medium tracking-tight leading-tight mb-4 title">{item.title}</h1>
-
-        <dl class="border-t border-haze mb-7">
-          {item.controlNumber && (
-            <div class={ROW}>
-              <dt class={DT}>Control number</dt>
-              <dd class="m-0 min-w-0 flex-1 font-mono text-sm">{item.controlNumber}</dd>
-            </div>
+      <div class:list={['record', { 'record--solo': !hasMain }]}>
+        {/* READING ORDER. Who is in the photograph is why almost anyone
+            arrives, so the description, the people, the details and the
+            inscriptions come first; the catalogue facts, the date and its
+            evidence, and the apparatus follow. Two groups, so a landscape
+            item can set them side by side under its full-width plate. */}
+        {hasMain && (
+        <div class="record-main">
+          {item.description && (
+            <section class="mb-7" aria-labelledby="desc-h">
+              <h2 id="desc-h" class={H2}>Description</h2>
+              <p class="m-0 prose-line">{item.description}</p>
+            </section>
           )}
-          {item.format && (
-            <div class={ROW}>
-              <dt class={DT}>Format</dt>
-              <dd class="m-0 min-w-0 flex-1">{item.format}</dd>
-            </div>
-          )}
-          {item.dimensions && (
-            <div class={ROW}>
-              <dt class={DT}>Dimensions</dt>
-              <dd class="m-0 min-w-0 flex-1">{item.dimensions}</dd>
-            </div>
-          )}
-          {maker && (
-            <div class={ROW}>
-              <dt class={DT}>{item.photographer ? 'Photographer' : 'Studio'}</dt>
-              <dd class="m-0 min-w-0 flex-1">{maker}</dd>
-            </div>
-          )}
-          {item.place && (
-            <div class={ROW}>
-              <dt class={DT}>Place</dt>
-              <dd class="m-0 min-w-0 flex-1">{item.place}</dd>
-            </div>
-          )}
-          <div class={ROW}>
-            <dt class={DT}>Date</dt>
-            <dd class="m-0 min-w-0 flex-1">
-              <span class="date-words">{dateWords}</span>
-              {span && label(item.date.confidence) && <span class={`${QUAL} ml-2`}>{label(item.date.confidence)}</span>}
-              <span class="date-display font-mono">{item.date.display}</span>
-              {glyph && span && (
-                <span class="glyph" aria-hidden="true">
-                  <span class="glyph-track">
-                    {glyph.ticks.map((t) => <i class="glyph-tick" style={`--x:${t.x}%`}></i>)}
-                    <i
-                      class:list={['glyph-bar', { soft: item.date.confidence === 'possible', 'open-start': span.openStart, 'open-end': span.openEnd }]}
-                      style={`--x:${glyph.x}%;--w:${glyph.w}%`}
-                    ></i>
-                  </span>
-                  <span class="glyph-ends font-mono"><span>{glyph.lo}</span><span>{glyph.hi}</span></span>
-                </span>
-              )}
-            </dd>
-          </div>
-          <div class={ROW}>
-            <dt class={DT}>Collection</dt>
-            <dd class="m-0 min-w-0 flex-1"><a href={`/collections/${c.slug}`} class={LINK}>{c.title}</a></dd>
-          </div>
-        </dl>
 
-        {item.description && (
-          <section class="mb-7" aria-labelledby="desc-h">
-            <h2 id="desc-h" class={H2}>Description</h2>
-            <p class="m-0 prose-line">{item.description}</p>
-          </section>
-        )}
+          {item.depicts.length > 0 && (
+            <section class="mb-7" aria-labelledby="people-h">
+              <h2 id="people-h" class={H2}>People</h2>
 
-        {item.date.basis.length > 0 && (
-          <section class="mb-7" aria-labelledby="evidence-h">
-            <h2 id="evidence-h" class={H2}>Evidence for the date</h2>
-            <ul class="list-none p-0 m-0">
-              {item.date.basis.map((b) => (
-                <li class="basis-line">{b}</li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {item.depicts.length > 0 && (
-          <section class="mb-7" aria-labelledby="people-h">
-            <h2 id="people-h" class={H2}>People</h2>
-
-            {/* A shared basis is printed once. item.identificationBasis
-                inherits to every depiction that sets none, which is right in
-                the data and unreadable on the page - fourteen names off one
-                verso would be the same sentence fourteen times. */}
-            {sharedBasis && (
-              <p class="text-sm opacity-75 m-0 mb-2.5">
-                <span class={QUAL}>All identifications</span> &mdash; {sharedBasis}
-              </p>
-            )}
-
-            <ul class="list-none p-0 m-0">
-              {item.depicts.map((d, n) => {
-                const m = personMark.get(n);
-                return (
-                  <li class="person" data-hover-mark={m?.id}>
-                    <div class="person-line">
-                      {m && (
-                        <button
-                          type="button"
-                          class="pin"
-                          data-locate={m.id}
-                          aria-label={`Show ${nameOf(d)} on the photograph`}
-                        >{m.tag}</button>
-                      )}
-                      {d.person ? (
-                        <a href={personHref(d.person)} class={LINK}>{nameOf(d)}</a>
-                      ) : (
-                        <span class="italic opacity-60">{nameOf(d)}</span>
-                      )}
-                      {/* The qualifier reads as part of the name, not as a
-                          line of its own: a column of PROBABLE under every
-                          name turned a list of people into a data dump. */}
-                      {label(d.confidence) && <span class={QUAL}>{label(d.confidence)}</span>}
-                      {d.position && <span class={MONO}>{d.position}</span>}
-                    </div>
-                    {d.basis !== sharedBasis && (
-                      <div class="text-sm opacity-75 mt-0.5">{d.basis}</div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        )}
-
-        {item.inscriptions.length > 0 && (
-          <section class="mb-7" aria-labelledby="ins-h">
-            <h2 id="ins-h" class={H2}>Inscriptions</h2>
-            <ul class="list-none p-0 m-0">
-              {item.inscriptions.map((ins, n) => {
-                const m = inscriptionMark.get(n);
-                return (
-                  <li class="inscription" data-hover-mark={m?.id}>
-                    <div class="ins-head">
-                      <span class={MONO}>{ins.location} &middot; {ins.medium}</span>
-                      {m && (
-                        <button type="button" class="ins-show" data-locate={m.id}>
-                          Read against the {(faceLabel.get(m.face) ?? m.face).toLowerCase()}
-                        </button>
-                      )}
-                    </div>
-                    <blockquote class="ins-text">{ins.text}</blockquote>
-                    {ins.hand && <div class="text-sm opacity-75 mt-1.5">Hand: {ins.hand}</div>}
-                    {ins.note && <div class="text-sm opacity-75 mt-1.5">{ins.note}</div>}
-                    {ins.datesSubjectNotObject && (
-                      <div class="text-sm opacity-75 mt-1">
-                        <span class={QUAL}>Note</span> &mdash; this dates the subject, not the photograph.
-                      </div>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        )}
-
-        {item.related && item.related.length > 0 && (
-          <section class="mb-7" aria-labelledby="related-h">
-            <h2 id="related-h" class={H2}>Related</h2>
-            <ul class="list-none p-0 m-0">
-              {item.related.map((r) => {
-                const other = itemBySlug.get(r.slug)!;
-                return (
-                  <li class="border-t border-haze first:border-t-0 py-2.5 first:pt-0">
-                    <a href={other.href} class={LINK}>{other.title}</a>
-                    <div class="text-sm opacity-75 mt-0.5">{r.relation}</div>
-                  </li>
-                );
-              })}
-            </ul>
-          </section>
-        )}
-
-        {alsoIn.length > 0 && (
-          <section class="mb-7" aria-labelledby="also-h">
-            <h2 id="also-h" class={H2}>Also in the collections</h2>
-            {alsoIn.map(({ pid, p, total, thumbs }) => (
-              <div class="also">
-                <p class="also-name">
-                  <a href={personHref(pid)} class={LINK}>{naturalName(p)}</a>
-                  <span class={`${MONO} ml-2`}>{total} more</span>
+              {/* A shared basis is printed once. item.identificationBasis
+                  inherits to every depiction that sets none, which is right in
+                  the data and unreadable on the page - fourteen names off one
+                  verso would be the same sentence fourteen times. */}
+              {sharedBasis && (
+                <p class="text-sm opacity-75 m-0 mb-2.5">
+                  <span class={QUAL}>All identifications</span> &mdash; {sharedBasis}
                 </p>
-                <ul class="also-row">
-                  {thumbs.map(({ a, r, coll }) => (
-                    <li>
-                      <a href={a.item.href} class="also-thumb" title={`${a.item.title} (${coll})`}>
-                        <img
-                          src={r.index}
-                          srcset={r.indexSrcset}
-                          width={r.width}
-                          height={r.height}
-                          alt={a.item.title}
-                          loading="lazy"
-                          decoding="async"
-                        />
-                      </a>
-                      <span class="also-date font-mono">{a.item.date.display}</span>
+              )}
+
+              <ul class="list-none p-0 m-0">
+                {item.depicts.map((d, n) => {
+                  const m = personMark.get(n);
+                  return (
+                    <li class="person" data-hover-mark={m?.id}>
+                      <div class="person-line">
+                        {m && (
+                          <button
+                            type="button"
+                            class="pin"
+                            data-locate={m.id}
+                            aria-label={`Show ${nameOf(d)} on the photograph`}
+                          >{m.tag}</button>
+                        )}
+                        {d.person ? (
+                          <a href={personHref(d.person)} class={LINK}>{nameOf(d)}</a>
+                        ) : (
+                          <span class="italic opacity-60">{nameOf(d)}</span>
+                        )}
+                        {/* The qualifier reads as part of the name, not as a
+                            line of its own: a column of PROBABLE under every
+                            name turned a list of people into a data dump. */}
+                        {label(d.confidence) && <span class={QUAL}>{label(d.confidence)}</span>}
+                        {d.position && <span class={MONO}>{d.position}</span>}
+                      </div>
+                      {d.basis !== sharedBasis && (
+                        <div class="text-sm opacity-75 mt-0.5">{d.basis}</div>
+                      )}
                     </li>
-                  ))}
-                </ul>
-                {total > thumbs.length && (
-                  <a href={personHref(pid)} class={`${LINK} text-sm`}>All photographs of {naturalName(p)}</a>
-                )}
+                  );
+                })}
+              </ul>
+            </section>
+          )}
+
+          {(item.details ?? []).length > 0 && (
+            <section class="mb-7" aria-labelledby="details-h">
+              {/* A heading now: the list sits in the record, after the h1. In
+                  the plate column it made the sticky column taller than a
+                  laptop screen, so its last entries could not be reached. */}
+              <h2 id="details-h" class={H2}>Details</h2>
+              <ol class="locs" aria-labelledby="details-h">
+                {(item.details ?? []).map((d, n) => (
+                  <li data-hover-mark={`detail-${n + 1}`}>
+                    <button type="button" class="loc" data-locate={`detail-${n + 1}`}>
+                      <span class="loc-n">{n + 1}</span>
+                      <span class="loc-cap">{d.caption}</span>
+                      {faces.length > 1 && <span class="loc-face">{faceLabel.get(d.face)}</span>}
+                    </button>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          )}
+
+          {item.inscriptions.length > 0 && (
+            <section class="mb-7" aria-labelledby="ins-h">
+              <h2 id="ins-h" class={H2}>Inscriptions</h2>
+              <ul class="list-none p-0 m-0">
+                {item.inscriptions.map((ins, n) => {
+                  const m = inscriptionMark.get(n);
+                  return (
+                    <li class="inscription" data-hover-mark={m?.id}>
+                      <div class="ins-head">
+                        <span class={MONO}>{ins.location} &middot; {ins.medium}</span>
+                        {m && (
+                          <button type="button" class="ins-show" data-locate={m.id}>
+                            Read against the {(faceLabel.get(m.face) ?? m.face).toLowerCase()}
+                          </button>
+                        )}
+                      </div>
+                      <blockquote class="ins-text">{ins.text}</blockquote>
+                      {ins.hand && <div class="text-sm opacity-75 mt-1.5">Hand: {ins.hand}</div>}
+                      {ins.note && <div class="text-sm opacity-75 mt-1.5">{ins.note}</div>}
+                      {ins.datesSubjectNotObject && (
+                        <div class="text-sm opacity-75 mt-1">
+                          <span class={QUAL}>Note</span> &mdash; this dates the subject, not the photograph.
+                        </div>
+                      )}
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          )}
+        </div>
+        )}
+
+        <div class="record-side">
+          <dl class="border-t border-haze mb-7">
+            {item.controlNumber && (
+              <div class={ROW}>
+                <dt class={DT}>Control number</dt>
+                <dd class="m-0 min-w-0 flex-1 font-mono text-sm">{item.controlNumber}</dd>
               </div>
-            ))}
+            )}
+            {item.format && (
+              <div class={ROW}>
+                <dt class={DT}>Format</dt>
+                <dd class="m-0 min-w-0 flex-1">{item.format}</dd>
+              </div>
+            )}
+            {item.dimensions && (
+              <div class={ROW}>
+                <dt class={DT}>Dimensions</dt>
+                <dd class="m-0 min-w-0 flex-1">{item.dimensions}</dd>
+              </div>
+            )}
+            {maker && (
+              <div class={ROW}>
+                <dt class={DT}>{item.photographer ? 'Photographer' : 'Studio'}</dt>
+                <dd class="m-0 min-w-0 flex-1">{maker}</dd>
+              </div>
+            )}
+            {item.place && (
+              <div class={ROW}>
+                <dt class={DT}>Place</dt>
+                <dd class="m-0 min-w-0 flex-1">{item.place}</dd>
+              </div>
+            )}
+            <div class={ROW}>
+              <dt class={DT}>Date</dt>
+              <dd class="m-0 min-w-0 flex-1">
+                <span class="date-words">{dateWords}</span>
+                {span && label(item.date.confidence) && <span class={`${QUAL} ml-2`}>{label(item.date.confidence)}</span>}
+                <span class="date-display font-mono">{item.date.display}</span>
+                {glyph && span && (
+                  <span class="glyph" aria-hidden="true">
+                    <span class="glyph-track">
+                      {glyph.ticks.map((t) => <i class="glyph-tick" style={`--x:${t.x}%`}></i>)}
+                      <i
+                        class:list={['glyph-bar', { soft: item.date.confidence === 'possible', 'open-start': span.openStart, 'open-end': span.openEnd }]}
+                        style={`--x:${glyph.x}%;--w:${glyph.w}%`}
+                      ></i>
+                    </span>
+                    <span class="glyph-ends font-mono"><span>{glyph.lo}</span><span>{glyph.hi}</span></span>
+                  </span>
+                )}
+                {/* The grounds sit under the date they support, open rather
+                    than behind a disclosure: a claim with its grounds hidden is
+                    the thing this collection is built not to do, and a closed
+                    <details> would also drop them from the printed sheet. */}
+                {item.date.basis.length > 0 && (
+                  <div class="evidence">
+                    <p class={`${MONO} evidence-h`}>Evidence</p>
+                    <ul class="list-none p-0 m-0">
+                      {item.date.basis.map((b) => (
+                        <li class="basis-line">{b}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </dd>
+            </div>
+            <div class={ROW}>
+              <dt class={DT}>Collection</dt>
+              <dd class="m-0 min-w-0 flex-1"><a href={`/collections/${c.slug}`} class={LINK}>{c.title}</a></dd>
+            </div>
+          </dl>
+
+
+          {item.related && item.related.length > 0 && (
+            <section class="mb-7" aria-labelledby="related-h" data-pagefind-ignore>
+              <h2 id="related-h" class={H2}>Related</h2>
+              <ul class="list-none p-0 m-0">
+                {item.related.map((r) => {
+                  const other = itemBySlug.get(r.slug)!;
+                  return (
+                    <li class="border-t border-haze first:border-t-0 py-2.5 first:pt-0">
+                      <a href={other.href} class={LINK}>{other.title}</a>
+                      <div class="text-sm opacity-75 mt-0.5">{r.relation}</div>
+                    </li>
+                  );
+                })}
+              </ul>
+            </section>
+          )}
+
+          {alsoIn.length > 0 && (
+            <section class="mb-7" aria-labelledby="also-h" data-pagefind-ignore>
+              <h2 id="also-h" class={H2}>Also in the collections</h2>
+              {alsoIn.map(({ pid, p, total, thumbs }) => (
+                <div class="also">
+                  <p class="also-name">
+                    <a href={personHref(pid)} class={LINK}>{naturalName(p)}</a>
+                    <span class={`${MONO} ml-2`}>{total} more</span>
+                  </p>
+                  <ul class="also-row">
+                    {thumbs.map(({ a, r, coll }) => (
+                      <li>
+                        <a href={a.item.href} class="also-thumb" title={`${a.item.title} (${coll})`}>
+                          <img
+                            src={r.index}
+                            srcset={r.indexSrcset}
+                            width={r.width}
+                            height={r.height}
+                            alt={a.item.title}
+                            loading="lazy"
+                            decoding="async"
+                          />
+                        </a>
+                        <span class="also-date font-mono">{a.item.date.display}</span>
+                      </li>
+                    ))}
+                  </ul>
+                  {total > thumbs.length && (
+                    <a href={personHref(pid)} class={`${LINK} text-sm`}>All photographs of {naturalName(p)}</a>
+                  )}
+                </div>
+              ))}
+            </section>
+          )}
+
+          {item.provenance && (
+            <section class="mb-7" aria-labelledby="prov-h">
+              <h2 id="prov-h" class={H2}>Provenance</h2>
+              <p class="m-0">{item.provenance}</p>
+            </section>
+          )}
+
+          <section class="mb-7" aria-labelledby="rights-h" data-pagefind-ignore>
+            <h2 id="rights-h" class={H2}>Rights</h2>
+            <p class="m-0">
+              {rights.label}
+              {item.rights.note && <span> {item.rights.note}</span>}
+            </p>
+            <p class="m-0 mt-1 text-sm">
+              <a href={rights.uri} class={LINK} rel="license">{rights.statement}</a>
+            </p>
           </section>
-        )}
 
-        {item.provenance && (
-          <section class="mb-7" aria-labelledby="prov-h">
-            <h2 id="prov-h" class={H2}>Provenance</h2>
-            <p class="m-0">{item.provenance}</p>
+          <section class="mb-7" aria-labelledby="cite-h" data-pagefind-ignore>
+            <h2 id="cite-h" class={H2}>Cite this photograph</h2>
+            <p class="cite" data-cite>
+              {maker && <>{maker}. </>}{item.titleSource === 'inscribed' ? <i>{citeTitle}</i> : citeTitle}. {citeRest.join('. ')}. {permalink}<span data-accessed></span>.
+            </p>
+            <div class="cite-tools" data-js-only>
+              <button type="button" class="seg-btn" data-copy="cite">Copy citation</button>
+              <button type="button" class="seg-btn" data-copy="link">Copy link</button>
+              <span class={`${MONO} copy-note`} role="status" data-copy-note></span>
+            </div>
           </section>
-        )}
 
-        <section class="mb-7" aria-labelledby="rights-h">
-          <h2 id="rights-h" class={H2}>Rights</h2>
-          <p class="m-0">
-            {rights.label}
-            {item.rights.note && <span> {item.rights.note}</span>}
+          <p class="mt-8 pt-3 border-t border-haze text-[0.92rem] opacity-70" data-pagefind-ignore>
+            Can you add anything to this record? <a href={mailto} class={LINK}>Write to me</a>.
           </p>
-          <p class="m-0 mt-1 text-sm">
-            <a href={rights.uri} class={LINK} rel="license">{rights.statement}</a>
+
+          <p class={`${MONO} mt-4 record-json`} data-pagefind-ignore>
+            <a href={`${item.href}/record.json`} class={LINK}>This record as JSON</a>
           </p>
-        </section>
+        </div>
 
-        <section class="mb-7" aria-labelledby="cite-h">
-          <h2 id="cite-h" class={H2}>Cite this photograph</h2>
-          <p class="cite" data-cite>
-            {maker && <>{maker}. </>}{item.titleSource === 'inscribed' ? <i>{citeTitle}</i> : citeTitle}. {citeRest.join('. ')}. {permalink}<span data-accessed></span>.
-          </p>
-          <div class="cite-tools" data-js-only>
-            <button type="button" class="seg-btn" data-copy="cite">Copy citation</button>
-            <button type="button" class="seg-btn" data-copy="link">Copy link</button>
-            <span class={`${MONO} copy-note`} role="status" data-copy-note></span>
-          </div>
-        </section>
-
-        <p class="mt-8 pt-3 border-t border-haze text-[0.92rem] opacity-70">
-          Can you add anything to this record? <a href={mailto} class={LINK}>Write to me</a>.
-        </p>
-
-        <p class={`${MONO} mt-4 record-json`}>
-          <a href={`${item.href}/record.json`} class={LINK}>This record as JSON</a>
-        </p>
       </div>
     </div>
 
-    <div class="sheet-foot" aria-hidden="true">
+    <div class="sheet-foot" aria-hidden="true" data-pagefind-ignore>
       <span>{item.controlNumber ? `${item.controlNumber} \u00b7 ` : ''}{item.title}</span>
       <span>{permalink}</span>
     </div>
@@ -767,21 +859,44 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
         )}
         <span class="ex-group ex-zoom">
           <button type="button" data-ex="out" aria-label="Zoom out">&minus;</button>
-          <span id="ex-pct" class="ex-pct" aria-live="polite">100%</span>
+          <span id="ex-pct" class="ex-pct">100%</span>
           <button type="button" data-ex="in" aria-label="Zoom in">+</button>
         </span>
         <button type="button" data-ex="fit">Fit</button>
+        <button type="button" data-ex="rotate" aria-label="Rotate a quarter turn" title="Rotate (R)">
+          <svg viewBox="0 0 20 20" aria-hidden="true" class="ex-ico">
+            <path d="M15.5 10a5.5 5.5 0 1 1-1.9-4.15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+            <path d="M14.4 2.6v3.6h-3.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
         {personMark.size > 0 && (
           <button type="button" data-ex="names" aria-pressed="false">Names</button>
         )}
         <button type="button" data-ex="link">Copy link</button>
         <button type="button" data-ex="info" aria-expanded="false" aria-controls="ex-note">Note</button>
+        <button type="button" data-ex="full" aria-pressed="false" aria-label="Full screen" title="Full screen (F)" hidden>
+          <svg viewBox="0 0 20 20" aria-hidden="true" class="ex-ico">
+            <path d="M3.5 7.5v-4h4M12.5 3.5h4v4M16.5 12.5v4h-4M7.5 16.5h-4v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
         <button type="button" data-ex="close" aria-label="Close">&#10005;</button>
       </div>
     </div>
 
     <div id="ex-note" class="ex-note" hidden><p id="ex-cap"></p></div>
+
+    {/* The overview: where on the print the zoomed view is. Outside the
+        stage, so pressing it never starts a pan. */}
+    <div id="ex-map" class="ex-map" hidden aria-hidden="true">
+      <div id="ex-map-inner" class="ex-map-inner">
+        <img id="ex-map-img" alt="" draggable="false" />
+        <span id="ex-map-view" class="ex-map-view"></span>
+      </div>
+    </div>
+
+    <p class="ex-load" aria-hidden="true">Loading detail</p>
     <p class="ex-toast" id="ex-toast" role="status"></p>
+    <p id="ex-sr" class="sr-only" role="status"></p>
   </dialog>
 </RootLayout>
 
@@ -793,6 +908,14 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     --c-dust: var(--color-dust, #ede7da);
     --c-iron: var(--color-iron, #3b3833);
     --c-canvas: var(--color-canvas, #f7f4ec);
+    /* THE PLATE NEVER OUTGROWS THE WINDOW. The whole photograph, plus the
+       tool row under it, fits on screen - which also keeps the sticky plate
+       from hiding its own bottom edge. 6rem = sticky offset + tool row +
+       breathing room. svh, not dvh: dvh changes as a phone's URL bar slides,
+       and that would resize the plate while you scroll. 18rem is a floor for
+       very short windows. */
+    --plate-max-h: max(18rem, calc(100vh - var(--header-h, 4.5rem) - 6rem));
+    --plate-max-h: max(18rem, calc(100svh - var(--header-h, 4.5rem) - 6rem));
   }
 
   /* Top line ------------------------------------------------------ */
@@ -819,14 +942,41 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     gap: 2.5rem;
     align-items: start;
   }
+  /* Split (portrait): 7:5 in the plate's favour - the photograph is the
+     subject, the record is about it. Wide (landscape): the plate takes the
+     full width, and the record below splits into reading and facts. */
   @media (min-width: 1024px) {
-    .layout {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    .layout--split {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
     }
-    .plate-col {
+    .layout--split .plate-col {
       position: sticky;
       top: calc(var(--header-h, 4.5rem) + 1rem);
     }
+    .layout--wide .record {
+      display: grid;
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: 3rem;
+      align-items: start;
+    }
+    .layout--wide .record--solo {
+      display: block;
+      max-width: 44rem;
+    }
+  }
+
+  /* Section headings: the serif in small caps, so a heading reads as a
+     heading and not as one more field label. Mono stays for the labels that
+     are data - field names, qualifiers, control numbers. */
+  .sec-h {
+    margin: 0 0 0.55rem;
+    font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+    font-size: 1.08rem;
+    font-weight: 600;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.07em;
+    line-height: 1.2;
+    color: var(--c-iron);
   }
 
   /* The plate ----------------------------------------------------- */
@@ -836,7 +986,6 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
      arguing. */
   .mat {
     position: relative;
-    padding: 0 0 2.5rem;
   }
   /* Every face in ONE grid cell, so the mat is as tall as the tallest face
      and switching views never moves the page. The fade is opacity, and
@@ -860,8 +1009,13 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     visibility: visible;
     transition: opacity 0.35s ease;
   }
+  /* Held to the window's height through its width, so the image box and
+     the photograph stay the same rectangle and every region - positioned in
+     percent of this box - stays on its face. object-fit would letterbox the
+     picture inside the img and throw every box off. */
   .face-box {
     position: relative;
+    width: min(100%, calc(var(--plate-max-h) * var(--ar, 1)));
   }
   .face-box img {
     display: block;
@@ -979,9 +1133,6 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
   }
 
   .examine-btn {
-    position: absolute;
-    right: 0;
-    bottom: 0;
     display: inline-flex;
     align-items: center;
     gap: 0.35rem;
@@ -990,7 +1141,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     border: 1px solid var(--c-haze);
     border-radius: 2px;
     color: var(--c-iron);
-    font: 500 0.62rem/1 ui-monospace, monospace;
+    font: 500 0.7rem/1 ui-monospace, monospace;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     cursor: pointer;
@@ -1008,7 +1159,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
-    margin-top: 0.6rem;
+    margin-top: 0.75rem;
   }
   .seg {
     display: inline-flex;
@@ -1018,7 +1169,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     border: 1px solid var(--c-haze);
     background: transparent;
     color: var(--c-iron);
-    font: 500 0.64rem/1.2 ui-monospace, monospace;
+    font: 500 0.7rem/1.2 ui-monospace, monospace;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     cursor: pointer;
@@ -1074,7 +1225,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
   .loc-n {
     flex-shrink: 0;
     width: 1rem;
-    font: 500 0.68rem/1 ui-monospace, monospace;
+    font: 500 0.72rem/1 ui-monospace, monospace;
     color: var(--c-caprock);
   }
   .loc-cap {
@@ -1082,7 +1233,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
   }
   .loc-face {
     flex-shrink: 0;
-    font: 0.58rem/1 ui-monospace, monospace;
+    font: 0.68rem/1 ui-monospace, monospace;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--c-sage);
@@ -1148,8 +1299,18 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     display: flex;
     justify-content: space-between;
     margin-top: 0.2rem;
-    font-size: 0.58rem;
+    font-size: 0.66rem;
     color: var(--c-sage);
+  }
+
+  .evidence {
+    margin-top: 0.75rem;
+  }
+  .evidence-h {
+    margin: 0 0 0.35rem;
+  }
+  .evidence .basis-line {
+    font-size: 0.9rem;
   }
 
   .basis-line {
@@ -1197,7 +1358,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     border-radius: 2px;
     background: transparent;
     color: var(--c-sage);
-    font: 500 0.64rem/1 ui-monospace, monospace;
+    font: 500 0.7rem/1 ui-monospace, monospace;
     cursor: pointer;
     transition:
       background-color 0.2s ease,
@@ -1290,7 +1451,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     max-width: 100%;
     margin-top: 0.2rem;
     overflow: hidden;
-    font-size: 0.55rem;
+    font-size: 0.66rem;
     color: var(--c-sage);
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1340,6 +1501,87 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
   }
   .ex::backdrop {
     background: #17150f;
+  }
+  /* Everything in the viewer that hides by the `hidden` attribute stays
+     hidden, whatever else styles it. */
+  .ex [hidden] {
+    display: none !important;
+  }
+  /* A swipe down fades the furniture as the photograph is pulled away. */
+  .ex-top,
+  .ex-note,
+  .ex-map {
+    opacity: calc(1 - var(--pull, 0));
+  }
+  .ex-ico {
+    display: block;
+    width: 1rem;
+    height: 1rem;
+  }
+  /* Name labels would read sideways on a turned photograph; the outlines
+     turn with it and stay. */
+  .ex[data-rot] .ex-region .region-tag {
+    visibility: hidden;
+  }
+
+  .ex-map {
+    position: absolute;
+    right: calc(var(--ex-pad) + var(--ex-aside));
+    bottom: calc(var(--ex-pad) + var(--ex-aside-b));
+    z-index: 2;
+    overflow: hidden;
+    border: 1px solid rgb(247 244 236 / 0.35);
+    background: rgb(10 9 6 / 0.9);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.5);
+    cursor: crosshair;
+    touch-action: none;
+  }
+  .ex-map-inner {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+  }
+  .ex-map-inner img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  /* The view: a lit rectangle, the rest of the print dimmed around it. */
+  .ex-map-view {
+    position: absolute;
+    border: 1.5px solid #e2a15c;
+    box-shadow: 0 0 0 100vmax rgb(10 9 6 / 0.5);
+    pointer-events: none;
+  }
+  @media (max-width: 640px) {
+    .ex.note-open .ex-map {
+      display: none;
+    }
+  }
+
+  /* Shown only if the sharper file takes more than a moment. */
+  .ex-load {
+    position: absolute;
+    top: calc(var(--ex-chrome) + 0.4rem);
+    left: 50%;
+    margin: 0;
+    padding: 0.3rem 0.6rem;
+    border-radius: 2px;
+    background: rgb(10 9 6 / 0.8);
+    color: #a79d89;
+    font: 0.66rem/1 ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateX(-50%);
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+  }
+  .ex.is-sharpening .ex-load {
+    opacity: 1;
+    transition-delay: 0.45s;
   }
   .ex-stage {
     position: absolute;
@@ -1772,13 +2014,20 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     .layout {
       display: block;
     }
-    .plate-col {
+    .plate-col,
+    .layout--split .plate-col {
       position: static;
       break-inside: avoid;
     }
-    .record {
+    .record,
+    .layout--wide .record,
+    .layout--wide .record--solo {
       display: flow-root;
       margin-top: 7mm;
+    }
+    /* The screen's height cap means nothing on paper; 11cm below does. */
+    .face-box {
+      width: auto;
     }
     .mat {
       padding: 0;
@@ -2118,6 +2367,16 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
 
     /* ---------------------------------------------------------------- *
      * Examine
+     *
+     * STATE. k is zoom relative to the fitted size; tx/ty the pan in px
+     * from the centre of the stage's content box; rot a quarter-turn angle.
+     * The frame always keeps its UNROTATED layout size and is turned by
+     * transform, so every region stays in the same percentages it was
+     * authored in - rotation only changes how a screen point maps onto it.
+     *
+     * MOTION. Buttons, keys, double-tap, Fit and flying to a face all
+     * animate on transform alone; a flung pan glides to a stop. Everything
+     * lands instantly under prefers-reduced-motion.
      * ---------------------------------------------------------------- */
     const stage = $('#ex-stage', dialog)!;
     const frameEl = $('#ex-frame', dialog)!;
@@ -2128,21 +2387,30 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     const cap = $('#ex-cap', dialog)!;
     const toastEl = $('#ex-toast', dialog)!;
     const topBar = $('#ex-top', dialog)!;
+    const srEl = $('#ex-sr', dialog);
     const inBtn = $<HTMLButtonElement>('[data-ex="in"]', dialog);
     const outBtn = $<HTMLButtonElement>('[data-ex="out"]', dialog);
     const infoBtn = $<HTMLButtonElement>('[data-ex="info"]', dialog);
     const compareBtn = $<HTMLButtonElement>('[data-ex="compare"]', dialog);
+    const fullBtn = $<HTMLButtonElement>('[data-ex="full"]', dialog);
     const exFaceBtns = $$<HTMLButtonElement>('[data-ex-face]', dialog);
     const exMarks = $$('[data-ex-mark]', dialog);
     const asideImg = $<HTMLImageElement>('#ex-aside-img', dialog);
     const asideLabel = $('#ex-aside-label', dialog);
+    const mapEl = $('#ex-map', dialog);
+    const mapInner = $('#ex-map-inner', dialog);
+    const mapImg = $<HTMLImageElement>('#ex-map-img', dialog);
+    const mapView = $('#ex-map-view', dialog);
+
+    const calm = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     let face = data.faces[0]?.key ?? 'recto';
-    let k = 1; // zoom, relative to the fitted size
-    let tx = 0; // pan, px from the centre of the stage's content box
+    let k = 1;
+    let tx = 0;
     let ty = 0;
+    let rot = 0;
     let layoutK = 1; // how much of k is baked into layout size
-    let fitW = 0;
+    let fitW = 0; // the fitted size, UNROTATED
     let fitH = 0;
     let area = { cx: 0, cy: 0, w: 0, h: 0 };
     let bestW = 0;
@@ -2152,6 +2420,10 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     let compare = false;
     let pushed = false; // did opening add a history entry
     let toastTimer = 0;
+    let anim = 0; // rAF id of a running animation or glide
+    let loadToken = 0; // bumps on every face load; late image swaps check it
+    let shownRank = 0; // 0 = page image, 1 = detail file, 2 = study file
+    let lastSaid = '';
 
     const toast = (text: string) => {
       const target = dialog.open ? toastEl : pageToast();
@@ -2160,34 +2432,62 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       window.clearTimeout(toastTimer);
       toastTimer = window.setTimeout(() => target.classList.remove('is-on'), 2600);
     };
+    // Screen readers hear where a gesture LANDS, never every frame of it.
+    const say = (text: string) => {
+      if (!srEl || text === lastSaid) return;
+      lastSaid = text;
+      srEl.textContent = text;
+    };
+
+    /* Rotation geometry ------------------------------------------------ */
+    const odd = () => rot % 180 !== 0;
+    const cs = () => {
+      const a = (rot * Math.PI) / 180;
+      return { c: Math.round(Math.cos(a)), s: Math.round(Math.sin(a)) };
+    };
+    // A vector in the unrotated frame, as it lands on screen; and back.
+    const turn = (u: number, v: number) => {
+      const { c, s } = cs();
+      return { x: u * c - v * s, y: u * s + v * c };
+    };
+    const unturn = (x: number, y: number) => {
+      const { c, s } = cs();
+      return { u: x * c + y * s, v: -x * s + y * c };
+    };
+    const visW = () => (odd() ? fitH : fitW);
+    const visH = () => (odd() ? fitW : fitH);
 
     // The stage's content box, which is where a fitted image is centred.
     const measure = () => {
       const r = stage.getBoundingClientRect();
-      const cs = getComputedStyle(stage);
-      const pl = parseFloat(cs.paddingLeft);
-      const pr = parseFloat(cs.paddingRight);
-      const pt = parseFloat(cs.paddingTop);
-      const pb = parseFloat(cs.paddingBottom);
+      const st = getComputedStyle(stage);
+      const pl = parseFloat(st.paddingLeft);
+      const pr = parseFloat(st.paddingRight);
+      const pt = parseFloat(st.paddingTop);
+      const pb = parseFloat(st.paddingBottom);
       const w = Math.max(1, r.width - pl - pr);
       const h = Math.max(1, r.height - pt - pb);
       area = { w, h, cx: r.left + pl + w / 2, cy: r.top + pt + h / 2 };
       const f = faceData.get(face)!;
-      const s = Math.min(w / f.w, h / f.h);
+      const s = odd() ? Math.min(w / f.h, h / f.w) : Math.min(w / f.w, h / f.h);
       fitW = f.w * s;
       fitH = f.h * s;
     };
 
-    // THE CEILING IS THE PIXELS WE HAVE: past 1:1 on the largest file there
-    // is nothing more to see, and zoom that keeps going would imply otherwise.
+    // THE ZOOM CEILING. At most one file pixel per CSS pixel times the
+    // screen's density - true 1:1 on an ordinary monitor, and on a phone a
+    // little further, where a thumb needs the room. Past that there is
+    // nothing more in the file to see.
     const maxK = () => Math.max(1, (bestW / Math.max(1, fitW)) * (window.devicePixelRatio || 1));
 
+    const clampTo = (nk: number, x: number, y: number) => {
+      nk = clamp(nk, 1, maxK());
+      const mx = Math.max(0, (visW() * nk - area.w) / 2);
+      const my = Math.max(0, (visH() * nk - area.h) / 2);
+      return { k: nk, tx: clamp(x, -mx, mx), ty: clamp(y, -my, my) };
+    };
     const clampView = () => {
-      k = clamp(k, 1, maxK());
-      const mx = Math.max(0, (fitW * k - area.w) / 2);
-      const my = Math.max(0, (fitH * k - area.h) / 2);
-      tx = clamp(tx, -mx, mx);
-      ty = clamp(ty, -my, my);
+      ({ k, tx, ty } = clampTo(k, tx, ty));
     };
 
     const layout = () => {
@@ -2195,39 +2495,117 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       frameEl.style.height = `${Math.round(fitH * layoutK)}px`;
     };
 
-    const upgrade = () => {
-      if (upgraded || !studySrc || img.getAttribute('src') === studySrc) return;
-      upgraded = true;
-      const want = studySrc;
+    /* Images: show at once, sharpen when ready ------------------------ */
+    // What the page itself is already showing for a face - decoded, in
+    // memory, and instant. Examine opens on it, never on an empty frame.
+    const plateSrc = (key: string) =>
+      root.querySelector<HTMLImageElement>(`.face[data-face="${CSS.escape(key)}"] img`)?.currentSrc || '';
+    // A sharper file replaces the one on screen only once it is DECODED, so
+    // the swap is a single frame with no blank between; and only if nothing
+    // newer or sharper has landed in the meantime.
+    const sharpen = (src: string, rank: number) => {
+      if (!src) return;
+      const token = loadToken;
+      const key = face;
       const pre = new Image();
-      pre.addEventListener(
-        'load',
-        () => {
-          if (dialog.open && faceData.get(face)?.study === want) img.src = want;
-        },
-        { once: true }
-      );
-      pre.src = want;
+      pre.src = src;
+      const done = () => {
+        if (token !== loadToken || key !== face || !dialog.open || rank <= shownRank) return;
+        img.src = src;
+        shownRank = rank;
+        if (rank >= 1) dialog.classList.remove('is-sharpening');
+      };
+      // If the file cannot be had, stop saying it is on its way.
+      const failed = () => {
+        if (rank === 1 && token === loadToken) dialog.classList.remove('is-sharpening');
+      };
+      pre.decode().then(done, () => {
+        if (pre.complete && pre.naturalWidth) done();
+        else if (pre.complete) failed();
+        else {
+          pre.addEventListener('load', done, { once: true });
+          pre.addEventListener('error', failed, { once: true });
+        }
+      });
+    };
+    const upgrade = () => {
+      if (upgraded || !studySrc) return;
+      upgraded = true;
+      sharpen(studySrc, 2);
     };
 
-    const paint = () => {
-      clampView();
-      frameEl.style.transform = `translate(${tx}px, ${ty}px) scale(${k / layoutK})`;
+    /* The overview ----------------------------------------------------- */
+    // Past the fitted size a small whole view shows which part of the print
+    // is on screen; press or drag in it to go elsewhere.
+    const MAP = 132;
+    let mapKey = '';
+    let mapIW = 0;
+    let mapIH = 0;
+    const viewBox = (): Box => {
+      const W = fitW * k;
+      const H = fitH * k;
+      const pts = [
+        [-area.w / 2, -area.h / 2],
+        [area.w / 2, -area.h / 2],
+        [-area.w / 2, area.h / 2],
+        [area.w / 2, area.h / 2],
+      ].map(([x, y]) => unturn(x - tx, y - ty));
+      const us = pts.map((p) => clamp(p.u / W + 0.5, 0, 1));
+      const vs = pts.map((p) => clamp(p.v / H + 0.5, 0, 1));
+      const x0 = Math.min(...us);
+      const y0 = Math.min(...vs);
+      return { x: x0 * 100, y: y0 * 100, w: (Math.max(...us) - x0) * 100, h: (Math.max(...vs) - y0) * 100 };
+    };
+    const drawMap = () => {
+      if (!mapEl || !mapInner || !mapView) return;
+      const show = dialog.open && k > 1.15;
+      mapEl.hidden = !show;
+      if (!show) return;
+      const key = `${face}|${rot}`;
+      if (key !== mapKey) {
+        mapKey = key;
+        const f = faceData.get(face)!;
+        const ar = f.w / f.h;
+        mapIW = ar >= 1 ? MAP : MAP * ar;
+        mapIH = ar >= 1 ? MAP / ar : MAP;
+        mapEl.style.width = `${Math.round(odd() ? mapIH : mapIW)}px`;
+        mapEl.style.height = `${Math.round(odd() ? mapIW : mapIH)}px`;
+        mapInner.style.width = `${mapIW}px`;
+        mapInner.style.height = `${mapIH}px`;
+        mapInner.style.transform = `translate(-50%, -50%) rotate(${rot}deg)`;
+      }
+      const v = viewBox();
+      mapView.style.left = `${v.x}%`;
+      mapView.style.top = `${v.y}%`;
+      mapView.style.width = `${v.w}%`;
+      mapView.style.height = `${v.h}%`;
+    };
+
+    /* Painting and settling ------------------------------------------- */
+    // `free` skips the pan limits - for a swipe in progress, which is meant
+    // to carry the photograph off its resting place.
+    const paint = (free = false) => {
+      if (!free) clampView();
+      frameEl.style.transform = `translate(${tx}px, ${ty}px) rotate(${rot}deg) scale(${k / layoutK})`;
       frameEl.style.setProperty('--tag-scale', String(layoutK / k));
       stage.classList.toggle('can-pan', k > 1.001);
       pctEl.textContent = `${Math.round(k * 100)}%`;
       if (inBtn) inBtn.disabled = k >= maxK() - 0.001;
       if (outBtn) outBtn.disabled = k <= 1.001;
       if (k > 1.5) upgrade();
+      drawMap();
     };
 
     // TRANSFORM WHILE MOVING, LAYOUT SIZE WHEN STILL. A transform is smooth
-    // but rasterised once at layout size and stretched; a layout width is
-    // rasterised at real size. Never lay out past the file's own pixels.
+    // but rasterised once and stretched; a layout width is rasterised at
+    // real size. The layout is capped where one file pixel meets one SCREEN
+    // pixel - the old cap was one CSS pixel, which on a 3x phone drew nine
+    // times the pixels the file has, for no gain in sharpness.
     const commit = () => {
       window.clearTimeout(settle);
       frameEl.classList.remove('is-moving');
-      const want = Math.min(k, Math.max(1, bestW / Math.max(1, fitW)));
+      const dpr = window.devicePixelRatio || 1;
+      const want = Math.min(k, Math.max(1, bestW / dpr / Math.max(1, fitW)));
       if (Math.abs(want - layoutK) > 0.01) {
         layoutK = want;
         layout();
@@ -2235,6 +2613,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       paint();
       syncHash();
       layoutExTags();
+      if (dialog.open) say(`Zoom ${Math.round(k * 100)} percent`);
     };
     const commitSoon = (ms = 160) => {
       frameEl.classList.add('is-moving');
@@ -2242,58 +2621,122 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       settle = window.setTimeout(commit, ms);
     };
 
-    // Zoom about a point on screen, so what is under the cursor or between
-    // the fingers stays there.
-    const zoomAt = (nk: number, clientX = area.cx, clientY = area.cy) => {
+    /* Animation ---------------------------------------------------------- */
+    const stopAnim = () => {
+      if (anim) cancelAnimationFrame(anim);
+      anim = 0;
+    };
+    // Glide to a view along the path a real zoom takes: about the one point
+    // that stays put, with the scale interpolated geometrically so 1x->8x
+    // spends as long on each doubling rather than rushing the last.
+    const animateTo = (target: { k: number; tx: number; ty: number }, ms = 260) => {
+      stopAnim();
+      const t = clampTo(target.k, target.tx, target.ty);
       const k0 = k;
+      const x0 = tx;
+      const y0 = ty;
+      if (calm() || (Math.abs(t.k - k0) < 0.001 && Math.hypot(t.tx - x0, t.ty - y0) < 0.5)) {
+        ({ k, tx, ty } = t);
+        paint();
+        commit();
+        return;
+      }
+      const r = t.k / k0;
+      const pivot = Math.abs(1 - r) > 0.001 ? { x: (t.tx - x0 * r) / (1 - r), y: (t.ty - y0 * r) / (1 - r) } : null;
+      const t0 = performance.now();
+      frameEl.classList.add('is-moving');
+      const step = (now: number) => {
+        const p = Math.min(1, (now - t0) / ms);
+        const e = 1 - Math.pow(1 - p, 3);
+        if (pivot) {
+          k = k0 * Math.pow(r, e);
+          tx = pivot.x - (pivot.x - x0) * (k / k0);
+          ty = pivot.y - (pivot.y - y0) * (k / k0);
+        } else {
+          tx = x0 + (t.tx - x0) * e;
+          ty = y0 + (t.ty - y0) * e;
+        }
+        paint(true);
+        if (p < 1) anim = requestAnimationFrame(step);
+        else {
+          anim = 0;
+          ({ k, tx, ty } = t);
+          commit();
+        }
+      };
+      anim = requestAnimationFrame(step);
+    };
+    // Zoom about a point on screen, so what is under the cursor or between
+    // the fingers stays there. zoomAt moves at once (gestures); zoomTo glides
+    // (buttons, keys, double-tap).
+    const aboutPoint = (nk: number, cx: number, cy: number) => {
       nk = clamp(nk, 1, maxK());
-      const px = clientX - area.cx;
-      const py = clientY - area.cy;
-      tx = px - (px - tx) * (nk / k0);
-      ty = py - (py - ty) * (nk / k0);
-      k = nk;
+      const px = cx - area.cx;
+      const py = cy - area.cy;
+      return { k: nk, tx: px - (px - tx) * (nk / k), ty: py - (py - ty) * (nk / k) };
+    };
+    const zoomAt = (nk: number, cx = area.cx, cy = area.cy) => {
+      ({ k, tx, ty } = aboutPoint(nk, cx, cy));
       paint();
     };
+    const zoomTo = (nk: number, cx = area.cx, cy = area.cy) => animateTo(aboutPoint(nk, cx, cy));
+    const fit = () => animateTo({ k: 1, tx: 0, ty: 0 });
 
-    const fit = () => {
-      k = 1;
-      tx = 0;
-      ty = 0;
-      layoutK = 1;
-      layout();
+    // A flung pan keeps going and slows to a stop, and stops dead at an edge.
+    const glide = (vx: number, vy: number) => {
+      stopAnim();
+      if (calm() || k <= 1.001 || Math.hypot(vx, vy) < 0.3) {
+        commit();
+        return;
+      }
+      let last = performance.now();
+      frameEl.classList.add('is-moving');
+      const step = (now: number) => {
+        const dt = Math.min(32, now - last);
+        last = now;
+        const x = tx + vx * dt;
+        const y = ty + vy * dt;
+        ({ k, tx, ty } = clampTo(k, x, y));
+        if (tx !== x) vx = 0;
+        if (ty !== y) vy = 0;
+        const decay = Math.exp(-dt / 320);
+        vx *= decay;
+        vy *= decay;
+        paint();
+        if (Math.hypot(vx, vy) > 0.02) anim = requestAnimationFrame(step);
+        else {
+          anim = 0;
+          commit();
+        }
+      };
+      anim = requestAnimationFrame(step);
+    };
+
+    // Where a region should land: centred, at 80% of the stage.
+    const targetFor = (r: Box) => {
+      const bw = (fitW * r.w) / 100;
+      const bh = (fitH * r.h) / 100;
+      const nk = clamp(Math.min(area.w / (odd() ? bh : bw), area.h / (odd() ? bw : bh)) * 0.8, 1, maxK());
+      const p = turn(((r.x + r.w / 2) / 100 - 0.5) * fitW * nk, ((r.y + r.h / 2) / 100 - 0.5) * fitH * nk);
+      return { k: nk, tx: -p.x, ty: -p.y };
+    };
+    const frameTo = (r: Box) => animateTo(targetFor(r), 480);
+    // Put a point of the photograph (as fractions) at the centre.
+    const centreOn = (fx: number, fy: number) => {
+      const p = turn((fx - 0.5) * fitW * k, (fy - 0.5) * fitH * k);
+      tx = -p.x;
+      ty = -p.y;
       paint();
-      syncHash();
-      layoutExTags();
+      commitSoon();
     };
 
-    const frameTo = (r: Box) => {
-      layoutK = 1;
-      layout();
-      const nk = Math.min(area.w / ((fitW * r.w) / 100), area.h / ((fitH * r.h) / 100)) * 0.8;
-      k = clamp(nk, 1, maxK());
-      tx = (0.5 - (r.x + r.w / 2) / 100) * fitW * k;
-      ty = (0.5 - (r.y + r.h / 2) / 100) * fitH * k;
-      paint();
-      commit();
-    };
-
-    // What part of the image is on screen, as percentages - the inverse of
-    // frameTo, and what goes in the shareable URL.
-    const visibleBox = (): Box | null => {
-      if (k <= 1.001) return null;
-      const w = fitW * k;
-      const h = fitH * k;
-      const x0 = Math.max(0, w / 2 - tx - area.w / 2);
-      const x1 = Math.min(w, w / 2 - tx + area.w / 2);
-      const y0 = Math.max(0, h / 2 - ty - area.h / 2);
-      const y1 = Math.min(h, h / 2 - ty + area.h / 2);
-      return { x: (x0 / w) * 100, y: (y0 / h) * 100, w: ((x1 - x0) / w) * 100, h: ((y1 - y0) / h) * 100 };
-    };
-
+    /* The address --------------------------------------------------------- */
+    const visibleBox = (): Box | null => (k <= 1.001 ? null : viewBox());
     const buildHash = () => {
       const v = visibleBox();
       const parts = [`face=${encodeURIComponent(face)}`];
       if (v) parts.push(`xywh=percent:${round1(v.x)},${round1(v.y)},${round1(v.w)},${round1(v.h)}`);
+      if (rot) parts.push(`rot=${rot}`);
       return `#${parts.join('&')}`;
     };
     // replaceState with the CURRENT state object, so ClientRouter's own
@@ -2302,7 +2745,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       if (!dialog.open) return;
       history.replaceState(history.state, '', `${location.pathname}${location.search}${buildHash()}`);
     };
-    const parseHash = (): { face: string; box: Box | null } | null => {
+    const parseHash = (): { face: string; box: Box | null; rot: number } | null => {
       const params = new URLSearchParams(location.hash.slice(1));
       const f = params.get('face');
       const xywh = params.get('xywh');
@@ -2314,13 +2757,19 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
           parsed = { x: nums[0], y: nums[1], w: nums[2], h: nums[3] };
         }
       }
-      return { face: f && faceData.has(f) ? f : data.faces[0].key, box: parsed };
+      const r = Number(params.get('rot'));
+      return {
+        face: f && faceData.has(f) ? f : data.faces[0].key,
+        box: parsed,
+        rot: [90, 180, 270].includes(r) ? r : 0,
+      };
     };
 
     const setNote = (text: string, open: boolean) => {
       cap.textContent = text;
       const has = !!text.trim();
       note.hidden = !(open && has);
+      dialog.classList.toggle('note-open', !note.hidden);
       if (infoBtn) {
         infoBtn.disabled = !has;
         infoBtn.setAttribute('aria-expanded', String(!note.hidden));
@@ -2329,12 +2778,14 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     };
 
     // Examine labels are placed on what is actually on screen after each
-    // move settles: numbers at full view, names as faces grow to hold them.
+    // move settles. On a turned photograph they would read sideways, so
+    // while it is turned only the outlines show.
     const exNamesBtn = $<HTMLButtonElement>('[data-ex="names"]', dialog);
     const layoutExTags = () => {
       if (!dialog.open) return;
       const people = exMarks.filter((m) => m.classList.contains('region-box--person'));
       clearTags(people);
+      if (rot) return;
       const named = exNamesBtn?.getAttribute('aria-pressed') === 'true';
       const shown = people.filter((m) => m.classList.contains('on-face') && (named || m.classList.contains('is-active')));
       if (!shown.length) return;
@@ -2350,18 +2801,33 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     const updateAside = () => {
       const o = otherFace();
       if (!compare || !o || !asideImg || !asideLabel) return;
-      asideImg.src = o.view;
+      asideImg.src = plateSrc(o.key) || o.view;
       asideLabel.textContent = o.label;
     };
 
-    const loadFace = (key: string) => {
+    const setRot = (r: number) => {
+      rot = ((r % 360) + 360) % 360;
+      dialog.toggleAttribute('data-rot', rot !== 0);
+    };
+
+    const loadFace = (key: string, r = 0) => {
+      stopAnim();
       const f = faceData.get(key) ?? data.faces[0];
       face = f.key;
+      loadToken++;
+      shownRank = 0;
       upgraded = false;
       studySrc = f.study;
       bestW = f.studyW || f.w;
+      setRot(r);
+      // Open on what the page already holds; the detail file follows.
+      const quick = plateSrc(f.key) || f.view;
       img.alt = f.alt;
-      img.src = f.big;
+      img.src = quick;
+      if (mapImg) mapImg.src = quick;
+      mapKey = '';
+      dialog.classList.add('is-sharpening');
+      sharpen(f.big, 1);
       titleEl.textContent = f.title;
       exFaceBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.exFace === face)));
       exMarks.forEach((m) => m.classList.toggle('on-face', m.dataset.face === face));
@@ -2377,11 +2843,69 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       paint();
     };
 
-    type OpenOpts = { box?: Box | null; caption?: string; noteOpen?: boolean; mark?: string; history?: 'push' | 'replace' | 'none' };
+    // Step through the views - front, back, and any others - in order.
+    const stepFace = (dir: number, slide = true) => {
+      const n = data.faces.length;
+      if (n < 2) return;
+      const i = data.faces.findIndex((f) => f.key === face);
+      const next = data.faces[(i + dir + n) % n];
+      loadFace(next.key);
+      setNote(data.note, false);
+      syncHash();
+      say(next.label);
+      if (slide && !calm()) {
+        tx = dir * area.w * 0.18;
+        paint(true);
+        animateTo({ k: 1, tx: 0, ty: 0 }, 220);
+      }
+    };
+
+    const rotate = (dir: number) => {
+      stopAnim();
+      setRot(rot + 90 * dir);
+      k = 1;
+      tx = 0;
+      ty = 0;
+      layoutK = 1;
+      mapKey = '';
+      measure();
+      layout();
+      paint();
+      commit();
+      say(rot ? `Turned ${rot} degrees` : 'Upright');
+    };
+
+    /* Full screen - where the browser allows it on an element. An iPhone
+       does not, so there the button never appears. */
+    const canFull = !!(document.fullscreenEnabled && dialog.requestFullscreen);
+    if (fullBtn) fullBtn.hidden = !canFull;
+    const toggleFull = async () => {
+      if (!canFull) return;
+      try {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        else await dialog.requestFullscreen();
+      } catch {
+        /* refused - the viewer is already as large as the window */
+      }
+    };
+    document.addEventListener(
+      'fullscreenchange',
+      () => fullBtn?.setAttribute('aria-pressed', String(document.fullscreenElement === dialog)),
+      { signal }
+    );
+
+    type OpenOpts = {
+      box?: Box | null;
+      caption?: string;
+      noteOpen?: boolean;
+      mark?: string;
+      rot?: number;
+      history?: 'push' | 'replace' | 'none';
+    };
     const open = (key: string, opts: OpenOpts = {}) => {
       const wasOpen = dialog.open;
       if (!wasOpen) dialog.showModal();
-      loadFace(key);
+      loadFace(key, opts.rot ?? 0);
 
       // THE HISTORY ENTRY GOES IN BEFORE ANY FRAMING. Framing commits, and a
       // commit rewrites the hash of whatever entry is current - done first,
@@ -2405,6 +2929,8 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
         }
       }
 
+      // A named face or detail is FLOWN to from the whole photograph, so the
+      // reader sees where on the print it sits.
       if (opts.box) frameTo(opts.box);
       else syncHash();
       if (opts.mark) setActiveMark(opts.mark);
@@ -2412,17 +2938,27 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       stage.focus({ preventScroll: true });
     };
 
-    // Closing, by any route - the button, Escape, the Back gesture.
+    // Closing, by any route - the button, Escape, the Back gesture, a swipe.
     dialog.addEventListener(
       'close',
       () => {
+        stopAnim();
         window.clearTimeout(settle);
+        loadToken++;
         frameEl.classList.remove('is-moving');
+        dialog.classList.remove('is-sharpening');
+        dialog.style.removeProperty('--pull');
         img.removeAttribute('src');
         pointers.clear();
         pinch = null;
         panFrom = null;
+        swipe = null;
+        gesturing = false;
+        setRot(0);
         setActiveMark(null);
+        if (mapEl) mapEl.hidden = true;
+        lastSaid = '';
+        if (document.fullscreenElement === dialog) document.exitFullscreen().catch(() => {});
         if (pushed && history.state?.examine) {
           // Our entry is on top: step back off it.
           history.back();
@@ -2447,7 +2983,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
         } else if (!dialog.open && history.state?.examine) {
           // Forward, back into a view.
           const h = parseHash();
-          if (h) open(h.face, { box: h.box, history: 'none' });
+          if (h) open(h.face, { box: h.box, rot: h.rot, history: 'none' });
         }
       },
       { signal }
@@ -2458,7 +2994,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       () => {
         if (dialog.open || location.pathname !== here) return;
         const h = parseHash();
-        if (h) open(h.face, { box: h.box, history: 'replace' });
+        if (h) open(h.face, { box: h.box, rot: h.rot, history: 'replace' });
       },
       { signal }
     );
@@ -2496,9 +3032,11 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
         if (!t) return;
         const action = t.dataset.ex;
         if (action === 'close') dialog.close();
-        if (action === 'in') { zoomAt(k * 1.4); commit(); }
-        if (action === 'out') { zoomAt(k / 1.4); commit(); }
+        if (action === 'in') zoomTo(k * 1.6);
+        if (action === 'out') zoomTo(k / 1.6);
         if (action === 'fit') fit();
+        if (action === 'rotate') rotate(1);
+        if (action === 'full') toggleFull();
         if (action === 'info') setNote(cap.textContent || data.note, Boolean(note.hidden));
         if (action === 'names') {
           const on = t.getAttribute('aria-pressed') !== 'true';
@@ -2512,40 +3050,74 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
           syncHash();
           if (await copyText(location.href)) toast('Link to this view copied');
         }
-        if (action === 'compare' || action === 'swap') {
-          if (action === 'compare') {
-            compare = !compare;
-            dialog.classList.toggle('is-compare', compare);
-            compareBtn?.setAttribute('aria-pressed', String(compare));
-            updateAside();
-            const k0 = k;
-            const w0 = fitW;
-            measure();
-            const s = fitW / Math.max(1, w0);
-            tx *= s;
-            ty *= s;
-            k = k0;
-            layoutK = 1;
-            layout();
-            commit();
-          } else {
-            const o = otherFace();
-            if (o) {
-              loadFace(o.key);
-              setNote(data.note, false);
-              syncHash();
-            }
+        if (action === 'compare') {
+          compare = !compare;
+          dialog.classList.toggle('is-compare', compare);
+          compareBtn?.setAttribute('aria-pressed', String(compare));
+          updateAside();
+          stopAnim();
+          const w0 = fitW;
+          measure();
+          const s = fitW / Math.max(1, w0);
+          tx *= s;
+          ty *= s;
+          layoutK = 1;
+          layout();
+          commit();
+        }
+        if (action === 'swap') {
+          const o = otherFace();
+          if (o) {
+            loadFace(o.key);
+            setNote(data.note, false);
+            syncHash();
           }
         }
       },
       { signal }
     );
 
+    // The overview: press or drag to move the view there.
+    if (mapEl && mapInner) {
+      let mapDrag = false;
+      const mapTo = (e: PointerEvent) => {
+        const r = mapEl.getBoundingClientRect();
+        const { u, v } = unturn(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2));
+        centreOn(clamp(u / Math.max(1, mapIW) + 0.5, 0, 1), clamp(v / Math.max(1, mapIH) + 0.5, 0, 1));
+      };
+      mapEl.addEventListener(
+        'pointerdown',
+        (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          stopAnim();
+          mapDrag = true;
+          try { mapEl.setPointerCapture(e.pointerId); } catch { /* not fatal */ }
+          mapTo(e);
+        },
+        { signal }
+      );
+      mapEl.addEventListener('pointermove', (e) => { if (mapDrag) mapTo(e); }, { signal });
+      const mapEnd = () => {
+        if (!mapDrag) return;
+        mapDrag = false;
+        commit();
+      };
+      mapEl.addEventListener('pointerup', mapEnd, { signal });
+      mapEl.addEventListener('pointercancel', mapEnd, { signal });
+      mapEl.addEventListener('lostpointercapture', mapEnd, { signal });
+    }
+
     /* Gestures --------------------------------------------------------- */
-    // Pointers are tracked by id, so two fingers are a pinch and one is a pan.
+    // Pointers are tracked by id, so two fingers are a pinch and one is a
+    // pan. At the fitted size a finger does something else: a swipe DOWN
+    // closes the viewer, a swipe ACROSS turns to the next view - the way the
+    // photo apps on a phone behave. A mouse never swipes.
     const pointers = new Map<number, { x: number; y: number }>();
     let pinch: { d0: number; k0: number; mx: number; my: number; tx0: number; ty0: number } | null = null;
     let panFrom: { x: number; y: number; tx0: number; ty0: number } | null = null;
+    let swipe: 'x' | 'y' | 'none' | null = null;
+    let samples: { x: number; y: number; t: number }[] = [];
     let down = { x: 0, y: 0, t: 0 };
     let lastTap = { x: 0, y: 0, t: 0 };
     let picking = false;
@@ -2557,6 +3129,16 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     const startPan = () => {
       const [p] = [...pointers.values()];
       panFrom = p ? { x: p.x, y: p.y, tx0: tx, ty0: ty } : null;
+      samples = p ? [{ x: p.x, y: p.y, t: performance.now() }] : [];
+    };
+    // Speed over the last tenth of a second, in px per ms.
+    const velocity = () => {
+      if (samples.length < 2) return { x: 0, y: 0 };
+      const a = samples[0];
+      const b = samples[samples.length - 1];
+      const dt = Math.max(1, b.t - a.t);
+      if (performance.now() - b.t > 80) return { x: 0, y: 0 }; // held still before letting go
+      return { x: (b.x - a.x) / dt, y: (b.y - a.y) / dt };
     };
 
     stage.addEventListener(
@@ -2564,15 +3146,18 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       (e) => {
         if (picking || (e.target as Element).closest('button, a')) return;
         if (e.pointerType === 'mouse' && e.button !== 0) return;
+        stopAnim();
         try { stage.setPointerCapture(e.pointerId); } catch { /* not fatal */ }
         pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
         if (pointers.size === 1) {
           down = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+          swipe = null;
           startPan();
         } else if (pointers.size === 2) {
           const p = pair();
           pinch = { d0: p.d, k0: k, mx: p.mx, my: p.my, tx0: tx, ty0: ty };
           panFrom = null;
+          swipe = 'none';
         }
         frameEl.classList.add('is-moving');
         e.preventDefault();
@@ -2601,10 +3186,33 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
           ty = py - (py - pinch.ty0) * (nk / pinch.k0) + (p.my - pinch.my);
           k = nk;
           paint();
-        } else if (panFrom && k > 1.001) {
-          tx = panFrom.tx0 + (e.clientX - panFrom.x);
-          ty = panFrom.ty0 + (e.clientY - panFrom.y);
+          return;
+        }
+        if (!panFrom) return;
+        const now = performance.now();
+        samples.push({ x: e.clientX, y: e.clientY, t: now });
+        samples = samples.filter((s) => now - s.t <= 100);
+        const dx = e.clientX - panFrom.x;
+        const dy = e.clientY - panFrom.y;
+        if (k > 1.001 && swipe !== 'x' && swipe !== 'y') {
+          tx = panFrom.tx0 + dx;
+          ty = panFrom.ty0 + dy;
           paint();
+          return;
+        }
+        if (e.pointerType === 'mouse') return;
+        if (swipe === null && Math.hypot(dx, dy) > 12) {
+          swipe = Math.abs(dy) > Math.abs(dx) ? 'y' : data.faces.length > 1 ? 'x' : 'none';
+        }
+        if (swipe === 'y') {
+          tx = 0;
+          ty = dy;
+          dialog.style.setProperty('--pull', String(Math.min(1, Math.abs(dy) / 220)));
+          paint(true);
+        } else if (swipe === 'x') {
+          tx = dx;
+          ty = 0;
+          paint(true);
         }
       },
       { signal }
@@ -2617,6 +3225,24 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
       if (pointers.size === 1) startPan();
       if (pointers.size > 0) return;
       panFrom = null;
+      const v = velocity();
+      const was = swipe;
+      swipe = null;
+
+      if (was === 'y') {
+        if (Math.abs(ty) > 110 || Math.abs(v.y) > 0.6) {
+          dialog.close();
+          return;
+        }
+        dialog.style.removeProperty('--pull');
+        animateTo({ k: 1, tx: 0, ty: 0 }, 200);
+        return;
+      }
+      if (was === 'x') {
+        if (Math.abs(tx) > 80 || Math.abs(v.x) > 0.5) stepFace(tx < 0 ? 1 : -1);
+        else animateTo({ k: 1, tx: 0, ty: 0 }, 200);
+        return;
+      }
 
       // A double tap (or double click) zooms in on that spot, or back out.
       const still = Math.hypot(e.clientX - down.x, e.clientY - down.y) < 10 && e.timeStamp - down.t < 300;
@@ -2625,28 +3251,100 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
         if (near && e.timeStamp - lastTap.t < 320) {
           lastTap = { x: 0, y: 0, t: 0 };
           if (k > 1.05) fit();
-          else zoomAt(Math.min(2.5, maxK()), e.clientX, e.clientY);
-        } else {
-          lastTap = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+          else zoomTo(Math.min(2.5, maxK()), e.clientX, e.clientY);
+          return;
         }
+        lastTap = { x: e.clientX, y: e.clientY, t: e.timeStamp };
+        commit();
+        return;
       }
-      commit();
+      glide(v.x, v.y);
     };
     stage.addEventListener('pointerup', endPointer, { signal });
     stage.addEventListener('pointercancel', endPointer, { signal });
     stage.addEventListener('lostpointercapture', endPointer, { signal });
 
+    // THE WHEEL, AND WHAT IS ACTUALLY TURNING IT.
+    //   - ctrl + wheel is a trackpad PINCH in Chrome, Firefox and Edge (and
+    //     ctrl + a mouse wheel anywhere): zoom.
+    //   - a trackpad's two-finger scroll PANS, as it does in every map and
+    //     design tool; at the fitted size, where there is nothing to pan, it
+    //     zooms, so the gesture is never dead.
+    //   - a mouse wheel zooms.
+    // A trackpad is told from a wheel by its deltas - fractional, sideways,
+    // or small - and the decision is held for the whole gesture, so one
+    // flick never switches from zooming to panning halfway through.
+    let wheelMode: 'zoom' | 'pan' | null = null;
+    let wheelIdle = 0;
+    let gesturing = false;
+    const smooth = (e: WheelEvent) =>
+      e.deltaMode === 0 && (e.deltaX !== 0 || !Number.isInteger(e.deltaY) || Math.abs(e.deltaY) < 50);
     stage.addEventListener(
       'wheel',
       (e) => {
         e.preventDefault();
+        if (gesturing) return;
+        stopAnim();
+        window.clearTimeout(wheelIdle);
+        wheelIdle = window.setTimeout(() => (wheelMode = null), 220);
         const unit = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? area.h : 1;
-        // ctrlKey is how a trackpad pinch arrives: finer steps.
-        const factor = Math.exp(-e.deltaY * unit * (e.ctrlKey ? 0.01 : 0.0018));
-        zoomAt(k * factor, e.clientX, e.clientY);
+        if (e.ctrlKey) {
+          zoomAt(k * Math.exp(-e.deltaY * unit * 0.01), e.clientX, e.clientY);
+          commitSoon();
+          return;
+        }
+        if (!wheelMode) wheelMode = smooth(e) && k > 1.001 ? 'pan' : 'zoom';
+        if (wheelMode === 'pan') {
+          tx -= e.deltaX * unit;
+          ty -= e.deltaY * unit;
+          paint();
+        } else {
+          zoomAt(k * Math.exp(-e.deltaY * unit * 0.0018), e.clientX, e.clientY);
+        }
         commitSoon();
       },
       { passive: false, signal }
+    );
+
+    // SAFARI'S TRACKPAD PINCH is not a wheel event at all: it arrives as
+    // gesturestart/change/end, and unhandled it zooms the whole page. On an
+    // iPhone the same events come alongside the touch pointers, which the
+    // pinch above already handles - so these only act with no touch down.
+    type Gesture = Event & { scale: number; clientX?: number; clientY?: number };
+    let g0 = 1;
+    dialog.addEventListener(
+      'gesturestart',
+      (e) => {
+        if (pointers.size) return;
+        e.preventDefault();
+        stopAnim();
+        gesturing = true;
+        g0 = k;
+      },
+      { signal }
+    );
+    dialog.addEventListener(
+      'gesturechange',
+      (e) => {
+        if (!gesturing) return;
+        e.preventDefault();
+        const g = e as Gesture;
+        const cx = Number.isFinite(g.clientX) ? (g.clientX as number) : area.cx;
+        const cy = Number.isFinite(g.clientY) ? (g.clientY as number) : area.cy;
+        zoomAt(g0 * g.scale, cx, cy);
+        frameEl.classList.add('is-moving');
+      },
+      { signal }
+    );
+    dialog.addEventListener(
+      'gestureend',
+      (e) => {
+        if (!gesturing) return;
+        e.preventDefault();
+        gesturing = false;
+        commit();
+      },
+      { signal }
     );
 
     dialog.addEventListener(
@@ -2656,15 +3354,21 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
         const step = e.shiftKey ? 160 : 48;
         let handled = true;
         switch (e.key) {
-          case 'ArrowLeft': tx += step; paint(); commitSoon(); break;
-          case 'ArrowRight': tx -= step; paint(); commitSoon(); break;
-          case 'ArrowUp': ty += step; paint(); commitSoon(); break;
-          case 'ArrowDown': ty -= step; paint(); commitSoon(); break;
+          case 'ArrowLeft': stopAnim(); tx += step; paint(); commitSoon(); break;
+          case 'ArrowRight': stopAnim(); tx -= step; paint(); commitSoon(); break;
+          case 'ArrowUp': stopAnim(); ty += step; paint(); commitSoon(); break;
+          case 'ArrowDown': stopAnim(); ty -= step; paint(); commitSoon(); break;
           case '+':
-          case '=': zoomAt(k * 1.4); commit(); break;
+          case '=': zoomTo(k * 1.6); break;
           case '-':
-          case '_': zoomAt(k / 1.4); commit(); break;
+          case '_': zoomTo(k / 1.6); break;
           case '0': fit(); break;
+          case 'r': rotate(1); break;
+          case 'R': rotate(-1); break;
+          case 'f':
+          case 'F': toggleFull(); break;
+          case '[': stepFace(-1); break;
+          case ']': stepFace(1); break;
           default: handled = false;
         }
         if (handled) e.preventDefault();
@@ -2675,11 +3379,12 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
     img.addEventListener('dragstart', (e) => e.preventDefault(), { signal });
 
     // Keep the view when the viewport changes - including the phone URL bar
-    // sliding in and out, which used to throw away a zoom mid-read.
+    // sliding in and out, and going full screen.
     window.addEventListener(
       'resize',
       () => {
         if (!dialog.open) return;
+        stopAnim();
         const w0 = fitW;
         measure();
         const s = fitW / Math.max(1, w0);
@@ -2687,6 +3392,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
         ty *= s;
         layoutK = 1;
         layout();
+        mapKey = '';
         commitSoon(60);
       },
       { signal }
@@ -2771,6 +3477,11 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
         'pointerdown',
         (e) => {
           if ((needShift && !e.shiftKey) || e.button !== 0) return;
+          // Regions are recorded against the upright photograph.
+          if (host === frameEl && rot) {
+            toast('Turn the photograph upright to draw a region.');
+            return;
+          }
           e.preventDefault();
           e.stopPropagation();
           picking = true;
@@ -2827,7 +3538,7 @@ const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
      * ---------------------------------------------------------------- */
     const arrival = parseHash();
     if (arrival) {
-      const go = () => open(arrival.face, { box: arrival.box, history: 'replace' });
+      const go = () => open(arrival.face, { box: arrival.box, rot: arrival.rot, history: 'replace' });
       if (document.readyState === 'complete') requestAnimationFrame(go);
       else window.addEventListener('load', go, { once: true, signal });
     }
