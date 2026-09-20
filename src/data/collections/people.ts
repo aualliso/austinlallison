@@ -1021,6 +1021,8 @@ export const PEOPLE: Person[] = [
       'Find a Grave memorial 46419250.',
     ],
     relations: [
+      { type: 'spouse', person: 'west-john-tolliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'wakeman-sara-beth-west', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-james', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-sarah-boyd', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'mckinstry-thomas', basis: 'Established relationship', confidence: 'certain' },
@@ -1032,6 +1034,40 @@ export const PEOPLE: Person[] = [
       { type: 'sibling', person: 'mckinstry-harrison-lee', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'mckinstry-adeline', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'mckinstry-robert-frederick', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'west-john-tolliver',
+    authorized: 'West, John Tolliver',
+    surname: 'West',
+    given: 'John Tolliver',
+    birth: '1884',
+    death: '1952',
+    variants: ['West, John', 'Tollie West', 'West, Tollie'],
+    status: 'established',
+    sources: [
+      'Find a Grave memorial 46419199.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'west-edith-mary-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'wakeman-sara-beth-west', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'wakeman-sara-beth-west',
+    authorized: 'Wakeman, Sara Beth West',
+    surname: 'Wakeman',
+    given: 'Sara Beth West',
+    birth: '1919',
+    death: '1990',
+    variants: ['West, Sara Beth', 'Sara Beth West', 'West, Sara', 'Sara Beth Wakeman'],
+    status: 'established',
+    sources: [
+      'Find a Grave memorial 46419277.',
+    ],
+    relations: [
+      { type: 'parent', person: 'west-john-tolliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'west-edith-mary-mckinstry', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {

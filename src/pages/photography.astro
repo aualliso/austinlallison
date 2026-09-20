@@ -1540,11 +1540,25 @@ if (belowHorizon.length) {
   if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
   document.addEventListener('astro:page-load', init);
   window.addEventListener('pageshow', (e) => {
-    if ((e as PageTransitionEvent).persisted) {
-      document.querySelectorAll('.pane.is-leaving').forEach((p) => p.classList.remove('is-leaving'));
-      document.querySelector('.album')?.classList.remove('is-leaving');
-      restore();
-    }
+    if (!(e as PageTransitionEvent).persisted) return;
+
+    document.querySelectorAll('.pane.is-leaving').forEach((p) => p.classList.remove('is-leaving'));
+    document.querySelector('.album')?.classList.remove('is-leaving');
+
+    /* The pull-back is a WAAPI animation with fill:'forwards', not a CSS
+       one, so removing .is-leaving above does nothing to it — a bfcached
+       document comes back with the plate still held at the end of the
+       contraction, 34vw and centred. Cancel it explicitly. */
+    document
+      .querySelectorAll<HTMLElement>('.pane .zoomer')
+      .forEach((z) => z.getAnimations().forEach((a) => a.cancel()));
+
+    /* NEXT FRAME, NOT THIS ONE. restore() scrolls the document, and the
+       header's bfcache repair has to invalidate the sticky hit-test region
+       AFTER that scroll has landed — see the pageshow handler in
+       Header.astro. Both in the reactivation task is what left the menu
+       dead on a swipe-back. */
+    requestAnimationFrame(() => restore());
   });
   init();
 </script>

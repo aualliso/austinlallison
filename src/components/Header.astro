@@ -3440,6 +3440,41 @@ const isDev = import.meta.env.DEV;
        against the OLD head. */
     applyThemeColor();
   });
+  /* ---- BACK/FORWARD CACHE: WAKE THE STICKY WRAPPER -----------------------
+     Swipe back onto any page of this site on a phone and the header draws
+     correctly and is completely dead — the menu control does not actuate,
+     and neither does anything else in the seam. A reload fixes it;
+     arriving by a link never shows it.
+
+     IT IS NOT THE JS. A swipe-back restores the document from the
+     back/forward cache rather than rebuilding it, so every listener bound
+     in initMenu() is still bound to the same live elements. What is stale
+     is the COMPOSITOR'S HIT-TEST REGION for #horizon-sticky: iOS
+     reactivates the document with the sticky layer's tap region still
+     keyed to the scroll offset the page had when it was frozen, so taps
+     on the header fall through to whatever is underneath it.
+
+     THE REPAIR is a forced re-layout while the wrapper is NOT sticky.
+     Dropping to position:relative invalidates the region and putting it
+     back re-derives it from the live scroll position. Both writes happen
+     inside one frame with a synchronous layout read between them, so the
+     intermediate state is never painted — no flicker, no jump.
+
+     TWO FRAMES DEEP, not one: a page that scrolls itself on reactivation
+     (the album restores a pane) has to land first. Invalidating in the
+     same frame as that scroll just rebuilds the same stale region. */
+  window.addEventListener('pageshow', (e) => {
+    if (!(e as PageTransitionEvent).persisted) return;
+    const sticky = document.getElementById('horizon-sticky');
+    if (!sticky) return;
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        sticky.style.position = 'relative';
+        void sticky.offsetHeight;    // force the layout; don't let it batch away
+        sticky.style.position = '';  // back to the stylesheet's sticky
+      });
+    });
+  });
 </script>
 
 <style is:global>
