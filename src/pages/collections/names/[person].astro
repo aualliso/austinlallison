@@ -14,6 +14,22 @@
 //   relationsOf  relations from BOTH records, so a relation entered once
 //                appears on both pages.
 //
+// HOW IT LOOKS (2026-09 redesign)
+//   THE CABINET CARD. The page opens on the person, not the record: their
+//   portrait in a mount with a bevelled window and the name set where a
+//   studio set its imprint, on a full-width band of desk paper. The window
+//   is cut from the PLATE (the photograph behind an overflow window), not
+//   from the small face crop, so it stays sharp at card size.
+//   FACES ALONG THE LIFE. Each placed, dated face stands above the life
+//   chart at its date, on a stem down to the years.
+//   THE SHELF. The photographs stand on a hairline at their true
+//   proportions, as on the collections guide; the list beneath keeps the
+//   grounds for each identification.
+//   THE CATALOGUE CARD. Heading, see-from forms, sources and identifiers
+//   typed on a 3x5 authority card; the MARC view stays below it.
+//   Kin faces and the card window share transition:name, so a relative's
+//   face grows into their portrait on the way to their page.
+//
 // STANDING CONSTRAINTS
 //   No filter, blend, mask, clip-path or 3D. Motion is opacity and
 //   transform, and none of it runs under reduced motion. Listeners register
@@ -106,6 +122,13 @@ const thumbs = new Map(
   )
 );
 const collectionsHere = new Set(appearances.map((a) => a.item.collection));
+// Each collection this person appears in, with a link to its inventory
+// already filtered to them (the collection page reads ?q=).
+const inventories = [...collectionsHere].map((slug) => ({
+  title: collectionBySlug.get(slug)?.title ?? slug,
+  n: new Set(appearances.filter((a) => a.item.collection === slug).map((a) => a.item.slug)).size,
+  href: `/collections/${slug}?q=${encodeURIComponent(name)}`,
+}));
 
 /* ------------------------------------------------------------------ *
  * Faces
@@ -138,6 +161,7 @@ const faces = await Promise.all(
         // photographed, the better it serves as the portrait.
         area: (f.region.w / 100) * src.width * ((f.region.h / 100) * src.height),
         link: viewLink(f),
+        src,
       };
     })
 );
@@ -145,6 +169,60 @@ const faces = await Promise.all(
 const portrait = faces
   .filter((x) => firm(x.f.confidence))
   .sort((a, b) => RANK[a.f.confidence] - RANK[b.f.confidence] || b.area - a.area)[0];
+
+/* ------------------------------------------------------------------ *
+ * The cabinet card: the portrait, cut from the photograph itself
+ * ------------------------------------------------------------------ */
+// The window is cut from the PLATE behind an overflow window, not from the
+// face crop, which is sized for thumbnails and would go soft at card size.
+// The region is grown to take in the shoulders and set in the upper part of
+// the window, where a portrait sitter's head sits. The photograph's own
+// srcset serves it, with `sizes` scaled by how much wider the whole
+// photograph is than the window.
+const WIN_AR = 0.78; // window width / height, about a cabinet card's
+const WIN_MAX = 240; // px: the window at its widest (15rem)
+const hero = (() => {
+  if (!portrait) return null;
+  const { f, src } = portrait;
+  const W = src.width;
+  const H = src.height;
+  const r = f.region;
+  let ch = Math.max((r.h / 100) * H * 2.3, ((r.w / 100) * W * 2.1) / WIN_AR);
+  let cw = ch * WIN_AR;
+  if (cw > W) {
+    cw = W;
+    ch = cw / WIN_AR;
+  }
+  if (ch > H) {
+    ch = H;
+    cw = ch * WIN_AR;
+  }
+  const cx = ((r.x + r.w / 2) / 100) * W;
+  const cy = ((r.y + r.h / 2) / 100) * H + ch * 0.14;
+  const x0 = Math.min(W - cw, Math.max(0, cx - cw / 2));
+  const y0 = Math.min(H - ch, Math.max(0, cy - ch / 2));
+  const pc = (v: number) => `${(v * 100).toFixed(3)}%`;
+  const scale = W / cw;
+  const detailW = Math.min(2600, W);
+  return {
+    src: src.view,
+    srcset: `${src.viewSrcset}${src.detail && detailW > 1900 ? `, ${src.detail} ${detailW}w` : ''}`,
+    sizes: `${Math.ceil(WIN_MAX * scale)}px`,
+    // left is a share of the window's width, top of its height.
+    style: `width:${pc(scale)};left:${pc(-x0 / cw)};top:${pc(-y0 / ch)}`,
+    w: W,
+    h: H,
+  };
+})();
+
+// The dates, set large. The sentence form (lifeLine) goes to screen readers.
+const T = '\u2009';
+const bigDates = (() => {
+  if (born === undefined && died === undefined) return '';
+  if (dateKind === 'active') return `active ${born ?? ''}${T}${EN}${T}${died ?? ''}`;
+  const c = dateKind === 'approximate' ? `c.${T}` : '';
+  return `${born !== undefined ? c + born : ''}${T}${EN}${T}${died !== undefined ? c + died : ''}`;
+})();
 
 // WHAT TO COMPARE FIRST. If any placement is only possible, the strongest
 // placement beside the first possible one: that is the question the page can
@@ -226,11 +304,47 @@ const life = (() => {
     const ageShown = age !== null && age >= 0 && (died === undefined || y <= died + PAD) && age <= 110;
     ticks.push({ y, x: P(y), labelled, minor: labelled && ((y - lo) / step) % 2 === 1, age: ageShown ? age : null });
   }
+  // FACES ALONG THE LIFE. Each placed, dated face stands above the chart at
+  // the middle of its date span. Faces go into at most three rows, spaced
+  // so none overlaps at the narrowest width the rail shows (40rem, where a
+  // 3rem face is about 9% of the chart). One that will not fit stays in the
+  // strip below and off the rail.
+  const RAIL_GAP = 9;
+  const RAIL_ROWS = 3;
+  const rowEnds: number[] = [];
+  const rail = faces
+    .filter((x) => x.span)
+    .map((x) => {
+      const s = x.span!;
+      const from = s.openStart ? s.to - OPEN_REACH : s.from;
+      const to = s.openEnd ? s.from + OPEN_REACH : s.to;
+      return { x, at: Math.min(96.5, Math.max(3.5, P((from + to + 1) / 2))) };
+    })
+    .sort((a, b) => a.at - b.at)
+    .flatMap((r) => {
+      let row = rowEnds.findIndex((end) => r.at - end >= RAIL_GAP);
+      if (row === -1 && rowEnds.length < RAIL_ROWS) {
+        row = rowEnds.length;
+        rowEnds.push(r.at);
+      }
+      if (row === -1) return [];
+      rowEnds[row] = r.at;
+      return [{ ...r, row }];
+    });
+
+  // THE CHART KEEPS ITS HEIGHT. Up to sixteen lanes each is 14px; past
+  // that the lanes close up, down to 5px, so a person in sixty photographs
+  // gets a denser chart rather than a taller one.
+  const lanes = Math.max(1, laneEnds.length);
+  const pitch = lanes <= 16 ? 14 : Math.max(5, Math.round(224 / lanes));
   return {
     lo,
     hi,
     bars,
-    lanes: Math.max(1, laneEnds.length),
+    lanes,
+    pitch,
+    rail,
+    railRows: rowEnds.length,
     band,
     ticks,
     birthX: born !== undefined ? P(born) : null,
@@ -368,9 +482,9 @@ const structured = json({
 
 const pageData = json({ prev: prev ? personHref(prev.id) : null, next: next ? personHref(next.id) : null, max: COMPARE_MAX });
 
-const H2 = 'font-mono text-[0.66rem] uppercase tracking-[0.15em] text-sage font-medium mb-3';
-const MONO = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage';
-const QUAL = 'font-mono text-[0.62rem] uppercase tracking-[0.12em] text-caprock';
+const H2 = 'sec-h mb-3';
+const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
+const QUAL = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-caprock';
 const LINK = 'text-caprock hover:underline';
 ---
 
@@ -416,64 +530,73 @@ const LINK = 'text-caprock hover:underline';
       )}
     </div>
 
-    <!-- THE CARD -->
-    <header class:list={['card', { 'has-portrait': !!portrait }]}>
-      {portrait && (
-        <a href={portrait.link} class="portrait" title={`${portrait.f.item.title}${portrait.span ? `, ${portrait.f.item.date.display}` : ''}`}>
-          <img
-            src={faceHref(portrait.f.id, 2)}
-            srcset={`${faceHref(portrait.f.id)} 1x, ${faceHref(portrait.f.id, 2)} 2x`}
-            width={FACE_W}
-            height={FACE_H}
-            alt={`${name}, from ${portrait.f.item.title}`}
-            fetchpriority="high"
-            decoding="async"
-          />
+    <!-- THE CABINET CARD -->
+    <header class:list={['hero', 'bleed', { 'has-card': !!hero }]}>
+      {hero && portrait && (
+        <a
+          href={portrait.link}
+          class="cabinet"
+          title={`${portrait.f.item.title}${portrait.span ? `, ${portrait.f.item.date.display}` : ''}`}
+        >
+          <span class="cab-window" transition:name={`person-${p.id}`}>
+            <img
+              src={hero.src}
+              srcset={hero.srcset}
+              sizes={hero.sizes}
+              width={hero.w}
+              height={hero.h}
+              style={hero.style}
+              alt={`${name}, from ${portrait.f.item.title}`}
+              fetchpriority="high"
+              decoding="async"
+            />
+          </span>
+          <span class="cab-imprint" aria-hidden="true">
+            <span class="cab-name">{name}</span>
+            {bigDates && <span class="cab-dates">{bigDates.replace(/c\.\u2009/g, '').replace(/active /, '')}</span>}
+          </span>
         </a>
       )}
-      <div class="card-text">
-        <p class={MONO}>Name authority record</p>
+      <div class="hero-text">
         <h1 class="name">{name}</h1>
-        <p class="life-line">
-          {lifeLine || <span class="italic opacity-60">Life dates not established</span>}
+        {bigDates ? (
+          <p class="dates">
+            <span aria-hidden="true">{bigDates}</span>
+            <span class="sr-only">{lifeLine}</span>
+          </p>
+        ) : (
+          <p class="dates dates--none">Life dates not established</p>
+        )}
+        {p.qualifier && <p class="qualifier">{p.qualifier}</p>}
+        {p.variants && p.variants.length > 0 && (
+          <p class="aka">
+            Also found as{' '}
+            {p.variants.map((v, n) => (
+              <>
+                {n > 0 && (n === p.variants!.length - 1 ? ' and ' : ', ')}
+                <i>{v}</i>
+              </>
+            ))}
+          </p>
+        )}
+        <p class="tally">
+          {appearances.length === 0
+            ? 'No photograph known'
+            : `In ${appearances.length} ${appearances.length === 1 ? 'photograph' : 'photographs'}`}
+          {collectionsHere.size > 1 && <> &middot; {collectionsHere.size} collections</>}
+          {faces.length > 0 && <> &middot; face placed in {faces.length}</>}
         </p>
-        <div class="heading-line">
-          <span class="heading-form">{heading(p)}</span>
-          <span class:list={['status', `status--${status}`]}>{status}</span>
-        </div>
       </div>
     </header>
 
-    <dl class="fields">
-      {p.variants && p.variants.length > 0 && (
-        <div class="field">
-          <dt class={MONO}>Search also under</dt>
-          <dd><ul class="variants">{p.variants.map((v) => <li>{v}</li>)}</ul></dd>
-        </div>
-      )}
-      {p.qualifier && (
-        <div class="field">
-          <dt class={MONO}>Distinguished as</dt>
-          <dd>{p.qualifier}</dd>
-        </div>
-      )}
-      <div class="field">
-        <dt class={MONO}>Photographs</dt>
-        <dd>
-          {appearances.length === 0
-            ? <span class="italic opacity-60">None known</span>
-            : <>{appearances.length}{collectionsHere.size > 1 && <span class="opacity-70">, across {collectionsHere.size} collections</span>}{faces.length > 0 && <span class="opacity-70">; placed in {faces.length}</span>}</>}
-        </dd>
-      </div>
-    </dl>
+    {p.scopeNote && <p class="lede">{p.scopeNote}</p>}
 
-    {p.scopeNote && <p class="scope">{p.scopeNote}</p>}
-
+    <div class="bleed bleed--life">
     <!-- A LIFE IN PHOTOGRAPHS -->
     {life && (
       <section class="section" aria-labelledby="life-h">
         <h2 id="life-h" class={H2}>A life in photographs</h2>
-        <div class="life" style={`--lanes:${life.lanes}`} data-life>
+        <div class="life" style={`--lanes:${life.lanes};--pitch:${life.pitch}px;--rows:${life.railRows};--face-ar:${(FACE_H / FACE_W).toFixed(4)}`} data-life>
           <div class="life-rules" aria-hidden="true">
             {life.ticks.map((t) => (
               <span class:list={['tick', { minor: t.minor }]} style={`--x:${t.x}%`}>
@@ -494,6 +617,30 @@ const LINK = 'text-caprock hover:underline';
           )}
           {life.deathX !== null && dateKind === 'exact' && (
             <span class="mark mark--death" style={`--x:${life.deathX}%`} aria-hidden="true"><b>d. {died}</b></span>
+          )}
+          {life.rail.length > 0 && (
+            <div class="rail" aria-hidden="true">
+              {life.rail.map((r) => (
+                <a
+                  href={r.x.link}
+                  tabindex="-1"
+                  class:list={['rail-face', { soft: !firm(r.x.f.confidence) }]}
+                  style={`--x:${r.at.toFixed(3)}%;--row:${r.row}`}
+                  data-key={r.x.key}
+                  title={`${r.x.f.item.title}, ${r.x.f.item.date.display}${r.x.age ? `, ${r.x.age}` : ''}`}
+                >
+                  <img
+                    src={faceHref(r.x.f.id)}
+                    srcset={`${faceHref(r.x.f.id)} 1x, ${faceHref(r.x.f.id, 2)} 2x`}
+                    width={FACE_W}
+                    height={FACE_H}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                  />
+                </a>
+              ))}
+            </div>
           )}
           {/* A visual index: the same photographs are listed, with links, below.
               Pointing at a line lights its face and its row. */}
@@ -595,6 +742,8 @@ const LINK = 'text-caprock hover:underline';
       </section>
     )}
 
+    </div>
+
     <!-- FAMILY -->
     {kin.length > 0 && (
       <section class="section" aria-labelledby="family-h">
@@ -605,7 +754,7 @@ const LINK = 'text-caprock hover:underline';
               {parents.map((k) => (
                 <a href={personHref(k.person)} class="kin" role="listitem">
                   {k.face ? (
-                    <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" />
+                    <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" transition:name={`person-${k.person}`} />
                   ) : (
                     <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
                   )}
@@ -624,7 +773,7 @@ const LINK = 'text-caprock hover:underline';
                 {siblings.map((k) => (
                   <a href={personHref(k.person)} class="kin kin--quiet" role="listitem">
                     {k.face ? (
-                      <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" />
+                      <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" transition:name={`person-${k.person}`} />
                     ) : (
                       <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
                     )}
@@ -654,7 +803,7 @@ const LINK = 'text-caprock hover:underline';
                 {spouses.map((k) => (
                   <a href={personHref(k.person)} class="kin" role="listitem">
                     {k.face ? (
-                      <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" />
+                      <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" transition:name={`person-${k.person}`} />
                     ) : (
                       <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
                     )}
@@ -673,7 +822,7 @@ const LINK = 'text-caprock hover:underline';
               {children.map((k) => (
                 <a href={personHref(k.person)} class="kin" role="listitem">
                   {k.face ? (
-                    <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" />
+                    <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" transition:name={`person-${k.person}`} />
                   ) : (
                     <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
                   )}
@@ -708,22 +857,54 @@ const LINK = 'text-caprock hover:underline';
     <!-- PHOTOGRAPHS -->
     <section class="section" aria-labelledby="photos-h">
       <h2 id="photos-h" class={H2}>Photographs</h2>
+      {inventories.length === 1 && (
+        <p class="note">
+          See {appearances.length === 1 ? 'it' : 'them'} in the inventory of the{' '}
+          <a href={inventories[0].href} class={LINK}>{inventories[0].title}</a>, filtered to {name}.
+        </p>
+      )}
+      {inventories.length > 1 && (
+        <p class="note">
+          See them in each collection's inventory, filtered to {name}:{' '}
+          {inventories.map((c, n) => (
+            <>
+              {n > 0 && <span aria-hidden="true"> &middot; </span>}
+              <a href={c.href} class={LINK}>{c.title}</a> ({c.n})
+            </>
+          ))}
+        </p>
+      )}
       {appearances.length === 0 ? (
         <p class="m-0 italic opacity-60">
           No photograph of this person is known. The record exists because the
           name is written on the back of one.
         </p>
       ) : (
-        <ul class="photos">
+        <>
+        {/* THE SHELF. The photographs stand on one hairline at their true
+            proportions - a cabinet card beside a wide group print, as they
+            would stand on a mantel. A visual index: the list below carries
+            the links, the dates and the grounds. */}
+        <ul class="shelf" aria-hidden="true">
           {appearances.map((a) => {
             const t = thumbs.get(a.item.slug)!;
+            return (
+              <li class="print" data-key={a.key}>
+                <a href={a.item.href} tabindex="-1" class="print-link" title={`${a.item.title}, ${a.item.date.display}`}>
+                  <img src={t.index} srcset={t.indexSrcset} width={t.width} height={t.height} alt="" loading="lazy" decoding="async" />
+                  {!firm(a.confidence) && <span class="print-flag">{label(a.confidence)}</span>}
+                </a>
+                <span class="print-date">{a.item.date.display}</span>
+              </li>
+            );
+          })}
+        </ul>
+        <ul class="photos">
+          {appearances.map((a) => {
             const coll = collectionBySlug.get(a.item.collection)?.title ?? '';
             const age = ageAt(a.span);
             return (
               <li class="photo" data-key={a.key}>
-                <a href={a.item.href} class="photo-thumb" tabindex="-1" aria-hidden="true">
-                  <img src={t.index} srcset={t.indexSrcset} width={t.width} height={t.height} alt="" loading="lazy" decoding="async" />
-                </a>
                 <div class="photo-text">
                   <a href={a.item.href} class={`${LINK} photo-title`}>{a.item.title}</a>
                   <div class={`${MONO} mt-1`}>
@@ -745,34 +926,41 @@ const LINK = 'text-caprock hover:underline';
             );
           })}
         </ul>
+        </>
       )}
     </section>
 
-    <!-- THE APPARATUS -->
-    <div class="apparatus">
-      {p.sources && p.sources.length > 0 && (
-        <section aria-labelledby="sources-h">
-          <h2 id="sources-h" class={H2}>Sources for this heading</h2>
-          <ul class="sources">
-            {p.sources.map((s) => <li>{s}</li>)}
-          </ul>
-        </section>
-      )}
-
-      {identifiers.length > 0 && (
-        <section aria-labelledby="ids-h">
-          <h2 id="ids-h" class={H2}>Also known to</h2>
-          <ul class="ids">
+    <!-- THE CATALOGUE CARD -->
+    <section class="section" aria-labelledby="record-h">
+      <h2 id="record-h" class={H2}>The authority record</h2>
+      <div class="catcard">
+        <span class:list={['cc-status', `cc-status--${status}`]}>{status}</span>
+        <p class="cc-heading">{heading(p)}</p>
+        {(p.variants ?? []).map((v) => (
+          <p class="cc-line"><span class="cc-x" title="see from">x</span> {v}</p>
+        ))}
+        {(p.sources ?? []).length > 0 && (
+          <>
+            <p class="cc-label">Sources</p>
+            {p.sources!.map((src) => <p class="cc-line cc-hang">{src}</p>)}
+          </>
+        )}
+        {identifiers.length > 0 && (
+          <>
+            <p class="cc-label">Also known to</p>
             {identifiers.map((i) => (
-              <li>
-                <span class={MONO}>{i.label}</span>
-                <a href={i.href} class={LINK} rel="external noopener">{i.value}</a>
-              </li>
+              <p class="cc-line">
+                {i.label}: <a href={i.href} rel="external noopener">{i.value}</a>
+              </p>
             ))}
-          </ul>
-        </section>
-      )}
-    </div>
+          </>
+        )}
+        {(p.sources ?? []).length === 0 && identifiers.length === 0 && (
+          <p class="cc-line cc-empty">No sources recorded for this heading yet.</p>
+        )}
+        <span class="cc-foot" aria-hidden="true">{permalink.replace(/^https?:\/\//, '')}</span>
+      </div>
+    </section>
 
     <details class="marc">
       <summary>
@@ -794,6 +982,28 @@ const LINK = 'text-caprock hover:underline';
     --c-dust: var(--color-dust, #ede7da);
     --c-iron: var(--color-iron, #3b3833);
     --c-canvas: var(--color-canvas, #f7f4ec);
+    /* Mounts and mats are pale paper. They were --c-dust, which the theme
+       defines as a dark sandy tan, so every face sat on a muddy ground. */
+    --c-mount: var(--color-caliche, #e8e1d1);
+    --c-desk: var(--color-desk, #f5f3ed);
+  }
+
+  /* FULL-WIDTH BANDS without a 100vw element: the band is painted by
+     border-image outset, which is ink overflow - it reaches the window
+     edges and never adds a horizontal scrollbar. */
+  .bleed {
+    border-image: conic-gradient(var(--c-desk) 0 0) fill 0 / / 0 100vmax;
+  }
+  .bleed--life {
+    margin-top: 2.75rem;
+    padding: 2.25rem 0 2.5rem;
+  }
+  .bleed--life > .section:first-child {
+    margin-top: 0;
+  }
+  /* No life chart and no faces: no empty band. */
+  .bleed--life:not(:has(> *)) {
+    display: none;
   }
 
   .topline {
@@ -810,102 +1020,154 @@ const LINK = 'text-caprock hover:underline';
     white-space: nowrap;
   }
 
-  /* The card ------------------------------------------------------- */
-  .card {
+  /* The cabinet card ---------------------------------------------- */
+  .hero {
     display: grid;
-    gap: 1.25rem 1.75rem;
-    align-items: end;
-    padding-bottom: 1.25rem;
-    border-bottom: 2px solid var(--c-caprock);
+    gap: 1.75rem 2.75rem;
+    align-items: center;
+    padding: 2.25rem 0 2.5rem;
+    margin-bottom: 2rem;
   }
-  .card.has-portrait {
-    grid-template-columns: auto minmax(0, 1fr);
-  }
-  /* A portrait as a print on a mount: the crop on a pale ground with a hair
-     line, not a circle-cropped avatar. These are photographs of people, and
-     the page treats them as objects. */
-  .portrait {
-    display: block;
-    width: clamp(6.5rem, 20vw, 9rem);
-    padding: 0.45rem;
-    background: var(--c-dust);
-    border: 1px solid var(--c-haze);
-    box-shadow: 0 10px 22px -16px rgb(59 56 51 / 0.55);
-  }
-  .portrait img {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
-  .name {
-    margin: 0.2rem 0 0;
-    font-size: clamp(2rem, 1.4rem + 2.6vw, 3rem);
-    font-weight: 500;
-    line-height: 1.02;
-    letter-spacing: -0.01em;
-    text-wrap: balance;
-  }
-  .life-line {
-    margin: 0.45rem 0 0;
-    font-size: 1.15rem;
-    font-style: italic;
-    font-variant-numeric: oldstyle-nums;
-  }
-  .heading-line {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.4rem 0.75rem;
-    margin-top: 0.8rem;
-  }
-  .heading-form {
-    font-size: 1rem;
-    opacity: 0.85;
-  }
-  .status {
-    padding: 0.12rem 0.45rem 0.14rem;
-    border: 1px solid var(--c-haze);
-    border-radius: 2px;
-    color: var(--c-sage);
-    font: 500 0.58rem/1.3 ui-monospace, monospace;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
-  }
-  .status--established {
-    background: var(--c-iron);
-    border-color: var(--c-iron);
-    color: var(--c-canvas);
-  }
-
-  .fields {
-    margin: 0 0 1.5rem;
-  }
-  .field {
-    display: grid;
-    gap: 0.15rem 1rem;
-    padding: 0.55rem 0;
-    border-bottom: 1px solid var(--c-haze);
-  }
-  @media (min-width: 40rem) {
-    .field {
-      grid-template-columns: 9rem minmax(0, 1fr);
+  @media (min-width: 36rem) {
+    .hero.has-card {
+      grid-template-columns: auto minmax(0, 1fr);
     }
   }
-  .field dt {
-    padding-top: 0.25rem;
+  /* A mount of pale board with a hairline rule inset like a gilt edge, the
+     window bevelled into it, and the imprint below. Rounded corners, as
+     cabinet cards had; set down on the desk a degree off square, and
+     straightened when you reach for it. */
+  .cabinet {
+    position: relative;
+    display: block;
+    justify-self: center;
+    width: clamp(11rem, 44vw, 15rem);
+    padding: 0.85rem 0.85rem 0;
+    border-radius: 5px;
+    background:
+      linear-gradient(155deg, rgb(255 255 255 / 0.4), rgb(255 255 255 / 0) 45%),
+      var(--c-mount);
+    box-shadow:
+      inset 0 0 0 1px rgb(255 255 255 / 0.45),
+      0 1px 1px rgb(26 25 25 / 0.14),
+      0 22px 34px -20px rgb(26 25 25 / 0.6);
+    color: inherit;
+    text-decoration: none;
+    transform: rotate(-1.2deg);
+    transition: transform 0.35s ease;
   }
-  .field dd {
+  .cabinet::before {
+    content: '';
+    position: absolute;
+    inset: 0.4rem;
+    border: 1px solid rgb(184 90 56 / 0.4);
+    border-radius: 3px;
+    pointer-events: none;
+  }
+  .cabinet:hover,
+  .cabinet:focus-visible {
+    transform: rotate(0deg) translateY(-3px);
+  }
+  .cabinet:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 4px;
+  }
+  .cab-window {
+    position: relative;
+    display: block;
+    aspect-ratio: 0.78;
+    overflow: hidden;
+    background: #d6cebd;
+  }
+  /* The whole photograph, placed behind the window by the style the page
+     computes. max-width: none, or Tailwind's img rule squeezes it back to
+     the window and the crop is lost. */
+  .cab-window img {
+    position: absolute;
+    max-width: none;
+    height: auto;
+  }
+  /* The bevel: a dark inner edge top and left, a light one bottom and
+     right, drawn over the photograph. */
+  .cab-window::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    box-shadow:
+      inset 0 0 0 1px rgb(26 25 25 / 0.35),
+      inset 2px 2px 3px rgb(26 25 25 / 0.3),
+      inset -1px -1px 0 rgb(255 255 255 / 0.35);
+    pointer-events: none;
+  }
+  .cab-imprint {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 0.75rem 0.4rem 0.9rem;
+    text-align: center;
+  }
+  .cab-name {
+    font-family: var(--font-serif);
+    font-size: 0.98rem;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.14em;
+    line-height: 1.15;
+    color: var(--c-caprock);
+    text-wrap: balance;
+  }
+  .cab-dates {
+    margin-top: 0.3rem;
+    font: 0.6rem/1 ui-monospace, monospace;
+    letter-spacing: 0.32em;
+    color: var(--c-sage);
+  }
+
+  .hero-text {
+    min-width: 0;
+  }
+  .name {
     margin: 0;
+    font-size: clamp(2.4rem, 1.5rem + 3.6vw, 4rem);
+    font-weight: 500;
+    line-height: 0.98;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
   }
-  .variants {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  .dates {
+    margin: 0.65rem 0 0;
+    color: var(--c-caprock);
+    font-size: clamp(1.4rem, 1rem + 1.5vw, 2rem);
+    font-variant-numeric: oldstyle-nums proportional-nums;
+    letter-spacing: 0.02em;
+    line-height: 1.1;
   }
-  .scope {
-    max-width: 40rem;
-    margin: 0 0 1.5rem;
+  .dates--none {
+    color: inherit;
     font-size: 1.05rem;
+    font-style: italic;
+    opacity: 0.6;
+  }
+  .qualifier {
+    margin: 0.4rem 0 0;
+    font-style: italic;
+    opacity: 0.8;
+  }
+  .aka {
+    margin: 1rem 0 0;
+    font-size: 1.08rem;
+  }
+  .tally {
+    margin: 1.1rem 0 0;
+    color: var(--c-sage);
+    font: 0.7rem/1.5 ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .lede {
+    max-width: 40rem;
+    margin: 0 0 0.5rem;
+    font-size: 1.2rem;
+    line-height: 1.55;
     text-wrap: pretty;
   }
 
@@ -925,7 +1187,13 @@ const LINK = 'text-caprock hover:underline';
   /* A life in photographs ------------------------------------------ */
   .life {
     --pitch: 14px;
-    --top: 1.35rem;
+    --rows: 0;
+    --face-ar: 1.25;
+    --face-w: 3rem;
+    /* one rail row: the face, its 2px mat and border, and a gap */
+    --slot: calc(var(--face-w) * var(--face-ar) + 6px + 0.6rem);
+    --rail: calc(var(--rows) * var(--slot));
+    --top: calc(1.35rem + var(--rail) + 0.35rem);
     --axis: 2.4rem;
     position: relative;
     height: calc(var(--top) + var(--lanes) * var(--pitch) + var(--axis));
@@ -951,13 +1219,13 @@ const LINK = 'text-caprock hover:underline';
   }
   .tick-year {
     bottom: -1.05rem;
-    font-size: 0.62rem;
+    font-size: 0.66rem;
     font-weight: 500;
     color: var(--c-sage);
   }
   .tick-age {
     bottom: -1.95rem;
-    font-size: 0.56rem;
+    font-size: 0.64rem;
     font-style: normal;
     color: var(--c-caprock);
     opacity: 0.8;
@@ -1009,7 +1277,7 @@ const LINK = 'text-caprock hover:underline';
   .mark b {
     position: absolute;
     top: 0;
-    font: 500 0.6rem/1 ui-monospace, monospace;
+    font: 500 0.66rem/1 ui-monospace, monospace;
     color: var(--c-caprock);
     white-space: nowrap;
   }
@@ -1018,6 +1286,64 @@ const LINK = 'text-caprock hover:underline';
   }
   .mark--death b {
     right: 0.3rem;
+  }
+  /* Faces along the life. */
+  .rail {
+    position: absolute;
+    top: 1.35rem;
+    left: 0;
+    right: 0;
+    height: var(--rail);
+  }
+  .rail-face {
+    position: absolute;
+    top: calc(var(--row) * var(--slot));
+    left: var(--x);
+    z-index: 1;
+    width: var(--face-w);
+    padding: 2px;
+    background: var(--c-mount);
+    border: 1px solid var(--c-haze);
+    box-shadow: 0 6px 10px -8px rgb(26 25 25 / 0.6);
+    transform: translateX(-50%);
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease,
+      opacity 0.2s ease;
+  }
+  .rail-face img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  /* The stem, down to where the bars begin. */
+  .rail-face::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    height: calc((var(--rows) - 1 - var(--row)) * var(--slot) + 0.95rem);
+    border-left: 1px solid rgb(184 90 56 / 0.55);
+  }
+  .rail-face.soft::after {
+    border-left: 1px dashed var(--c-sage);
+  }
+  .rail-face:hover,
+  .rail-face.is-lit {
+    z-index: 2;
+    border-color: var(--c-caprock);
+    transform: translateX(-50%) translateY(-2px);
+  }
+  .life[data-dim] .rail-face:not(.is-lit) {
+    opacity: 0.35;
+  }
+  @media (max-width: 40rem) {
+    .life {
+      --rail: 0px;
+    }
+    .rail {
+      display: none;
+    }
   }
   .life-bars {
     position: absolute;
@@ -1063,7 +1389,7 @@ const LINK = 'text-caprock hover:underline';
     flex-wrap: wrap;
     gap: 0.4rem 1.2rem;
     margin-top: 0.4rem;
-    font: 0.6rem/1.4 ui-monospace, monospace;
+    font: 0.7rem/1.4 ui-monospace, monospace;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--c-sage);
@@ -1096,7 +1422,7 @@ const LINK = 'text-caprock hover:underline';
   .strip {
     display: grid;
     grid-auto-flow: column;
-    grid-auto-columns: 7.25rem;
+    grid-auto-columns: 8.5rem;
     gap: 1rem;
     margin: 0;
     padding: 0.25rem 0.1rem 0.9rem;
@@ -1115,7 +1441,7 @@ const LINK = 'text-caprock hover:underline';
     position: relative;
     display: block;
     padding: 0.3rem;
-    background: var(--c-dust);
+    background: var(--c-mount);
     border: 1px solid var(--c-haze);
     transition:
       border-color 0.2s ease,
@@ -1140,13 +1466,13 @@ const LINK = 'text-caprock hover:underline';
     padding: 0.1rem 0.3rem;
     background: rgb(23 21 15 / 0.78);
     color: #f0ead9;
-    font: 0.52rem/1.3 ui-monospace, monospace;
+    font: 0.62rem/1.3 ui-monospace, monospace;
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
   .strip-date {
     margin-top: 0.45rem;
-    font-size: 0.6rem;
+    font-size: 0.68rem;
     color: var(--c-sage);
   }
   .strip-age {
@@ -1161,7 +1487,7 @@ const LINK = 'text-caprock hover:underline';
     border: 1px solid var(--c-haze);
     background: transparent;
     color: var(--c-iron);
-    font: 500 0.56rem/1.2 ui-monospace, monospace;
+    font: 500 0.66rem/1.2 ui-monospace, monospace;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     cursor: pointer;
@@ -1203,7 +1529,7 @@ const LINK = 'text-caprock hover:underline';
   .cmp-face {
     display: block;
     padding: 0.5rem;
-    background: var(--c-dust);
+    background: var(--c-mount);
     border: 1px solid var(--c-haze);
     box-shadow: 0 14px 26px -20px rgb(59 56 51 / 0.6);
   }
@@ -1236,7 +1562,7 @@ const LINK = 'text-caprock hover:underline';
     border: 0;
     background: none;
     color: var(--c-sage);
-    font: 0.58rem/1.3 ui-monospace, monospace;
+    font: 0.68rem/1.3 ui-monospace, monospace;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     cursor: pointer;
@@ -1316,7 +1642,7 @@ const LINK = 'text-caprock hover:underline';
     width: 2.8rem;
     height: 3.5rem;
     object-fit: cover;
-    background: var(--c-dust);
+    background: var(--c-mount);
   }
   .kin-face--none {
     display: flex;
@@ -1332,7 +1658,7 @@ const LINK = 'text-caprock hover:underline';
     min-width: 0;
   }
   .kin-role {
-    font: 0.55rem/1.3 ui-monospace, monospace;
+    font: 0.66rem/1.3 ui-monospace, monospace;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--c-sage);
@@ -1372,6 +1698,84 @@ const LINK = 'text-caprock hover:underline';
   }
 
   /* Photographs ---------------------------------------------------- */
+  /* The shelf ----------------------------------------------------- */
+  .shelf {
+    --shelf-h: 10rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 1.9rem 1.5rem;
+    margin: 0.75rem 0 2.25rem;
+    padding: 0;
+    list-style: none;
+  }
+  @media (max-width: 40rem) {
+    .shelf {
+      --shelf-h: 7rem;
+      gap: 1.5rem 1rem;
+    }
+  }
+  .print {
+    display: flex;
+    flex-direction: column;
+    max-width: 100%;
+  }
+  .print-link {
+    position: relative;
+    display: block;
+    transition: transform 0.25s ease;
+  }
+  /* max-height, not height: a fixed height with a max-width would squash a
+     wide print on a narrow screen. Both limits keep the proportions. */
+  .print-link img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: var(--shelf-h);
+    box-shadow:
+      0 1px 1px rgb(26 25 25 / 0.18),
+      0 12px 18px -12px rgb(26 25 25 / 0.55);
+  }
+  /* The hairline they stand on, run half a gap past each print so a row
+     reads as one line. */
+  .print-link::after {
+    content: '';
+    position: absolute;
+    left: -0.75rem;
+    right: -0.75rem;
+    bottom: -1px;
+    border-bottom: 1px solid rgb(26 25 25 / 0.28);
+  }
+  .print-link:hover,
+  .print.is-lit .print-link {
+    transform: translateY(-4px);
+  }
+  .print-flag {
+    position: absolute;
+    left: 0.3rem;
+    bottom: 0.35rem;
+    padding: 0.1rem 0.35rem;
+    background: rgb(26 25 25 / 0.72);
+    color: #f5f3ed;
+    font: 0.62rem/1.3 ui-monospace, monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+  /* Width 0 and min-width 100%: the date takes the print's width without
+     widening it, and trims rather than wraps. */
+  .print-date {
+    width: 0;
+    min-width: 100%;
+    margin-top: 0.5rem;
+    overflow: hidden;
+    color: var(--c-sage);
+    font: 0.68rem/1.3 ui-monospace, monospace;
+    letter-spacing: 0.04em;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .photos {
     margin: 0;
     padding: 0;
@@ -1386,23 +1790,6 @@ const LINK = 'text-caprock hover:underline';
   }
   .photo.is-lit {
     background: rgb(218 211 196 / 0.22);
-  }
-  .photo-thumb {
-    display: flex;
-    flex-shrink: 0;
-    align-items: center;
-    justify-content: center;
-    width: 6rem;
-    height: 7.5rem;
-    padding: 0.3rem;
-    background: var(--c-dust);
-    border: 1px solid var(--c-haze);
-  }
-  .photo-thumb img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
   }
   .photo-text {
     min-width: 0;
@@ -1424,7 +1811,7 @@ const LINK = 'text-caprock hover:underline';
     display: inline-block;
     margin-top: 0.45rem;
     color: var(--c-caprock);
-    font: 500 0.6rem/1.3 ui-monospace, monospace;
+    font: 500 0.7rem/1.3 ui-monospace, monospace;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     text-decoration: none;
@@ -1433,53 +1820,98 @@ const LINK = 'text-caprock hover:underline';
     text-decoration: underline;
   }
 
-  /* Apparatus ------------------------------------------------------ */
-  .apparatus {
-    display: grid;
-    gap: 2rem 2.5rem;
-    margin-top: 2.75rem;
-    padding-top: 1.5rem;
-    border-top: 2px solid var(--c-haze);
-  }
-  @media (min-width: 48rem) {
-    .apparatus {
-      grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
-    }
-  }
-  .sources {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .sources li {
+  /* The catalogue card --------------------------------------------- */
+  /* A 3x5 authority card: buff stock, typed, the rod hole at the foot, the
+     status stamped in the corner. Set down a fraction off square. */
+  .catcard {
     position: relative;
-    margin-bottom: 0.45rem;
-    padding-left: 1rem;
-    font-size: 0.95rem;
-    opacity: 0.88;
+    max-width: 36rem;
+    min-height: 13rem;
+    margin-top: 0.5rem;
+    padding: 1.4rem 1.6rem 3rem 2.1rem;
+    border: 1px solid rgb(26 25 25 / 0.12);
+    border-radius: 3px;
+    background: #f7f2e4;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.6),
+      0 14px 26px -18px rgb(26 25 25 / 0.5);
+    color: #2a2826;
+    font-family: 'Courier New', Courier, ui-monospace, monospace;
+    font-size: 0.92rem;
+    line-height: 1.55;
+    transform: rotate(0.35deg);
   }
-  .sources li::before {
+  .catcard::after {
     content: '';
     position: absolute;
-    left: 0;
-    top: 0.75em;
-    width: 0.5rem;
-    border-top: 1px solid currentColor;
+    left: 50%;
+    bottom: 0.8rem;
+    width: 1.05rem;
+    height: 1.05rem;
+    margin-left: -0.525rem;
+    border-radius: 50%;
+    background: var(--c-canvas);
+    box-shadow: inset 0 1px 2px rgb(26 25 25 / 0.4);
+  }
+  .cc-heading {
+    margin: 0 6.5rem 0.55rem 0;
+    font-weight: 700;
+  }
+  .cc-line {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  /* Sources run on with a hanging indent, as typed cards did. */
+  .cc-hang {
+    padding-left: 3ch;
+    text-indent: -3ch;
+  }
+  .cc-x {
+    color: var(--c-caprock);
+  }
+  .cc-label {
+    margin: 0.85rem 0 0.1rem;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  .cc-empty {
+    font-style: italic;
     opacity: 0.6;
   }
-  .ids {
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  .catcard a {
+    color: var(--c-caprock);
   }
-  .ids li {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: 0.2rem 1rem;
-    padding: 0.4rem 0;
-    border-bottom: 1px solid var(--c-haze);
+  .catcard a:hover {
+    text-decoration: underline;
+  }
+  /* The status, as a rubber stamp. */
+  .cc-status {
+    position: absolute;
+    top: 1rem;
+    right: 1.1rem;
+    padding: 0.1rem 0.45rem;
+    border: 1.5px solid currentColor;
+    border-radius: 2px;
+    color: var(--c-sage);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    transform: rotate(-4deg);
+  }
+  .cc-status--established {
+    color: var(--c-caprock);
+  }
+  .cc-foot {
+    position: absolute;
+    left: 2.1rem;
+    bottom: 0.85rem;
+    max-width: calc(50% - 3rem);
+    overflow: hidden;
+    font-size: 0.66rem;
+    opacity: 0.5;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .marc {
@@ -1523,8 +1955,17 @@ const LINK = 'text-caprock hover:underline';
     .bar,
     .strip-face,
     .kin,
-    .photo {
+    .photo,
+    .cabinet,
+    .rail-face,
+    .print-link {
       transition: none;
+    }
+    .cabinet:hover,
+    .cabinet:focus-visible,
+    .print-link:hover,
+    .print.is-lit .print-link {
+      transform: none;
     }
     .strip-face:hover,
     .strip-face:focus-visible,
@@ -1534,6 +1975,20 @@ const LINK = 'text-caprock hover:underline';
   }
 
   @media print {
+    .bleed {
+      border-image: none;
+    }
+    .cabinet,
+    .catcard {
+      transform: none;
+      box-shadow: none;
+    }
+    .rail {
+      display: none;
+    }
+    .life {
+      --rail: 0px;
+    }
     .pager,
     .pick,
     .cmp-remove,

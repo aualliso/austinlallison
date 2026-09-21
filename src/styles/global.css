@@ -108,6 +108,26 @@
   background-position: var(--plat-x) var(--plat-y);
 }
 
+/* SECTION HEADINGS, the collections pages and anywhere else that wants
+   them. The serif in small caps, so a heading reads as a heading and not
+   as one more field label; the mono small capitals stay for labels that
+   are data (field names, qualifiers, control numbers, dates). In the
+   components layer so a page's utilities (a margin, a rule) win over it.
+   If the Cormorant kit carries no true small caps the browser draws them
+   from the capitals, which is lighter but serviceable. */
+@layer components {
+  .sec-h {
+    margin: 0 0 0.55rem;
+    font-family: var(--font-serif);
+    font-size: 1.08rem;
+    font-weight: 600;
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.07em;
+    line-height: 1.2;
+    color: var(--color-iron);
+  }
+}
+
 /* Global Markdown Typography Handlers */
 article blockquote, .prose blockquote {
   border-left: 3px solid #B85A38 !important; /* Solid Caprock Rust Line */

@@ -2,17 +2,48 @@
 // src/pages/collections/names.astro
 // The authority file. A static route, so it wins over [collection].astro -
 // which is why index.ts refuses a collection slugged 'names'.
+//
+// Built for hundreds of names: headings filed under their initial with an
+// A-Z bar, and a filter over headings, reading forms and see-from forms
+// (?q= in the address keeps it).
 import RootLayout from '../../layouts/RootLayout.astro';
 import { PEOPLE, NAME_INDEX, appearancesOf, personById, personHref } from '../../data/collections/index';
-import { heading } from '../../data/collections/types';
+import { heading, naturalName } from '../../data/collections/types';
 
-const H2 =
-  'font-mono text-xs uppercase tracking-[0.16em] text-sage font-medium border-b border-haze pb-1.5 mt-10 mb-4';
+const H2 = 'sec-h border-b border-haze pb-1.5 mt-10 mb-4';
 
 const headings = PEOPLE.map((p) => ({ p, n: appearancesOf(p.id).length })).sort(
   (a, b) => heading(a.p).localeCompare(heading(b.p))
 );
 const variants = NAME_INDEX.filter((n) => !n.authorized);
+
+// FILED BY LETTER. At hundreds of names one run of two columns is a long
+// scroll with no way in, so headings are grouped under their initial with an
+// A-Z bar above - the thumb index of a printed index. Letters with no names
+// show, dimmed, so the bar never changes shape.
+const initial = (s: string) => {
+  const c = s.normalize('NFD').replace(/[\u0300-\u036f]/g, '').charAt(0).toUpperCase();
+  return /[A-Z]/.test(c) ? c : '#';
+};
+const groups = new Map<string, typeof headings>();
+for (const h of headings) {
+  const k = initial(heading(h.p));
+  if (!groups.has(k)) groups.set(k, []);
+  groups.get(k)!.push(h);
+}
+const LETTERS = [...'ABCDEFGHIJKLMNOPQRSTUVWXYZ', ...(groups.has('#') ? ['#'] : [])];
+
+// What the filter searches: heading, reading order and every see-from form,
+// folded the way the script folds a query.
+const fold = (v: string) =>
+  v
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+const hayOf = (p: (typeof PEOPLE)[number]) => fold([heading(p), naturalName(p), ...(p.variants ?? [])].join(' '));
+const LETTER = 'font-mono text-[0.7rem] uppercase tracking-[0.1em]';
 ---
 
 <RootLayout
@@ -21,7 +52,7 @@ const variants = NAME_INDEX.filter((n) => !n.authorized);
   prose={false}
 >
   <div class="max-w-4xl mx-auto py-6 text-iron font-serif">
-    <nav class="font-mono text-[0.68rem] uppercase tracking-[0.1em] text-sage mb-4">
+    <nav class="font-mono text-[0.7rem] uppercase tracking-[0.1em] text-sage mb-4">
       <a href="/collections" class="text-caprock hover:underline">Collections</a>
     </nav>
 
@@ -32,24 +63,54 @@ const variants = NAME_INDEX.filter((n) => !n.authorized);
       by how the material reached me rather than by family.
     </p>
 
+    <div class="names-tools" data-js-only>
+      <label for="names-filter" class={`${LETTER} text-sage block`}>Find a name</label>
+      <input
+        id="names-filter"
+        class="names-filter"
+        type="search"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="A surname, a given name, or a form found on a photograph"
+        data-names-filter
+      />
+      <p class={`${LETTER} text-sage mt-1.5 min-h-[1.3em]`} aria-live="polite" data-names-status></p>
+    </div>
+
+    <nav class="letters" aria-label="Headings by letter">
+      {LETTERS.map((l) =>
+        groups.has(l) ? (
+          <a href={`#letter-${l === '#' ? 'other' : l}`} class={`${LETTER} letter`} data-letter={l}>{l}</a>
+        ) : (
+          <span class={`${LETTER} letter letter--none`} aria-hidden="true">{l}</span>
+        )
+      )}
+    </nav>
+
     <h2 class={H2}>Headings</h2>
-    <ul class="list-none p-0 m-0 md:columns-2 md:gap-10">
-      {headings.map(({ p, n }) => (
-        <li class="flex justify-between gap-4 border-b border-haze py-1.5 break-inside-avoid">
-          <a href={personHref(p.id)} class="text-caprock hover:underline">{heading(p)}</a>
-          <span class="font-mono text-[0.7rem] text-sage">{n || ''}</span>
-        </li>
-      ))}
-    </ul>
+    {[...groups.entries()].map(([l, list]) => (
+      <section class="letter-group" data-group={l} aria-labelledby={`letter-${l === '#' ? 'other' : l}`}>
+        <h3 id={`letter-${l === '#' ? 'other' : l}`} class="letter-h">{l}</h3>
+        <ul class="list-none p-0 m-0 md:columns-2 md:gap-10">
+          {list.map(({ p, n }) => (
+            <li class="name-row flex justify-between gap-4 border-b border-haze py-1.5 break-inside-avoid" data-hay={hayOf(p)}>
+              <a href={personHref(p.id)} class="text-caprock hover:underline">{heading(p)}</a>
+              <span class="font-mono text-[0.7rem] text-sage">{n || ''}</span>
+            </li>
+          ))}
+        </ul>
+      </section>
+    ))}
+    <p class="italic opacity-70 mt-6" hidden data-names-empty>No heading or variant form matches.</p>
 
     {variants.length > 0 && (
       <>
-        <h2 class={H2}>Variant forms</h2>
-        <ul class="list-none p-0 m-0 md:columns-2 md:gap-10">
+        <h2 class={H2} data-variants-h>Variant forms</h2>
+        <ul class="list-none p-0 m-0 md:columns-2 md:gap-10" data-variants>
           {variants.map((v) => (
-            <li class="border-b border-haze py-1.5 break-inside-avoid flex flex-wrap items-baseline gap-2">
+            <li class="name-row border-b border-haze py-1.5 break-inside-avoid flex flex-wrap items-baseline gap-2" data-hay={fold(v.form)}>
               <span class="italic opacity-60">{v.form}</span>
-              <span class="font-mono text-[0.6rem] uppercase tracking-[0.12em] text-sage">see</span>
+              <span class="font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage">see</span>
               <a href={personHref(v.id)} class="text-caprock hover:underline">
                 {heading(personById.get(v.id)!)}
               </a>
@@ -59,4 +120,157 @@ const variants = NAME_INDEX.filter((n) => !n.authorized);
       </>
     )}
   </div>
+  <noscript>
+    <style is:inline>
+      [data-js-only] { display: none !important; }
+    </style>
+  </noscript>
 </RootLayout>
+
+<style>
+  /* Anything hidden by the attribute stays hidden: .name-row is a flex row,
+     and a class outranks the browser's own [hidden] rule. */
+  [hidden] {
+    display: none !important;
+  }
+  .names-tools {
+    max-width: 30rem;
+    margin-top: 2rem;
+  }
+  .names-filter {
+    width: 100%;
+    padding: 0.4rem 0.2rem;
+    border: 0;
+    border-bottom: 1.5px solid var(--color-iron);
+    border-radius: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 1.1rem;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .names-filter::placeholder {
+    color: var(--color-sage);
+    font-style: italic;
+  }
+  .names-filter:focus {
+    outline: none;
+    border-bottom-color: var(--color-caprock);
+    box-shadow: 0 1.5px 0 0 var(--color-caprock);
+  }
+  .letters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.15rem;
+    margin-top: 1.5rem;
+  }
+  .letter {
+    min-width: 1.7rem;
+    padding: 0.3rem 0;
+    border: 1px solid var(--color-haze);
+    color: var(--color-caprock);
+    text-align: center;
+    text-decoration: none;
+  }
+  a.letter:hover,
+  a.letter:focus-visible {
+    border-color: var(--color-caprock);
+  }
+  a.letter:focus-visible {
+    outline: 2px solid var(--color-caprock);
+    outline-offset: 2px;
+  }
+  .letter--none,
+  .letter.is-empty {
+    color: var(--color-sage);
+    opacity: 0.35;
+  }
+  .letter-group {
+    scroll-margin-top: calc(var(--header-h, 4.5rem) + 1rem);
+  }
+  .letter-h {
+    margin: 1.4rem 0 0.2rem;
+    font-size: 1.35rem;
+    font-weight: 500;
+    color: var(--color-caprock);
+  }
+</style>
+
+<script>
+  // THE FILTER. Every word must begin some word of a heading, its reading
+  // form or one of its see-from forms. Rows that fail hide; letters with
+  // nothing left hide and dim in the bar. ?q= keeps it, so a filtered index
+  // is a link.
+  function wireNames() {
+    const input = document.querySelector<HTMLInputElement>('[data-names-filter]');
+    if (!input || input.dataset.wired) return;
+    input.dataset.wired = '1';
+    const ac = new AbortController();
+    document.addEventListener('astro:before-swap', () => ac.abort(), { once: true });
+    const fold = (v: string) =>
+      v
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '')
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, ' ')
+        .trim();
+    const rows = Array.from(document.querySelectorAll<HTMLElement>('.name-row'));
+    const hay = new Map(rows.map((r) => [r, (r.dataset.hay ?? '').split(' ')]));
+    const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-group]'));
+    const status = document.querySelector<HTMLElement>('[data-names-status]');
+    const empty = document.querySelector<HTMLElement>('[data-names-empty]');
+    const variantsList = document.querySelector<HTMLElement>('[data-variants]');
+    const variantsH = document.querySelector<HTMLElement>('[data-variants-h]');
+    const headingRows = rows.filter((r) => r.closest('[data-group]'));
+
+    const apply = (q: string) => {
+      const words = fold(q).split(' ').filter(Boolean);
+      rows.forEach((r) => {
+        const h = hay.get(r) ?? [];
+        r.hidden = !words.every((w) => h.some((x) => x.startsWith(w)));
+      });
+      let shown = 0;
+      groups.forEach((g) => {
+        const n = Array.from(g.querySelectorAll<HTMLElement>('.name-row')).filter((r) => !r.hidden).length;
+        shown += n;
+        g.hidden = n === 0;
+        const l = document.querySelector<HTMLElement>(`[data-letter="${CSS.escape(g.dataset.group ?? '')}"]`);
+        l?.classList.toggle('is-empty', n === 0);
+      });
+      if (variantsList && variantsH) {
+        const any = Array.from(variantsList.querySelectorAll<HTMLElement>('.name-row')).some((r) => !r.hidden);
+        variantsList.hidden = !any;
+        variantsH.hidden = !any;
+      }
+      if (empty) empty.hidden = !(words.length && shown === 0);
+      if (status) {
+        const total = headingRows.length;
+        status.textContent = words.length ? `${shown} of ${total} ${total === 1 ? 'heading' : 'headings'}` : '';
+      }
+      const url = new URL(location.href);
+      if (words.length) url.searchParams.set('q', q.trim());
+      else url.searchParams.delete('q');
+      history.replaceState(history.state, '', url);
+    };
+
+    const start = new URLSearchParams(location.search).get('q');
+    if (start) {
+      input.value = start;
+      apply(start);
+    }
+    input.addEventListener('input', () => apply(input.value), { signal: ac.signal });
+    input.addEventListener(
+      'keydown',
+      (e) => {
+        if (e.key === 'Escape' && input.value) {
+          e.preventDefault();
+          input.value = '';
+          apply('');
+        }
+      },
+      { signal: ac.signal }
+    );
+  }
+  document.addEventListener('astro:page-load', wireNames);
+</script>

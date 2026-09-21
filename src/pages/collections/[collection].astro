@@ -24,6 +24,18 @@
 //     inventory can be sent as a link.
 //   - NAMES IN THIS COLLECTION: every person in it, alphabetical by the
 //     authority heading, with a count, linked to their authority record.
+//
+// HOW IT LOOKS (2026-09 redesign, matching the guide and the person pages)
+//   THE FRONT. A desk-paper band: the title and scope beside the
+//   collection's key photographs standing on a hairline (the same prints,
+//   with the same transition names, as its entry on the guide - so they
+//   carry across when you arrive), three figures, and a row of the people
+//   in it, each face linked to their record.
+//   THE SHEET. The inventory opens as a contact sheet: every photograph at
+//   its true proportions on a hairline, title and date beneath. List view,
+//   with the names and format, is one button away; ?view=list keeps it.
+//   Both views are the same rows restyled, so the filter and the order
+//   work in either.
 import RootLayout from '../../layouts/RootLayout.astro';
 import {
   COLLECTIONS,
@@ -39,8 +51,14 @@ import {
   personHref,
   headingDates,
   PEOPLE_WITH_ITEMS,
+  keyItemsOf,
+  naturalName,
+  FACES,
+  FACE_W,
+  FACE_H,
+  faceHref,
 } from '../../data/collections/index';
-import type { ResolvedItem } from '../../data/collections/index';
+import type { ResolvedItem, Face } from '../../data/collections/index';
 import { plate } from '../../data/collections/images';
 
 export function getStaticPaths() {
@@ -66,8 +84,8 @@ const thumbs = new Map(
 );
 
 const H2 =
-  'font-mono text-xs uppercase tracking-[0.16em] text-sage font-medium border-b border-haze pb-1.5 mt-10 mb-4';
-const DT = 'font-mono text-[0.66rem] uppercase tracking-[0.12em] text-sage sm:w-36 sm:shrink-0 sm:pt-1';
+  'sec-h border-b border-haze pb-1.5 mt-10 mb-4';
+const DT = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage sm:w-36 sm:shrink-0 sm:pt-1';
 const ROW = 'flex flex-col sm:flex-row sm:gap-4 border-b border-haze py-2';
 
 // Series that actually have something in them, plus anything unfiled.
@@ -151,6 +169,66 @@ const names = PEOPLE_WITH_ITEMS.map(({ person, appearances }) => ({
   .filter((x) => x.n > 0)
   .sort((a, b) => a.p.authorized.localeCompare(b.p.authorized));
 const NAMES_ID = 'collection-names';
+
+/* ---------------------------------------------------------------- *
+ * The front
+ * ---------------------------------------------------------------- */
+// The key photographs: the same four the guide shows for this collection,
+// so their transition names pair and they carry across from the guide.
+const keys = keyItemsOf(c.slug, 4);
+const key = keys[0] ?? null;
+const strip = keys.slice(1, 4);
+
+// The people in it: each person's best face FROM THIS COLLECTION (identified
+// as certain or probable, the largest share of its photograph), in order of
+// birth, then by earliest photograph. Up to FACES_MAX.
+const FACES_MAX = 18;
+const FIRM: Record<string, number> = { certain: 0, probable: 1 };
+const here = new Set(items.map((i) => i.slug));
+const faceArea = (f: Face) => f.region.w * f.region.h;
+const bestHere = new Map<string, Face>();
+for (const f of FACES) {
+  if (!(f.confidence in FIRM) || !here.has(f.item.slug)) continue;
+  const cur = bestHere.get(f.person);
+  if (
+    !cur ||
+    FIRM[f.confidence] < FIRM[cur.confidence] ||
+    (FIRM[f.confidence] === FIRM[cur.confidence] && faceArea(f) > faceArea(cur))
+  ) {
+    bestHere.set(f.person, f);
+  }
+}
+const yearOf = (v?: string) => (v && /^\d{3,4}$/.test(v.trim()) ? Number(v) : undefined);
+const firstIn = (pid: string) => {
+  const froms = items
+    .filter((i) => i.depicts.some((d) => d.person === pid))
+    .map((i) => spanOf(i)?.from)
+    .filter((y): y is number => y !== undefined);
+  return froms.length ? Math.min(...froms) : Infinity;
+};
+const people = names
+  .filter(({ p }) => bestHere.has(p.id))
+  .map(({ p, n }) => {
+    const dates = headingDates(p).replace(/(\d)-/g, `$1${EN}`);
+    return {
+      p,
+      face: bestHere.get(p.id)!,
+      born: yearOf(p.birth),
+      first: firstIn(p.id),
+      name: naturalName(p),
+      caption: `${naturalName(p)}${dates ? `, ${dates}` : ''} \u00b7 ${plural(n, 'photograph')} here`,
+      n,
+    };
+  })
+  .sort((a, b) => b.n - a.n)
+  .slice(0, FACES_MAX)
+  .sort((a, b) => {
+    if (a.born !== undefined && b.born !== undefined) return a.born - b.born || a.name.localeCompare(b.name);
+    if (a.born !== undefined) return -1;
+    if (b.born !== undefined) return 1;
+    return a.first - b.first || a.name.localeCompare(b.name);
+  });
+const PEOPLE_NOTE = 'The people in this collection, in order of birth';
 const sortable = sections.some((s) => s.items.length > 1);
 const custodyKnown = !/^TODO/i.test(c.custody);
 ---
@@ -168,12 +246,86 @@ const custodyKnown = !/^TODO/i.test(c.custody);
   </noscript>
 
   <div class="collection max-w-4xl mx-auto py-6 text-iron font-serif" data-collection>
-    <nav class="font-mono text-[0.68rem] uppercase tracking-[0.1em] text-sage mb-4">
-      <a href="/collections" class="text-caprock hover:underline">Collections</a>
-    </nav>
+    <!-- THE FRONT -->
+    <header class:list={['front', 'bleed', { 'has-plates': !!key }]}>
+      <div class="front-text">
+        <nav class="front-crumb" aria-label="Breadcrumb">
+          <a href="/collections">Collections</a>
+        </nav>
+        <h1 class="front-title">{c.title}</h1>
+        <p class="lede">{c.scope}</p>
+        <dl class="figs">
+          <div>
+            <dt>Photographs</dt>
+            <dd>{items.length.toLocaleString('en-US')}</dd>
+          </div>
+          {extent && (
+            <div>
+              <dt>Dates</dt>
+              <dd>{years(extent.from, extent.to)}</dd>
+            </div>
+          )}
+          {names.length > 0 && (
+            <div>
+              <dt>People</dt>
+              <dd>{names.length.toLocaleString('en-US')}</dd>
+            </div>
+          )}
+        </dl>
+      </div>
 
-    <h1 class="text-3xl font-medium tracking-tight mb-3">{c.title}</h1>
-    <p class="text-lg max-w-2xl opacity-90">{c.scope}</p>
+      {key && (
+        <div class="front-shelf" aria-hidden="true">
+          {[key, ...strip].map((it, n) => {
+            const r = thumbs.get(it.slug)!;
+            return (
+              <a href={it.href} tabindex="-1" class:list={['plate', n === 0 ? 'plate--key' : 'plate--small']} style={`--ar:${(r.width / r.height).toFixed(4)}`}>
+                <img
+                  src={n === 0 ? r.view : r.index}
+                  srcset={n === 0 ? r.viewSrcset : r.indexSrcset}
+                  sizes={n === 0 ? '(min-width: 48rem) 300px, 60vw' : undefined}
+                  width={r.width}
+                  height={r.height}
+                  alt=""
+                  decoding="async"
+                  fetchpriority={n === 0 ? 'high' : undefined}
+                  transition:name={`plate-${it.slug}`}
+                />
+              </a>
+            );
+          })}
+        </div>
+      )}
+
+      {people.length > 0 && (
+        <figure class="people">
+          <ol class="people-row" aria-label={`${PEOPLE_NOTE}.`}>
+            {people.map((w) => (
+              <li>
+                <a href={personHref(w.p.id)} class="people-face" aria-label={w.caption} data-caption={w.caption}>
+                  <img
+                    src={faceHref(w.face.id)}
+                    srcset={`${faceHref(w.face.id)} 1x, ${faceHref(w.face.id, 2)} 2x`}
+                    width={FACE_W}
+                    height={FACE_H}
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    transition:name={`person-${w.p.id}`}
+                  />
+                </a>
+              </li>
+            ))}
+          </ol>
+          <figcaption class="people-cap">
+            <span class="people-read" aria-hidden="true" data-people-read>{PEOPLE_NOTE}</span>
+            <a href={`#${NAMES_ID}`} class="people-all">
+              All {plural(names.length, 'name')} <span aria-hidden="true">&darr;</span>
+            </a>
+          </figcaption>
+        </figure>
+      )}
+    </header>
 
     <dl class="mt-6 border-t border-haze">
       <div class={ROW}>
@@ -181,7 +333,7 @@ const custodyKnown = !/^TODO/i.test(c.custody);
         <dd class="m-0 min-w-0 flex-1">
           {custodyKnown
             ? c.custody
-            : <span class="font-mono text-[0.62rem] uppercase tracking-[0.1em] text-caprock">To be recorded</span>}
+            : <span class="font-mono text-[0.7rem] uppercase tracking-[0.1em] text-caprock">To be recorded</span>}
         </dd>
       </div>
       <div class={ROW}>
@@ -256,14 +408,23 @@ const custodyKnown = !/^TODO/i.test(c.custody);
       </div>
     )}
 
-    {sortable && (
+    {items.length > 1 && (
       <div class="sorter" data-js-only>
-        <span class="font-mono text-[0.62rem] uppercase tracking-[0.12em] text-sage">Order</span>
-        <div class="seg" role="group" aria-label="Order of the inventory">
-          <button type="button" class="seg-btn" data-order="arr" aria-pressed="true">As arranged</button>
-          <button type="button" class="seg-btn" data-order="date" aria-pressed="false">By date</button>
-          <button type="button" class="seg-btn" data-order="title" aria-pressed="false">By title</button>
+        <span class="font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage">View</span>
+        <div class="seg" role="group" aria-label="How the inventory is shown">
+          <button type="button" class="seg-btn" data-view="sheet" aria-pressed="true">Sheet</button>
+          <button type="button" class="seg-btn" data-view="list" aria-pressed="false">List</button>
         </div>
+        {sortable && (
+          <>
+            <span class="font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage sorter-gap">Order</span>
+            <div class="seg" role="group" aria-label="Order of the inventory">
+              <button type="button" class="seg-btn" data-order="arr" aria-pressed="true">As arranged</button>
+              <button type="button" class="seg-btn" data-order="date" aria-pressed="false">By date</button>
+              <button type="button" class="seg-btn" data-order="title" aria-pressed="false">By title</button>
+            </div>
+          </>
+        )}
         <p class="sr-only" aria-live="polite" data-order-status></p>
       </div>
     )}
@@ -280,7 +441,7 @@ const custodyKnown = !/^TODO/i.test(c.custody);
       <section data-section={s.id}>
         <h2 class={H2} id={s.id}>{s.title}</h2>
         {s.scope && <p class="text-sm opacity-75 -mt-2 mb-3">{s.scope}</p>}
-        <ul class="inventory" data-list>
+        <ul class="inventory is-sheet" data-list>
           {s.items.map((row) => {
             const i = row.item;
             const t = thumbs.get(i.slug)!;
@@ -295,25 +456,27 @@ const custodyKnown = !/^TODO/i.test(c.custody);
                 data-a={yr ? yr.a : undefined}
                 data-b={yr ? yr.b : undefined}
               >
-                <img
-                  src={t.index}
-                  srcset={t.indexSrcset}
-                  alt=""
-                  width="112"
-                  height="144"
-                  loading="lazy"
-                  decoding="async"
-                  class="entry-thumb"
-                />
-                <div class="min-w-0 flex-1">
+                <span class="entry-print">
+                  <img
+                    src={t.index}
+                    srcset={t.indexSrcset}
+                    alt=""
+                    width={t.width}
+                    height={t.height}
+                    loading="lazy"
+                    decoding="async"
+                    class="entry-thumb"
+                  />
+                </span>
+                <div class="entry-text">
                   <a href={i.href} class="entry-link text-caprock">{i.title}</a>
-                  <div class="font-mono text-[0.65rem] uppercase tracking-[0.08em] text-sage mt-0.5">
+                  <div class="entry-meta font-mono text-[0.7rem] uppercase tracking-[0.08em] text-sage mt-0.5">
                     {i.controlNumber && <span>{i.controlNumber} &middot; </span>}
                     {i.format && <span>{i.format} &middot; </span>}
                     <span>{i.date.display}</span>
                     {i.verso && <span> &middot; verso</span>}
                   </div>
-                  <div class="text-sm opacity-75 mt-0.5">
+                  <div class="entry-names text-sm opacity-75 mt-0.5">
                     {i.depicts.length > 0
                       ? depictedNames(i).join(', ')
                       : <span class="italic opacity-70">no one named</span>}
@@ -327,7 +490,7 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     ))}
 
     {names.length > 0 && (
-      <section aria-labelledby={NAMES_ID}>
+      <section aria-labelledby={NAMES_ID} class="bleed names-band">
         <h2 id={NAMES_ID} class={H2}>Names in this collection</h2>
         <p class="text-sm opacity-75 -mt-2 mb-3">
           Headings as they stand in the <a href="/collections/names" class="text-caprock hover:underline">name authority file</a>.
@@ -356,7 +519,202 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     --c-haze: var(--color-haze, #dad3c4);
     --c-dust: var(--color-dust, #ede7da);
     --c-iron: var(--color-iron, #3b3833);
+    --c-mount: var(--color-caliche, #e8e1d1);
+    --c-desk: var(--color-desk, #f5f3ed);
+    --mono: var(--font-mono, ui-monospace, monospace);
   }
+  /* FULL-WIDTH BANDS by border-image outset (ink overflow: no scrollbar),
+     as on the guide and the person pages. */
+  .bleed {
+    border-image: conic-gradient(var(--c-desk) 0 0) fill 0 / / 0 100vmax;
+  }
+
+  /* The front ------------------------------------------------------- */
+  .front {
+    display: grid;
+    gap: 2rem 2.75rem;
+    align-items: end;
+    padding: 2.25rem 0 2.5rem;
+    margin-bottom: 1.5rem;
+  }
+  @media (min-width: 48rem) {
+    .front.has-plates {
+      grid-template-columns: minmax(0, 1fr) auto;
+    }
+  }
+  .front-crumb a {
+    color: var(--c-caprock);
+    font: 0.7rem/1.4 var(--mono);
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  .front-crumb a:hover {
+    text-decoration: underline;
+  }
+  .front-title {
+    margin: 0.5rem 0 0;
+    font-size: clamp(2.3rem, 1.5rem + 3.2vw, 3.6rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .front .lede {
+    max-width: 34rem;
+    margin: 0.9rem 0 0;
+    font-size: 1.15rem;
+    line-height: 1.5;
+    text-wrap: pretty;
+  }
+  .figs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2.25rem;
+    margin: 1.6rem 0 0;
+  }
+  .figs dt {
+    color: var(--c-sage);
+    font: 0.7rem/1.4 var(--mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .figs dd {
+    margin: 0.15rem 0 0;
+    font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.1rem);
+    font-weight: 500;
+    font-variant-numeric: oldstyle-nums proportional-nums;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* The key photographs on a hairline, as on the guide. Width is capped
+     through the height, never with max-width, so nothing is squashed. */
+  .front-shelf {
+    display: flex;
+    align-items: flex-end;
+    gap: clamp(0.75rem, 1.8vw, 1.5rem);
+    padding-bottom: 0.9rem;
+    border-bottom: 1px solid rgb(26 25 25 / 0.28);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .front-shelf::-webkit-scrollbar {
+    display: none;
+  }
+  .plate {
+    flex: none;
+    display: block;
+    transition: transform 0.35s ease;
+  }
+  .plate img {
+    display: block;
+    width: auto;
+    max-width: none;
+    height: 100%;
+    box-shadow:
+      0 1px 1px rgb(26 25 25 / 0.16),
+      0 16px 26px -18px rgb(26 25 25 / 0.6);
+  }
+  .plate--key {
+    height: min(clamp(11rem, 28vw, 17.5rem), calc(min(19rem, 60vw) / var(--ar, 1)));
+  }
+  .plate--small {
+    height: min(clamp(5rem, 11vw, 7.5rem), calc(min(6.5rem, 18vw) / var(--ar, 1)));
+  }
+  .front-shelf:hover .plate {
+    transform: translateY(-3px);
+  }
+
+  /* The people in it. */
+  .people {
+    grid-column: 1 / -1;
+    margin: 0.5rem 0 0;
+  }
+  .people-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(3.6rem, 1fr));
+    gap: 0.6rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (max-width: 40rem) {
+    .people-row {
+      grid-template-columns: repeat(auto-fill, minmax(3.1rem, 1fr));
+      gap: 0.45rem;
+    }
+    .people-row li:nth-child(n + 13) {
+      display: none;
+    }
+  }
+  .people-face {
+    display: block;
+    padding: 3px;
+    background: var(--c-mount);
+    border: 1px solid var(--c-haze);
+    box-shadow: 0 8px 14px -12px rgb(26 25 25 / 0.6);
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease,
+      opacity 0.25s ease;
+  }
+  .people-face img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .people-face:hover,
+  .people-face:focus-visible {
+    border-color: var(--c-caprock);
+    transform: translateY(-3px);
+  }
+  .people-face:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
+  }
+  .people-row:has(.people-face:hover) .people-face:not(:hover) {
+    opacity: 0.5;
+  }
+  .people-cap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.3rem 1.25rem;
+    margin-top: 0.8rem;
+    color: var(--c-sage);
+    font: 0.7rem/1.5 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .people-read {
+    min-height: 1.5em;
+  }
+  .people-read.is-reading {
+    color: var(--c-iron);
+  }
+  .people-all {
+    color: var(--c-caprock);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .people-all:hover {
+    text-decoration: underline;
+  }
+
+  .sorter-gap {
+    margin-left: 0.6rem;
+  }
+  .names-band {
+    margin-top: 3.5rem;
+    padding: 0.5rem 0 2.5rem;
+  }
+  .names-band :global(h2) {
+    border-bottom-color: rgb(26 25 25 / 0.12);
+  }
+
+
 
   /* Anything this page hides with the `hidden` attribute stays hidden:
      .entry sets display, and a class selector outranks the browser's own
@@ -503,7 +861,7 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     border: 1px solid var(--c-haze);
     background: transparent;
     color: var(--c-iron);
-    font: 500 0.64rem/1.2 ui-monospace, monospace;
+    font: 500 0.7rem/1.2 ui-monospace, monospace;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     cursor: pointer;
@@ -548,11 +906,16 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     outline: 2px solid var(--c-caprock);
     outline-offset: 2px;
   }
-  /* A fixed sleeve: rows keep their height before the images arrive, and a
-     portrait cabinet card and a landscape gin print read as one size of
-     object rather than one width. */
-  .entry-thumb {
+  /* LIST VIEW. A fixed sleeve: rows keep their height before the images
+     arrive, and a portrait cabinet card and a landscape gin print read as
+     one size of object rather than one width. */
+  .entry-print {
+    position: relative;
+    display: block;
     flex-shrink: 0;
+  }
+  .entry-thumb {
+    display: block;
     width: 7rem;
     height: 9rem;
     padding: 0.25rem;
@@ -560,6 +923,97 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     background: rgb(218 211 196 / 0.4);
     border: 1px solid var(--c-haze);
   }
+  .entry-text {
+    min-width: 0;
+    flex: 1;
+  }
+
+  /* SHEET VIEW. The same rows as a contact sheet: every photograph at its
+     true proportions standing on one hairline, title and date beneath. The
+     caption block has a fixed height so every row of prints shares its
+     baseline whatever the titles do. */
+  .inventory.is-sheet {
+    --sheet-h: 9.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 2.25rem 1.6rem;
+    padding-top: 0.75rem;
+  }
+  @media (max-width: 40rem) {
+    .inventory.is-sheet {
+      --sheet-h: 7rem;
+      gap: 1.75rem 1.1rem;
+    }
+  }
+  .is-sheet .entry {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    max-width: 100%;
+    padding: 0;
+    border-top: 0;
+  }
+  .is-sheet .entry:hover,
+  .is-sheet .entry:focus-within {
+    background: none;
+  }
+  .is-sheet .entry-print {
+    transition: transform 0.25s ease;
+  }
+  .is-sheet .entry:hover .entry-print,
+  .is-sheet .entry:focus-within .entry-print {
+    transform: translateY(-4px);
+  }
+  /* max-height, not height, so a wide print is never squashed. */
+  .is-sheet .entry-thumb {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: var(--sheet-h);
+    padding: 0;
+    object-fit: fill;
+    background: none;
+    border: 0;
+    box-shadow:
+      0 1px 1px rgb(26 25 25 / 0.18),
+      0 12px 18px -12px rgb(26 25 25 / 0.55);
+  }
+  /* The hairline, run half a gap past each print so a row reads as one. */
+  .is-sheet .entry-print::after {
+    content: '';
+    position: absolute;
+    left: -0.8rem;
+    right: -0.8rem;
+    bottom: -1px;
+    border-bottom: 1px solid rgb(26 25 25 / 0.28);
+  }
+  /* Width 0 and min-width 100%: the caption takes the print's width and
+     never widens it. */
+  .is-sheet .entry-text {
+    flex: none;
+    width: 0;
+    min-width: 100%;
+    height: 3.6rem;
+    margin-top: 0.55rem;
+  }
+  .is-sheet .entry-link {
+    display: -webkit-box;
+    overflow: hidden;
+    font-size: 0.95rem;
+    line-height: 1.25;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+  .is-sheet .entry-meta {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .is-sheet .entry-names {
+    display: none;
+  }
+
   /* The whole row is the link, and one link per row for the keyboard. */
   .entry-link {
     text-decoration: none;
@@ -578,8 +1032,23 @@ const custodyKnown = !/^TODO/i.test(c.custody);
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .entry {
+    .entry,
+    .entry-print,
+    .plate,
+    .people-face {
       transition: none;
+    }
+    .is-sheet .entry:hover .entry-print,
+    .is-sheet .entry:focus-within .entry-print,
+    .front-shelf:hover .plate,
+    .people-face:hover,
+    .people-face:focus-visible {
+      transform: none;
+    }
+  }
+  @media print {
+    .bleed {
+      border-image: none;
     }
   }
 </style>
@@ -593,6 +1062,8 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     document.addEventListener('astro:before-swap', () => ac.abort(), { once: true });
 
     wireFilter(root, ac.signal);
+    wireView(root, ac.signal);
+    wirePeople(root, ac.signal);
     const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-order]'));
     const status = root.querySelector<HTMLElement>('[data-order-status]');
     buttons.forEach((b) =>
@@ -612,6 +1083,44 @@ const custodyKnown = !/^TODO/i.test(c.custody);
         { signal: ac.signal }
       )
     );
+  }
+
+  // SHEET OR LIST. Only a class on each inventory; the rows are the same,
+  // so the filter and the order carry over. ?view=list keeps the list.
+  function wireView(root: HTMLElement, signal: AbortSignal) {
+    const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-view]'));
+    if (!buttons.length) return;
+    const lists = Array.from(root.querySelectorAll<HTMLElement>('[data-list]'));
+    const status = root.querySelector<HTMLElement>('[data-order-status]');
+    const set = (view: string, announce: boolean) => {
+      lists.forEach((l) => l.classList.toggle('is-sheet', view === 'sheet'));
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.view === view)));
+      const url = new URL(location.href);
+      if (view === 'list') url.searchParams.set('view', 'list');
+      else url.searchParams.delete('view');
+      history.replaceState(history.state, '', url);
+      if (announce && status) status.textContent = view === 'list' ? 'Inventory as a list.' : 'Inventory as a contact sheet.';
+    };
+    if (new URLSearchParams(location.search).get('view') === 'list') set('list', false);
+    buttons.forEach((b) => b.addEventListener('click', () => set(b.dataset.view ?? 'sheet', true), { signal }));
+  }
+
+  // The line under the faces names the one you are on.
+  function wirePeople(root: HTMLElement, signal: AbortSignal) {
+    const read = root.querySelector<HTMLElement>('[data-people-read]');
+    if (!read) return;
+    const rest = read.textContent ?? '';
+    const say = (text: string | null) => {
+      read.textContent = text ?? rest;
+      read.classList.toggle('is-reading', !!text);
+    };
+    root.querySelectorAll<HTMLElement>('.people-face').forEach((a) => {
+      const text = a.dataset.caption ?? null;
+      a.addEventListener('pointerenter', () => say(text), { signal });
+      a.addEventListener('pointerleave', () => say(null), { signal });
+      a.addEventListener('focus', () => say(text), { signal });
+      a.addEventListener('blur', () => say(null), { signal });
+    });
   }
 
   // THE FILTER. Every word must begin some word of the row's record; a

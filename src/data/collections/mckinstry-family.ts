@@ -2288,7 +2288,7 @@ export const COLLECTION: Collection = {
       format: 'snapshot',
       place: 'Hagerman, New Mexico',
       date: {
-        display: '[1933-1935]',
+        display: '[1932-1934]',
         earliest: 1932,
         latest: 1934,
         basis: [
@@ -2356,6 +2356,76 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Identified on verso.',
           region: { face: 'recto', x: 61.5, y: 41, w: 7, h: 9.8 },
+        },
+      ],
+    },
+    {
+      slug: 'mckinstry-children-ruth',
+      title: 'Loveta\'s children and Ruth at Aunt Nannie\'s',
+      titleSource: 'inscribed',
+      controlNumber: 'a.1.20.2',
+      format: 'snapshot',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '[1930-1931]',
+        earliest: 1930,
+        latest: 1931,
+        basis: [
+          'Mildred appears to be between 3 and 4 in this photograph, which likely dates it to 1930 or 1931.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-children-ruth-recto.jpg', },
+      verso: { file: 'mckinstry-children-ruth-verso.jpg' },
+      description:
+        'This photograph depicts the children of Sam and Loveta McKinstry, Sammy, Jean, and Mildred, and a cousin Ruth at Aunt Nannie\'s home in Jacobia, Texas. The McKinstrys are sitting on the fence, while Ruth is standing to the left.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Loveta\'s children and Ruth at Aunt Nannie\'s.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 59.5, y: 26.2, w: 10.2, h: 8.7 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 46.4, y: 32.2, w: 7.8, h: 7.4 },
+        },
+        {
+          person: 'osborn-mildred-adeline-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 36.2, y: 34.7, w: 8.2, h: 7.2 },
+        },
+        {
+          as: 'Ruth',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 24.7, y: 30.5, w: 10.4, h: 8.6 },
         },
       ],
     },

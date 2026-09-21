@@ -1266,7 +1266,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 23.7, y: 30.8, w: 14.7, h: 13.7 },
+          region: { face: 'recto', x: 17.8, y: 29.4, w: 14, h: 14.9 },
         },
       ],
       description: 'This is a photograph of a seated C.E. Girdner at the home of Sam and Loveta McKinstry. The photograph shows the interior of their home. This was likely taken in 1953.',
@@ -1776,7 +1776,9 @@ export const COLLECTION: Collection = {
       place: 'Jacobia, Texas',
       date: {
         // What prints. Square brackets mark an assessment.
-        display: '1901',
+        display: '[1909-1911]',
+        earliest: 1909,
+        latest: 1911,
         basis: [
           'This is an estimated date. Based on the ages of those depicts, the date has been estimated to be between 1909 and 1911.',
         ],

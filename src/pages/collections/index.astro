@@ -27,6 +27,14 @@
 //   - Script is wired on astro:page-load and guarded, so it survives
 //     ClientRouter navigation.
 //
+// HOW IT LOOKS (2026-09 redesign). The page opens on the PEOPLE: a band
+// of desk paper with the title, one line of lede, a wall of faces - one per
+// person, their best identified face, in order of birth - and the finder.
+// Each face shares its transition name with the cabinet card on that
+// person's page, so it grows into it. The chronology sits on a second desk
+// band; holdings and surnames on the canvas between. The surname table shows
+// the twenty most photographed and folds the rest behind a button.
+//
 // SCALE. Rewritten 2026-09 for thousands of items. The page no longer
 // carries a line, a thumbnail or an index entry per photograph: the chart is
 // one path per series, and photographs are found through PAGEFIND, whose
@@ -54,7 +62,12 @@ import {
   personHref,
   naturalName,
   headingDates,
+  FACES,
+  FACE_W,
+  FACE_H,
+  faceHref,
 } from '../../data/collections/index';
+import type { Face } from '../../data/collections/index';
 import { plate } from '../../data/collections/images';
 import type { Rendered } from '../../data/collections/images';
 
@@ -64,7 +77,7 @@ const plural = (n: number, one: string, many = `${one}s`) =>
   `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
 
 const H2 =
-  'font-mono text-xs uppercase tracking-[0.16em] text-sage font-medium border-b border-haze pb-1.5 mb-4';
+  'sec-h border-b border-haze pb-1.5 mb-4';
 
 /* ---------------------------------------------------------------- *
  * Images. Rendered once per item; the item pages ask getImage() for the
@@ -127,6 +140,59 @@ const surnames = [...surnameRows.entries()]
   }))
   .sort((a, b) => a.surname.localeCompare(b.surname));
 const maxCell = Math.max(1, ...surnames.flatMap((r) => r.perCollection));
+// The table lists the most photographed first, and shows XW_SHOW of them
+// until asked for the rest; the chronology's surname menu stays alphabetical.
+const XW_SHOW = 20;
+const xwRows = [...surnames].sort((a, b) => b.items - a.items || a.surname.localeCompare(b.surname));
+
+/* ---------------------------------------------------------------- *
+ * 0. The people: the wall of faces that opens the page
+ * ---------------------------------------------------------------- */
+// One face per person, their best: identified as certain or probable, and
+// the largest share of its photograph. Up to WALL_MAX people, chosen for
+// established headings and then the most photographs, and laid out in
+// order of birth so the wall reads as the generations. People with no
+// birth year follow, in order of their earliest photograph.
+const WALL_MAX = 32;
+const FIRM: Record<string, number> = { certain: 0, probable: 1 };
+const faceArea = (f: Face) => f.region.w * f.region.h;
+const bestFace = new Map<string, Face>();
+for (const f of FACES) {
+  if (!(f.confidence in FIRM)) continue;
+  const cur = bestFace.get(f.person);
+  if (
+    !cur ||
+    FIRM[f.confidence] < FIRM[cur.confidence] ||
+    (FIRM[f.confidence] === FIRM[cur.confidence] && faceArea(f) > faceArea(cur))
+  ) {
+    bestFace.set(f.person, f);
+  }
+}
+const yearOf = (v?: string) => (v && /^\d{3,4}$/.test(v.trim()) ? Number(v) : undefined);
+const wall = PEOPLE_WITH_ITEMS.filter(({ person }) => bestFace.has(person.id))
+  .map(({ person: p, appearances }) => {
+    const froms = appearances.map((a) => spanOf(a.item)?.from).filter((y): y is number => y !== undefined);
+    const n = new Set(appearances.map((a) => a.item.slug)).size;
+    const dates = headingDates(p).replace(/(\d)-/g, `$1${EN}`);
+    return {
+      p,
+      face: bestFace.get(p.id)!,
+      born: yearOf(p.birth),
+      first: froms.length ? Math.min(...froms) : Infinity,
+      n,
+      name: naturalName(p),
+      caption: `${naturalName(p)}${dates ? `, ${dates}` : ''} \u00b7 ${plural(n, 'photograph')}`,
+    };
+  })
+  .sort((a, b) => Number(b.p.status === 'established') - Number(a.p.status === 'established') || b.n - a.n)
+  .slice(0, WALL_MAX)
+  .sort((a, b) => {
+    if (a.born !== undefined && b.born !== undefined) return a.born - b.born || a.name.localeCompare(b.name);
+    if (a.born !== undefined) return -1;
+    if (b.born !== undefined) return 1;
+    return a.first - b.first || a.name.localeCompare(b.name);
+  });
+const WALL_NOTE = 'The people in the photographs, in order of birth';
 const crossing = surnames.filter((r) => r.perCollection.filter(Boolean).length > 1).length;
 
 /* ---------------------------------------------------------------- *
@@ -327,23 +393,73 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   </noscript>
 
   <div class="guide max-w-4xl mx-auto py-6 text-iron font-serif" data-guide>
-    <header class="border-b-2 border-caprock pb-4 mb-6">
-      <p class="font-mono text-[0.65rem] uppercase tracking-[0.16em] text-sage mb-1">
-        Guide to the collections
+    <!-- 0. The front: title, people, finder -->
+    <header class="front bleed">
+      <p class="front-eyebrow">Guide to the collections</p>
+      <h1 class="front-title">Collections</h1>
+      <p class="lede">
+        These are photographs that I have collected or have had access to
+        through the years, and most of them are in my possession.
       </p>
-      <h1 class="text-3xl font-medium tracking-tight">Collections</h1>
-    </header>
 
-    <p class="lede text-lg max-w-2xl opacity-90">
-      These are photographs that I have collected or have had access to
-      through the years, and most of them are in my possession. Each
-      collection is a group of photographs that came to me together, so a
-      collection is not the same thing as a family: one box can hold several
-      families, and one family can turn up in several boxes. The people in
-      them are gathered across every collection in the <a
-        href="/collections/names"
-        class="text-caprock hover:underline">name authority file</a>.
-    </p>
+      {wall.length > 0 && (
+        <figure class="wall-fig">
+          <ol class="wall" aria-label={`${WALL_NOTE}.`}>
+            {wall.map((w) => (
+              <li>
+                <a
+                  href={personHref(w.p.id)}
+                  class="wall-face"
+                  aria-label={w.caption}
+                  data-caption={w.caption}
+                >
+                  <img
+                    src={faceHref(w.face.id)}
+                    srcset={`${faceHref(w.face.id)} 1x, ${faceHref(w.face.id, 2)} 2x`}
+                    width={FACE_W}
+                    height={FACE_H}
+                    alt=""
+                    decoding="async"
+                    transition:name={`person-${w.p.id}`}
+                  />
+                </a>
+              </li>
+            ))}
+          </ol>
+          <figcaption class="wall-cap">
+            <span class="wall-read" aria-hidden="true" data-wall-read>{WALL_NOTE}</span>
+            <a href="/collections/names" class="wall-all">
+              All {PEOPLE_WITH_ITEMS.length.toLocaleString('en-US')} names <span aria-hidden="true">&rarr;</span>
+            </a>
+          </figcaption>
+        </figure>
+      )}
+
+      <!-- 2. Finder -->
+      <div class="finder" data-finder>
+        <label for="finder-input" class="finder-label">Find a name, a photograph, or a year</label>
+        <div class="finder-field">
+          <svg class="finder-icon" viewBox="0 0 20 20" aria-hidden="true">
+            <circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+            <path d="M12.6 12.6 17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+          </svg>
+          <input
+            id="finder-input"
+            type="search"
+            role="combobox"
+            aria-expanded="false"
+            aria-controls="finder-list"
+            aria-autocomplete="list"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder={placeholder}
+            data-finder-input
+          />
+        </div>
+        <ul id="finder-list" class="finder-list" role="listbox" aria-label="Matches" hidden data-finder-list></ul>
+        <p class="sr-only" aria-live="polite" data-finder-status></p>
+      </div>
+    </header>
 
     <!-- 1. Descriptive summary -->
     <dl class="ledger">
@@ -377,41 +493,23 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       </div>
     </dl>
 
-    <!-- 2. Finder -->
-    <div class="finder" data-finder>
-      <label for="finder-input" class="finder-label">Find a name, a photograph, or a year</label>
-      <div class="finder-field">
-        <svg class="finder-icon" viewBox="0 0 20 20" aria-hidden="true">
-          <circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5" />
-          <path d="M12.6 12.6 17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-        </svg>
-        <input
-          id="finder-input"
-          type="search"
-          role="combobox"
-          aria-expanded="false"
-          aria-controls="finder-list"
-          aria-autocomplete="list"
-          autocomplete="off"
-          spellcheck="false"
-          placeholder={placeholder}
-          data-finder-input
-        />
-      </div>
-      <ul id="finder-list" class="finder-list" role="listbox" aria-label="Matches" hidden data-finder-list></ul>
-      <p class="sr-only" aria-live="polite" data-finder-status></p>
-    </div>
-
     <!-- 3. Holdings -->
     <section aria-labelledby="holdings-h" class="mt-12">
       <h2 id="holdings-h" class={H2}>Holdings</h2>
+      <p class="note">
+        Each collection is a group of photographs that came to me together,
+        so a collection is not the same thing as a family: one box can hold
+        several families, and one family can turn up in several boxes. The
+        people in them are gathered across every collection in the <a
+          href="/collections/names"
+          class="text-caprock hover:underline">name authority file</a>.
+      </p>
       <div class="entries">
         {cards.map(({ c, count, extent: e, key, strip }, n) => (
           <article class="entry" data-collection={c.slug}>
             <div class="entry-mark" aria-hidden="true">{String(n + 1).padStart(2, '0')}</div>
             <div class="entry-head">
               <div class="entry-text">
-                <p class="entry-eyebrow">Collection</p>
                 <h3 class="entry-title">
                   <a href={`/collections/${c.slug}`} class="entry-link">{c.title}</a>
                 </h3>
@@ -483,7 +581,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
 
     <!-- 4. Chronology -->
     {axis && spreads.length > 0 && (
-      <section aria-labelledby="chron-h" class="mt-14" data-chron>
+      <section aria-labelledby="chron-h" class="bleed chron-band" data-chron>
         <h2 id="chron-h" class={H2}>Chronology</h2>
         <p class="note">
           How many photographs were made in each year, as far as the dates
@@ -591,10 +689,11 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
         <h2 id="surnames-h" class={H2}>Surnames across the collections</h2>
         <p class="note">
           Collections follow where the photographs came from, so families run
-          across them. Figures are photographs.
+          across them. Figures are photographs; the most photographed
+          surnames come first.
         </p>
         <div class="xwalk-wrap">
-          <table class="xwalk">
+          <table class="xwalk" data-xw>
             <thead>
               <tr>
                 <th scope="col">Surname</th>
@@ -603,8 +702,8 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
               </tr>
             </thead>
             <tbody>
-              {surnames.map((r) => (
-                <tr>
+              {xwRows.map((r, i) => (
+                <tr class:list={[{ 'xw-more': i >= XW_SHOW }]}>
                   <th scope="row">{r.surname}</th>
                   {r.perCollection.map((n) => (
                     <td class="num">
@@ -624,6 +723,19 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
             </tbody>
           </table>
         </div>
+        {xwRows.length > XW_SHOW && (
+          <button
+            type="button"
+            class="xw-toggle"
+            aria-expanded="false"
+            data-xw-toggle
+            data-more={`Show all ${xwRows.length.toLocaleString('en-US')} surnames`}
+            data-less={`Show the first ${XW_SHOW}`}
+            data-js-only
+          >
+            Show all {xwRows.length.toLocaleString('en-US')} surnames
+          </button>
+        )}
       </section>
     )}
   </div>
@@ -642,6 +754,144 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   .guide [hidden] {
     display: none !important;
   }
+  .guide {
+    --c-mount: var(--color-caliche, #e8e1d1);
+    --c-desk: var(--color-desk, #f5f3ed);
+  }
+  /* FULL-WIDTH BANDS without a 100vw element: painted by border-image
+     outset, which is ink overflow - it reaches the window edges and never
+     adds a horizontal scrollbar. The same device as the person pages. */
+  .bleed {
+    border-image: conic-gradient(var(--c-desk) 0 0) fill 0 / / 0 100vmax;
+  }
+
+  /* 0. The front ---------------------------------------------------- */
+  .front {
+    padding: 2.5rem 0 2.5rem;
+  }
+  .front-eyebrow {
+    margin: 0;
+    color: var(--c-sage);
+    font: 0.7rem/1.4 var(--mono);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .front-title {
+    margin: 0.3rem 0 0;
+    font-size: clamp(2.7rem, 1.6rem + 4.2vw, 4.5rem);
+    font-weight: 500;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
+  }
+  .front .lede {
+    max-width: 36rem;
+    margin: 1rem 0 0;
+    font-size: 1.2rem;
+    line-height: 1.5;
+  }
+  .front .finder {
+    margin-top: 2rem;
+  }
+
+  /* The wall of faces: small mounted crops in a grid, like cartes de
+     visite laid out on the desk. Point at one and the rest step back. */
+  .wall-fig {
+    margin: 2.25rem 0 0;
+  }
+  .wall {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(4.4rem, 1fr));
+    gap: 0.7rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  @media (max-width: 40rem) {
+    .wall {
+      grid-template-columns: repeat(auto-fill, minmax(3.4rem, 1fr));
+      gap: 0.5rem;
+    }
+    /* A phone gets four or five rows, not seven. */
+    .wall li:nth-child(n + 21) {
+      display: none;
+    }
+  }
+  .wall-face {
+    display: block;
+    padding: 3px;
+    background: var(--c-mount);
+    border: 1px solid var(--c-haze);
+    box-shadow: 0 8px 14px -12px rgb(26 25 25 / 0.6);
+    transition:
+      transform 0.25s ease,
+      border-color 0.25s ease,
+      opacity 0.25s ease;
+  }
+  .wall-face img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  .wall-face:hover,
+  .wall-face:focus-visible {
+    border-color: var(--c-caprock);
+    transform: translateY(-3px);
+  }
+  .wall-face:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
+  }
+  .wall:has(.wall-face:hover) .wall-face:not(:hover) {
+    opacity: 0.5;
+  }
+  .wall-cap {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.3rem 1.25rem;
+    margin-top: 0.9rem;
+    color: var(--c-sage);
+    font: 0.7rem/1.5 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .wall-read {
+    min-height: 1.5em;
+  }
+  .wall-read.is-reading {
+    color: var(--c-iron);
+  }
+  .wall-all {
+    color: var(--c-caprock);
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .wall-all:hover {
+    text-decoration: underline;
+  }
+
+  /* The chronology's band. */
+  .chron-band {
+    margin-top: 3.5rem;
+    padding: 2.5rem 0 2.75rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .wall-face {
+      transition: none;
+    }
+    .wall-face:hover,
+    .wall-face:focus-visible {
+      transform: none;
+    }
+  }
+  @media print {
+    .bleed {
+      border-image: none;
+    }
+  }
+
   .lede,
   .note {
     text-wrap: pretty;
@@ -674,7 +924,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   }
   .ledger dt {
     font-family: var(--mono);
-    font-size: 0.62rem;
+    font-size: 0.7rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--c-sage);
@@ -703,7 +953,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   .finder-label {
     display: block;
     font-family: var(--mono);
-    font-size: 0.62rem;
+    font-size: 0.7rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--c-sage);
@@ -775,7 +1025,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   }
   .finder-list :global(.opt[aria-selected='true']),
   .finder-list :global(.opt:hover) {
-    background: var(--c-dust);
+    background: var(--c-mount);
   }
   .finder-list :global(.opt-main) {
     display: block;
@@ -790,7 +1040,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   .finder-list :global(.opt-meta),
   .finder-list :global(.opt-kind) {
     font-family: var(--mono);
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--c-sage);
@@ -867,14 +1117,6 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       align-items: end;
     }
   }
-  .entry-eyebrow {
-    margin: 0 0 0.35rem;
-    font-family: var(--mono);
-    font-size: 0.6rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--c-sage);
-  }
   .entry-title {
     margin: 0 0 0.4rem;
     font-size: clamp(1.7rem, 1.1rem + 2vw, 2.5rem);
@@ -910,7 +1152,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
      values rather than a sentence. */
   .entry-figures {
     font-family: var(--mono);
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     letter-spacing: 0.1em;
     line-height: 1.9;
     text-transform: uppercase;
@@ -1020,7 +1262,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     gap: 0.3rem 1.5rem;
     margin: 0.75rem 0 0;
     font-family: var(--mono);
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
     color: var(--c-sage);
@@ -1051,7 +1293,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   .facet-label {
     width: 5.5rem;
     font-family: var(--mono);
-    font-size: 0.66rem;
+    font-size: 0.7rem;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--c-sage);
@@ -1190,7 +1432,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     gap: 0.4rem 1.25rem;
     margin-top: 0.6rem;
     font-family: var(--mono);
-    font-size: 0.66rem;
+    font-size: 0.7rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--c-sage);
@@ -1335,7 +1577,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     display: block;
     margin-top: 0.15rem;
     font-family: var(--mono);
-    font-size: 0.66rem;
+    font-size: 0.7rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--c-sage);
@@ -1361,6 +1603,27 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   }
 
   /* 5. Surnames --------------------------------------------------- */
+  .xwalk.is-collapsed .xw-more {
+    display: none;
+  }
+  .xw-toggle {
+    margin-top: 0.9rem;
+    padding: 0.35rem 0.9rem;
+    border: 1px solid var(--c-haze);
+    background: transparent;
+    color: var(--c-iron);
+    font: 500 0.7rem/1.2 var(--mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .xw-toggle:hover {
+    border-color: var(--c-caprock);
+  }
+  .xw-toggle:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
+  }
   .xwalk-wrap {
     margin-top: 1rem;
     overflow-x: auto;
@@ -1382,7 +1645,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     border-bottom: 1px solid var(--c-iron);
     vertical-align: bottom;
     font-family: var(--mono);
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     font-weight: 500;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -1921,12 +2184,50 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     });
   }
 
+  /* ---------------------------------------------------------------- *
+   * 0. The wall: the line under it names the face you are on
+   * ---------------------------------------------------------------- */
+  function initWall(root: HTMLElement) {
+    const read = root.querySelector<HTMLElement>('[data-wall-read]');
+    if (!read) return;
+    const rest = read.textContent ?? '';
+    const say = (text: string | null) => {
+      read.textContent = text ?? rest;
+      read.classList.toggle('is-reading', !!text);
+    };
+    root.querySelectorAll<HTMLElement>('.wall-face').forEach((a) => {
+      const text = a.dataset.caption ?? null;
+      a.addEventListener('pointerenter', () => say(text));
+      a.addEventListener('pointerleave', () => say(null));
+      a.addEventListener('focus', () => say(text));
+      a.addEventListener('blur', () => say(null));
+    });
+  }
+
+  /* ---------------------------------------------------------------- *
+   * 5. Surnames: fold the table to its first rows until asked. Folded by
+   * script, so without it every row shows.
+   * ---------------------------------------------------------------- */
+  function initCrosswalk(root: HTMLElement) {
+    const table = root.querySelector<HTMLElement>('[data-xw]');
+    const btn = root.querySelector<HTMLButtonElement>('[data-xw-toggle]');
+    if (!table || !btn) return;
+    table.classList.add('is-collapsed');
+    btn.addEventListener('click', () => {
+      const open = table.classList.toggle('is-collapsed') === false;
+      btn.setAttribute('aria-expanded', String(open));
+      btn.textContent = (open ? btn.dataset.less : btn.dataset.more) ?? btn.textContent;
+    });
+  }
+
   function initGuide() {
     const root = document.querySelector<HTMLElement>('[data-guide]');
     if (!root || root.dataset.ready) return;
     root.dataset.ready = '1';
+    initWall(root);
     initChronology(root);
     initFinder(root);
+    initCrosswalk(root);
   }
 
   document.addEventListener('astro:page-load', initGuide);

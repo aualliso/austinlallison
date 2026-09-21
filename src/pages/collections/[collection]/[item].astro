@@ -965,19 +965,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     }
   }
 
-  /* Section headings: the serif in small caps, so a heading reads as a
-     heading and not as one more field label. Mono stays for the labels that
-     are data - field names, qualifiers, control numbers. */
-  .sec-h {
-    margin: 0 0 0.55rem;
-    font-family: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
-    font-size: 1.08rem;
-    font-weight: 600;
-    font-variant-caps: all-small-caps;
-    letter-spacing: 0.07em;
-    line-height: 1.2;
-    color: var(--c-iron);
-  }
+  /* Section headings (.sec-h) live in src/styles/global.css, shared by
+     every collections page. */
 
   /* The plate ----------------------------------------------------- */
   /* The photograph on the paper, with its own hairline and a shallow
