@@ -2009,6 +2009,24 @@ export const COLLECTION: Collection = {
           basis: 'Known identity.',
           region: { face: 'recto', x: 38, y: 24.6, w: 5.2, h: 7.6 },
         },
+        {
+          person: 'mckinstry-james-daubin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'possible',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Somewhat matches likeness.',
+          region: { face: 'recto', x: 74.9, y: 14.5, w: 6.6, h: 10.2 },
+        },
+         {
+          person: 'mckinstry-william-boyd',  // an id in people.ts. Build throws if unknown.
+          confidence: 'possible',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Somewhat matches likeness.',
+          region: { face: 'recto', x: 22.7, y: 17.8, w: 6.5, h: 10 },
+        },
       ]
     },
     {
@@ -3488,6 +3506,310 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Identified on verso.',
           region: { face: 'recto', x: 36.1, y: 28.8, w: 6.7, h: 10.6 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-jim-and-sam',
+      title: '[Jim and Sam McKinstry next to a house]',
+      titleSource: 'supplied',
+      controlNumber: 'b.1.1.1',
+      format: 'real photo postcard',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1912]',
+        basis: [
+          'This photograph appears to be from the weddings of Sam and Loveta McKinstry and Jim and Minnie McKinstry. It is not certain, but a strong estimate.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jim-and-sam-recto.jpg', },
+      verso: { file: 'mckinstry-jim-and-sam-verso.jpg' },
+      description:
+        'This photograph depicts Jim and Sam McKinstry standing next to a house in formal wear and hats. It is possible that this photograph is from November 7, 1912, the date that brothers Jim and Sam McKinstry married sisters Minnie and Loveta Swann.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Jim McKinstry left \n Sam McKinstry right.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-james-daubin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 39, y: 30.9, w: 7.4, h: 12.1 },
+        },
+        {
+          person: 'mckinstry-samuel-small',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 49.2, y: 27.4, w: 8.5, h: 12.5 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-sammy-jean-peggy-austin-swann',
+      title: '[Austin Swann with granddaughters Sammy, Jean, and Peggy McKinstry]',
+      titleSource: 'supplied',
+      controlNumber: 'b.1.4.1',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1928]',
+        basis: [
+          'The verso suggests a 1928 date. There is nothing that objects to it.',
+        ],
+        confidence: 'certain',
+      },
+      recto: { file: 'mckinstry-sammy-jean-peggy-austin-swann-recto.jpg', },
+      verso: { file: 'mckinstry-sammy-jean-peggy-austin-swann-verso.jpg' },
+      description:
+        'This photograph depicts Austin Swann with his granddaughters Sammy, Jean, and Peggy McKinstry. This photograph was taken in a formal setting just a few years before Austin Swann\'s death. Mildred McKinstry is not present in this photograph, which suggests she may have been too young to appear in it.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Papa Swann \n Sammy, Jean, and \n Peggy McKinstry \n 1928.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 12, y: 27.5, w: 24.5, h: 20.4 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 61.7, y: 36.9, w: 19.7, h: 16.6 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 46.2, y: 11.5, w: 19.5, h: 16.9 },
+        },
+        {
+          person: 'smith-peggy-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 36.6, y: 50.7, w: 18, h: 13.6 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-jim-sam-water-well',
+      title: '[Jim and Sam McKinstry standing near irrigation well with running water]',
+      titleSource: 'supplied',
+      controlNumber: 'b.1.7.1',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1925-1930]',
+        basis: [
+          'There is no date on this photograph, but it appears to be from the second half of the 1920s or early 1930s based on the ages of Jim and Sam McKinstry.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jim-sam-water-well-recto.jpg', },
+      verso: { file: 'mckinstry-jim-sam-water-well-verso.jpg' },
+      description:
+        'This photograph depicts Jim and Sam McKinstry standing next to a new irrigation well on their land near Hagerman, New Mexico.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Jim and Sam McKinstry \n admiring their new fine irrigation well \n on what we call the N. 40 acre place.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-james-daubin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 40.5, y: 21.4, w: 4.4, h: 7.6 },
+        },
+        {
+          person: 'mckinstry-samuel-small',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 27.6, y: 25, w: 4.1, h: 6.7 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-jean-fourth-grade-class',
+      title: '[Jean McKinstry fourth grade class]',
+      titleSource: 'supplied',
+      controlNumber: 'b.1.8.1',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1932-1933]',
+        basis: [
+          'This photograph is of Jean McKinstry\'s fourth grade class. Assuming she would be around 10 or 11 years old, this would place the photograph in 1932 or 1933.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jean-fourth-grade-class-recto.jpg', },
+      verso: { file: 'mckinstry-jean-fourth-grade-class-verso.jpg' },
+      description:
+        'This photograph depicts Jean McKinstry\'s fourth grade class at the school in Hagerman. Jean is front and center. The verso identifies other classmates such as Mable Jo Wade, Helen Goodwin, Wiley Grizzle Jr., and Bobby Cumpsten.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Fourth grade class. Center front, Jean McKinstry \n left of Jean, Mable Jo Wade - right, Helen Goodwin. \ n Left \'x\' Wiley Grizzle (Jr.). Right \'x\' Bobby Cumpsten.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 46.1, y: 36.2, w: 4.6, h: 8 },
+        },
+        {
+          person: 'grizzle-wiley-jr',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 23.1, y: 31.2, w: 6.2, h: 9.3 },
+        },
+        {
+          as: 'Mable Jo Wade',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 37.3, y: 37.6, w: 4.9, h: 8.6 },
+        },
+        {
+          as: 'Helen Goodwin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 53.5, y: 36.6, w: 5, h: 7.6 },
+        },
+        {
+          as: 'Bobby Cumpsten',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 86.9, y: 32.3, w: 5.2, h: 9.3 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-sammy-jean-austin-swann',
+      title: '[Austin Swann with granddaughters Sammy and Jean McKinstry]',
+      titleSource: 'supplied',
+      controlNumber: 'b.1.8.2',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1927]',
+        basis: [
+          'The verso suggests a 1928 date, but the other portrait with Jean and Sammy with Austin Swann shows an older Austin Swann. I propose a date of 1927 for this photograph.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-sammy-jean-austin-swann-recto.jpg', },
+      verso: { file: 'mckinstry-sammy-jean-austin-swann-verso.jpg' },
+      description:
+        'This photograph depicts Austin Swann with his granddaughters Sammy and Jean McKinstry. This photograph was taken in a formal setting just a few years before Austin Swann\'s death. ',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Austin Swann \n (Loveta\'s daddy) \n Sammy and Jean McKinstry \n with their granddaddy \n 1928.',
+          hand: 'unknown',
+        },
+      ],
+      depicts: [
+        {
+          person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 37.2, y: 17.5, w: 19.9, h: 17.7 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 62.2, y: 25.3, w: 19.1, h: 16.7 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 20.9, y: 39.9, w: 20.2, h: 14.5 },
         },
       ]
     },

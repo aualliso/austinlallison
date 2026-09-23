@@ -1147,6 +1147,27 @@ export const PEOPLE: Person[] = [
     ]
   },
   {
+    id: 'grizzle-wiley',
+    authorized: 'Grizzle, Wiley',
+    surname: 'Grizzle',
+    given: 'Wiley',
+    birth: '1895',
+    death: '1973',
+    variants: ['Wiley Grizzle', 'Grizzle, Wiley'],
+    status: 'established',
+    scopeNote:
+      'Wiley Grizzle married Ollie Blanche Ingle Allison in 1923.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    sources: [
+      'Find a Grave memorial 132669877.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'grizzle-wiley-jr', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
     id: 'allison-gerald-parker',
     authorized: 'Allison, Gerald Parker',
     surname: 'Allison',
@@ -1305,6 +1326,30 @@ export const PEOPLE: Person[] = [
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'grizzle-wiley-jr',
+    authorized: 'Grizzle Jr., Wiley',
+    surname: 'Grizzle',
+    given: 'Wiley Jr.',
+    birth: '1924',
+    death: '1945',
+    variants: ['Junior Grizzle', 'Grizzle, Junior', 'Wiley Grizzle, Jr.'],
+    status: 'established',
+    scopeNote:
+      '',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    sources: [
+      'Find a Grave memorial 132669877.',
+    ],
+    relations: [
+      { type: 'parent', person: 'grizzle-wiley', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
 ];

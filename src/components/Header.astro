@@ -3331,17 +3331,25 @@ const isDev = import.meta.env.DEV;
      hinting on every load — the annoying failure is the repeated one. */
   const HINT_KEY = 'horizon-menu-hinted';
   const runFirstVisitHint = () => {
-    if (!menuPanel) return;
+    /* PINNED FOR THE LIFE OF THE HINT. menuPanel is a `let` now, and
+       rebind() can re-point it at a new panel between this call and the
+       animationend a second and a half later — at which point the class
+       would come off an element that never carried it, and stay on the one
+       that does. Holding the panel this run is hinting also gives the
+       narrowing something to survive the closure, which a reassignable
+       binding cannot do. */
+    const panel = menuPanel;
+    if (!panel) return;
     if (!window.matchMedia('(max-width: 767px)').matches) return;      // no control above 768
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
     let seen = true;
     try { seen = localStorage.getItem(HINT_KEY) !== null; } catch { /* denied */ }
     if (seen) return;
     try { localStorage.setItem(HINT_KEY, '1'); } catch { /* denied */ }
-    menuPanel.classList.add('is-hinting');
-    menuPanel.addEventListener(
+    panel.classList.add('is-hinting');
+    panel.addEventListener(
       'animationend',
-      () => menuPanel.classList.remove('is-hinting'),
+      () => panel.classList.remove('is-hinting'),
       { once: true }
     );
   };

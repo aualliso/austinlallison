@@ -2264,7 +2264,7 @@ export const COLLECTION: Collection = {
       titleSource: 'supplied',
       place: 'Hagerman, New Mexico',
       date: {
-        display: '1920-1925',
+        display: '[1920-1925]',
         earliest: 1920,
         latest: 1925,
         basis: [
@@ -2276,6 +2276,14 @@ export const COLLECTION: Collection = {
       recto: { file: 'swann-austin-jim-mckinstry-edmund-mckinstry-recto.jpg' },
       verso: { file: 'swann-austin-jim-mckinstry-edmund-mckinstry-verso.jpg' },
       description: 'This photograph depicts Austin Swann sitting on a porch. Jim McKinstry is left and Edmund McKinstry is in the back.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Papa Swann sitting \n down, Jim left \n and Edmon McK.',
+        },
+      ],
       depicts: [
         {
           person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
@@ -2294,6 +2302,461 @@ export const COLLECTION: Collection = {
           confidence: 'certain',  // REQUIRED on every depiction
           basis: 'Edmund McKinstry is the son of Thomas and Camille McKinstry.',
           region: { face: 'recto', x: 52.3, y: 26.3, w: 7, h: 9.6 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'girdner-charlie-next-to-barn',
+      title: '[Charlie Girdner with horses and car next to a barn]',
+      controlNumber: 'b.1.1.2',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '[1911]',
+        basis: [
+          'A date of 1911 is on the inscription on the recto. Nothing objects to this date.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'real photo postcard',
+      recto: { file: 'girdner-charlie-next-to-barn-recto.jpg' },
+      verso: { file: 'girdner-charlie-next-to-barn-verso.jpg' },
+      description: 'This photograph depicts Charlie Girdner standing in front of a barn. A car is to the left. Three horses are also visible. There is another figure behind a horse. The verso identifies them as "Jute (Doc) Girdner.',
+      inscriptions: [
+        {
+          location: 'recto',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Charlie Girdner \n in front of barn \n with first car \n about 1911.',
+        },
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Shetland pony \n who was bought by Mack Swann \n in Indian Territory. \n Cousin Jule (Doc) Girdner \n with his Shetland "Madge."',
+        },
+      ],
+      depicts: [
+        {
+          person: 'girdner-charles-edgar',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 52.6, y: 31.5, w: 2.2, h: 1.5 },
+        },
+        {
+          as: 'Jute Girdner',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 73.3, y: 32.3, w: 4.4, h: 9.2 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'picnic-crowd-at-jacobia',
+      title: 'Picnic crowd at Jacobia',
+      controlNumber: 'b.1.2.2',
+      titleSource: 'inscribed',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '[1904-1908]',
+        basis: [
+          'There is no date associated with this photograph, but the real photo postcard details on the back suggest a date between 1904 and 1908.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'real photo postcard',
+      recto: { file: 'picnic-crowd-at-jacobia-recto.jpg' },
+      verso: { file: 'picnic-crowd-at-jacobia-verso.jpg' },
+      description: 'This photograph depicts a picnic crowd at Jacobia, Texas. It is likely several members of the Swann family are present here, but none are personally identifiable.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Picnic crowd at \n Jacobia, Texas.',
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-austin-first-house-hagerman',
+      title: '[First home of Austin Swann in Hagerman, New Mexico]',
+      controlNumber: 'b.1.3.1',
+      titleSource: 'supplied',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1908]',
+        basis: [
+          'A date of December 8th, 1908 is on the verso. Nothing objects to this date.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'swann-austin-first-house-hagerman-recto.jpg' },
+      verso: { file: 'swann-austin-first-house-hagerman-verso.jpg' },
+      description: 'This photograph depicts the first house of Austin Swann and his three girls as it looked in 1908 when they came to Hagerman. There are two women on the front porch of this house, but the resolution of the photograph prevents certain identification.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Dec. 8, 1908 \n  The first house \n Austin Swann and \n daughters (Eva, Minnie, \n and Loveta) lived in \n when they came \n to Hagerman, N.M.',
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'girdner-c-e-3',
+      title: 'C.E. Girdner, 1911',
+      controlNumber: 'b.1.3.2',
+      titleSource: 'inscribed',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '[1911]',
+        basis: [
+          'A date of 1911 is on the inscription on the recto. Nothing objects to this date.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'real photo postcard',
+      recto: { file: 'girdner-c-e-3-recto.jpg' },
+      verso: { file: 'girdner-c-e-3-verso.jpg' },
+      description: 'This photograph depicts C.E. Girdner on a horse next to a barn in 1911.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'C.E. Girdner \n 1911.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'girdner-charles-edgar',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 44.5, y: 20.7, w: 8.7, h: 7.6 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-loveta-and-friend',
+      title: 'Loveta and a friend',
+      controlNumber: 'b.1.4.2',
+      titleSource: 'inscribed',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '[1906-1908]',
+        basis: [
+          'There is no date on this photograph, but a date of 1906 to 1908 is probable. This photograph appears to be from before the Swanns moved to Hagerman, New Mexico.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-loveta-and-friend-recto.jpg' },
+      verso: { file: 'swann-loveta-and-friend-verso.jpg' },
+      description: 'This photograph depicts C.E. Girdner on a horse next to a barn in 1911.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Loveta and a friend.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 50.7, y: 43.4, w: 8.6, h: 7.3 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-all-three-girls',
+      title: 'All three girls',
+      controlNumber: 'b.1.5.1',
+      titleSource: 'inscribed',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1909-1911]',
+        basis: [
+          'There is no date on this photograph, but it was taken at the Hagerman, New Mexico home of Austin Swann, which places this photograph after 1908.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'swann-all-three-girls-recto.jpg' },
+      verso: { file: 'swann-all-three-girls-verso.jpg' },
+      description: 'This photograph depicts Eva Swann, Minnie Swann, and Loveta Swann on the porch of their Hagerman, New Mexico home. No specific identifications are possible.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'All 3 girls.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 59.7, y: 34, w: 3.9, h: 6.8 },
+        },
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 71.1, y: 22, w: 4.1, h: 9.2 },
+        },
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 55.1, y: 21, w: 4.4, h: 8.1 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'papa-swanns-funeral',
+      title: 'Papa Swann\'s funeral',
+      controlNumber: 'b.1.5.2',
+      titleSource: 'inscribed',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '1931',
+        basis: [
+          'Austin Swann died in 1931, so a 1931 date is certain.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'papa-swanns-funeral-recto.jpg' },
+      verso: { file: 'papa-swanns-funeral-verso.jpg' },
+      description: 'This photograph depicts the grave of Austin Swann at the cemetery in Jacobia, Texas. ',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Papa Swann\'s funeral.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 13.4, y: 21.3, w: 18.7, h: 37.1 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-minnie-loveta-in-boat',
+      title: '[Minnie and Loveta Swann in a boat]',
+      controlNumber: 'b.1.6.1',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1909-1911]',
+        basis: [
+          'There is no date on this photograph. It appears Minnie and Loveta are rowing a boat on a lake where the surround terrain is treeless, suggesting it was taken in New Mexico rather than East Texas. A date after 1908 is probable.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'swann-minnie-loveta-in-boat-recto.jpg' },
+      verso: { file: 'swann-minnie-loveta-in-boat-verso.jpg' },
+      description: 'This photograph depicts Minnie and Loveta Swann rowing a boat on a lake in New Mexico.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Loveta left \n and Minnie.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 25.4, y: 37.1, w: 3.6, h: 2.7 },
+        },
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 41.2, y: 36.7, w: 4, h: 2.7 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-austin-eva-car',
+      title: '[Austin Swann in a car with Eva Swann and others next to the car]',
+      controlNumber: 'b.1.6.2',
+      titleSource: 'supplied',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1917-1920]',
+        basis: [
+          'There is no date on this photograph. Based on the car model and ages of those known in the photograph, a 1917 to 1920 date is probable.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'swann-austin-eva-car-recto.jpg' },
+      verso: { file: 'swann-austin-eva-car-verso.jpg' },
+      description: 'This photograph depicts Austin Swann sitting in a car, Eva Swann standing in the gate, a Mr. Will Lane next to the gate, and Mr. Fay Irwin standing in front of the car.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Eva or Minnie \n Mr. Will Lane in gate \n Pap Swann in car \n Mr. Fay Irwin right.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 62.1, y: 36.2, w: 3.1, h: 5 },
+        },
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 32.2, y: 36.6, w: 2.7, h: 5.5 },
+        },
+        {
+          as: 'Will Lane',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 42.8, y: 38.4, w: 3.2, h: 5.2 },
+        },
+        {
+          as: 'Fay Irwin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 71, y: 36.2, w: 3.9, h: 6.3 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-loveta-in-field',
+      title: '[Loveta Swann in a field near Tyler, Texas]',
+      controlNumber: 'b.1.7.2',
+      titleSource: 'supplied',
+      place: 'Tyler, Texas',
+      date: {
+        display: '[1915-1920]',
+        basis: [
+          'There is no date on this photograph, but Loveta appears to be in her early or mid 20s here.',
+        ],
+        confidence: 'probable',
+      },
+      photographer: {
+        name: 'Bud Thomas',
+        confidence: 'certain',
+        basis: 'Identified as photographer on verso.',
+      },
+      format: 'snapshot',
+      recto: { file: 'swann-loveta-in-field-recto.jpg' },
+      verso: { file: 'swann-loveta-in-field-verso.jpg' },
+      description: 'This photograph depicts Loveta Swann McKinstry standing in a rose field near Tyler, Texas. Her uncle Norphlet "Bud" Thomas took this photograph.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Uncle Bud Thomas \n took this picture of me in a \n rose field near Tyler, Texas.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 36.5, y: 37, w: 2.7, h: 5.7 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-eva-portrait',
+      title: '[Eva Swann about the time she married Elza Powell]',
+      controlNumber: 'b.1.9.1',
+      titleSource: 'supplied',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1920]',
+        basis: [
+          'The date of 1920 is supplied with this photograph. Nothing objects to it.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-eva-portrait-recto.jpg' },
+      verso: { file: 'swann-eva-portrait-verso.jpg' },
+      description: 'This photograph depicts Eva Swann around the time she married her first husband, Elza Powell.',
+      inscriptions: [
+        {
+          location: 'sleeve',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Eva Swann \n about the time she \n married Elza Powell \n 1920.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 39.6, y: 27.5, w: 32.5, h: 27 },
         },
       ],
       rights: {
