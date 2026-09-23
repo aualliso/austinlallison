@@ -718,6 +718,7 @@ export const PEOPLE: Person[] = [
       'Find a Grave memorial 211790000',
     ],
     relations: [
+      { type: 'spouse', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-samuel-small', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-loveta-swann', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
@@ -1099,9 +1100,213 @@ export const PEOPLE: Person[] = [
       'Findagrave record number 21144508',
     ],
   },
-  // TODO: 'Jean' and 'Sammy' are given names only, with no surname on the
-  // object. They stay as `as:` strings on the item until a heading can be
-  // established - an authority record for a bare given name is not one.
+  {
+    id: 'allison-oscar-simmon',
+    authorized: 'Allison, Oscar Simmon',
+    surname: 'Allison',
+    given: 'Oscar Simmon',
+    birth: '1884',
+    death: '1920',
+    variants: ['Oscar Allison', 'Oscar Simmon Allison', 'Allison, Oscar'],
+    status: 'established',
+    scopeNote:
+      'Oscar Simmon Allison lived from 1884 to 1920',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    sources: [
+      'Find a Grave memorial 28322691.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'grizzle-ollie-blanche-ingle-allison',
+    authorized: 'Grizzle, Ollie Blanche Ingle Allison',
+    surname: 'Grizzle',
+    given: 'Ollie Blanche Ingle Allison',
+    birth: '1892',
+    death: '1976',
+    variants: ['Ollie Allison', 'Ollie Ingle', 'Ollie Grizzle'],
+    status: 'established',
+    scopeNote:
+      'Ollie Blanche Ingle Allison Grizzle lived from 1892 to 1976. She married Oscar Simmon Allison in 1911. He died in 1920 and she remarried Wiley Grizzle in 1923.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    sources: [
+      'Find a Grave memorial 132669875.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-gerald-parker',
+    authorized: 'Allison, Gerald Parker',
+    surname: 'Allison',
+    given: 'Gerald Parker',
+    birth: '1913',
+    death: '1982',
+    variants: ['Gerald Allison', 'Gerald Parker Allison', 'Allison, Gerald'],
+    status: 'established',
+    scopeNote:
+      'Gerald Allison lived from 1913 to 1982',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    sources: [
+      'Find a Grave memorial 13773914.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-lanora-ethel-wells', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-james-oscar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-winston-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'bainbridge-sherry-lynn-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-lanora-ethel-wells',
+    authorized: 'Allison, Lanora Ethel Wells',
+    surname: 'Allison',
+    given: 'Lanora Ethel Wells',
+    birth: '1917',
+    death: '2008',
+    variants: ['Ethel Allison', 'Lanora Ethel Allison', 'Wells, Lanora Ethel', 'Ethel Wells', 'Wells, Ethel'],
+    status: 'established',
+    scopeNote:
+      'Ethel Allison lived from 1917 to 2008',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    sources: [
+      'Find a Grave memorial 26227837.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-james-oscar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-winston-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'bainbridge-sherry-lynn-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-james-oscar',
+    authorized: 'Allison, James Oscar',
+    surname: 'Allison',
+    given: 'James Oscar',
+    birth: '1937',
+    death: '2012',
+    variants: ['James Oscar Allison', 'Jim O. Allison', 'Allison, Jimmy', 'Jimmy Allison', 'James Allison'],
+    status: 'established',
+    scopeNote:
+      'James Oscar Allison lived from 1937 to 2012',
+    sources: [
+      'No Find a Grave memorial.',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-lanora-ethel-wells', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-winston-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'bainbridge-sherry-lynn-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-winston-irvin',
+    authorized: 'Allison, Winston Irvin',
+    surname: 'Allison',
+    given: 'Winston Irvin',
+    birth: '1938',
+    death: '2016',
+    variants: ['Winston Irvin Allison', 'Winston Allison', 'Allison, Winston'],
+    status: 'established',
+    scopeNote:
+      'Winston Irvin Allison lived from 1938 to 2016',
+    sources: [
+      'Find a Grave memorial 169503745.',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-lanora-ethel-wells', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-james-oscar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'bainbridge-sherry-lynn-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'bainbridge-sherry-lynn-allison',
+    authorized: 'Bainbridge, Sherry Lynn Allison',
+    surname: 'Bainbridge',
+    given: 'Sherry Lynn Allison',
+    birth: '1938',
+    death: '2016',
+    variants: ['Sherry Allison', 'Sherry Bainbridge'],
+    status: 'established',
+    scopeNote:
+      'Sherry Lynn Allison Bainbridge lived from 1939 to 2014',
+    sources: [
+      'Find a Grave memorial 126992596.',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-lanora-ethel-wells', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-james-oscar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-winston-irvin', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-harold-lamar',
+    authorized: 'Allison, Harold Lamar',
+    surname: 'Allison',
+    given: 'Harold Lamar',
+    birth: '1917',
+    death: '1991',
+    variants: ['Harold Allison', 'Harold Lamar Allison'],
+    status: 'established',
+    scopeNote:
+      'Allison died at 12:04 a.m. Tuesday in the Methodist Hospital in Lubbock. Born Feb. 26, 1917 in Roswell, N .M ., Allison had been a resident of Earth since 1948, moving there from Roswell. He married Veta Jean McKinstry on March 26, 1944, in Hagerman, N.M.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    sources: [
+      'Find a Grave memorial 53568158.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-oscar-ingle',
+    authorized: 'Allison, Oscar Ingle',
+    surname: 'Allison',
+    given: 'Oscar Ingle',
+    birth: '1919',
+    death: '1982',
+    variants: ['Oscar Allison', 'Oscar Ingle Allison'],
+    status: 'established',
+    scopeNote:
+      '',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    sources: [
+      'Find a Grave memorial 51564541.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
 ];
 
 export const personById = new Map(PEOPLE.map((p) => [p.id, p]));

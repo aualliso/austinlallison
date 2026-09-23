@@ -43,11 +43,13 @@ import { PEOPLE, personById, NAME_INDEX } from './people';
 import { COLLECTION as SWANN_FAMILY } from './swann-family';
 import { COLLECTION as THOMAS_FAMILY } from './thomas-family';
 import { COLLECTION as MCKINSTRY_FAMILY } from './mckinstry-family';
+import { COLLECTION as ALLISON_FAMILY } from './allison-family';
 
 const REGISTERED: Collection[] = [
   SWANN_FAMILY,
   THOMAS_FAMILY,
   MCKINSTRY_FAMILY,
+  ALLISON_FAMILY,
 ];
 
 export const COLLECTIONS: Collection[] = [...REGISTERED].sort((a, b) =>

@@ -2226,5 +2226,80 @@ export const COLLECTION: Collection = {
         note: 'Photographer unidentified; unpublished.',
       },
     },
+    {
+      slug: 'concord-church-1968',
+      title: '[Concord Church at Jacobia, 1928]',
+      controlNumber: 'a.1.25.1',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1968]',
+        basis: [
+          'There is no definitive date associated with this photograph. A date of 1968 is attached since the verso suggests this picture was taken just before the structure was torn down.',
+        ],
+        confidence: 'probable',
+      },
+       inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Concord Church \n just before it \n was torned down \n in 1968.',
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'concord-church-1968-recto.jpg' },
+      verso: { file: 'concord-church-1968-verso.jpg' },
+      description: 'This photograph depicts the Concord Church at Jacobia just before it was torn down in 1968. ',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-austin-jim-mckinstry-edmund-mckinstry',
+      title: '[Austin Swann with Jim McKinstry and Edmund McKinstry]',
+      controlNumber: 'a.1.28.2',
+      titleSource: 'supplied',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '1920-1925',
+        earliest: 1920,
+        latest: 1925,
+        basis: [
+          'There is no way to assign a specific date to this photograph. A date of 1920 to 1925 is presumed based on Austin Swann\'s age.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'swann-austin-jim-mckinstry-edmund-mckinstry-recto.jpg' },
+      verso: { file: 'swann-austin-jim-mckinstry-edmund-mckinstry-verso.jpg' },
+      description: 'This photograph depicts Austin Swann sitting on a porch. Jim McKinstry is left and Edmund McKinstry is in the back.',
+      depicts: [
+        {
+          person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Austin Swann is identified on the verso.',
+          region: { face: 'recto', x: 50.5, y: 42.7, w: 8, h: 14.3 },
+        },
+        {
+          person: 'mckinstry-james-daubin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Austin Swann is identified on the verso.',
+          region: { face: 'recto', x: 18.5, y: 10, w: 24.1, h: 79.8 },
+        },
+        {
+          as: 'Edmund McKinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Edmund McKinstry is the son of Thomas and Camille McKinstry.',
+          region: { face: 'recto', x: 52.3, y: 26.3, w: 7, h: 9.6 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
   ],
 };

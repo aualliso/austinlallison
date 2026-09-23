@@ -1429,11 +1429,27 @@ const isDev = import.meta.env.DEV;
 </div>
 
 <script>
-  // This module runs exactly once per site load. The header itself persists
-  // across view transitions, so everything below is written to be re-entrant
-  // via astro:after-swap — never re-bound.
+  // This module runs exactly once per site load, so everything below is
+  // written to be re-entrant via astro:after-swap — never re-bound.
+  //
+  // THE HEADER USUALLY PERSISTS ACROSS A VIEW TRANSITION, BUT NOT ALWAYS.
+  // transition:persist needs a matching wrapper in the OUTGOING document,
+  // and a hideNav page (the light table) has none — so navigating back off
+  // one lands a brand new, never-initialised header in the document while
+  // this module sits on the old one. Nothing below may hold an element
+  // across a swap without rebind() re-pointing it; see rebind() and
+  // bindMenu() at the foot of the module.
 
-  const header = document.getElementById('horizon-header');
+  /* LIVE, NOT CAPTURED — see rebind() in the lifecycle block below. The
+     light table sets hideNav, so its DOM carries no
+     [data-astro-transition-persist="horizon-header"] for Astro to match
+     against, and every client-side navigation OFF that page therefore lands
+     a BRAND NEW header in the document. This module, being a module, does
+     not run again to notice — so a `const` here would leave every function
+     below writing to a detached element while the live one keeps its
+     build-time defaults: a day sky at midnight, and a menu control whose
+     listener is attached to a button that is no longer on the page. */
+  let header = document.getElementById('horizon-header');
   const SITE_LAT = 33.5779;
   const SITE_LON = -101.8552;
 
@@ -3035,7 +3051,7 @@ const isDev = import.meta.env.DEV;
   };
 
   /* ---- per-page geography ----------------------------------------------- */
-  const horizonSvg = document.getElementById('the-horizon');
+  let horizonSvg = document.getElementById('the-horizon');   // rebind() re-points it
   const silhouettes = horizonSvg?.dataset.silhouettes
     ? JSON.parse(horizonSvg.dataset.silhouettes)
     : null;
@@ -3181,26 +3197,36 @@ const isDev = import.meta.env.DEV;
 
   /* ---- narrow-width navigation (2026-08-25) ------------------------------
      Below 768px the four mile markers collapse to one control and the list
-     opens as a cut below the horizon. Three things this has to survive, all
-     of them consequences of transition:persist on the sticky wrapper:
+     opens as a cut below the horizon. Four things this has to survive:
 
-       1. The header is NOT re-created on a client-side navigation, so an
-          open panel would still be open on the far side of a route change.
+       1. The header is usually NOT re-created on a client-side navigation,
+          so an open panel would still be open on the far side of a route
+          change.
        2. The control's label is the CURRENT route's, and the frontmatter
           that computed it ran once, at build time.
-       3. This module runs once per site load, so the listeners below are
-          bound once and must never be re-bound on swap.
+       3. This module runs once per site load, so the listeners must be
+          bound once and never re-bound on swap.
+       4. AND SOMETIMES THE HEADER *IS* RE-CREATED (2026-09-23, fix). Point
+          1 holds only while transition:persist has something to match
+          against on BOTH sides of the navigation. The light table sets
+          hideNav, so coming back off it Astro finds no persisted wrapper
+          in the outgoing DOM and uses the incoming page's fresh markup —
+          and this module, being a module, does not execute again. The
+          three handles below therefore cannot be `const`: see rebind().
 
-     Points 1 and 2 are handled from astro:after-swap; point 3 is why the
-     binding lives in initMenu(), called from the lifecycle block below and
-     nowhere else. */
-  const menuBtn = document.getElementById('horizon-menu-btn');
-  const menuPanel = document.getElementById('horizon-menu');
+     Points 1 and 2 are handled from astro:after-swap. Point 3 is why the
+     listeners live in bindMenu(), called from the lifecycle block below and
+     nowhere else — and why every one of them is delegated from document
+     rather than attached to an element that may be replaced under it.
+     Point 4 is why initMenu(), which only ever WRITES to the elements, runs
+     again on every swap. */
+  let menuBtn = document.getElementById('horizon-menu-btn');
+  let menuPanel = document.getElementById('horizon-menu');
   /* The 13px strip the control sits in. It mirrors the panel's open state so
      it can take the panel's surface — see .menu-seam. Done here rather than
      with a sibling-state CSS selector to keep it off newer syntax the build
      has mangled before. */
-  const menuSeam = document.querySelector<HTMLElement>('.menu-seam');
+  let menuSeam = document.querySelector<HTMLElement>('.menu-seam');
 
   /* THE GATE HAS TO BE RE-STAMPED ON EVERY SWAP (2026-08-25, fix).
      Astro's client-side navigation does not merge <html>'s attributes — it
@@ -3320,14 +3346,25 @@ const isDev = import.meta.env.DEV;
     );
   };
 
-  const initMenu = () => {
-    markJsAvailable();   // idempotent; the is:inline copy already ran
-    if (!menuBtn || !menuPanel) return;
-    setMenu(false);
-    syncMenuSurface();
-    runFirstVisitHint();
-
-    menuBtn.addEventListener('click', () => setMenu(!menuIsOpen(), true));
+  /* BOUND ONCE, AND NEVER TO AN ELEMENT. Every listener here hangs off
+     document or window and finds its target at event time, so a header that
+     has been rebuilt under us is wired the moment it lands — no re-binding,
+     and no way to bind twice. The two that used to sit directly on menuBtn
+     and menuPanel are exactly the ones that went dead coming back off the
+     light table: still attached, but to elements no longer in the document.
+     Called from the lifecycle block below and nowhere else. */
+  const bindMenu = () => {
+    document.addEventListener('click', (e) => {
+      const t = e.target as Element | null;
+      if (t?.closest?.('#horizon-menu-btn')) {
+        setMenu(!menuIsOpen(), true);
+        return;
+      }
+      /* A tap on a link navigates, and after-swap closes the panel anyway —
+         but doing it here as well means the section is already collapsing
+         while the next page loads, instead of snapping shut behind it. */
+      if (t?.closest?.('#horizon-menu a[href]')) setMenu(false);
+    });
 
     document.addEventListener('keydown', (e) => {
       /* setMenu already returns focus to the control whenever it is inside
@@ -3339,15 +3376,8 @@ const isDev = import.meta.env.DEV;
     document.addEventListener('pointerdown', (e) => {
       if (!menuIsOpen()) return;
       const t = e.target as Node;
-      if (menuPanel.contains(t) || menuBtn.contains(t)) return;
+      if (menuPanel?.contains(t) || menuBtn?.contains(t)) return;
       setMenu(false);
-    });
-
-    /* A tap on a link navigates, and after-swap closes the panel anyway —
-       but doing it here as well means the section is already collapsing
-       while the next page loads, instead of snapping shut behind it. */
-    menuPanel.addEventListener('click', (e) => {
-      if ((e.target as Element).closest('a[href]')) setMenu(false);
     });
 
     /* The control only exists below 768px. If the viewport crosses that line
@@ -3356,6 +3386,18 @@ const isDev = import.meta.env.DEV;
     window.matchMedia('(min-width: 768px)').addEventListener('change', (e) => {
       if (e.matches && menuIsOpen()) setMenu(false);
     });
+  };
+
+  /* PER RENDER. Everything that WRITES to the elements themselves, so it has
+     to run again every time there is a new set of them — on first load and
+     from astro:after-swap. runFirstVisitHint is already once-per-browser
+     through localStorage, so it is safe to call again. */
+  const initMenu = () => {
+    markJsAvailable();   // idempotent; the is:inline copy already ran
+    if (!menuBtn || !menuPanel) return;
+    setMenu(false);
+    syncMenuSurface();
+    runFirstVisitHint();
   };
 
   /* ---- no scroll listener --------------------------------------------------
@@ -3378,6 +3420,7 @@ const isDev = import.meta.env.DEV;
   applySeasonalMarker();
   refreshActive();
   initMenu();         // must follow refreshActive: it reads the active row's label
+  bindMenu();         // ONCE, and only here — see the note on bindMenu above
   applyWeather();
   setInterval(applyPhase, 60_000); // long-lived tabs cross phase/elevation/azimuth boundaries
   // Was 15 min back when the moon was pinned to a fixed spot and only its
@@ -3418,8 +3461,30 @@ const isDev = import.meta.env.DEV;
     applyStars();
   });
 
+  /* ---- re-point every captured element at the live document ---------------
+     THE ONE THING THIS MODULE CANNOT ASSUME is that the header it started
+     with is still the header on screen. transition:persist covers the
+     ordinary case; it cannot cover a navigation FROM a page that renders no
+     header at all, and the light table (hideNav) is such a page — coming
+     back off it, Astro has nothing to match and uses the incoming page's
+     fresh markup. This module does not re-execute, so without this every
+     call below would write to the detached original: the live header would
+     keep its build-time day sky after dark, and the live menu control would
+     have no listener on it at all.
+
+     Five lookups on a swap. Cheap, and it makes the whole module correct by
+     construction rather than by the persist matching. */
+  const rebind = () => {
+    header     = document.getElementById('horizon-header');
+    horizonSvg = document.getElementById('the-horizon');
+    menuBtn    = document.getElementById('horizon-menu-btn');
+    menuPanel  = document.getElementById('horizon-menu');
+    menuSeam   = document.querySelector<HTMLElement>('.menu-seam');
+  };
+
   document.addEventListener('astro:after-swap', () => {
-    markJsAvailable();  // FIRST: the swap just stripped it off <html>
+    rebind();           // BEFORE ANYTHING ELSE: every call below writes to these
+    markJsAvailable();  // the swap just stripped it off <html>
     markArrived();      // ditto — and a swap is by definition not an arrival
     setHorizon();       // the new route's silhouette, before applyPhase/applyStars sample it
     measureSkyWindow(); // nav width changes with the active route's marker
@@ -3429,51 +3494,20 @@ const isDev = import.meta.env.DEV;
     applyStars();
     applySeasonalMarker();
     refreshActive();
-    /* The header persists across the swap, so the panel does too — it has
-       to be told to close. Must follow refreshActive(), which is what moves
-       .is-active onto the new route's station. */
-    setMenu(false);
+    /* Was setMenu(false), on the assumption that the header — and so the
+       panel — always persists across the swap and only needs closing. A
+       REBUILT panel needs more than that: it has never had the sky mirrored
+       onto it and the gate has never been stamped for it. initMenu() does
+       all three and nothing else, and closing a persisted panel is still
+       what it does on the ordinary path. Must follow refreshActive(), which
+       is what moves .is-active onto the new route's station. */
+    initMenu();
     applyWeather();
     /* Astro swaps the whole <head>, so the meta tag applyPhase wrote is gone
        — same class of loss as the data-js attribute above, and it needs the
        same re-stamp. applyPhase() ran earlier in this handler, but it ran
        against the OLD head. */
     applyThemeColor();
-  });
-  /* ---- BACK/FORWARD CACHE: WAKE THE STICKY WRAPPER -----------------------
-     Swipe back onto any page of this site on a phone and the header draws
-     correctly and is completely dead — the menu control does not actuate,
-     and neither does anything else in the seam. A reload fixes it;
-     arriving by a link never shows it.
-
-     IT IS NOT THE JS. A swipe-back restores the document from the
-     back/forward cache rather than rebuilding it, so every listener bound
-     in initMenu() is still bound to the same live elements. What is stale
-     is the COMPOSITOR'S HIT-TEST REGION for #horizon-sticky: iOS
-     reactivates the document with the sticky layer's tap region still
-     keyed to the scroll offset the page had when it was frozen, so taps
-     on the header fall through to whatever is underneath it.
-
-     THE REPAIR is a forced re-layout while the wrapper is NOT sticky.
-     Dropping to position:relative invalidates the region and putting it
-     back re-derives it from the live scroll position. Both writes happen
-     inside one frame with a synchronous layout read between them, so the
-     intermediate state is never painted — no flicker, no jump.
-
-     TWO FRAMES DEEP, not one: a page that scrolls itself on reactivation
-     (the album restores a pane) has to land first. Invalidating in the
-     same frame as that scroll just rebuilds the same stale region. */
-  window.addEventListener('pageshow', (e) => {
-    if (!(e as PageTransitionEvent).persisted) return;
-    const sticky = document.getElementById('horizon-sticky');
-    if (!sticky) return;
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        sticky.style.position = 'relative';
-        void sticky.offsetHeight;    // force the layout; don't let it batch away
-        sticky.style.position = '';  // back to the stylesheet's sticky
-      });
-    });
   });
 </script>
 

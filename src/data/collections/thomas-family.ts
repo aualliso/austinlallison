@@ -311,9 +311,11 @@ export const COLLECTION: Collection = {
         basis: 'No imprint or signature visible in the surrogate.',
       },
       date: {
-        display: '[late 19th century]',
+        display: '[1895-1900]',
+        earliest: 1895,
+        latest: 1900,
         basis: ['Nothing on the object dates it. This photograph shows a young Mattie Thomas Darby. She was born in 1875, so a proposed late 19th century date is plausible'],
-        confidence: 'unidentified',
+        confidence: 'probable',
       },
       recto: {
         file: 'darby-mattie-thomas-recto.jpg',
