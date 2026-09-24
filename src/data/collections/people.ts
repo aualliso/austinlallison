@@ -512,6 +512,7 @@ export const PEOPLE: Person[] = [
     death: '1935',
     status: 'established',
     relations: [
+      { type: 'spouse', person: 'bouknight-paul-alexander', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-malcom', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-nancy-atkinson', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'swann-annie', basis: 'Established relationship', confidence: 'certain' },
@@ -519,6 +520,63 @@ export const PEOPLE: Person[] = [
       { type: 'sibling', person: 'girdner-lizzie-swann', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'swann-john-milton', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'girdner-nannie-atkinson-swann', basis: 'Established relationship', confidence: 'certain' },
+    ],
+  },
+  {
+    id: 'bouknight-paul-alexander',
+    authorized: 'Bouknight, Paul Alexander',
+    surname: 'Bouknight',
+    given: 'Paul Alexander',
+    birth: '1859',
+    death: '1918',
+    status: 'established',
+    relations: [
+      { type: 'spouse', person: 'bouknight-phebe-swann', basis: 'Established relationship', confidence: 'certain' },
+    ],
+  },
+  {
+    id: 'harrison-juanita-bouknight',
+    authorized: 'Harrison, Juanita Bouknight',
+    surname: 'Harrison',
+    given: 'Juanita Bouknight',
+    birth: '1891',
+    death: '1941',
+    status: 'established',
+    relations: [
+      { type: 'parent', person: 'bouknight-paul-alexander', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'bouknight-phebe-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'bouknight-raymond-ardre', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'bouknight-thurman-alexander', basis: 'Established relationship', confidence: 'certain' },
+    ],
+  },
+  {
+    id: 'bouknight-raymond-ardre',
+    authorized: 'Bouknight, Raymond Ardre',
+    surname: 'Bouknight',
+    given: 'Raymond Ardre',
+    birth: '1894',
+    death: '1951',
+    status: 'established',
+    relations: [
+      { type: 'parent', person: 'bouknight-paul-alexander', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'bouknight-phebe-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'harrison-juanita-bouknight', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'bouknight-thurman-alexander', basis: 'Established relationship', confidence: 'certain' },
+    ],
+  },
+  {
+    id: 'bouknight-thurman-alexander',
+    authorized: 'Bouknight, Thurman Alexander',
+    surname: 'Bouknight',
+    given: 'Thurman Alexander',
+    birth: '1896',
+    death: '1966',
+    status: 'established',
+    relations: [
+      { type: 'parent', person: 'bouknight-paul-alexander', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'bouknight-phebe-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'bouknight-raymond-ardre', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'bouknight-thurman-alexander', basis: 'Established relationship', confidence: 'certain' },
     ],
   },
   {
@@ -531,6 +589,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     relations: [
       { type: 'spouse', person: 'girdner-charles-edgar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'girdner-vena', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-malcom', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-nancy-atkinson', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'swann-annie', basis: 'Established relationship', confidence: 'certain' },
@@ -551,10 +610,23 @@ export const PEOPLE: Person[] = [
     status: 'established',
     relations: [
       { type: 'spouse', person: 'girdner-nannie-atkinson-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'girdner-vena', basis: 'Established relationship', confidence: 'certain' },
     ],
   },
-  
-  
+  {
+    id: 'girdner-vena',
+    authorized: 'Girdner, Vena',
+    surname: 'Girdner',
+    given: 'Vena',
+    variants: ['Girdner, Vena', 'Vena Girdner'],
+    birth: '1900',
+    death: '1905',
+    status: 'established',
+    relations: [
+      { type: 'parent', person: 'girdner-charles-edgar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'girdner-nannie-atkinson-swann', basis: 'Established relationship', confidence: 'certain' },
+    ],
+  },
   {
     id: 'west-eva-swann-powell',
     authorized: 'West, Eva Swann',

@@ -3813,5 +3813,47 @@ export const COLLECTION: Collection = {
         },
       ]
     },
+    {
+      slug: 'mckinstry-jean-portrait-1',
+      title: '[Portrait of Jean McKinstry, circa 1927-1928]',
+      titleSource: 'supplied',
+      controlNumber: 'b.1.21.2',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1927-1928]',
+        earliest: 1927,
+        latest: 1928,
+        basis: [
+          'There is no date on this photoraph, but Jean McKinstry appears to be about 5 years old here.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jean-portrait-1-recto.jpg', },
+      verso: { file: 'mckinstry-jean-portrait-1-verso.jpg' },
+      description:
+        'This is a portrait of Jean McKinstry from roughly 1927 or 1928. She is holding a bouqet of roses.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Veta Jean McKinstry',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 30.4, y: 15, w: 42.8, h: 37.8 },
+        },
+      ]
+    },
   ],
 };

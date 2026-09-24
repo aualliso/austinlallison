@@ -142,5 +142,42 @@ export const COLLECTION: Collection = {
           },
       ],
     },
+    {
+      slug: 'allison-harold-discharged-1945',
+      title: '[Harold Allison shortly after being discharged from military in 1945]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      controlNumber: 'b.1.20.1',
+      place: 'Dexter, New Mexico',
+      date: {
+        display: '1945',
+        basis: ['Verso identifies the date'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-harold-discharged-1945-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-discharged-1945-verso.jpg',
+      },
+      description:
+        'This photograph depicts Harold Allison standing next to a car in his military uniform shortly after being discharged from the military in 1945 following the conclusion of World War II.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: '1945 \n Harold Lamar Allison \n Dexter, N. Mex \n Discharged',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 23.1, y: 32.2, w: 10.7, h: 10.1 },
+          },
+      ],
+    },
   ]
 }

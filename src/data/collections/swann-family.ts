@@ -101,16 +101,15 @@ export const COLLECTION: Collection = {
           slug: 'malcom-swann-in-oklahoma',
           relation: ''
         },
+        {
+          slug: 'swann-thresher-steam-engine',
+          relation: '',
+        }
       ],
       rights: {
         status: 'public-domain',
         note: 'Photographer unidentified; unpublished.',
       },
-      needsWork: [
-        'Which of the three names in the firm are in the photograph, and where.',
-        'Where in Oklahoma, and in what years the outfit operated.',
-        'Whether "Girdner" connects to a line you can place.',
-      ],
     },
 
     /* ---------------------------------------------------------------- */
@@ -1843,9 +1842,9 @@ export const COLLECTION: Collection = {
       place: 'Hagerman, New Mexico',
       date: {
         // What prints. Square brackets mark an assessment.
-        display: '1910',
+        display: '1911',
         basis: [
-          'The date is inscribed on the verso',
+          'The verso states that this is from 1910, but a 1911 date is more likely.',
         ],
         confidence: 'certain',
       },
@@ -2757,6 +2756,1137 @@ export const COLLECTION: Collection = {
           confidence: 'certain',  // REQUIRED on every depiction
           basis: 'Identified on photogoraph',
           region: { face: 'recto', x: 39.6, y: 27.5, w: 32.5, h: 27 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-nannie-portrait',
+      title: '[Portrait of Nannie Swann, circa 1894]',
+      controlNumber: 'b.1.9.2',
+      titleSource: 'supplied',
+      place: 'Greenville, Texas',
+      date: {
+        display: '[1894]',
+        basis: [
+          'The verso of this photograph states that Nannie Swann was 16 when this photograph was taken. That would place it in 1894. A date of 1899 is also on the verso, but it is unclear which is more reliable.',
+        ],
+        confidence: 'probable',
+      },
+      studio: 'Knight\'s Gallery (Greenville, Texas)',
+      format: 'mounted photograph',
+      recto: { file: 'swann-nannie-portrait-recto.jpg' },
+      verso: { file: 'swann-nannie-portrait-verso.jpg' },
+      description: 'This photograph depicts Nannie Swann around the age of 16.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Nannie Swann Girdner \n Age 16 \  Born Mar. 15, 1878 \n in Hunt Co. in log house. \n Greenville, Tex. \n She was 93 before \n she died in May 71. \n Youngest daughter \n and child of \n Mac and Nancy Swann. \n abt. 1899.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'girdner-nannie-atkinson-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 34.5, y: 27.1, w: 33.1, h: 24.9 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'girdner-vena-portrait',
+      title: '[Portrait of Vena Girdner]',
+      controlNumber: 'b.1.10.1',
+      titleSource: 'supplied',
+      place: 'Greenville, Texas',
+      date: {
+        display: '[1904-1905]',
+        earliest: 1904,
+        latest: 1905,
+        basis: [
+          'Vena Girdner was born in 1900, and she died in 1905. This photograph appears to depict her between the ages of 4 and 5, which places the year between 1903 and 1905.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'girdner-vena-portrait-recto.jpg' },
+      verso: { file: 'girdner-vena-portrait-verso.jpg' },
+      description: 'This photograph depicts Vena Girdner around the ages of 3 to 5. This may be the only formal portrait of her, because she died at 5 years old.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Vena Girdner \n Uncle Charlie and Aunt Nannie Girdner',
+        },
+      ],
+      depicts: [
+        {
+          person: 'girdner-vena',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 37.1, y: 18.9, w: 22.4, h: 20.5 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-eva-and-bouknight-children',
+      title: '[Eva Swann with Juanita, Raymond, and Thurman Bouknight]',
+      controlNumber: 'b.1.10.2',
+      titleSource: 'supplied',
+      place: 'Greenville, Texas',
+      date: {
+        display: '[1899-1902]',
+        basis: [
+          'There is no date assocaited with this photograph. Eva Swann appears to be between 13 and 16 years old here, which places it between 1899 and 1902.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'swann-eva-and-bouknight-children-recto.jpg' },
+      verso: { file: 'swann-eva-and-bouknight-children-verso.jpg' },
+      description: 'This photograph depicts Eva Swann and Juanita, Raymond, and Thurman Bouknight on the porch at the home of Phebe and Paul Alexander Bouknight in Greenville, Texas.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Juanita Bouknight \n Thurman Bouknight \n Eva Swann \n Raymond Bouknight \n on porch at Aunt Phebe and Uncle \n Paul\'s home at Greenville.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 49.9, y: 40.8, w: 5.5, h: 6.5 },
+        },
+        {
+          person: 'harrison-juanita-bouknight',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 27.2, y: 41.4, w: 5.9, h: 6.8 },
+        },
+        {
+          person: 'bouknight-raymond-ardre',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 40, y: 49.3, w: 6.8, h: 6.8 },
+        },
+        {
+          person: 'bouknight-thurman-alexander',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 57.3, y: 47, w: 7.1, h: 7.2 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'picnic-at-jacobia-1900',
+      title: '[Picnic in Jacobia, circa 1900]',
+      controlNumber: 'b.1.11.1',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '1900',
+        basis: [
+          'Text on verso identifies date.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'picnic-at-jacobia-1900-recto.jpg' },
+      verso: { file: 'picnic-at-jacobia-1900-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Picnic at Jacobia, 1900. \n Loveta standing on back of wagon. \n "Happy Days."',
+        }
+      ],
+      description: 'This photograph depicts a picnic at Jacobia in the year 1900. Loveta Swann is noted to be standing on the back of the wagon, but it is unclear which person she is.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 57.9, y: 43.2, w: 16, h: 12.9 },
+        },
+      ]
+    },
+    {
+      slug: 'girdner-vena-and-malcolm-t-swann',
+      title: '[Vena Girdner and Malcolm T. Swann]',
+      controlNumber: 'b.1.11.2',
+      titleSource: 'inscribed',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1903-1904]',
+        basis: [
+          'Vena Girdner was born in 1900. Malcolm T. Swann was born in 1901. They both appear to be 2 or 3 years old here.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'girdner-vena-and-malcolm-t-swann-recto.jpg' },
+      verso: { file: 'girdner-vena-and-malcolm-t-swann-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Vena Girdner \n Malcom Swann II \n Dog Bell at Jacobia, Texas.',
+        }
+      ],
+      description: 'This photograph depicts Vena Girdner and Malcolm T. Swann standing in a field with two dogs. One of the dogs has the name of "Bell."',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      depicts: [
+        {
+          person: 'girdner-vena',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 43.9, y: 44.3, w: 6.2, h: 6.6 },
+        },
+        {
+          as: 'Malcolm T. Swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 55.4, y: 43.7, w: 6.2, h: 7.8 },
+        },
+      ]
+    },
+    {
+      slug: 'school-picnic',
+      title: 'At a school picnic at Jacobia',
+      controlNumber: 'b.1.12.1',
+      titleSource: 'inscribed',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1895]',
+        basis: [
+          'There is no date for this photograph, but an approximate 1895 date matches.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'school-picnic-recto.jpg' },
+      verso: { file: 'school-picnic-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'At a school picnic at Jacobia',
+        }
+      ],
+      description: 'This photograph depicts a school picnic in Jacobia from approximately 1895. Individuals cannot be identified from the picture, although an older Malcom Swann may be standing left of center with a beard.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      depicts: [
+        {
+          person: 'swann-malcom',  // an id in people.ts. Build throws if unknown.
+          confidence: 'possible',  // REQUIRED on every depiction
+          basis: 'Somewhat matches likeness around this period.',
+          region: { face: 'recto', x: 35.2, y: 39.3, w: 4.5, h: 4.6 },
+        },
+      ]
+    },
+    {
+      slug: 'picnic-on-sulfur-river',
+      title: 'Picnic on Sulfur River',
+      controlNumber: 'b.1.12.2',
+      titleSource: 'inscribed',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1895]',
+        basis: [
+          'The date of 1890 is inscribed on the verso, but it appears to be later than that.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'picnic-on-sulfur-river-recto.jpg' },
+      verso: { file: 'picnic-on-sulfur-river-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Picnic on Sulfur \n River \n Made about 1890',
+        }
+      ],
+      description: 'This photograph depicts a picnic on Sulfur River. The people in the photograph are mostly unidentifiable, but Malcom Swann may be on the left.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      depicts: [
+        {
+          person: 'swann-malcom',  // an id in people.ts. Build throws if unknown.
+          confidence: 'possible',  // REQUIRED on every depiction
+          basis: 'Somewhat matches likeness around this period.',
+          region: { face: 'recto', x: 31.5, y: 46.3, w: 2.3, h: 2.7 },
+        },
+      ]
+    },
+    {
+      slug: 'girdner-vena-and-austin',
+      title: '[Vena Girdner and Austin Girdner]',
+      controlNumber: 'b.1.13.1',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1902-1903]',
+        earliest: 1902,
+        latest: 1903,
+        basis: [
+          'Vena Girdner was born in 1900. She appears to be two or three years old here. Austin Girdner was born in November 1902. She appears to be a new born, which places this in late 1902 or early 1903.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'girdner-vena-and-austin-recto.jpg' },
+      verso: { file: 'girdner-vena-and-austin-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Baby - Austin Girdner \n Child - Vena Girdner \n Man - Mr. Prather.',
+        }
+      ],
+      description: 'This photograph depicts Vena Girdner and Austin Girdner on a porch. Another man, identified as Mr. Prather, sits on the right side of the porch.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      depicts: [
+        {
+          person: 'girdner-vena',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 40.6, y: 38, w: 8.2, h: 8.7 },
+        },
+        {
+          as: 'Austin Girdner',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 51.6, y: 51.3, w: 9.2, h: 7.1 },
+        },
+        {
+          as: 'Mr. Prather',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 67.6, y: 33.1, w: 8.8, h: 10.1 },
+        },
+      ]
+    },
+    {
+      slug: 'swann-malcom-grandchildren',
+      title: 'Grandpa Swann and some grandchildren',
+      controlNumber: 'b.1.13.2',
+      titleSource: 'inscribed',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1903-1904]',
+        earliest: 1903,
+        latest: 1904,
+        basis: [
+          'This photograph is similar to others. Vena Girdner appears to be in the same outfit as another picture, and she appears to be the same age. I place this around 1903 or 1904.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'swann-malcom-grandchildren-recto.jpg' },
+      verso: { file: 'swann-malcom-grandchildren-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Grandpa Swann + \n some grandchildren.',
+        }
+      ],
+      description: 'This photograph depicts Malcom Swann standing in the yard of a home at Jacobia, Texas with several of his grandchildren.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      depicts: [
+        {
+          person: 'swann-malcom',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 46.2, y: 40.1, w: 3.2, h: 4.7 },
+        },
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          basis: 'Matches likeness around this period.',
+          region: { face: 'recto', x: 34, y: 42.4, w: 2.3, h: 3.1 },
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          basis: 'Matches likeness around this period.',
+          region: { face: 'recto', x: 31.6, y: 45.5, w: 3.1, h: 3.8 },
+        },
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          basis: 'Matches likeness around this period.',
+          region: { face: 'recto', x: 66.3, y: 42.9, w: 2.9, h: 3.6 },
+        },
+        {
+          person: 'harrison-juanita-bouknight',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          basis: 'Matches likeness around this period.',
+          region: { face: 'recto', x: 59.6, y: 41.5, w: 3.1, h: 3.7 },
+        },
+        {
+          person: 'bouknight-raymond-ardre',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          basis: 'Matches likeness around this period.',
+          region: { face: 'recto', x: 39, y: 45.4, w: 2.9, h: 4 },
+        },
+        {
+          person: 'bouknight-thurman-alexander',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          basis: 'Matches likeness around this period.',
+          region: { face: 'recto', x: 58.5, y: 48, w: 2.6, h: 3.2 },
+        },
+        {
+          person: 'girdner-vena',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          basis: 'Matches likeness around this period.',
+          region: { face: 'recto', x: 39.6, y: 52.2, w: 2.9, h: 3.5 },
+        },
+        {
+          as: 'Malcolm T. Swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          basis: 'Matches likeness around this period.',
+          region: { face: 'recto', x: 50, y: 51.9, w: 3, h: 3.5 },
+        },
+        {
+          as: 'Austin Girdner',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          basis: 'Matches likeness around this period.',
+          region: { face: 'recto', x: 62, y: 44.9, w: 2.2, h: 2.5 },
+        },
+      ]
+    },
+    {
+      slug: 'swann-loveta-at-jacobia-home',
+      title: 'Loveta Swann at Jacobia home',
+      controlNumber: 'b.1.14.1',
+      titleSource: 'inscribed',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '[1901-1903]',
+        earliest: 1901,
+        latest: 1903,
+        basis: [
+          'There is no date on this photograph, but Loveta appears to be between 8 and 10 years old here.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-loveta-at-jacobia-home-recto.jpg' },
+      verso: { file: 'swann-loveta-at-jacobia-home-verso.jpg' },
+      description: 'This photograph depicts Loveta Swann standing in front of her home in Jacobia, Texas between the years 1901 and 1903.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Loveta Swann at Jacobia home.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 46, y: 34.9, w: 9.7, h: 11.6 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-john-fishing',
+      title: 'John Swann fishing',
+      controlNumber: 'b.1.14.2',
+      titleSource: 'inscribed',
+      place:  'Texas',
+      date: {
+        display: '[1890-1900]',
+        earliest: 1890,
+        latest: 1900,
+        basis: [
+          'There is no date on this photograph. If John Swann is depicted, he appears to be in his 30s, which makes the decade of 1890 through 1900 possible',
+        ],
+        confidence: 'possible',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-john-fishing-recto.jpg' },
+      verso: { file: 'swann-john-fishing-verso.jpg' },
+      description: 'This photograph depicts John Swann fishing in an unknown lake or water source. There are two men depicted here.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'John Swann fishing.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'swann-john-milton',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 55, y: 43.5, w: 1.9, h: 2 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-thresher-steam-engine',
+      controlNumber: 'b.1.15.1',
+      title: 'Austin Swann\'s steam engine and thresher',
+      titleSource: 'inscribed',
+      format: 'mounted photograph',
+      place: 'Oklahoma',
+      date: {
+        display: '[1900-1901]',
+        earliest: 1900,
+        latest: 1901,
+        basis: [
+          'Nothing on the object dates it.',
+          'Other photographs of the threshing trip to Oklahoma mention dates of 1900 and 1901.',
+        ],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'swann-thresher-steam-engine-recto.jpg',
+      },
+      verso: {
+        file: 'swann-thresher-steam-engine-verso.jpg',
+      },
+      description:
+        'This photograph depicts a steam engine pulling a thresher in a wheat field. This photograph was likely taken in Oklahoma on one of the family\'s threshing excursions.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Austin Swann\'s steam engine and thresher',
+        },
+      ],
+      related :[
+        {
+          slug: 'swann-girdner-swann-cooking-1',
+          relation: ''
+        },
+        {
+          slug: 'malcom-swann-in-oklahoma',
+          relation: ''
+        },
+        {
+          slug: 'swann-girdner-swann-thresher',
+          relation: ''
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'girdner-nannie-outhouse',
+      title: '[Nannie Swann Girdner walking to outhouse]',
+      controlNumber: 'b.1.15.2',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '[1911]',
+        basis: [
+          'The verso lists a date of 1911. Nothing objects to that date.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'girdner-nannie-outhouse-recto.jpg' },
+      verso: { file: 'girdner-nannie-outhouse-verso.jpg' },
+      description: 'This photograph depicts Nannie Swann Girdner walking to an outhouse.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Aunt Nannie \n in her Mother Hubbard \n on her way to the "out house" \n (privy)',
+        },
+      ],
+      depicts: [
+        {
+          person: 'girdner-nannie-atkinson-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 52.5, y: 36.7, w: 6.8, h: 7.4 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-john-family',
+      title: '[John Swann family]',
+      controlNumber: 'b.1.16.1',
+      titleSource: 'supplied',
+      place: 'Greenville, Texas',
+      date: {
+        display: '[1897-1898]',
+        earliest: 1897,
+        latest: 1898,
+        basis: [
+          'There is no date on this photoraph, but John and Gussie Swann have three kids in this photograph. Their fourth kid was born in 1899 and is not pictured here, which means this photo predates that birth.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'cabinet card',
+      recto: { file: 'swann-john-family-recto.jpg' },
+      verso: { file: 'swann-john-family-verso.jpg' },
+      description: 'The photograph depicts the family of John Milton Swann and his wife Gussie. Their three children here are Tessie, Mable, and Lucille.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'John Swann family \n Gussie \n Tessie \n Mable \n Lucille.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'swann-john-milton',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 23, y: 11.3, w: 13.5, h: 10.8 },
+        },
+        {
+          person: 'swann-gussie-cody',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 60.1, y: 18.2, w: 11.1, h: 9.7 },
+        },
+        {
+          as: 'Tessie',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 43.9, y: 45.6, w: 12.4, h: 9.8 },
+        },
+        {
+          as: 'Mable',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 59.8, y: 45.8, w: 12, h: 9.1 },
+        },
+        {
+          as: 'Lucille',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 38.6, y: 32.6, w: 10.7, h: 8.3 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-girdner-children',
+      title: '[Swann and Girdner children in yard at Jacobia]',
+      controlNumber: 'b.1.17.1',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '[1902-1903]',
+        earliest: 1902,
+        latest: 1903,
+        basis: [
+          'There is no date associated with this photograph, but it appears to be taken around the time Vena Girdner is about 2 or 3 years old. That would place this about 1902 or 1903.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-girdner-children-recto.jpg' },
+      verso: { file: 'swann-girdner-children-verso.jpg' },
+      description: 'This photograph depicts Eva Swann, Minnie Swann, and Loveta Swann. It also depicts Vena Girdner and Zera Girdner.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Eva to left with her back turned \n Minnie to left in swing \n Vena Girdner in middle and \n Zera to right. Loveta sitting \n on the ground with long hair. \n At home at Jacobia, Tex.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 34.6, y: 38.5, w: 5.5, h: 5.8 },
+        },
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 47.2, y: 41.8, w: 3.3, h: 3.7 },
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 65.1, y: 46.9, w: 4.2, h: 4.8 },
+        },
+        {
+          person: 'girdner-vena',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 50.3, y: 44.6, w: 3.4, h: 3.4 },
+        },
+        {
+          as: 'Zera Girdner',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 54.6, y: 41.6, w: 3.6, h: 3.2 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'family-picnic',
+      title: '"At one of our many family picnics"',
+      controlNumber: 'b.1.19.2',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '[1890-1895]',
+        earliest: 1890,
+        latest: 1895,
+        basis: [
+          'There is no date associated with this photograph. Based on the style of clothing, the best estimate is a date between 1890 and 1895. There are no identifiale people in this photograph.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'family-picnic-recto.jpg' },
+      verso: { file: 'family-picnic-verso.jpg' },
+      description: 'This photo depicts a group of children near the edge of a water source. Some of the children are climbing or descending the edge of the embankment.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'At one of our many family picnics',
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-loveta-portrait',
+      title: '[Portrait of Loveta Swann, circa 1911-1912]',
+      controlNumber: 'b.1.21.1',
+      titleSource: 'supplied',
+      place: 'Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1910-1911]',
+        earliest: 1910,
+        latest: 1911,
+        basis: [
+          'There is nothing that dates this photograph, but it is likely from just before Loveta married Sam McKinstry',
+        ],
+        confidence: 'probable',
+      },
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 35.1, y: 19.5, w: 29.8, h: 27.4 },
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'swann-loveta-portrait-recto.jpg' },
+      verso: { file: 'swann-loveta-portrait-verso.jpg' },
+      description: 'This is a portrait of Loveta Swann shortly before she married Sam McKinstry.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-loveta-baccalaureate-2',
+      title: '[Loveta Swann as a 1911 graduate of Hagerman High School]',
+      controlNumber: 'b.1.22.1',
+      titleSource: 'supplied',
+      place: 'Hagerman, New Mexico',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '1911',
+        basis: [
+          'The date is inscribed on the verso',
+        ],
+        confidence: 'certain',
+      },
+      format: 'real photo postcard',
+      recto: { file: 'swann-loveta-baccalaureate-2-recto.jpg' },
+      verso: { file: 'swann-loveta-baccalaureate-2-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Loveta Swann \n 1911 Hagerman \n graduate H.S. Hagerman, N. Mex. \n Married Sam McKinstry 1912.',
+        }
+      ],
+      description: 'This photograph depicts Loveta Swann in her baccalaureate dress and hat in 1911. The family had moved to New Mexico by this date, so it was likely taken in New Mexico.',
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 40.4, y: 12.9, w: 15.7, h: 11.7 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-home-jacobia',
+      title: '[Childhood home of Eva, Minnie, and Loveta Swann]',
+      controlNumber: 'b.1.22.2',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '[1900-1905]',
+        earliest: 1900,
+        latest: 1905,
+        basis: [
+          'There is no date associated with this photograph. Based on photographs from this collection, this photograph matches the production of others dating between 1900 and 1905.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-home-jacobia-recto.jpg' },
+      verso: { file: 'swann-home-jacobia-verso.jpg' },
+      description: 'This photograph depicts the childhood home of Eva, Minnie, and Loveta Swann in Jacobia, Texas. There are several children on the porch, but none can be positively identified.',
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'This is where Eva, \n Minnie and Loveta Swann \n lived when they were \n little girls.',
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-austin-hunting-trip',
+      title: '[Austin Swann on a fishing or hunting trip]',
+      controlNumber: 'b.1.23.1',
+      titleSource: 'supplied',
+      place: 'Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1895-1905]',
+        earliest: 1895,
+        latest: 1905,
+        basis: [
+          'There is no date associated with this photograph, but it matches the production of other photos between this time period.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-austin-hunting-trip-recto.jpg' },
+      verso: { file: 'swann-austin-hunting-trip-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Papa Swann \n and dog "Bell" \n on a fishing or hunting trip.',
+        }
+      ],
+      description: 'This photograph depicts Austin Swann near a wagon on a hunting or fishing trip. The location of this photograph is unknown, but presumed to be in Texas.',
+      depicts: [
+        {
+          person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 41.5, y: 47.2, w: 3.7, h: 4 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-loveta-with-cook-1',
+      title: '[Loveta Swann with cook, Pete Lovall]',
+      controlNumber: 'b.1.23.2',
+      titleSource: 'supplied',
+      place: 'Oklahoma',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1900-1901]',
+        earliest: 1900,
+        latest: 1901,
+        basis: [
+          'The date range of 1900 to 1901 is included on the verso.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-loveta-with-cook-1-recto.jpg' },
+      verso: { file: 'swann-loveta-with-cook-1-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Pete Lovall was was the cook \n for Papa\'s threshing \n crew when we went \n to Okla (then Indian Territory) \n I was always there \n watching him cook. \n Just some of Papa\'s \n photography. \n 1900-1901.',
+        }
+      ],
+      description: 'This photograph depicts Loveta Swann (marked with an X) sitting down on a bench with cook Pete Lovall in the background. Typical cooking equipment is in view.',
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 25.2, y: 43.9, w: 9.2, h: 10.9 },
+        },
+        {
+          as: 'Pete Lovall',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 43.1, y: 32.9, w: 8.5, h: 10.1 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-austin-steam-engine',
+      title: 'Austin Swann and his old steam engine',
+      controlNumber: 'b.1.24.1',
+      titleSource: 'inscribed',
+      place: 'Oklahoma',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1900-1901]',
+        earliest: 1900,
+        latest: 1901,
+        basis: [
+          'There is no date associated with this photograph, but it is likely from the threshing trips the family made in 1900 and 1901.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-austin-steam-engine-recto.jpg' },
+      verso: { file: 'swann-austin-steam-engine-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Austn Swann and his old \n steam engine.',
+        }
+      ],
+      description: 'This photograph depicts a man, likely Austin Swann, operating a steam engine in a field. The right side of the photograph is faded and less clear than the rest.',
+      depicts: [
+        {
+          person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 44.3, y: 47.9, w: 2.5, h: 2.4 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'lovell-claude',
+      title: '[Claude Lovell]',
+      controlNumber: 'b.1.24.2',
+      titleSource: 'supplied',
+      place: 'Oklahoma',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1900-1901]',
+        earliest: 1900,
+        latest: 1901,
+        basis: [
+          'The date range of 1900 to 1901 is included on the verso.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'lovell-claude-recto.jpg' },
+      verso: { file: 'lovell-claude-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Claude Lovell \n who was our cook when we \n went to Okla and the "Indian \n Territory" on a threshing trip. \n Seven (7) covered wagons of us. \n The Dick Girdner family and \n Austin Swann family were among \n all the help required. \n 1900-1901.',
+        }
+      ],
+      description: 'This photograph depicts cook Claude Lovell sitting next to a stove on one of the Austin Swann threshing trips to Oklahoma in 1900 and 1901.',
+      depicts: [
+        {
+          as: 'Claude Lovell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 46.9, y: 37, w: 6.5, h: 6.8 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-austin-fish',
+      title: '[Fish from Austin Swann hunting trip]',
+      controlNumber: 'b.1.25.1',
+      titleSource: 'supplied',
+      photographer: 
+      { name: 'Austin Swann', confidence: 'certain', basis: 'identified on verso'},
+      place: 'Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1895-1905]',
+        earliest: 1895,
+        latest: 1905,
+        basis: [
+          'There is no date associated with this photograph, but it matches the production of other photos between this time period.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-austin-fish-recto.jpg' },
+      verso: { file: 'swann-austin-fish-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Papa\'s photography',
+        }
+      ],
+      description: 'This photograph depicts caught fish hanging from a wagon.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-minnie-zera-girdner-erwin-children',
+      title: '[Zera Girdner, Minnie Swann, and Erwin children on the North Canadian River]',
+      controlNumber: 'b.1.25.2',
+      titleSource: 'supplied',
+      place: 'North Canadian River, Oklahoma',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1900-1901]',
+        earliest: 1900,
+        latest: 1901,
+        basis: [
+          'This photograph was likely taken on one of the threshing trips the Swann family made to Oklahoma during the years of 1900 and 1901.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-minnie-zera-girdner-erwin-children-recto.jpg' },
+      verso: { file: 'swann-minnie-zera-girdner-erwin-children-verso.jpg' },
+      inscriptions : [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Zera Girdner, Minnie Swann \n and Erwin children. \n North Canadian River.',
+        }
+      ],
+      description: 'This photograph depicts four children crossing a stream, possibly the North Canadian River somewhere in Oklahoma. Positive identifications are impossible, but it can be guessed that Zera Girdner is on the left and the next person on the right is Minnie Swann.',
+      depicts: [
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'possible',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 52.9, y: 35.4, w: 4.8, h: 4.9 },
+        },
+        {
+          as: 'Zera Girdner',  // an id in people.ts. Build throws if unknown.
+          confidence: 'possible',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 41.7, y: 35.3, w: 4, h: 4.9 },
         },
       ],
       rights: {
