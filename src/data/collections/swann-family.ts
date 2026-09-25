@@ -166,14 +166,14 @@ export const COLLECTION: Collection = {
           confidence: 'certain',
           basis:
             'The gin carries his name and an older man sits prominently at the center of the group. Nothing specifically identifies Malcom, but the figure sitting in the center matches what Malcom looked like.',
-          region: { face: 'recto', x: 50.7, y: 61.4, w: 2.9, h: 4.3 },
+          region: { face: 'recto', x: 50.6, y: 60.2, w: 2.4, h: 4.6 },
           },
         {
           person: 'swann-austin',
           confidence: 'certain',
           basis:
             'A figure matching Austin Swann sits two spots to the right of Malcom.',
-          region: { face: 'recto', x: 62.4, y: 62.8, w: 2.5, h: 3.5 },
+          region: { face: 'recto', x: 62.8, y: 62.2, w: 1.7, h: 2.4 },
           },
       ],
       needsWork: [
@@ -295,7 +295,7 @@ export const COLLECTION: Collection = {
           confidence: 'possible',
           basis:
             'Matches John Swann\'s appearance.',
-          region: { face: 'recto', x: 56.7, y: 48.6, w: 2.8, h: 4.2 },
+          region: { face: 'recto', x: 57.4, y: 49.2, w: 2, h: 3 },
         },
       ],
       related: [
@@ -875,7 +875,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Named on verso. She is the girl on the right with the \'x\'',
-          region: { face: 'recto', x: 86.3, y: 16.9, w: 7.6, h: 8.8 },
+          region: { face: 'recto', x: 87.5, y: 17.4, w: 7.4, h: 8.4 },
         },
         {
           person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
@@ -2612,13 +2612,13 @@ export const COLLECTION: Collection = {
           person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
           confidence: 'certain',  // REQUIRED on every depiction
           basis: 'Identified on photogoraph',
-          region: { face: 'recto', x: 25.4, y: 37.1, w: 3.6, h: 2.7 },
+          region: { face: 'recto', x: 24.1, y: 37.8, w: 5.7, h: 3.4 },
         },
         {
           person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
           confidence: 'certain',  // REQUIRED on every depiction
           basis: 'Identified on photogoraph',
-          region: { face: 'recto', x: 41.2, y: 36.7, w: 4, h: 2.7 },
+          region: { face: 'recto', x: 41.5, y: 37.4, w: 3.6, h: 3.3 },
         },
       ],
       rights: {
@@ -2656,25 +2656,25 @@ export const COLLECTION: Collection = {
           person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
           confidence: 'certain',  // REQUIRED on every depiction
           basis: 'Identified on photogoraph',
-          region: { face: 'recto', x: 62.1, y: 36.2, w: 3.1, h: 5 },
+          region: { face: 'recto', x: 63.4, y: 31.7, w: 4.1, h: 6.5 },
         },
         {
           person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
           confidence: 'certain',  // REQUIRED on every depiction
           basis: 'Identified on photogoraph',
-          region: { face: 'recto', x: 32.2, y: 36.6, w: 2.7, h: 5.5 },
+          region: { face: 'recto', x: 29.5, y: 32.1, w: 3.4, h: 7.1 },
         },
         {
           as: 'Will Lane',  // an id in people.ts. Build throws if unknown.
           confidence: 'certain',  // REQUIRED on every depiction
           basis: 'Identified on photogoraph',
-          region: { face: 'recto', x: 42.8, y: 38.4, w: 3.2, h: 5.2 },
+          region: { face: 'recto', x: 41.7, y: 34, w: 3.4, h: 7.5 },
         },
         {
           as: 'Fay Irwin',  // an id in people.ts. Build throws if unknown.
           confidence: 'certain',  // REQUIRED on every depiction
           basis: 'Identified on photogoraph',
-          region: { face: 'recto', x: 71, y: 36.2, w: 3.9, h: 6.3 },
+          region: { face: 'recto', x: 73.4, y: 30.4, w: 5.4, h: 9.6 },
         },
       ],
       rights: {
@@ -3593,7 +3593,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 40.4, y: 12.9, w: 15.7, h: 11.7 },
+          region: { face: 'recto', x: 41, y: 10.8, w: 16.2, h: 12.9 },
         },
       ],
       rights: {
@@ -3667,7 +3667,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 41.5, y: 47.2, w: 3.7, h: 4 },
+          region: { face: 'recto', x: 41.6, y: 46.4, w: 4, h: 4.5 },
         },
       ],
       rights: {
@@ -3709,7 +3709,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 25.2, y: 43.9, w: 9.2, h: 10.9 },
+          region: { face: 'recto', x: 23.7, y: 43.4, w: 8.6, h: 11.5 },
         },
         {
           as: 'Pete Lovall',  // an id in people.ts. Build throws if unknown.
@@ -3718,7 +3718,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 43.1, y: 32.9, w: 8.5, h: 10.1 },
+          region: { face: 'recto', x: 41.3, y: 31.3, w: 9.6, h: 10.5 },
         },
       ],
       rights: {
@@ -3802,7 +3802,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 46.9, y: 37, w: 6.5, h: 6.8 },
+          region: { face: 'recto', x: 45.9, y: 35.8, w: 7.1, h: 9 },
         },
       ],
       rights: {
@@ -3887,6 +3887,50 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Identified on verso.',
           region: { face: 'recto', x: 41.7, y: 35.3, w: 4, h: 4.9 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'girdner-charles-nannie-portrait',
+      title: '[Portrait of Charles and Nannie Girdner]',
+      titleSource: 'supplied',
+      place: 'Greenville, Texas',
+      studio: 'Adams (Greenville, Texas)',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1897-1900]',
+        earliest: 1897,
+        latest: 1900,
+        basis: [
+          'There is no date associated with this photograph, but it may be from the period of Charles and Nannie\'s wedding in 1897. It could be in subsequent years, however. A period of 1897 to 1900 is assigned based on available information.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'cabinet card',
+      recto: { file: 'girdner-charles-nannie-portrait-recto.jpg' },
+      description: 'This portrait depicts Charles and Nannie Girdner taken at the Adams Studio in Greenville, Texas. This may be a wedding portrait of each of them, but this is not certain.',
+      depicts: [
+        {
+          person: 'girdner-charles-edgar',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identity.',
+          region: { face: 'recto', x: 19.9, y: 24.4, w: 25.5, h: 21.8 },
+        },
+        {
+          person: 'girdner-nannie-atkinson-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identity.',
+          region: { face: 'recto', x: 55.2, y: 27.3, w: 24.6, h: 21.6 },
         },
       ],
       rights: {

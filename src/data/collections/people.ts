@@ -1173,6 +1173,678 @@ export const PEOPLE: Person[] = [
     ],
   },
   {
+    id: 'allison-redmon',
+    authorized: 'Allison, Redmon',
+    surname: 'Allison',
+    given: 'Redmon',
+    birth: '1848',
+    death: '1937',
+    variants: ['Redmon Allison', 'Red Allison', 'Allison, Redmon', 'Grandpa Red'],
+    status: 'established',
+    scopeNote:
+      'Redmon Allison lived from 1848 to 1937',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    sources: [
+      'Find a Grave memorial 48431435.',
+    ],
+    relations: [
+    ]
+  },
+  {
+    id: 'allison-mary-elizabeth-stirman',
+    authorized: 'Allison, Mary Elizabeth Stirman',
+    surname: 'Allison',
+    given: 'Mary Elizabeth Stirman',
+    birth: '1854',
+    death: '1943',
+    variants: ['Betty Allison', 'Mary Allison', 'Betty Stirman', 'Mary Stirman', 'Grandma Red', 'Stirman, Betty', 'Stirman, Mary'],
+    status: 'established',
+    scopeNote:
+      'Redmon Allison lived from 1854 to 1943',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    sources: [
+      'Find a Grave memorial 48431529.',
+    ],
+    relations: [
+    ]
+  },
+  {
+    id: 'allison-william-irvin',
+    authorized: 'Allison, William Irvin',
+    surname: 'Allison',
+    given: 'William Irvin',
+    birth: '1875',
+    death: '1948',
+    variants: ['Irvin Allison', 'William Allison', 'Allison, Irvin', 'Allison, William'],
+    status: 'established',
+    scopeNote:
+      'William Irvin Allison lived from 1875 to 1948',
+    sources: [
+      'Find a Grave memorial 48431435.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-sophronia-emma-baker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'spouse', person: 'allison-amanda-wardlow', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'swan-mary-alice-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-redmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-mary-elizabeth-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gilbert-ella-georgia-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-parker-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-joseph-carroll', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-annie-wheeler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-david-edwin', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-sophronia-emma-baker',
+    authorized: 'Allison, Sophronia Emma Baker',
+    surname: 'Allison',
+    given: 'Sophronia Emma Baker',
+    birth: '1881',
+    death: '1912',
+    variants: ['Sophronia Allison', 'Sophronia Emma Allison', 'Baker, Sophronia', 'Allison, Sophronia'],
+    status: 'established',
+    scopeNote:
+      'Sophronia Emma Baker Allison lived from 1881 to 1912',
+    sources: [
+      'Find a Grave memorial 39499033.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-william-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'swan-mary-alice-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-amanda-wardlow',
+    authorized: 'Allison, Amanda Wardlow',
+    surname: 'Allison',
+    given: 'Amanda Wardlow',
+    birth: '1872',
+    death: '1972',
+    variants: ['Amanda Allison', 'Amanda Wardlow', 'Wardlow, Amanda', 'Allison, Amanda'],
+    status: 'established',
+    scopeNote:
+      'Amanda Wardlow Allison lived from 1872 to 1972. She was the second wife of William Irvin Allison',
+    sources: [
+      'Find a Grave memorial 14518916.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-william-irvin', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'swan-mary-alice-allison',
+    authorized: 'Swan, Mary Alice Allison',
+    surname: 'Swan',
+    given: 'Mary Alice Allison',
+    birth: '1909',
+    death: '1987',
+    variants: ['Mary Alice Allison', 'Mary Alice Swan', 'Swan, Mary Alice', 'Allison, Mary Alice'],
+    status: 'established',
+    scopeNote:
+      'Mary Alice Allison Swan lived from 1909 to 1987',
+    sources: [
+      'Find a Grave memorial 35356222.',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-william-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-sophronia-emma-baker', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'dingler-sarah-estella-allison',
+    authorized: 'Dingler, Sarah Estella Allison',
+    surname: 'Dingler',
+    given: 'Sarah Estella Allison',
+    birth: '1877',
+    death: '1954',
+    variants: ['Sarah Estella Allison', 'Stella Allison', 'Estella Allison', 'Dingler, Sarah', 'Dingler, Stella'],
+    status: 'established',
+    scopeNote:
+      'Sarah Estella Allison Dingler lived from 1877 to 1954',
+    sources: [
+      'Find a Grave memorial 28197445.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'dingler-willie-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-redmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-mary-elizabeth-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'dingler-willie-elgin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'dingler-marlin-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'locke-betty-amanda-dingler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'dingler-ovel-estell', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'lawless-rossa-novella-dingler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'dingler-isaac-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-william-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gilbert-ella-georgia-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-parker-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-joseph-carroll', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-annie-wheeler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-david-edwin', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'dingler-willie-oliver',
+    authorized: 'Dingler, Willie Oliver',
+    surname: 'Dingler',
+    given: 'Willie Oliver',
+    birth: '1876',
+    death: '1919',
+    variants: ['Bud Dingler', 'Willie Oliver Dingler', 'Willie Dingler', 'Dingler, Willie', 'Dingler, Bud'],
+    status: 'established',
+    scopeNote:
+      'Willie Oliver "Bud" Dingler lived from 1876 to 1919',
+    sources: [
+      'Find a Grave memorial 28197405.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'dingler-willie-elgin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'dingler-marlin-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'locke-betty-amanda-dingler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'dingler-ovel-estell', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'lawless-rossa-novella-dingler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'dingler-isaac-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'dingler-willie-elgin',
+    authorized: 'Dingler, Willie Elgin',
+    surname: 'Dingler',
+    given: 'Willie Elgin',
+    birth: '1904',
+    death: '1983',
+    variants: ['Willie Elgin Dingler', 'Willie Dingler', 'Dingler, Willie Elgin'],
+    status: 'established',
+    scopeNote:
+      'Willie Elgin Dingler lived from 1904 to 1983',
+    sources: [
+      'Find a Grave memorial 71493554.',
+    ],
+    relations: [
+      { type: 'parent', person: 'dingler-willie-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-marlin-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'locke-betty-amanda-dingler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-ovel-estell', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'lawless-rossa-novella-dingler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-isaac-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'dingler-marlin-oliver',
+    authorized: 'Dingler, Marlin Oliver',
+    surname: 'Dingler',
+    given: 'Marlin Oliver',
+    birth: '1906',
+    death: '1975',
+    variants: ['Marlin Oliver Dingler', 'Marlin Dingler', 'Dingler, Marlin'],
+    status: 'established',
+    scopeNote:
+      'Marlin Oliver Dingler lived from 1906 to 1975',
+    sources: [
+      'Find a Grave memorial 66565579.',
+    ],
+    relations: [
+      { type: 'parent', person: 'dingler-willie-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-willie-elgin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'locke-betty-amanda-dingler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-ovel-estell', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'lawless-rossa-novella-dingler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-isaac-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'locke-betty-amanda-dingler',
+    authorized: 'Locke, Betty Amanda Dingler',
+    surname: 'Locke',
+    given: 'Betty Amanda',
+    birth: '1910',
+    death: '1947',
+    variants: ['Betty Amanda Dingler Locke', 'Betty Dingler', 'Betty Locke'],
+    status: 'established',
+    scopeNote:
+      'Betty Amanda Dingler Locke lived from 1910 to 1947',
+    sources: [
+      'Find a Grave memorial 49045290.',
+    ],
+    relations: [
+      { type: 'parent', person: 'dingler-willie-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-willie-elgin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-marlin-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-ovel-estell', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'lawless-rossa-novella-dingler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-isaac-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'dingler-ovel-estell',
+    authorized: 'Dingler, Ovel Estell',
+    surname: 'Dingler',
+    given: 'Ovel Estell',
+    birth: '1911',
+    death: '1987',
+    variants: ['Ovel Dingler', 'Dingler, Ovel', 'Ovel Estell Dingler'],
+    status: 'established',
+    scopeNote:
+      'Ovel Estell Dingler lived from 1911 to 1987',
+    sources: [
+      'Find a Grave memorial 44260554.',
+    ],
+    relations: [
+      { type: 'parent', person: 'dingler-willie-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-willie-elgin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-marlin-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'locke-betty-amanda-dingler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'lawless-rossa-novella-dingler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-isaac-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'lawless-rossa-novella-dingler',
+    authorized: 'Lawless, Rossa Novella Dingler',
+    surname: 'Lawless',
+    given: 'Rossa Novella Dingler',
+    birth: '1914',
+    death: '2002',
+    variants: ['Rossa Dingler', 'Rossa Lawless', 'Novella Dingler', 'Novella Lawless', 'Dingler, Rossa', 'Dingler, Novella', 'Lawless, Novella'],
+    status: 'established',
+    scopeNote:
+      'Rossa Novella Dingler Lawless lived from 1914 to 2002',
+    sources: [
+      'Find a Grave memorial 76422110.',
+    ],
+    relations: [
+      { type: 'parent', person: 'dingler-willie-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-willie-elgin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-marlin-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'locke-betty-amanda-dingler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-ovel-estell', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-isaac-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'dingler-isaac-allison',
+    authorized: 'Dingler, Isaac Allison',
+    surname: 'Dingler',
+    given: 'Isaac Allison',
+    birth: '1916',
+    death: '1994',
+    variants: ['Isaac Dingler', 'Dingler, Isaac', 'Dingler, Isaac Allison'],
+    status: 'established',
+    scopeNote:
+      'Isaac Allison lived from 1916 to 1994',
+    sources: [
+      'Find a Grave memorial 125462846.',
+    ],
+    relations: [
+      { type: 'parent', person: 'dingler-willie-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-willie-elgin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-marlin-oliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'locke-betty-amanda-dingler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-ovel-estell', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'lawless-rossa-novella-dingler', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'gilbert-ella-georgia-allison',
+    authorized: 'Gilbert, Ella Georgia Allison',
+    surname: 'Gilbert',
+    given: 'Ella Georgia Allison',
+    birth: '1879',
+    death: '1942',
+    variants: ['Ella Georgia Allison', 'Ella Allison', 'Georgia Allison', 'Gilbert, Ella Georgia', 'Gilbert, Ella'],
+    status: 'established',
+    scopeNote:
+      'Ella Georgia Allison Gilbert lived from 1879 to 1942',
+    sources: [
+      'Find a Grave memorial 52160574.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'gilbert-hilliard-reason', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'gilbert-seth-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'trimble-velma-mary-gilbert', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'gooch-verda-lilla-gilbert', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'gilbert-jack-clifford', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-redmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-mary-elizabeth-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-william-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-parker-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-joseph-carroll', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-annie-wheeler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-david-edwin', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'gilbert-hilliard-reason',
+    authorized: 'Gilbert, Hilliard Reason',
+    surname: 'Gilbert',
+    given: 'Hilliard Reason',
+    birth: '1875',
+    death: '1963',
+    variants: ['Gilbert, Hilliard', 'Hilliard Gilbert', 'Gilbert, Hilliard Reason', 'Hilliard Reason Gilbert'],
+    status: 'established',
+    scopeNote:
+      'Hilliard Reason Gilbert lived from 1875 to 1963',
+    sources: [
+      'Find a Grave memorial 52160403.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'gilbert-ella-georgia-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'gilbert-seth-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'trimble-velma-mary-gilbert', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'gooch-verda-lilla-gilbert', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'gilbert-jack-clifford', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'gilbert-seth-parker',
+    authorized: 'Gilbert, Seth Parker',
+    surname: 'Gilbert',
+    given: 'Seth Parker',
+    birth: '1904',
+    death: '1980',
+    variants: ['Seth Parker Gilbert', 'Gilbert, Seth', 'Seth Gilbert', 'Gilbert, Seth Parker', 'Gilbert, Seth'],
+    status: 'established',
+    scopeNote:
+      'Ella Georgia Allison Gilbert lived from 1904 to 1980',
+    sources: [
+      'Find a Grave memorial 140308904.',
+    ],
+    relations: [
+      { type: 'parent', person: 'gilbert-hilliard-reason', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'gilbert-ella-georgia-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'trimble-velma-mary-gilbert', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gooch-verda-lilla-gilbert', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gilbert-jack-clifford', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'trimble-velma-mary-gilbert',
+    authorized: 'Trimble, Velma Mary Gilbert',
+    surname: 'Trimble',
+    given: 'Velma Mary Gilbert',
+    birth: '1906',
+    death: '1967',
+    variants: ['Velma Mary Gilbert', 'Gilbert, Velma Mary', 'Velma Trimble', 'Trimble, Velma', 'Gilbert, Velma'],
+    status: 'established',
+    scopeNote:
+      'Velma Mary Gilbert Trimble lived from 1906 to 1967',
+    sources: [
+      'Find a Grave memorial 40443365.',
+    ],
+    relations: [
+      { type: 'parent', person: 'gilbert-hilliard-reason', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'gilbert-ella-georgia-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gilbert-seth-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gooch-verda-lilla-gilbert', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gilbert-jack-clifford', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'gooch-verda-lilla-gilbert',
+    authorized: 'Gooch, Verda Lilla Gilbert',
+    surname: 'Gooch',
+    given: 'Verda Lilla Gilbert',
+    birth: '1908',
+    death: '2000',
+    variants: ['Verda Gooch', 'Verda Lilla Gooch', 'Verda Allison', 'Verda Lilla Allison', 'Gooch, Verda', 'Gooch, Verda Lilla'],
+    status: 'established',
+    scopeNote:
+      'Verda Lilla Gilbert Gooch lived from 1908 to 2000',
+    sources: [
+      'Find a Grave memorial 44876803.',
+    ],
+    relations: [
+      { type: 'parent', person: 'gilbert-hilliard-reason', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'gilbert-ella-georgia-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gilbert-seth-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'trimble-velma-mary-gilbert', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gilbert-jack-clifford', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'gilbert-jack-clifford',
+    authorized: 'Gilbert, Jack Clifford',
+    surname: 'Gilbert',
+    given: 'Jack Clifford',
+    birth: '1917',
+    death: '1961',
+    variants: ['Jack Gilbert', 'Gilbert, Jack', 'Jack Clifford Gilbert'],
+    status: 'established',
+    scopeNote:
+      'Jack Clifford Gilbert lived from 1917 to 1961',
+    sources: [
+      'Find a Grave memorial 3348236.',
+    ],
+    relations: [
+      { type: 'parent', person: 'gilbert-hilliard-reason', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'gilbert-ella-georgia-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gilbert-seth-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'trimble-velma-mary-gilbert', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gooch-verda-lilla-gilbert', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-parker-stirman',
+    authorized: 'Allison, Parker Stirman',
+    surname: 'Allison',
+    given: 'Parker Stirman',
+    birth: '1881',
+    death: '1904',
+    variants: ['Parker Stirman Allison', 'Parker Allison', 'Stirman Allison', 'Allison, Parker Stirman'],
+    status: 'established',
+    scopeNote:
+      'Parker Stirman Allison lived from 1881 to 1904',
+    sources: [
+      'Find a Grave memorial 48431604.',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-redmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-mary-elizabeth-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-william-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gilbert-ella-georgia-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-joseph-carroll', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-annie-wheeler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-david-edwin', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-joseph-carroll',
+    authorized: 'Allison, Joseph Carroll',
+    surname: 'Allison',
+    given: 'Joseph Carroll',
+    birth: '1882',
+    death: '1979',
+    variants: ['Joseph Carroll Allison', 'Carroll Allison', 'Allison, Joseph', 'Allison, Carroll'],
+    status: 'established',
+    scopeNote:
+      'Joseph Carroll Allison lived from 1882 to 1979',
+    sources: [
+      'Find a Grave memorial 49866819.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-sarah-edna-adkins', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-carroll-redmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-joe-winston', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-redmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-mary-elizabeth-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-william-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gilbert-ella-georgia-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-parker-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-annie-wheeler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-david-edwin', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-sarah-edna-adkins',
+    authorized: 'Allison, Sarah Edna Adkins',
+    surname: 'Allison',
+    given: 'Sarah Edna Adkins',
+    birth: '1888',
+    death: '1920',
+    variants: ['Sarah Allison', 'Edna Allison', 'Allison, Sarah', 'Allison, Edna', 'Sarah Edna Adkins', 'Adkins, Sarah'],
+    status: 'established',
+    scopeNote:
+      'Sarah Edna Adkins Allison lived from 1888 to 1920',
+    sources: [
+      'Find a Grave memorial 49866557.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-joseph-carroll', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-carroll-redmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-joe-winston', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-carroll-redmon',
+    authorized: 'Allison, Carroll Redmon',
+    surname: 'Allison',
+    given: 'Carroll Redmon',
+    birth: '1914',
+    death: '1963',
+    variants: ['Carrol R. Allison', 'Carrol Redmon Allison', 'Allison, Carroll', 'Allison, Carroll Redmon'],
+    status: 'established',
+    scopeNote:
+      'Carroll Redman Allison lived from 1914 to 1963',
+    sources: [
+      'Find a Grave memorial 102002752.',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-joseph-carroll', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-sarah-edna-adkins', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-joe-winston', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-joe-winston',
+    authorized: 'Allison, Joe Winston',
+    surname: 'Allison',
+    given: 'Joe Winston',
+    birth: '1916',
+    death: '1966',
+    variants: ['Joe Allison', 'Joe Winston Allison', 'Allison, Joe Winston'],
+    status: 'established',
+    scopeNote:
+      'Joe Winston Allison lived from 1916 to 1966',
+    sources: [
+      'Find a Grave memorial 52910917.',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-joseph-carroll', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-sarah-edna-adkins', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-carroll-redmon', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-annie-wheeler',
+    authorized: 'Allison, Annie Wheeler',
+    surname: 'Allison',
+    given: 'Annie Wheeler',
+    birth: '1887',
+    death: '1975',
+    variants: ['Annie Allison', 'Annie Wheeler Allison', 'Allison, Annie'],
+    status: 'established',
+    scopeNote:
+      'Annie Wheeler Allison lived from 1887 to 1975',
+    sources: [
+      'Find a Grave memorial 48431741.',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-redmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-mary-elizabeth-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-william-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gilbert-ella-georgia-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-parker-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-joseph-carroll', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-david-edwin', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-david-edwin',
+    authorized: 'Allison, David Edwin',
+    surname: 'Allison',
+    given: 'David Edwin',
+    birth: '1889',
+    death: '1973',
+    variants: ['David Allison', 'David Edwin Allison', 'Allison, Edwin', 'Allison, David', 'Edwin Allison'],
+    status: 'established',
+    scopeNote:
+      'David Edwin Allison lived from 1889 to 1973',
+    sources: [
+      'Find a Grave memorial 48431799.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-precilla-isabell-barton', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-euell-edwin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-redmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-mary-elizabeth-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-william-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gilbert-ella-georgia-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-parker-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-joseph-carroll', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-annie-wheeler', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-precilla-isabell-barton',
+    authorized: 'Allison, Precilla Isabell Barton',
+    surname: 'Allison',
+    given: 'Precilla Isabell Barton',
+    birth: '1896',
+    death: '1940',
+    variants: ['Precilla Allison', 'Precilla Isabell Allison', 'Allison, Precilla', 'Barton, Precilla', 'Precilla Barton'],
+    status: 'established',
+    scopeNote:
+      'Precilla Isabell Barton Allison lived from 1896 to 1940',
+    sources: [
+      'Find a Grave memorial 48510505.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-david-edwin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-euell-edwin', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-euell-edwin',
+    authorized: 'Allison, Euell Edwin',
+    surname: 'Allison',
+    given: 'Euell Edwin',
+    birth: '1920',
+    death: '2007',
+    variants: ['Euell Edwin Allison', 'Euell Allison', 'Allison, Euell'],
+    status: 'established',
+    scopeNote:
+      'Euell Edwin Allison lived from 1920 to 2007',
+    sources: [
+      'Find a Grave memorial 20653554.',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-david-edwin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-precilla-isabell-barton', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
     id: 'allison-oscar-simmon',
     authorized: 'Allison, Oscar Simmon',
     surname: 'Allison',
@@ -1183,8 +1855,6 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Oscar Simmon Allison lived from 1884 to 1920',
-    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
-    // still unknown; this is the one record in the batch with none.
     sources: [
       'Find a Grave memorial 28322691.',
     ],
@@ -1193,6 +1863,15 @@ export const PEOPLE: Person[] = [
       { type: 'child', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-redmon', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-mary-elizabeth-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-william-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'dingler-sarah-estella-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'gilbert-ella-georgia-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-parker-stirman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-joseph-carroll', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-annie-wheeler', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-david-edwin', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -1216,6 +1895,44 @@ export const PEOPLE: Person[] = [
       { type: 'child', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'ingle-minnie-joan-coleman',
+    authorized: 'Ingle, Minnie Joan Coleman',
+    surname: 'Ingle',
+    given: 'Minnie Joan Coleman',
+    birth: '1875',
+    death: '1918',
+    variants: ['Ingle, Minnie', 'Minnie Ingle', 'Ingle, Minnie Joan', 'Coleman, Minnie', 'Minnie Coleman'],
+    status: 'established',
+    scopeNote:
+      'Minnie Joan Coleman Ingle lived from 1875 to 1918.',
+    sources: [
+      'Find a Grave memorial 206297882.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'ingle-james', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'ingle-james',
+    authorized: 'Ingle, James',
+    surname: 'Ingle',
+    given: 'James',
+    birth: '1860',
+    death: '1938',
+    variants: ['Ingle, James', 'James Ingle', 'Ingle, James L.', 'James L. Ingle'],
+    status: 'established',
+    scopeNote:
+      'James Ingle lived from 1860 to 1938.',
+    sources: [
+      'Find a Grave memorial 29757328.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'ingle-minnie-joan-coleman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {

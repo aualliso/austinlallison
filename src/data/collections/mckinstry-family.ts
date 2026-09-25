@@ -562,7 +562,7 @@ export const COLLECTION: Collection = {
       recto: { file: 'mckinstry-adeline-portrait-recto.jpg', },
       verso: { file: 'mckinstry-adeline-portrait-verso.jpg' },
       views: [
-        { file: 'mckinstry-adeline-portrait-recto-close.jpg', label: 'Closer view of portrait'}
+        { file: 'mckinstry-adeline-portrait-recto-close.png', label: 'Closer view of portrait'}
       ],
       description:
         'This is a formal oval vignette portrait of Adeline McKinstry from between 1901 and 1905.',
@@ -3546,7 +3546,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 39, y: 30.9, w: 7.4, h: 12.1 },
+          region: { face: 'recto', x: 39.4, y: 29.2, w: 7.6, h: 12.7 },
         },
         {
           person: 'mckinstry-samuel-small',  // an id in people.ts. Build throws if unknown.
@@ -3555,7 +3555,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 49.2, y: 27.4, w: 8.5, h: 12.5 },
+          region: { face: 'recto', x: 49, y: 26.2, w: 8.1, h: 13.5 },
         },
       ]
     },
@@ -3664,7 +3664,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 40.5, y: 21.4, w: 4.4, h: 7.6 },
+          region: { face: 'recto', x: 40.7, y: 17.3, w: 3.9, h: 9.4 },
         },
         {
           person: 'mckinstry-samuel-small',  // an id in people.ts. Build throws if unknown.
@@ -3673,7 +3673,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 27.6, y: 25, w: 4.1, h: 6.7 },
+          region: { face: 'recto', x: 24.5, y: 20.7, w: 4.8, h: 9.6 },
         },
       ]
     },
@@ -3852,6 +3852,40 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Identified on verso.',
           region: { face: 'recto', x: 30.4, y: 15, w: 42.8, h: 37.8 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-sam-standing-next-to-house',
+      title: '[Sam McKinstry standing next to a house]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1907-1912]',
+        earliest: 1907,
+        latest: 1912,
+        basis: [
+          'There is no date on this photoraph, but it appears that this was taken after the McKinstrys moved to New Mexico around 1907 or 1908. This could be a wedding photo of Sam McKinstry from 1912 when he married Loveta Swann, but that is not certain.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-sam-standing-next-to-house-recto.jpg', },
+      description:
+        'This photograph depicts Sam McKinstry standing next to a house. This could be from around the time he married Loveta Swann in November 1912, but this is not certain. He is wearing formal attire.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      depicts: [
+        {
+          person: 'mckinstry-samuel-small',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identify.',
+          region: { face: 'recto', x: 58.5, y: 26.7, w: 11.3, h: 10.4 },
         },
       ]
     },
