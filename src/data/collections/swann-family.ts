@@ -295,7 +295,7 @@ export const COLLECTION: Collection = {
           confidence: 'possible',
           basis:
             'Matches John Swann\'s appearance.',
-          region: { face: 'recto', x: 57.4, y: 49.2, w: 2, h: 3 },
+          region: { face: 'recto', x: 58.9, y: 51, w: 2.6, h: 4.9 },
         },
       ],
       related: [

@@ -1095,6 +1095,7 @@ export const PEOPLE: Person[] = [
     ],
     relations: [
       { type: 'spouse', person: 'west-john-tolliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'hearn-loveta-west', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'wakeman-sara-beth-west', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-james', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-sarah-boyd', basis: 'Established relationship', confidence: 'certain' },
@@ -1123,7 +1124,26 @@ export const PEOPLE: Person[] = [
     ],
     relations: [
       { type: 'spouse', person: 'west-edith-mary-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'hearn-loveta-west', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'wakeman-sara-beth-west', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'hearn-loveta-west',
+    authorized: 'Hearn, Loveta West',
+    surname: 'Hearn',
+    given: 'Loveta',
+    birth: '1910',
+    death: '1987',
+    variants: ['Hearn, Loveta West', 'Loveta West', 'West, Loveta', 'Loveta West Hearn'],
+    status: 'established',
+    sources: [
+      'Find a Grave memorial 232035054.',
+    ],
+    relations: [
+      { type: 'parent', person: 'west-john-tolliver', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'west-edith-mary-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'wakeman-sara-beth-west', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -1141,6 +1161,7 @@ export const PEOPLE: Person[] = [
     relations: [
       { type: 'parent', person: 'west-john-tolliver', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'west-edith-mary-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'hearn-loveta-west', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {

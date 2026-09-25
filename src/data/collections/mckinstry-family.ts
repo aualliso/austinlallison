@@ -3889,5 +3889,141 @@ export const COLLECTION: Collection = {
         },
       ]
     },
+    {
+      slug: 'west-tollie-edith-loveta-portrait',
+      title: '[John "Tollie", Edith, and Loveta West]',
+      titleSource: 'supplied',
+      format: 'mounted photograph',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1911]',
+        basis: [
+          'Loveta West, the daughter of Tollie and Edith, appears to be one year of age here. She was born in 1910.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'west-tollie-edith-loveta-portrait-recto.jpg', },
+      verso: { file: 'west-tollie-edith-loveta-portrait-verso.jpg', },
+      description:
+        'This photograph depicts John "Tollie" West and his wife Edith McKinstry with their daughter Loveta West. This portrait was likely taken prior to 1914 when their next child was born.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Tollie, (Edith), Loveta West \n (Sam\'s sister)',
+        },
+      ],
+      depicts: [
+        {
+          person: 'west-john-tolliver',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identify.',
+          region: { face: 'recto', x: 44.8, y: 31.6, w: 21.8, h: 18.6 },
+        },
+        {
+          person: 'west-edith-mary-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identify.',
+          region: { face: 'recto', x: 25.9, y: 9.2, w: 23.6, h: 20.6 },
+        },
+        {
+          person: 'hearn-loveta-west',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identify.',
+          region: { face: 'recto', x: 68.3, y: 45.8, w: 17.1, h: 16.1 },
+        },
+      ]
+    },
+    {
+      slug: 'west-loveta-portrait-1',
+      title: '[Loveta West portrait, circa 1914]',
+      titleSource: 'supplied',
+      format: 'mounted photograph',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1914]',
+        basis: [
+          'Loveta West, the daughter of Tollie and Edith, appears to be four years of age here. She was born in 1910.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'west-loveta-portrait-1-recto.jpg', },
+      description:
+        'This photograph depicts Loveta West, the daughter of Tollie and Edith West. She appears to be about four years old here.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'recto',
+          medium: 'ink',
+          text: 'Loveta (West) Hearn',
+        },
+      ],
+      depicts: [
+        {
+          person: 'hearn-loveta-west',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identify.',
+          region: { face: 'recto', x: 44.1, y: 17.2, w: 17.8, h: 16.4 },
+        },
+      ]
+    },
+    {
+      slug: 'west-loveta-portrait-2',
+      title: '[Loveta West portrait]',
+      titleSource: 'supplied',
+      format: 'mounted photograph',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1930-1935]',
+        earliest: 1930,
+        latest: 1935,
+        basis: [
+          'Loveta West, the daughter of Tollie and Edith, appears to be about 20 or 25 years of age here. She was born in 1910.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'west-loveta-portrait-2-recto.jpg', },
+      verso: { file: 'west-loveta-portrait-2-verso.jpg', },
+      description:
+        'This photograph depicts Loveta West, the daughter of Tollie and Edith West. She appears to be about 20 or 25 years old here.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'recto',
+          medium: 'ink',
+          text: 'Loveta West',
+        },
+      ],
+      depicts: [
+        {
+          person: 'hearn-loveta-west',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identify.',
+          region: { face: 'recto', x: 32.8, y: 20.3, w: 41.4, h: 39 },
+        },
+      ]
+    },
   ],
 };
