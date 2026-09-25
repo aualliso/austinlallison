@@ -643,10 +643,29 @@ export const PEOPLE: Person[] = [
       'Named as a surviving daughter in Austin Swann\'s obituary, Greenville (Tex.) Evening Banner, 1 and 3 Jun 1931',
     ],
     relations: [
+      { type: 'spouse', person: 'west-benjamin-jackson', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-austin', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-nannie-thomas', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'mckinstry-minnie-swann', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'mckinstry-loveta-swann', basis: 'Established relationship', confidence: 'certain' },
+    ],
+  },
+  {
+    id: 'west-benjamin-jackson',
+    authorized: 'West, Benjamin Jackson',
+    surname: 'West',
+    given: 'Benjamin Jackson',
+    variants: ['West, Ben Jack', 'Benjamin Jackson West', 'Ben West', 'West, Ben'],
+    birth: '1872',
+    death: '1947',
+    status: 'established',
+    scopeNote:
+      'The second husband of Eva Swann. They married in 1922',
+    sources: [
+      'Find a Grave memorial 52583010,'
+    ],
+    relations: [
+      { type: 'spouse', person: 'west-eva-swann-powell', basis: 'Established relationship', confidence: 'certain' },
     ],
   },
   {

@@ -1737,6 +1737,11 @@ export const COLLECTION: Collection = {
         status: 'public-domain',
         note: 'Photographer unidentified; unpublished.',
       },
+      related: [
+        { slug: 'swann-minnie-eva-loveta-annie-miller-2',
+          relation: 'Same session'
+        }
+      ]
     },
     {
       slug: 'jacobia-picnic-1901',
@@ -3931,6 +3936,568 @@ export const COLLECTION: Collection = {
           // schema will not store.
           basis: 'Known identity.',
           region: { face: 'recto', x: 55.2, y: 27.3, w: 24.6, h: 21.6 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'group-of-swann-families-1',
+      title: '[Group of Swann families]',
+      titleSource: 'supplied',
+      controlNumber: 'c.1.18.1',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1910]',
+        basis: [
+          'There is no date associated with this photograph, but it must be before 1910 when Malcom Swann died. The verso of another photograph taken at the same time suggests a 1910 date.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'group-of-swann-families-1-recto.jpg' },
+      verso: { file: 'group-of-swann-families-1-verso.jpg' },
+      description: 'This photograph depicts a group of Swann families on the porch of a Jacobia, Texas home. Malcom Swann is visible on the left. John Swann may be seated to the right of him. Loveta Swann appears to be sitting on the porch. Eva Swann appears to be standing in the rear.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'A group of Swann families \n Grandpa seated at left.'
+        }
+      ],
+      depicts: [
+        {
+          person: 'swann-malcom',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identity.',
+          region: { face: 'recto', x: 24.1, y: 33.6, w: 4.6, h: 4.2 },
+        },
+        {
+          person: 'swann-john-milton',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identity.',
+          region: { face: 'recto', x: 31.7, y: 33.6, w: 3.6, h: 3.3 },
+        },
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identity.',
+          region: { face: 'recto', x: 49.3, y: 29.9, w: 3.7, h: 3.5 },
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identity.',
+          region: { face: 'recto', x: 44.3, y: 36.4, w: 4, h: 3.6 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-families-1',
+      title: 'Swann families',
+      titleSource: 'inscribed',
+      controlNumber: 'c.1.19.1',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1910]',
+        basis: [
+          'There is no date associated with this photograph, but it must be before 1910 when Malcom Swann died. The verso suggests a 1910 date.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-families-1-recto.jpg' },
+      verso: { file: 'swann-families-1-verso.jpg' },
+      description: 'This photograph depicts a group of Swann families on the porch of a Jacobia, Texas home. ',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: '1910 \n The Swann families'
+        }
+      ],
+      depicts: [
+        {
+          person: 'swann-john-milton',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identity.',
+          region: { face: 'recto', x: 23.5, y: 33.3, w: 3.9, h: 3.1 },
+        },
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identity.',
+          region: { face: 'recto', x: 42, y: 29.2, w: 3.9, h: 3.5 },
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Known identity.',
+          region: { face: 'recto', x: 36.7, y: 36.4, w: 4.3, h: 3.3 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'outdoor-party',
+      title: 'Back at Aunt Nannie\'s for an outdoor party with old friends',
+      titleSource: 'inscribed',
+      controlNumber: 'c.1.20.1',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1910]',
+        basis: [
+          'There is no date associated with this photograph. A 1910 date is estimated.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'outdoor-party-recto.jpg' },
+      verso: { file: 'outdoor-party-verso.jpg' },
+      description: 'This photograph depicts a group of people with a horse and wagon. None of the individuals are identifiable. This may have been taken on a return trip the Austin Swanns made to Jacobia after they moved to New Mexico.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Back at Aunt Nannie\'s for an outdoor party with old friends.',
+        }
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'jacobia-school',
+      title: 'Jacobia School around turn of the century',
+      titleSource: 'inscribed',
+      controlNumber: 'c.1.22.1',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1900]',
+        basis: [
+          'A date around 1900 is likely based on verso text.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'jacobia-school-recto.jpg' },
+      verso: { file: 'jacobia-school-verso.jpg' },
+      description: 'This photograph depicts the Jacobia School around the turn of the century. Students and teachers are visible, but no one can be certainly identified. It is presumed Eva, Minnie, and Loveta Swann and other family members may be in this photograph.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Jacobia School \n around turn of the century',
+        }
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'baptism-at-dodson-pool',
+      title: 'A Baptist baptism at the Dodson Pool',
+      titleSource: 'inscribed',
+      controlNumber: 'c.1.23.1',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1890-1900]',
+        earliest: 1890,
+        latest: 1900,
+        basis: [
+          'There is no date associated with this photograph. This is purely an estimate.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'baptism-at-dodson-pool-recto.jpg' },
+      verso: { file: 'baptism-at-dodson-pool-verso.jpg' },
+      description: 'This photograph depicts a Baptist baptism at the Dodson Pool near Jacobia, Texas. Numerous people are in this photograph, but none are identifiable.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'A Baptist baptism at the \n Dodson Pool',
+        }
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'truett-baptism',
+      title: 'Baptism with our Baptist minister "Dr. Jim Truett" of Dallas.',
+      titleSource: 'inscribed',
+      controlNumber: 'c.1.24.1',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1890-1900]',
+        earliest: 1890,
+        latest: 1900,
+        basis: [
+          'There is no date associated with this photograph. This is purely an estimate.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'truett-baptism-recto.jpg' },
+      verso: { file: 'truett-baptism-verso.jpg' },
+      description: 'This photograph depicts a baptism led by Dr. Jim Truett of Dallas.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Baptism with our Baptist \n minister "Dr. Jim Truett" of Dallas.',
+        }
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-loveta-western-college',
+      title: '[Loveta Swann at Western College, Artesia, New Mexico]',
+      titleSource: 'supplied',
+      controlNumber: 'c.1.28.1',
+      place: 'Artesia, New Mexico',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '1911-1912',
+        earliest: 1911,
+        latest: 1912,
+        basis: [
+          'The verso identifies the date',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'swann-loveta-western-college-recto.jpg' },
+      verso: { file: 'swann-loveta-western-college-verso.jpg' },
+      description: 'This photograph depicts Loveta Swann and her professors and fellow students at Western College in Artesia, New Mexico. Loveta is marked with an X.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Music class at Artesia, N.M. \n Prof. Webster teacher \n Methodist College \n where I studied voice and piano \n 1911-1912',
+        }
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified.',
+          region: { face: 'recto', x: 75.4, y: 66.8, w: 5.6, h: 6.3 },
+        },
+      ]
+    },
+    {
+      slug: 'girdner-charles-edgar-1925',
+      title: 'C.E. Girdner, 1925',
+      controlNumber: 'c.1.29.1',
+      titleSource: 'inscribed',
+      place: 'Greenville, Texas',
+      studio: 'House Studio (Greenville, Tex.)',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1925]',
+        basis: [
+          'The verso identifies a probable date.',
+        ],
+        confidence: 'probable',
+      },
+       inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'C.E. Girdner, abt. 1925',
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'girdner-charles-edgar-1925-recto.jpg' },
+      verso: { file: 'girdner-charles-edgar-1925-verso.jpg' },
+      depicts: [
+        {
+          person: 'girdner-charles-edgar',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 29.7, y: 18.7, w: 38.4, h: 33.5 },
+        },
+      ],
+      description: 'This photograph depicts Charles Edgar (C.E.) Girdner around the year 1925.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-minnie-eva-loveta-annie-miller-2',
+      title: '[Minnie, Eva, and Loveta Swann and Annie Miller]',
+      controlNumber: 'c.1.31.1',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1910]',
+        basis: [
+          'Text on the verso of another photograph from this session suggests a date of about 1910. This seems likely.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-minnie-eva-loveta-annie-miller-2-recto.jpg' },
+      depicts: [
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 22.7, y: 13.3, w: 15.7, h: 13.9 },
+        },
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 33.1, y: 30.5, w: 15.9, h: 15.6 },
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 57.9, y: 44.9, w: 15.5, h: 14.8 },
+        },
+        {
+          as: 'Annie Miller',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 57.2, y: 12.4, w: 15.2, h: 14 },
+        },
+      ],
+      description: 'This photograph depicts sisters Minnie, Eva, and Loveta Swann and a cousin Annie Miller. A date on the verso of another photograph from this session suggests this photograph was taken about 1910. Nothing disputes that.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      related: [
+        { slug: 'swann-minnie-eva-loveta-annie-miller',
+          relation: 'Same session'
+        }
+      ]
+    },
+    {
+      slug: 'west-eva-ben-jack',
+      title: '[Eva and Ben Jack West]',
+      titleSource: 'supplied',
+      format: 'mounted photograph',
+      place: 'Hagerman, New Mexico',
+      controlNumber: 'c.1.33.1',
+      date: {
+        display: '[1925]',
+        basis: [
+          'There is no date associated with this photograph, but it appears to be from about the year 1930. This is purely an estimate.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'west-eva-ben-jack-recto.jpg', },
+      description:
+        'This formal portrait depicts Ben Jack and Eva West from about the year 1925.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'west-benjamin-jackson',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on photograph.',
+          region: { face: 'recto', x: 17.7, y: 20.4, w: 27.6, h: 25.7 },
+        },
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on photograph.',
+          region: { face: 'recto', x: 57.1, y: 25.1, w: 24.7, h: 24.7 },
+        },
+      ]
+    },
+    {
+      slug: 'swann-loveta-graduation',
+      title: 'Loveta Swann graduation picture',
+      controlNumber: 'c.1.35.1',
+      titleSource: 'inscribed',
+      place: 'Hagerman, New Mexico',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '1911',
+        basis: [
+          'There is no date associated with this photograph, but Loveta graduated in 1911, so that is the date that can be assigned here.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-loveta-graduation-recto.jpg' },
+      inscriptions : [
+        { location: 'recto',
+          medium: 'ink',
+          text: '"Loveta Swann" graduation picture - \n sister Eva made the dress',
+        }
+      ],
+      description: 'This is Loveta Swann\'s graduation picture from about 1911. Her sister Eva made this dress.',
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 37.9, y: 9.7, w: 19.8, h: 14.2 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'girdner-nannie-atkinson-swann-portrait',
+      title: '[Nannie Swann Girdner, circa 1925]',
+      controlNumber: 'c.1.37.1',
+      titleSource: 'inscribed',
+      place: 'Greenville, Texas',
+      studio: 'House Studio (Greenville, Tex.)',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1925]',
+        basis: [
+          'The verso identifies a probable date.',
+        ],
+        confidence: 'probable',
+      },
+       inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Nannie Swann Girdner, abt. 1925',
+        },
+      ],
+      format: 'snapshot',
+      recto: { file: 'girdner-nannie-atkinson-swann-portrait-recto.jpg' },
+      verso: { file: 'girdner-nannie-atkinson-swann-portrait-verso.jpg' },
+      depicts: [
+        {
+          person: 'girdner-nannie-atkinson-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on verso.',
+          region: { face: 'recto', x: 27.7, y: 15.4, w: 41.2, h: 30.7 },
+        },
+      ],
+      description: 'This photograph depicts Nannie Swann Girdner around the year 1925.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-eva-portrait-2',
+      title: '[Eva Swann, circa 1906]',
+      controlNumber: 'c.1.38.1',
+      titleSource: 'supplied',
+      place: 'Greenville, Texas',
+      studio: 'Adams Studio (Greenville, Texas)',
+      date: {
+        display: '[1906]',
+        basis: [
+          'Text associated with this photograph suggests Eva is about 20 years old here. That would make the year about 1906. This photograph was also produced in the Adams Studio in Greenville before the family moved to Hagerman, New Mexico. A 1906 date matches this.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'swann-eva-portrait-2-recto.jpg' },
+      description: 'This photograph depicts Eva Swann around 20 years of age.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 40.5, y: 16.3, w: 16.4, h: 12.1 },
         },
       ],
       rights: {

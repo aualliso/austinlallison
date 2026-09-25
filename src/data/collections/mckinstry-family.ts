@@ -4008,7 +4008,7 @@ export const COLLECTION: Collection = {
         note: 'Photographer unidentified; unpublished.',
       },
       inscriptions: [
-        { location: 'recto',
+        { location: 'verso',
           medium: 'ink',
           text: 'Loveta West',
         },
@@ -4025,5 +4025,160 @@ export const COLLECTION: Collection = {
         },
       ]
     },
+    {
+      slug: 'mckinstry-jim-minnie',
+      title: '[Portraits of Jim and Minnie McKinstry, circa 1912]',
+      titleSource: 'supplied',
+      format: 'mounted photograph',
+      place: 'Hagerman, New Mexico',
+      controlNumber: 'c.1.27.1',
+      date: {
+        display: '[1912]',
+        basis: [
+          'This photograph was likely taken around the time that Jim and Minnie McKinstry got married in November 1912.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jim-minnie-recto.jpg', },
+      description:
+        'This photograph depicts Jim and Minnie McKinstry around the time of their marriage in 1912.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'recto',
+          medium: 'ink',
+          text: 'Sister Minnie and husband Jim McKinstry',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-james-daubin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on photograph.',
+          region: { face: 'recto', x: 59.5, y: 42.5, w: 21.9, h: 18.7 },
+        },
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on photograph.',
+          region: { face: 'recto', x: 25.6, y: 18.7, w: 18.5, h: 18.1 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-loveta-sammy-jean-1924',
+      title: '[Loveta, Sammy, and Jean McKinstry, circa 1924]',
+      titleSource: 'supplied',
+      format: 'mounted photograph',
+      controlNumber: 'c.1.30.1',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1924]',
+        basis: [
+          'The verso provides a likely date of 1924.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-loveta-sammy-jean-1924-recto.jpg', },
+      verso: { file: 'mckinstry-loveta-sammy-jean-1924-verso.jpg', },
+      description:
+        'This formal portrait depicts Loveta Swann McKinstry with her daughters, Sammy Nan and Veta Jean, around the year 1924.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Mrs. Loveta McKinstry \n and \n daughters \n Jean and Sammy \n 1924.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on photograph.',
+          region: { face: 'recto', x: 38.7, y: 21.4, w: 23, h: 19.6 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on photograph.',
+          region: { face: 'recto', x: 62, y: 12.4, w: 20.7, h: 17 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on photograph.',
+          region: { face: 'recto', x: 15.3, y: 32.7, w: 21.1, h: 16.4 },
+        },
+      ]
+    },
+    {
+      slug: 'mckinstry-sammy-jean-1923',
+      title: '[Sammy and Jean McKinstry, circa 1923]',
+      titleSource: 'supplied',
+      controlNumber: 'c.1.32.1',
+      format: 'mounted photograph',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1923]',
+        basis: [
+          'Text on the photograph suggests a 1923 date.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-sammy-jean-1923-recto.jpg', },
+      description:
+        'This formal portrait depicts Sammy and Jean McKinstry around the year 1923.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'recto',
+          medium: 'ink',
+          text: 'Sammy and Jean, 1923.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on photograph.',
+          region: { face: 'recto', x: 50.8, y: 11.8, w: 24.2, h: 19.3 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on photograph.',
+          region: { face: 'recto', x: 25.8, y: 18.2, w: 20.9, h: 18.6 },
+        },
+      ]
+    },
+    
   ],
 };
