@@ -25,3 +25,5 @@ pnpm-debug.log*
 
 *.tif
 *.tiff
+
+src/assets/collections/
