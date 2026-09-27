@@ -1,7 +1,7 @@
 // src/pages/collections/faces/[face].webp.ts
 //
-// FACE CROPS, cut from the source scans at build time. One small file per
-// face at 1x and 2x: /collections/faces/<id>.webp and <id>@2x.webp.
+// FACE CROPS, cut at build time. One small file per face at 1x and 2x:
+// /collections/faces/<id>.webp and <id>@2x.webp.
 //
 // WHY A FILE AND NOT A CSS CROP. A face is often a few percent of a group
 // photograph, so showing it sharply with CSS alone means loading a 1900-2600px
@@ -14,14 +14,31 @@
 // and slid back inside the picture if it would run off an edge. It is never
 // retouched, sharpened or enhanced: it is the scan, cut.
 //
-// Requires sharp, which Astro's image service already uses. If a build ever
-// reports that sharp cannot be found, `npm i sharp` makes it a direct
-// dependency.
+// WHERE THE PIXELS COME FROM. Since the IIIF move the scans are no longer in
+// the repository, so the crop is assembled from the R2 tiles - the same
+// full-resolution tiles a IIIF viewer uses. For each face:
+//
+//   1. read the image's info.json (once per image, however many faces it has)
+//   2. pick the SMALLEST tiles that still hold enough pixels for the 2x crop -
+//      a face that fills half a portrait needs a few low-resolution tiles, a
+//      face that is 3% of a group photograph needs full-resolution ones
+//   3. fetch only the tiles the crop touches, stitch them, cut, resize
+//
+// A static (level 0) IIIF server cannot cut an arbitrary region on request,
+// which is why the stitching happens here rather than by asking R2 for it.
+//
+// The tiles are already upright - the tiling script applies EXIF rotation -
+// so there is no orientation step. They are JPEG at quality 85, one
+// generation after the scan; at face-crop sizes that is not visible.
+//
+// NETWORK AT BUILD. Every build fetches these tiles from iiif.austinlallison.com.
+// That is a few small files per face, not the scans. If R2 is unreachable the
+// build fails and names the tile, rather than shipping a blank face.
 
 import type { APIRoute } from 'astro';
 import sharp from 'sharp';
 import { FACES, FACE_W, FACE_H, faceById } from '../../../data/collections/index';
-import { sourcePath } from '../../../data/collections/images';
+import { plate } from '../../../data/collections/images';
 
 export function getStaticPaths() {
   return FACES.flatMap((f) => [
@@ -33,11 +50,129 @@ export function getStaticPaths() {
 /** How much larger than the recorded region the crop is. */
 const MARGIN = 1.45;
 const QUALITY = 84;
+/** Fetches in flight at once, across the whole build. */
+const MAX_FETCHES = 8;
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
 
-// Both densities come from one decode of the scan. Keyed by face id; the build
-// asks for <id> and <id>@2x separately and the second finds this waiting.
+/* ------------------------------------------------------------------ *
+ * Fetching, politely
+ * ------------------------------------------------------------------ */
+let inFlight = 0;
+const waiting: (() => void)[] = [];
+async function slot<T>(fn: () => Promise<T>): Promise<T> {
+  if (inFlight >= MAX_FETCHES) await new Promise<void>((r) => waiting.push(r));
+  inFlight++;
+  try {
+    return await fn();
+  } finally {
+    inFlight--;
+    waiting.shift()?.();
+  }
+}
+
+async function fetchBytes(url: string): Promise<ArrayBuffer> {
+  return slot(async () => {
+    for (let attempt = 1; ; attempt++) {
+      try {
+        const res = await fetch(url);
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.arrayBuffer();
+      } catch (err) {
+        if (attempt >= 3) {
+          throw new Error(
+            `[faces] Could not fetch ${url} (${(err as Error).message}). ` +
+              `Is the scan uploaded? Run: npm run iiif`
+          );
+        }
+        await new Promise((r) => setTimeout(r, 400 * attempt));
+      }
+    }
+  });
+}
+
+type Info = { width: number; height: number; tiles: { width: number; height?: number; scaleFactors: number[] }[] };
+const infos = new Map<string, Promise<Info>>();
+function info(service: string): Promise<Info> {
+  let p = infos.get(service);
+  if (!p) {
+    p = fetchBytes(`${service}/info.json`).then((b) => JSON.parse(new TextDecoder().decode(b)) as Info);
+    infos.set(service, p);
+  }
+  return p;
+}
+
+/**
+ * The pixels of one full-resolution rectangle, at 1/s scale, assembled from
+ * the level-0 tiles. Tile addresses follow the Image API: region in full-size
+ * pixels, then the size that region was scaled to, rounded up.
+ */
+async function region(
+  service: string,
+  inf: Info,
+  s: number,
+  rect: { left: number; top: number; width: number; height: number }
+) {
+  const tw = inf.tiles[0].width;
+  const th = inf.tiles[0].height ?? tw;
+  const spanX = tw * s;
+  const spanY = th * s;
+  const W = inf.width;
+  const H = inf.height;
+
+  const tx0 = Math.floor(rect.left / spanX);
+  const tx1 = Math.floor((rect.left + rect.width - 1) / spanX);
+  const ty0 = Math.floor(rect.top / spanY);
+  const ty1 = Math.floor((rect.top + rect.height - 1) / spanY);
+
+  const pieces: { input: Buffer; left: number; top: number }[] = [];
+  let canvasW = 0;
+  let canvasH = 0;
+  const jobs: Promise<void>[] = [];
+
+  for (let ty = ty0; ty <= ty1; ty++) {
+    for (let tx = tx0; tx <= tx1; tx++) {
+      const x = tx * spanX;
+      const y = ty * spanY;
+      const rw = Math.min(spanX, W - x);
+      const rh = Math.min(spanY, H - y);
+      const sw = Math.ceil(rw / s);
+      const sh = Math.ceil(rh / s);
+      const left = (tx - tx0) * tw;
+      const top = (ty - ty0) * th;
+      canvasW = Math.max(canvasW, left + sw);
+      canvasH = Math.max(canvasH, top + sh);
+      const url = `${service}/${x},${y},${rw},${rh}/${sw},${sh}/0/default.jpg`;
+      jobs.push(fetchBytes(url).then((b) => void pieces.push({ input: Buffer.from(b), left, top })));
+    }
+  }
+  await Promise.all(jobs);
+
+  const stitched = await sharp({
+    create: { width: canvasW, height: canvasH, channels: 3, background: '#ffffff' },
+  })
+    .composite(pieces)
+    .png()
+    .toBuffer();
+
+  // The crop, in the stitched canvas's scaled coordinates.
+  const ox = tx0 * spanX;
+  const oy = ty0 * spanY;
+  const l = clamp(Math.round((rect.left - ox) / s), 0, canvasW - 1);
+  const t = clamp(Math.round((rect.top - oy) / s), 0, canvasH - 1);
+  return sharp(stitched).extract({
+    left: l,
+    top: t,
+    width: Math.max(1, Math.min(canvasW - l, Math.round(rect.width / s))),
+    height: Math.max(1, Math.min(canvasH - t, Math.round(rect.height / s))),
+  });
+}
+
+/* ------------------------------------------------------------------ *
+ * The crop
+ * ------------------------------------------------------------------ */
+// Both densities come from one assembly. Keyed by face id; the build asks for
+// <id> and <id>@2x separately and the second finds this waiting.
 const made = new Map<string, Promise<[Uint8Array, Uint8Array]>>();
 
 function cut(id: string): Promise<[Uint8Array, Uint8Array]> {
@@ -47,15 +182,10 @@ function cut(id: string): Promise<[Uint8Array, Uint8Array]> {
   const job = (async () => {
     const f = faceById.get(id);
     if (!f) throw new Error(`[faces] No face "${id}".`);
-    const file = sourcePath(f.collection, f.file);
-
-    // Regions are drawn on the picture as displayed, so measure it the same
-    // way: an EXIF rotation of 90 or 270 degrees swaps width and height.
-    const meta = await sharp(file, { limitInputPixels: false }).metadata();
-    const turned = (meta.orientation ?? 1) >= 5;
-    const W = (turned ? meta.height : meta.width) ?? 0;
-    const H = (turned ? meta.width : meta.height) ?? 0;
-    if (!W || !H) throw new Error(`[faces] Could not read the size of ${file}.`);
+    const img = await plate(f.collection, f.file);
+    const inf = await info(img.iiif);
+    const W = inf.width;
+    const H = inf.height;
 
     const r = f.region;
     const aspect = FACE_W / FACE_H;
@@ -78,10 +208,15 @@ function cut(id: string): Promise<[Uint8Array, Uint8Array]> {
     const width = Math.max(1, Math.min(W - left, Math.round(cw)));
     const height = Math.max(1, Math.min(H - top, Math.round(ch)));
 
-    // rotate() before extract(): the crop is taken from the upright picture.
-    const base = sharp(file, { limitInputPixels: false })
-      .rotate()
-      .extract({ left, top, width, height });
+    // The coarsest tile level that still gives the 2x crop its full pixels.
+    // Scale factors are listed small to large; 1 is full resolution.
+    const need = FACE_W * 2;
+    const s = [...inf.tiles[0].scaleFactors]
+      .sort((a, b) => a - b)
+      .filter((k) => width / k >= need)
+      .pop() ?? 1;
+
+    const base = await region(img.iiif, inf, s, { left, top, width, height });
 
     const [one, two] = await Promise.all(
       [1, 2].map((d) =>

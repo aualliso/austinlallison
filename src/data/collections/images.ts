@@ -46,8 +46,6 @@
 // Firefox Android, so no page ever asks for one. `iiif` below is the service
 // address a tiled viewer uses to reach full resolution a few tiles at a time.
 
-import path from 'node:path';
-import { existsSync } from 'node:fs';
 import manifest from './iiif-images.json';
 
 type Size = { width: number; height: number };
@@ -185,21 +183,3 @@ export async function plate(
     iiif: e.id,
   };
 }
-
-/**
- * The source scan's path on disk, for build-time work that reads the original
- * directly - the face crops in /collections/faces/ are cut from it with sharp.
- *
- * TEMPORARY. This only works while the scans are still in src/assets. It has
- * to be replaced before they leave the repository, or the faces pages break.
- */
-export const sourcePath = (collection: string, file: string): string => {
-  const p = path.join(process.cwd(), 'src', 'assets', 'collections', collection, file);
-  if (!existsSync(p)) {
-    throw new Error(
-      `[collections] sourcePath: no scan at ${p}. The face crops still read ` +
-        `scans from src/assets; see the note on sourcePath in images.ts.`
-    );
-  }
-  return p;
-};
