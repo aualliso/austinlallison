@@ -68,9 +68,17 @@ export function iiifImage(webpUrl: string, service: string) {
   };
 }
 
-/** IIIF's `rights` only accepts Creative Commons or RightsStatements.org URIs. */
-export const isIiifRights = (uri: string) =>
-  /^https?:\/\/(creativecommons\.org|rightsstatements\.org)\//.test(uri);
+/**
+ * IIIF's `rights` only accepts Creative Commons or RightsStatements.org URIs,
+ * and only in their http:// form, though both sites now publish https://.
+ * Returns the IIIF form, or null when the URI is from anywhere else.
+ */
+export function iiifRights(uri: string): string | null {
+  const m = uri.match(
+    /^https?:\/\/(creativecommons\.org\/(?:licenses|publicdomain)\/.+|rightsstatements\.org\/vocab\/.+)$/
+  );
+  return m ? `http://${m[1]}` : null;
+}
 
 export const json = (body: unknown) =>
   new Response(JSON.stringify(body, null, 2), {

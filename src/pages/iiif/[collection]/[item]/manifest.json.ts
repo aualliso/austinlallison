@@ -36,7 +36,7 @@ import {
   confidenceLabel,
   xywh,
   iiifImage,
-  isIiifRights,
+  iiifRights,
   json,
 } from '../../../../data/collections/iiif';
 
@@ -153,6 +153,8 @@ export const GET: APIRoute = async ({ props, site }) => {
   const rights = RIGHTS[item.rights.status];
   const rightsText = `${rights.label}${item.rights.note ? ` ${item.rights.note}` : ''}`;
 
+  const iiifR = iiifRights(rights.uri);
+
   return json({
     '@context': PRESENTATION_CONTEXT,
     id,
@@ -174,7 +176,7 @@ export const GET: APIRoute = async ({ props, site }) => {
       label: en('Attribution'),
       value: en(`${c.title}, collection of Austin Allison. ${rightsText}`),
     },
-    ...(isIiifRights(rights.uri) ? { rights: rights.uri } : {}),
+    ...(iiifR ? { rights: iiifR } : {}),
     provider: [
       {
         id: abs('/about'),
