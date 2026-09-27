@@ -294,6 +294,7 @@ const pageData = json({
     studyW: f.img.studyWidth,
     w: f.img.width,
     h: f.img.height,
+    iiif: f.img.iiif,
   })),
   marks: marks.map(({ id, kind, face, x, y, w, h, caption }) => ({ id, kind, face, x, y, w, h, caption })),
 });
@@ -823,6 +824,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     <div class="ex-stage" id="ex-stage" tabindex="-1">
       <div class="ex-frame" id="ex-frame">
         <img id="ex-img" alt="" draggable="false" />
+        <div class="ex-tiles" id="ex-tiles" aria-hidden="true"></div>
         <div class="ex-marks">
           {marks.map((m) => (
             <span class:list={['ex-region', `region-box--${m.kind}`, { 'is-doubtful': m.doubtful }]} data-ex-mark={m.id} data-face={m.face} style={box(m)} aria-hidden="true">
@@ -1614,6 +1616,19 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     user-select: none;
     -webkit-user-drag: none;
   }
+  /* Full-resolution tiles, laid over the photograph in the frame's own
+     percentages - so pan, zoom, rotation, the regions and the overview all
+     carry them without knowing they exist. Each tile's box is set inline. */
+  .ex-tiles {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .ex-tiles img {
+    position: absolute;
+    max-width: none;
+  }
   .ex-marks {
     position: absolute;
     inset: 0;
@@ -2127,8 +2142,11 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     big: string;
     study: string;
     studyW: number;
+    /** Full pixel size of the scan. */
     w: number;
     h: number;
+    /** IIIF image service for this face: full resolution, as tiles. */
+    iiif?: string;
   };
   type MarkData = {
     id: string;
@@ -2471,7 +2489,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     // THE ZOOM CEILING. At most one file pixel per CSS pixel times the
     // screen's density - true 1:1 on an ordinary monitor, and on a phone a
     // little further, where a thumb needs the room. Past that there is
-    // nothing more in the file to see.
+    // nothing more in the file to see. With tiles, "the file" is the scan
+    // itself at full resolution; bestW is set per face in loadFace().
     const maxK = () => Math.max(1, (bestW / Math.max(1, fitW)) * (window.devicePixelRatio || 1));
 
     const clampTo = (nk: number, x: number, y: number) => {
@@ -2526,6 +2545,164 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       if (upgraded || !studySrc) return;
       upgraded = true;
       sharpen(studySrc, 2);
+    };
+
+    /* Full resolution: tiles past the study file --------------------- *
+     * The study file stops at 5000px on the long edge, because decoding a
+     * whole 8000px scan would crash a phone. Past it, only the part of the
+     * photograph on screen is fetched, as 512px IIIF tiles from R2, at the
+     * coarsest level that is still as sharp as the screen.
+     *
+     * The tiles sit inside the frame in its own percentages, so everything
+     * that moves the frame moves them. Nothing here touches the gestures.
+     *
+     * Same rule as the files: show at once, sharpen when ready. Tiles are
+     * fetched only when the view settles (commit), a coarser level stays
+     * underneath until the finer one has arrived, and the study file stays
+     * under all of it - so a seam or a slow tile shows the photograph a
+     * little softer, never a hole.
+     * ---------------------------------------------------------------- */
+    const tilesEl = $('#ex-tiles', dialog);
+    type TileInfo = { width: number; height: number; tw: number; th: number; scales: number[] };
+    const tileInfos = new Map<string, Promise<TileInfo | null>>();
+    const tileInfo = (iiif: string): Promise<TileInfo | null> => {
+      let p = tileInfos.get(iiif);
+      if (!p) {
+        p = fetch(`${iiif}/info.json`)
+          .then((r) => (r.ok ? r.json() : null))
+          .then((j) => {
+            const t = j?.tiles?.[0];
+            if (!t || !j.width || !j.height) return null;
+            return {
+              width: j.width as number,
+              height: j.height as number,
+              tw: t.width as number,
+              th: (t.height ?? t.width) as number,
+              scales: [...(t.scaleFactors as number[])].sort((a, b) => a - b),
+            };
+          })
+          .catch(() => null);
+        tileInfos.set(iiif, p);
+      }
+      return p;
+    };
+
+    const tileEls = new Map<string, HTMLImageElement>();
+    let tileToken = 0;
+    /** More than this on screen and the next coarser level is used instead. */
+    const MAX_TILES = 80;
+
+    const clearTiles = () => {
+      tileToken++;
+      tileEls.forEach((el) => el.remove());
+      tileEls.clear();
+    };
+
+    const refineTiles = async () => {
+      const f = faceData.get(face);
+      if (!tilesEl || !f?.iiif || !dialog.open) return;
+
+      // Device pixels across the whole photograph at this zoom. Until that
+      // outruns the study file there is nothing for tiles to add.
+      const dpr = window.devicePixelRatio || 1;
+      const needed = fitW * k * dpr;
+      if (needed <= (f.studyW || f.w) * 1.05) {
+        if (tileEls.size) clearTiles();
+        return;
+      }
+
+      const token = ++tileToken;
+      const info = await tileInfo(f.iiif);
+      if (!info || token !== tileToken || face !== f.key || !dialog.open) return;
+      const { width: W, height: H, tw, th, scales } = info;
+
+      // What is on screen, in scan pixels. viewBox() already accounts for
+      // rotation and pan - it is what the overview and the URL use.
+      const box = viewBox();
+      const x0 = (box.x / 100) * W;
+      const y0 = (box.y / 100) * H;
+      const x1 = ((box.x + box.w) / 100) * W;
+      const y1 = ((box.y + box.h) / 100) * H;
+
+      type Tile = { key: string; url: string; left: number; top: number; w: number; h: number; s: number };
+      const pick = (s: number): Tile[] => {
+        const spanX = tw * s;
+        const spanY = th * s;
+        // Half a tile of margin, so a small pan lands on tiles already here.
+        const ax = Math.max(0, Math.floor((x0 - spanX / 2) / spanX));
+        const bx = Math.min(Math.ceil(W / spanX) - 1, Math.floor((x1 + spanX / 2) / spanX));
+        const ay = Math.max(0, Math.floor((y0 - spanY / 2) / spanY));
+        const by = Math.min(Math.ceil(H / spanY) - 1, Math.floor((y1 + spanY / 2) / spanY));
+        const out: Tile[] = [];
+        for (let j = ay; j <= by; j++) {
+          for (let i = ax; i <= bx; i++) {
+            const x = i * spanX;
+            const y = j * spanY;
+            const rw = Math.min(spanX, W - x);
+            const rh = Math.min(spanY, H - y);
+            const sw = Math.ceil(rw / s);
+            const sh = Math.ceil(rh / s);
+            // Level 0 names a region covering the whole scan "full".
+            const region = x === 0 && y === 0 && rw === W && rh === H ? 'full' : `${x},${y},${rw},${rh}`;
+            out.push({
+              key: `${s}/${x},${y}`,
+              url: `${f.iiif}/${region}/${sw},${sh}/0/default.jpg`,
+              left: (x / W) * 100,
+              top: (y / H) * 100,
+              w: (rw / W) * 100,
+              h: (rh / H) * 100,
+              s,
+            });
+          }
+        }
+        return out;
+      };
+
+      // The coarsest level still as sharp as the screen; full resolution last.
+      let s = [...scales].reverse().find((q) => W / q >= needed) ?? scales[0];
+      let want = pick(s);
+      while (want.length > MAX_TILES) {
+        const coarser = scales.find((q) => q > s);
+        if (!coarser) break;
+        s = coarser;
+        want = pick(s);
+      }
+
+      const wanted = new Set(want.map((t) => t.key));
+      const loads: Promise<void>[] = [];
+      for (const t of want) {
+        if (tileEls.has(t.key)) continue;
+        const el = document.createElement('img');
+        el.alt = '';
+        el.draggable = false;
+        el.decoding = 'async';
+        // Finer levels above coarser ones.
+        el.style.cssText =
+          `left:${t.left}%;top:${t.top}%;width:${t.w}%;height:${t.h}%;z-index:${Math.round(1000 / t.s)}`;
+        loads.push(
+          new Promise<void>((done) => {
+            el.onload = () => done();
+            el.onerror = () => {
+              el.remove();
+              tileEls.delete(t.key);
+              done();
+            };
+          })
+        );
+        el.src = t.url;
+        tilesEl.appendChild(el);
+        tileEls.set(t.key, el);
+      }
+      await Promise.all(loads);
+      if (token !== tileToken) return;
+
+      // Everything wanted has arrived: retire the rest, coarser levels included.
+      tileEls.forEach((el, key) => {
+        if (!wanted.has(key)) {
+          el.remove();
+          tileEls.delete(key);
+        }
+      });
     };
 
     /* The overview ----------------------------------------------------- */
@@ -2607,6 +2784,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       paint();
       syncHash();
       layoutExTags();
+      void refineTiles();
       if (dialog.open) say(`Zoom ${Math.round(k * 100)} percent`);
     };
     const commitSoon = (ms = 160) => {
@@ -2809,10 +2987,12 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       const f = faceData.get(key) ?? data.faces[0];
       face = f.key;
       loadToken++;
+      clearTiles();
       shownRank = 0;
       upgraded = false;
       studySrc = f.study;
-      bestW = f.studyW || f.w;
+      // With tiles the ceiling is the scan itself; without, the study file.
+      bestW = f.iiif ? f.w : f.studyW || f.w;
       setRot(r);
       // Open on what the page already holds; the detail file follows.
       const quick = plateSrc(f.key) || f.view;
@@ -2943,6 +3123,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
         dialog.classList.remove('is-sharpening');
         dialog.style.removeProperty('--pull');
         img.removeAttribute('src');
+        clearTiles();
         pointers.clear();
         pinch = null;
         panFrom = null;

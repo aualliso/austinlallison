@@ -315,6 +315,106 @@
     },
     "hash": "5331ecef0ccade5c37562a9e887f2c88595e394b031976f5ca5de3afe65fd3b3"
   },
+  "allison-family/allison-oscar-teacher-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-teacher-recto-96738ed96c",
+    "width": 3332,
+    "height": 2120,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 216
+      },
+      {
+        "width": 417,
+        "height": 265
+      },
+      {
+        "width": 680,
+        "height": 433
+      },
+      {
+        "width": 800,
+        "height": 509
+      },
+      {
+        "width": 1200,
+        "height": 764
+      },
+      {
+        "width": 1900,
+        "height": 1209
+      },
+      {
+        "width": 2600,
+        "height": 1654
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": null
+    },
+    "hash": "96738ed96c9f4a919640b25a3e0dd6c177c691c1c6bdbf3e82bed1f5b28aa833"
+  },
+  "allison-family/allison-oscar-teacher-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-teacher-verso-225284c8c1",
+    "width": 2138,
+    "height": 3314,
+    "sizes": [
+      {
+        "width": 268,
+        "height": 415
+      },
+      {
+        "width": 340,
+        "height": 527
+      },
+      {
+        "width": 680,
+        "height": 1054
+      },
+      {
+        "width": 800,
+        "height": 1240
+      },
+      {
+        "width": 1200,
+        "height": 1860
+      },
+      {
+        "width": 1677,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2945
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1677,
+      "study": null
+    },
+    "hash": "225284c8c1af5612f82b2cdd9b1b84099a5a46fc2f334a51faa81ddf174efbef"
+  },
   "allison-family/allison-redmon-family-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-redmon-family-recto-56beca7e63",

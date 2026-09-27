@@ -142,7 +142,9 @@ async function region(
       const top = (ty - ty0) * th;
       canvasW = Math.max(canvasW, left + sw);
       canvasH = Math.max(canvasH, top + sh);
-      const url = `${service}/${x},${y},${rw},${rh}/${sw},${sh}/0/default.jpg`;
+      // Level 0 names a region covering the whole scan "full".
+      const reg = x === 0 && y === 0 && rw === W && rh === H ? 'full' : `${x},${y},${rw},${rh}`;
+      const url = `${service}/${reg}/${sw},${sh}/0/default.jpg`;
       jobs.push(fetchBytes(url).then((b) => void pieces.push({ input: Buffer.from(b), left, top })));
     }
   }

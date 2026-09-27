@@ -494,5 +494,83 @@ export const COLLECTION: Collection = {
           },
       ],
     },
+    {
+      slug: 'allison-oscar-teacher',
+      title: '[Oscar Allison at a teacher meeting at Hagerman in 1910]',
+      titleSource: 'supplied',
+      format: 'real photo postcard',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1910]',
+        basis: ['The verso assigns a date of 1910. Nothing here objects to this.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-oscar-teacher-recto.jpg',
+      },
+      verso: {
+        file: 'allison-oscar-teacher-verso.jpg',
+      },
+      description:
+        'This photograph depicts Oscar Allison as at teacher meeting in 1910 at Hagerman. Oscar is standing fifth from the left. Several others are identifed on the verso.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Teachers meeting about 1910 at Hagerman. \n 1st Mr. Ellis \n standing 2nd from left Hannah Grizzle, \n 5th from left Oscar Allison. \n Seated from left: \n 1. Eula Grizzle \n 2. Myrtle Stark \n 3. Nina Cullen \n 5. Eddie Stirman \n (Daddy\'s cousin) \n 4 schools represented \n 1. Ingleville, Daddy \n Blanche Cullen \n 2. White Flat \n Myrtle Stark \n Mr. Ellis.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-oscar-simmon',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 64.1, y: 9, w: 6.9, h: 13.5 },
+          },
+          {
+          as: 'Mr Ellis',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 12.4, y: 11, w: 6.1, h: 13.2 },
+          },
+          {
+          as: 'Hannah Grizzle',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 25.4, y: 13.7, w: 7, h: 13.4 },
+          },
+          {
+          as: 'Eula Grizzle',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 12.7, y: 29.9, w: 7.8, h: 13.2 },
+          },
+          {
+          as: 'Myrtle Stark',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 26.2, y: 33.1, w: 6.6, h: 11.9 },
+          },
+          {
+          as: 'Nina Cullen',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 38.9, y: 31.6, w: 6.9, h: 12.7 },
+          },
+          {
+          as: 'Eddie Stirman',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 65.5, y: 32.4, w: 7.1, h: 14.5 },
+          },
+      ],
+    },
   ]
 }
