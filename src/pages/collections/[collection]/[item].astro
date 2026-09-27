@@ -73,6 +73,7 @@ const EM = '\u2014';
 const site = Astro.site ?? Astro.url;
 const abs = (path: string) => new URL(path, site).href;
 const permalink = abs(item.href);
+const manifestUrl = `/iiif/${item.collection}/${item.slug}/manifest.json`;
 
 /* ------------------------------------------------------------------ *
  * Faces
@@ -709,6 +710,10 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
             <div class={ROW}>
               <dt class={DT}>Collection</dt>
               <dd class="m-0 min-w-0 flex-1"><a href={`/collections/${c.slug}`} class={LINK}>{c.title}</a></dd>
+            </div>
+            <div class={ROW}>
+              <dt class={DT}>IIIF manifest</dt>
+              <dd class="m-0 min-w-0 flex-1"><a href={manifestUrl} class={LINK}>manifest.json</a></dd>
             </div>
           </dl>
 
