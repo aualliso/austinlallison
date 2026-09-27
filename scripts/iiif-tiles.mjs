@@ -9,10 +9,23 @@
 //   npm run iiif -- --only swann       only scans whose path contains "swann"
 //   npm run iiif -- --force            redo scans even if unchanged
 //
+// Only scans that are new, changed, or from an older VERSION are processed.
+//
 // Every face gets:
 //   - 512px tiles at every zoom level, up to FULL resolution
-//   - fixed page sizes (340, 680, 800, 1200, 1900 wide) under full/{w},{h}/0/
+//   - the site's own rungs under full/{w},{h}/0/, as default.jpg (IIIF) AND
+//     default.webp (what the site's pages actually load):
+//       index 340/680 and view 800/1200/1900, keyed on WIDTH
+//       detail 2600 and study 5000, keyed on the LONG EDGE
+//     These mirror the rules images.ts used to apply with getImage(): never
+//     upscale, and skip the study rung unless it is 1.3x the detail rung.
 //   - an info.json whose `sizes` lists every pre-made full image
+//
+// The chosen rungs are written into iiif-images.json, so images.ts reads them
+// rather than recomputing them - one place decides, the other obeys.
+//
+// VERSION is stored on every entry. Bumping it makes the next run redo every
+// scan without --force, which is how a change to the rungs rolls out.
 //
 // The content hash is part of each image's address, so replacing a scan gives
 // it a new address; old tiles can never be served from a stale cache. That is
@@ -33,9 +46,17 @@ import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 // ── Settings ──────────────────────────────────────────────────────────────
 const MANIFEST_PATH = 'src/data/collections/iiif-images.json';
 const TILE = 512;
+const VERSION = 2;
 const TILE_QUALITY = 85;
-const SIZE_QUALITY = 82;
-const PAGE_WIDTHS = [340, 680, 800, 1200, 1900];
+const JPG_QUALITY = 82;
+const INDEX_RUNGS = [340, 680];
+const VIEW_RUNGS = [800, 1200, 1900];
+const DETAIL_LONG = 2600;
+const STUDY_LONG = 5000;
+const STUDY_MIN_GAIN = 1.3;
+// WebP quality per rung, as images.ts had it: the study rung holds at 80
+// because compression in a pencil stroke is exactly what it exists to avoid.
+const WEBP_QUALITY = { index: 82, view: 80, detail: 82, study: 80 };
 const UPLOAD_CONCURRENCY = 16;
 const SOURCE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.tif', '.tiff']);
 
@@ -104,7 +125,7 @@ function addressFor(rel, hash) {
   };
 }
 
-const CONTENT_TYPES = { '.jpg': 'image/jpeg', '.json': 'application/json' };
+const CONTENT_TYPES = { '.jpg': 'image/jpeg', '.webp': 'image/webp', '.json': 'application/json' };
 
 async function upload(key, file) {
   for (let attempt = 1; ; attempt++) {
@@ -166,16 +187,35 @@ async function processImage(src, rel, hash) {
     const info = JSON.parse(readFileSync(infoPath, 'utf8'));
     const { width: W, height: H } = info; // oriented pixel size, from libvips
 
-    // Fixed page sizes. Never upscale.
-    for (const w of PAGE_WIDTHS) {
-      if (w >= W) continue;
-      const h = Math.round((H * w) / W);
+    // The site's rungs. Never upscale; duplicates collapse.
+    const unique = (ws) => [...new Set(ws)];
+    const longEdge = Math.max(W, H);
+    const widthForLong = (target) =>
+      Math.max(1, Math.round((W * Math.min(target, longEdge)) / longEdge));
+    const detail = widthForLong(DETAIL_LONG);
+    const studyW = widthForLong(STUDY_LONG);
+    const rungs = {
+      index: unique(INDEX_RUNGS.map((w) => Math.min(w, W))),
+      view: unique(VIEW_RUNGS.map((w) => Math.min(w, W))),
+      detail,
+      study: studyW >= detail * STUDY_MIN_GAIN ? studyW : null,
+    };
+
+    // Width -> webp quality. Set in rising order of importance so a width that
+    // serves two rungs gets the later rung's setting.
+    const quality = new Map();
+    for (const w of rungs.index) quality.set(w, WEBP_QUALITY.index);
+    for (const w of rungs.view) quality.set(w, WEBP_QUALITY.view);
+    quality.set(rungs.detail, WEBP_QUALITY.detail);
+    if (rungs.study) quality.set(rungs.study, WEBP_QUALITY.study);
+
+    for (const [w, q] of quality) {
+      const h = Math.max(1, Math.round((H * w) / W));
       const dir = join(root, 'full', `${w},${h}`, '0');
       mkdirSync(dir, { recursive: true });
-      await base.clone()
-        .resize(w, h, { fit: 'fill' })
-        .jpeg({ quality: SIZE_QUALITY })
-        .toFile(join(dir, 'default.jpg'));
+      const sized = base.clone().resize(w, h, { fit: 'fill' });
+      await sized.clone().jpeg({ quality: JPG_QUALITY }).toFile(join(dir, 'default.jpg'));
+      await sized.clone().webp({ quality: q }).toFile(join(dir, 'default.webp'));
     }
 
     // List every pre-made full image (libvips writes one small one of its own)
@@ -207,7 +247,10 @@ async function processImage(src, rel, hash) {
         upload(`${prefix}/${name}/${toPosix(relative(root, f))}`, f));
     }
 
-    return { entry: { id: serviceId, width: W, height: H, sizes, hash }, files: files.length };
+    return {
+      entry: { v: VERSION, id: serviceId, width: W, height: H, sizes, rungs, hash },
+      files: files.length,
+    };
   } finally {
     rmSync(work, { recursive: true, force: true });
   }
@@ -230,7 +273,7 @@ for (const src of sources) {
   const rel = toPosix(relative(SCANS_DIR, src));
   const hash = createHash('sha256').update(readFileSync(src)).digest('hex');
 
-  if (!FORCE && manifest[rel]?.hash === hash) {
+  if (!FORCE && manifest[rel]?.hash === hash && manifest[rel]?.v === VERSION) {
     skipped++;
     continue;
   }
