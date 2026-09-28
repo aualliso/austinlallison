@@ -74,6 +74,7 @@ const site = Astro.site ?? Astro.url;
 const abs = (path: string) => new URL(path, site).href;
 const permalink = abs(item.href);
 const manifestUrl = `/iiif/${item.collection}/${item.slug}/manifest.json`;
+const miradorUrl = `https://projectmirador.org/embed/?iiif-content=${encodeURIComponent(abs(manifestUrl))}`;
 
 /* ------------------------------------------------------------------ *
  * Faces
@@ -290,6 +291,7 @@ const pageData = json({
     alt: f.alt,
     view: f.img.view,
     big: f.img.detail,
+    bigW: f.img.detailWidth,
     study: f.img.study,
     studyW: f.img.studyWidth,
     w: f.img.width,
@@ -298,6 +300,13 @@ const pageData = json({
   })),
   marks: marks.map(({ id, kind, face, x, y, w, h, caption }) => ({ id, kind, face, x, y, w, h, caption })),
 });
+
+// Link previews and search engines get the JPEG twin of the plate image.
+// The tiling script writes every size as default.jpg beside default.webp,
+// and some preview services still handle WebP unreliably.
+const shareImage = faces[0].img.view.replace(/default\.webp$/, 'default.jpg');
+// The IIIF image server, to connect to before the plate is reached.
+const iiifOrigin = faces[0].img.iiif ? new URL(faces[0].img.iiif).origin : null;
 
 const rights = RIGHTS[item.rights.status];
 const reliable = (conf: string) => conf === 'certain' || conf === 'probable';
@@ -308,7 +317,7 @@ const structured = json({
   url: permalink,
   name: item.title,
   ...(item.description ? { description: item.description } : {}),
-  image: abs(faces[0].img.view),
+  image: shareImage,
   ...(item.controlNumber ? { identifier: item.controlNumber } : {}),
   ...(span
     ? {
@@ -373,9 +382,16 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
 <RootLayout
   title={`${item.title} | ${c.title} | Austin Allison`}
   description={item.description ?? `${item.format ?? 'Photograph'} in ${c.title}.`}
-  image={faces[0].img.view}
+  image={shareImage}
   prose={false}
 >
+  {iiifOrigin && <link slot="head" rel="preconnect" href={iiifOrigin} />}
+  <link
+    slot="head"
+    rel="alternate"
+    type='application/ld+json;profile="http://iiif.io/api/presentation/3/context.json"'
+    href={abs(manifestUrl)}
+  />
   <script type="application/ld+json" is:inline set:html={structured} />
   <script type="application/json" id="item-data" is:inline set:html={pageData} />
   <noscript>
@@ -714,7 +730,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
             </div>
             <div class={ROW}>
               <dt class={DT}>IIIF manifest</dt>
-              <dd class="m-0 min-w-0 flex-1"><a href={manifestUrl} class={LINK}>manifest.json</a></dd>
+              <dd class="m-0 min-w-0 flex-1"><a href={manifestUrl} class={LINK}>manifest.json</a> · <a href={miradorUrl} class={LINK} target="_blank" rel="noopener">Open in Mirador</a></dd>
             </div>
           </dl>
 
@@ -1575,7 +1591,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     transition: opacity 0.2s ease;
     pointer-events: none;
   }
-  .ex.is-sharpening .ex-load {
+  .ex.is-sharpening .ex-load,
+  .ex.is-tiling .ex-load {
     opacity: 1;
     transition-delay: 0.45s;
   }
@@ -1618,16 +1635,26 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
   }
   /* Full-resolution tiles, laid over the photograph in the frame's own
      percentages - so pan, zoom, rotation, the regions and the overview all
-     carry them without knowing they exist. Each tile's box is set inline. */
+     carry them without knowing they exist. Each tile's box is set inline.
+
+     The tiles are CREATED BY SCRIPT, so they never get this component's
+     scoping attribute and a plain `.ex-tiles img` rule would never reach
+     them. It didn't: the tiles fell back to the global img reset
+     (display: block, static position), stacked into a column down the
+     left edge, and the zoom past the detail file showed the detail file
+     stretched. Hence :global(), and position is also set inline. */
   .ex-tiles {
     position: absolute;
     inset: 0;
     overflow: hidden;
     pointer-events: none;
   }
-  .ex-tiles img {
+  .ex-tiles :global(img) {
     position: absolute;
+    display: block;
     max-width: none;
+    user-select: none;
+    -webkit-user-drag: none;
   }
   .ex-marks {
     position: absolute;
@@ -2140,6 +2167,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     alt: string;
     view: string;
     big: string;
+    /** Width of `big`, the detail file Examine opens with. */
+    bigW: number;
     study: string;
     studyW: number;
     /** Full pixel size of the scan. */
@@ -2547,20 +2576,23 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       sharpen(studySrc, 2);
     };
 
-    /* Full resolution: tiles past the study file --------------------- *
-     * The study file stops at 5000px on the long edge, because decoding a
-     * whole 8000px scan would crash a phone. Past it, only the part of the
-     * photograph on screen is fetched, as 512px IIIF tiles from R2, at the
-     * coarsest level that is still as sharp as the screen.
+    /* Full resolution: tiles past the detail file -------------------- *
+     * A whole 8000px scan decoded at once would crash a phone. So Examine
+     * opens on the 2600px detail file, and past what that can show, only
+     * the part of the photograph on screen is fetched, as 512px IIIF tiles
+     * from R2, at the coarsest level that is still as sharp as the screen.
+     * (The 5000px study file is only used for a face without tiles.)
      *
      * The tiles sit inside the frame in its own percentages, so everything
      * that moves the frame moves them. Nothing here touches the gestures.
      *
      * Same rule as the files: show at once, sharpen when ready. Tiles are
      * fetched only when the view settles (commit), a coarser level stays
-     * underneath until the finer one has arrived, and the study file stays
+     * underneath until the finer one has arrived, and the detail file stays
      * under all of it - so a seam or a slow tile shows the photograph a
-     * little softer, never a hole.
+     * little softer, never a hole. "Loading detail" shows while tiles are
+     * on their way (after the same short delay, so a quick load never
+     * flashes it).
      * ---------------------------------------------------------------- */
     const tilesEl = $('#ex-tiles', dialog);
     type TileInfo = { width: number; height: number; tw: number; th: number; scales: number[] };
@@ -2592,8 +2624,11 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     /** More than this on screen and the next coarser level is used instead. */
     const MAX_TILES = 80;
 
+    const tiling = (on: boolean) => dialog.classList.toggle('is-tiling', on);
+
     const clearTiles = () => {
       tileToken++;
+      tiling(false);
       tileEls.forEach((el) => el.remove());
       tileEls.clear();
     };
@@ -2603,17 +2638,22 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       if (!tilesEl || !f?.iiif || !dialog.open) return;
 
       // Device pixels across the whole photograph at this zoom. Until that
-      // outruns the study file there is nothing for tiles to add.
+      // outruns the detail file there is nothing for tiles to add.
       const dpr = window.devicePixelRatio || 1;
       const needed = fitW * k * dpr;
-      if (needed <= (f.studyW || f.w) * 1.05) {
+      if (needed <= (f.bigW || f.w) * 1.05) {
         if (tileEls.size) clearTiles();
+        else tiling(false);
         return;
       }
 
       const token = ++tileToken;
       const info = await tileInfo(f.iiif);
-      if (!info || token !== tileToken || face !== f.key || !dialog.open) return;
+      if (token !== tileToken || face !== f.key || !dialog.open) return;
+      if (!info) {
+        tiling(false);
+        return;
+      }
       const { width: W, height: H, tw, th, scales } = info;
 
       // What is on screen, in scan pixels. viewBox() already accounts for
@@ -2678,7 +2718,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
         el.decoding = 'async';
         // Finer levels above coarser ones.
         el.style.cssText =
-          `left:${t.left}%;top:${t.top}%;width:${t.w}%;height:${t.h}%;z-index:${Math.round(1000 / t.s)}`;
+          `position:absolute;left:${t.left}%;top:${t.top}%;width:${t.w}%;height:${t.h}%;` +
+          `max-width:none;z-index:${Math.round(1000 / t.s)}`;
         loads.push(
           new Promise<void>((done) => {
             el.onload = () => done();
@@ -2693,8 +2734,10 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
         tilesEl.appendChild(el);
         tileEls.set(t.key, el);
       }
+      if (loads.length) tiling(true);
       await Promise.all(loads);
       if (token !== tileToken) return;
+      tiling(false);
 
       // Everything wanted has arrived: retire the rest, coarser levels included.
       tileEls.forEach((el, key) => {
@@ -2990,7 +3033,10 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       clearTiles();
       shownRank = 0;
       upgraded = false;
-      studySrc = f.study;
+      // With tiles, the 5000px study file is skipped: the tiles cover that
+      // range and fetch only what is on screen, where the study file cost a
+      // phone its whole decode (~60-100 MB) for any zoom past 1.5x.
+      studySrc = f.iiif ? '' : f.study;
       // With tiles the ceiling is the scan itself; without, the study file.
       bestW = f.iiif ? f.w : f.studyW || f.w;
       setRot(r);

@@ -49,6 +49,28 @@
 //
 // The surname crosswalk (5) is still one row per surname; at several hundred
 // surnames it will want the same treatment.
+//
+// 2026-09-27 PASS. Order is now: front (title, lede, finder beside THE
+// TABLE; then the people) -> summary -> holdings -> surnames -> chronology
+// -> colophon.
+//   - THE TABLE: a handful of real prints laid on the desk the way a box of
+//     family photographs comes out onto a table - true proportions, a little
+//     askew, overlapping, earliest at top left. Point at one and it
+//     straightens and lifts, and its label reads underneath; choose it and it
+//     grows into the plate on its record (shared transition name). They are
+//     dealt onto the table once on arrival; nothing moves under reduced
+//     motion. Positions are seeded from the slugs, so the table is the same
+//     on every build until the picks change. Sized in container units, so
+//     the layout is the same at every width, only smaller.
+//   - THE PEOPLE run along a rule broken at each birth decade, so the order
+//     by birth is visible as generations. Fewer, larger faces.
+//   - VOCABULARY: every "photograph" on the page comes from NOUN, which turns
+//     to "item" the moment anything other than a photograph is described. An
+//     item's kind is read from an optional `kind` field (default photograph).
+//   - DECADES sit under the chart as its own axis, one column per decade,
+//     when there are few enough to fit; hovering one lights its span.
+//   - The surname crosswalk moved above the chronology, so the page ends on
+//     the decades and their photographs, then a short colophon.
 
 import RootLayout from '../../layouts/RootLayout.astro';
 import {
@@ -78,6 +100,31 @@ const plural = (n: number, one: string, many = `${one}s`) =>
 
 const H2 =
   'sec-h border-b border-haze pb-1.5 mb-4';
+
+/* ---------------------------------------------------------------- *
+ * Vocabulary. While everything described is a photograph the page says
+ * "photograph"; the first journal, letter or artifact turns every count on
+ * the page to "item" and the summary breaks the total down by kind.
+ * An item's kind is an OPTIONAL `kind` field on the record, read loosely
+ * here so nothing breaks before types.ts has it. To add it there:
+ *   kind?: 'photograph' | 'journal' | 'letter' | 'artifact';
+ * ---------------------------------------------------------------- */
+const kindOf = (i: object) =>
+  ((i as { kind?: string }).kind ?? 'photograph').trim().toLowerCase() || 'photograph';
+const kinds = new Map<string, number>();
+for (const i of ALL_ITEMS) kinds.set(kindOf(i), (kinds.get(kindOf(i)) ?? 0) + 1);
+const ONLY_PHOTOS = [...kinds.keys()].every((k) => k === 'photograph');
+const NOUN = ONLY_PHOTOS ? 'photograph' : 'item';
+const NOUNS = `${NOUN}s`;
+const Noun = NOUN[0].toUpperCase() + NOUN.slice(1);
+const kindBreakdown = [...kinds.entries()]
+  .sort((a, b) => b[1] - a[1])
+  .map(([k, n]) => plural(n, k))
+  .join(', ');
+
+/* The lede. Edit freely; it is the sentence most people read. */
+const LEDE =
+  'Family photographs, and the papers that came down with them, described the way an archive describes its holdings: what each object is, who is in it, and how we know. Most are in my keeping; the rest I have been allowed to copy.';
 
 /* ---------------------------------------------------------------- *
  * Images. Rendered once per item; the item pages ask getImage() for the
@@ -153,7 +200,7 @@ const xwRows = [...surnames].sort((a, b) => b.items - a.items || a.surname.local
 // established headings and then the most photographs, and laid out in
 // order of birth so the wall reads as the generations. People with no
 // birth year follow, in order of their earliest photograph.
-const WALL_MAX = 32;
+const WALL_MAX = 21;
 const FIRM: Record<string, number> = { certain: 0, probable: 1 };
 const faceArea = (f: Face) => f.region.w * f.region.h;
 const bestFace = new Map<string, Face>();
@@ -181,7 +228,7 @@ const wall = PEOPLE_WITH_ITEMS.filter(({ person }) => bestFace.has(person.id))
       first: froms.length ? Math.min(...froms) : Infinity,
       n,
       name: naturalName(p),
-      caption: `${naturalName(p)}${dates ? `, ${dates}` : ''} \u00b7 ${plural(n, 'photograph')}`,
+      caption: `${naturalName(p)}${dates ? `, ${dates}` : ''} \u00b7 ${plural(n, NOUN)}`,
     };
   })
   .sort((a, b) => Number(b.p.status === 'established') - Number(a.p.status === 'established') || b.n - a.n)
@@ -192,7 +239,15 @@ const wall = PEOPLE_WITH_ITEMS.filter(({ person }) => bestFace.has(person.id))
     if (b.born !== undefined) return 1;
     return a.first - b.first || a.name.localeCompare(b.name);
   });
-const WALL_NOTE = 'The people in the photographs, in order of birth';
+// Each face knows its birth decade and whether it opens a new one: the wall
+// is drawn as a rule broken at every decade, so the order reads as the
+// generations it is.
+const decadeOfBirth = (born?: number) => (born !== undefined ? `b. ${Math.floor(born / 10) * 10}s` : 'Birth unknown');
+const wallRuns = wall.map((w, n) => {
+  const decade = decadeOfBirth(w.born);
+  return { ...w, decade, opens: n === 0 || decadeOfBirth(wall[n - 1].born) !== decade };
+});
+const WALL_NOTE = `The people in the ${NOUNS}, in order of birth`;
 const crossing = surnames.filter((r) => r.perCollection.filter(Boolean).length > 1).length;
 
 /* ---------------------------------------------------------------- *
@@ -215,6 +270,71 @@ const cards = COLLECTIONS.map((c) => {
     strip: keys.slice(1, 4).map((item) => ({ item, r: renderOf(item.slug) })),
   };
 });
+
+/* ---------------------------------------------------------------- *
+ * THE TABLE. A handful of prints, spread evenly across the dates, laid out
+ * on the desk in a loose grid - earliest at top left - each nudged and
+ * turned a little by a generator seeded from its slug, so the spread is
+ * the same on every build. Every size and position is a percentage of the
+ * table, and the table keeps one shape, so a phone sees the same spread
+ * smaller rather than a different one.
+ * ---------------------------------------------------------------- */
+const TABLE_N = 11;
+const TABLE_AR = 1.18; // the table's width over its height
+const keySlugs = new Set([...keysOf.values()].flat().map((i) => i.slug));
+const byDate = [...ALL_ITEMS].sort(
+  (a, b) => (spanOf(a)?.from ?? Infinity) - (spanOf(b)?.from ?? Infinity) || a.slug.localeCompare(b.slug)
+);
+const tablePicks =
+  byDate.length <= TABLE_N
+    ? byDate
+    : Array.from({ length: TABLE_N }, (_, n) => byDate[Math.round((n * (byDate.length - 1)) / (TABLE_N - 1))]);
+const seeded = (text: string) => {
+  let h = 2166136261;
+  for (let k = 0; k < text.length; k++) h = Math.imul(h ^ text.charCodeAt(k), 16777619);
+  return () => {
+    h = Math.imul(h ^ (h >>> 15), h | 1);
+    h ^= h + Math.imul(h ^ (h >>> 7), h | 61);
+    return ((h ^ (h >>> 14)) >>> 0) / 4294967296;
+  };
+};
+const tableCols = Math.max(2, Math.ceil(Math.sqrt(tablePicks.length * TABLE_AR)));
+const tableRows = Math.max(1, Math.ceil(tablePicks.length / tableCols));
+const tableRenders = await Promise.all(
+  tablePicks.map((i) => plate(i.collection, i.recto.file, i.recto))
+);
+const table = tablePicks.map((i, n) => {
+  const rnd = seeded(i.slug);
+  const r = tableRenders[n];
+  const ar = r.width / r.height;
+  // A print's width in % of the table: mixed on purpose, and a wide print
+  // is wider rather than shorter, the way a group photograph is.
+  const w = Math.max(14, Math.min(33, (16 + rnd() * 8) * Math.sqrt(ar)));
+  const hPct = ((w / ar) * TABLE_AR); // its height in % of the table's height
+  const col = n % tableCols;
+  const row = Math.floor(n / tableCols);
+  // Alternate rows are staggered so the spread does not read as columns.
+  const stagger = row % 2 ? 0.35 : -0.1;
+  const cx = ((col + 0.5 + stagger) / tableCols) * 100 + (rnd() - 0.5) * (80 / tableCols);
+  const cy = ((row + 0.5) / tableRows) * 100 + (rnd() - 0.5) * (60 / tableRows);
+  const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+  const date = (i as unknown as { date?: { display?: string } }).date?.display;
+  return {
+    i,
+    r,
+    x: clamp(cx, w / 2 + 1, 100 - w / 2 - 1),
+    y: clamp(cy, hPct / 2 + 2, 100 - hPct / 2 - 2),
+    w,
+    rot: (rnd() - 0.5) * 14,
+    z: 1 + Math.floor(rnd() * tablePicks.length),
+    // The key prints already carry their transition name on the shelf
+    // below; a name may only appear once on a page.
+    morph: !keySlugs.has(i.slug),
+    label: [i.title, date].filter(Boolean).join(', '),
+  };
+});
+const dealOrder = table.map((_, n) => n).sort((a, b) => table[a].z - table[b].z);
+const TABLE_NOTE = `${plural(table.length, NOUN)} from the boxes, earliest at top left`;
 
 /* ---------------------------------------------------------------- *
  * 4. Chronology
@@ -294,6 +414,9 @@ const decades = axis
       return { from, est: Math.round(est), could, x: pct(from), w: pct(from + 10) - pct(from) };
     })
   : [];
+// Few enough decades to stand under the chart as its own axis, one column
+// each? Beyond this they wrap as a row of buttons, as before.
+const ALIGN_DECADES = decades.length >= 3 && decades.length <= 18;
 const ticks: { year: number; x: number; label: boolean; minor: boolean }[] = [];
 if (axis) {
   const step = axis.hi - axis.lo > 120 ? 20 : 10;
@@ -392,21 +515,86 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     </style>
   </noscript>
 
-  <div class="guide max-w-4xl mx-auto py-6 text-iron font-serif" data-guide>
+  <div class="guide max-w-4xl mx-auto py-6 text-iron font-serif" data-guide data-noun={NOUN}>
     <!-- 0. The front: title, people, finder -->
     <header class="front bleed">
-      <p class="front-eyebrow">Guide to the collections</p>
-      <h1 class="front-title">Collections</h1>
-      <p class="lede">
-        These are photographs that I have collected or have had access to
-        through the years, and most of them are in my possession.
-      </p>
+      <div class="front-top">
+        <div class="front-text">
+          <p class="front-eyebrow">Guide</p>
+          <h1 class="front-title">Collections</h1>
+          <p class="lede">{LEDE}</p>
+          <!-- 2. Finder -->
+          <div class="finder" data-finder>
+            <label for="finder-input" class="finder-label">Find a name, a {NOUN}, or a year</label>
+            <div class="finder-field">
+              <svg class="finder-icon" viewBox="0 0 20 20" aria-hidden="true">
+                <circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5" />
+                <path d="M12.6 12.6 17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              </svg>
+              <input
+                id="finder-input"
+                type="search"
+                role="combobox"
+                aria-expanded="false"
+                aria-controls="finder-list"
+                aria-autocomplete="list"
+                autocomplete="off"
+                spellcheck="false"
+                placeholder={placeholder}
+                data-finder-input
+              />
+            </div>
+            <ul id="finder-list" class="finder-list" role="listbox" aria-label="Matches" hidden data-finder-list></ul>
+            <p class="sr-only" aria-live="polite" data-finder-status></p>
+          </div>
+        </div>
+
+        {table.length > 0 && (
+          <figure class="table-fig">
+            <div class="spread" style={`--table-ar:${TABLE_AR}`} data-table>
+              {table.map((t, n) => (
+                <a
+                  href={t.i.href}
+                  class="spread-print"
+                  style={`--x:${t.x.toFixed(2)}%;--y:${t.y.toFixed(2)}%;--w:${t.w.toFixed(2)};--r:${t.rot.toFixed(2)}deg;--z:${t.z};--i:${dealOrder.indexOf(n)}`}
+                  aria-label={t.label}
+                  data-label={t.label}
+                >
+                  {t.morph ? (
+                    <img
+                      src={t.r.index}
+                      srcset={t.r.indexSrcset}
+                      width={t.r.width}
+                      height={t.r.height}
+                      alt=""
+                      decoding="async"
+                      transition:name={`plate-${t.i.slug}`}
+                    />
+                  ) : (
+                    <img
+                      src={t.r.index}
+                      srcset={t.r.indexSrcset}
+                      width={t.r.width}
+                      height={t.r.height}
+                      alt=""
+                      decoding="async"
+                    />
+                  )}
+                </a>
+              ))}
+            </div>
+            <figcaption class="table-cap">
+              <span class="table-read" aria-hidden="true" data-table-read>{TABLE_NOTE}</span>
+            </figcaption>
+          </figure>
+        )}
+      </div>
 
       {wall.length > 0 && (
         <figure class="wall-fig">
           <ol class="wall" aria-label={`${WALL_NOTE}.`}>
-            {wall.map((w) => (
-              <li>
+            {wallRuns.map((w) => (
+              <li class:list={['wall-cell', { 'is-first': w.opens }]} data-decade={w.opens ? w.decade : undefined}>
                 <a
                   href={personHref(w.p.id)}
                   class="wall-face"
@@ -435,38 +623,16 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
         </figure>
       )}
 
-      <!-- 2. Finder -->
-      <div class="finder" data-finder>
-        <label for="finder-input" class="finder-label">Find a name, a photograph, or a year</label>
-        <div class="finder-field">
-          <svg class="finder-icon" viewBox="0 0 20 20" aria-hidden="true">
-            <circle cx="8.5" cy="8.5" r="5.5" fill="none" stroke="currentColor" stroke-width="1.5" />
-            <path d="M12.6 12.6 17 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-          </svg>
-          <input
-            id="finder-input"
-            type="search"
-            role="combobox"
-            aria-expanded="false"
-            aria-controls="finder-list"
-            aria-autocomplete="list"
-            autocomplete="off"
-            spellcheck="false"
-            placeholder={placeholder}
-            data-finder-input
-          />
-        </div>
-        <ul id="finder-list" class="finder-list" role="listbox" aria-label="Matches" hidden data-finder-list></ul>
-        <p class="sr-only" aria-live="polite" data-finder-status></p>
-      </div>
     </header>
 
     <!-- 1. Descriptive summary -->
     <dl class="ledger">
       <div>
-        <dt>Photographs</dt>
+        <dt>{ONLY_PHOTOS ? 'Photographs' : 'Items'}</dt>
         <dd class="fig">{ALL_ITEMS.length.toLocaleString('en-US')}</dd>
-        <dd class="sub">in {plural(COLLECTIONS.length, 'collection')}</dd>
+        <dd class="sub">
+          {ONLY_PHOTOS ? '' : `${kindBreakdown}; `}in {plural(COLLECTIONS.length, 'collection')}
+        </dd>
       </div>
       <div>
         <dt>Dates</dt>
@@ -497,7 +663,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     <section aria-labelledby="holdings-h" class="mt-12">
       <h2 id="holdings-h" class={H2}>Holdings</h2>
       <p class="note">
-        Each collection is a group of photographs that came to me together,
+        Each collection is a group of {NOUNS} that came to me together,
         so a collection is not the same thing as a family: one box can hold
         several families, and one family can turn up in several boxes. The
         people in them are gathered across every collection in the <a
@@ -517,7 +683,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
               </div>
 
               <div class="entry-figures">
-                <p class="fig-line"><b>{count.toLocaleString('en-US')}</b> {count === 1 ? 'photograph' : 'photographs'}</p>
+                <p class="fig-line"><b>{count.toLocaleString('en-US')}</b> {count === 1 ? NOUN : NOUNS}</p>
                 {e && <p class="fig-line"><b>{years(e.from, e.to)}</b></p>}
                 {e?.bulk && <p class="fig-line fig-quiet">bulk <b>{years(e.bulk.from, e.bulk.to)}</b></p>}
                 {e && axis && (
@@ -579,118 +745,14 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       </div>
     </section>
 
-    <!-- 4. Chronology -->
-    {axis && spreads.length > 0 && (
-      <section aria-labelledby="chron-h" class="bleed chron-band" data-chron>
-        <h2 id="chron-h" class={H2}>Chronology</h2>
-        <p class="note">
-          How many photographs were made in each year, as far as the dates
-          allow. A photograph dated only to a span of years is spread evenly
-          across it, so a loosely dated print adds a little to many years
-          rather than all of itself to one. Choose a decade to see its
-          photographs.
-        </p>
-
-        <div class="facets" data-js-only>
-          {COLLECTIONS.length > 1 && (
-            <div class="facet-row" role="group" aria-label="Show photographs from a collection">
-              <span class="facet-label" aria-hidden="true">Collection</span>
-              <button type="button" class="facet" aria-pressed="true" data-facet="c" data-value="" data-label="All collections">All</button>
-              {COLLECTIONS.map((c, n) => (
-                <button type="button" class="facet" aria-pressed="false" data-facet="c" data-value={String(n)} data-slug={c.slug} data-label={c.title}>
-                  {c.title}
-                </button>
-              ))}
-            </div>
-          )}
-          {surnames.length > 0 && (
-            <div class="facet-row">
-              {/* A native select, not a row of buttons: it holds three
-                  surnames or three hundred in the same space, and it is
-                  already keyboard- and screen-reader-complete. */}
-              <label for="chron-surname" class="facet-label">Surname</label>
-              <select id="chron-surname" class="facet-select" data-surname>
-                <option value="">All surnames</option>
-                {surnames.map((r, n) => (
-                  <option value={String(n)} data-key={r.key}>{r.surname} ({r.items})</option>
-                ))}
-              </select>
-            </div>
-          )}
-        </div>
-
-        <div class="hist" data-hist>
-          <div class="hist-plot">
-            <div class="rules" aria-hidden="true">
-              {ticks.map((t) => (
-                <span class:list={['tick', { minor: t.minor }]} style={`--x:${t.x.toFixed(3)}%`}>
-                  {t.label && <b>{t.year}</b>}
-                </span>
-              ))}
-            </div>
-            <svg
-              class="hist-svg"
-              viewBox={`0 0 ${YEARS} ${H}`}
-              preserveAspectRatio="none"
-              role="img"
-              aria-label={`Photographs by year, ${axis.lo} to ${axis.hi - 1}. The decade list below gives the figures.`}
-              data-hist-svg
-            >
-              <path class="h-firm" d={firmPath} data-h-firm />
-              <path class="h-soft" d={softPath} data-h-soft />
-              <path class="h-lit" d="" data-h-lit />
-            </svg>
-            <span class="hist-cursor" aria-hidden="true" hidden data-hist-cursor></span>
-          </div>
-          <p class="hist-readout" aria-hidden="true" data-hist-readout>&nbsp;</p>
-        </div>
-
-        <div class="legend">
-          <span><i class="swatch firm"></i>Certain or probable date</span>
-          <span><i class="swatch soft"></i>Possible date</span>
-          {undated > 0 && <span>{plural(undated, 'photograph')} undated, not counted</span>}
-        </div>
-
-        {/* The decades are the way in, for every kind of reader: real buttons
-            with real figures, so the chart itself can stay a picture. */}
-        <div class="decades" role="group" aria-label="Browse by decade">
-          {decades.map((d) => (
-            <button
-              type="button"
-              class="decade"
-              aria-pressed="false"
-              aria-controls="decade-panel"
-              data-decade={d.from}
-              disabled={d.could === 0}
-            >
-              <span class="decade-y">{d.from}s</span>
-              <span class="decade-n" data-decade-n>{d.could > 0 ? `~${d.est}` : '\u2013'}</span>
-            </button>
-          ))}
-        </div>
-
-        <div id="decade-panel" class="panel" hidden data-panel>
-          <div class="panel-head">
-            <h3 class="panel-title" data-panel-title></h3>
-            <button type="button" class="panel-close" data-panel-close aria-label="Close the decade">&#10005;</button>
-          </div>
-          <ul class="panel-grid" data-panel-grid></ul>
-          <p class="panel-note" data-panel-note hidden></p>
-          <button type="button" class="panel-more" data-panel-more hidden>Show more</button>
-        </div>
-
-        <p class="sr-only" aria-live="polite" data-chron-status></p>
-      </section>
-    )}
-
     <!-- 5. Surnames -->
     {surnames.length > 0 && COLLECTIONS.length > 0 && (
       <section aria-labelledby="surnames-h" class="mt-14">
         <h2 id="surnames-h" class={H2}>Surnames across the collections</h2>
         <p class="note">
-          Collections follow where the photographs came from, so families run
-          across them. Figures are photographs; the most photographed
-          surnames come first.
+          Collections follow where the {NOUNS} came from, so families run
+          across them. Figures are {NOUNS}; the surnames that turn up most
+          come first.
         </p>
         <div class="xwalk-wrap">
           <table class="xwalk" data-xw>
@@ -738,6 +800,128 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
         )}
       </section>
     )}
+    <!-- 4. Chronology -->
+    {axis && spreads.length > 0 && (
+      <section aria-labelledby="chron-h" class="bleed chron-band" data-chron>
+        <h2 id="chron-h" class={H2}>Chronology</h2>
+        <p class="note">
+          How many {NOUNS} were made in each year, as far as the dates
+          allow. One dated only to a span of years is spread evenly across
+          it, so a loosely dated print adds a little to many years rather
+          than all of itself to one. Choose a decade to see what it holds.
+        </p>
+
+        <div class="facets" data-js-only>
+          {COLLECTIONS.length > 1 && (
+            <div class="facet-row" role="group" aria-label={`Show ${NOUNS} from a collection`}>
+              <span class="facet-label" aria-hidden="true">Collection</span>
+              <button type="button" class="facet" aria-pressed="true" data-facet="c" data-value="" data-label="All collections">All</button>
+              {COLLECTIONS.map((c, n) => (
+                <button type="button" class="facet" aria-pressed="false" data-facet="c" data-value={String(n)} data-slug={c.slug} data-label={c.title}>
+                  {c.title}
+                </button>
+              ))}
+            </div>
+          )}
+          {surnames.length > 0 && (
+            <div class="facet-row">
+              {/* A native select, not a row of buttons: it holds three
+                  surnames or three hundred in the same space, and it is
+                  already keyboard- and screen-reader-complete. */}
+              <label for="chron-surname" class="facet-label">Surname</label>
+              <select id="chron-surname" class="facet-select" data-surname>
+                <option value="">All surnames</option>
+                {surnames.map((r, n) => (
+                  <option value={String(n)} data-key={r.key}>{r.surname} ({r.items})</option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+
+        <div class:list={['hist', { 'is-aligned': ALIGN_DECADES }]} data-hist>
+          <div class="hist-plot">
+            <div class="rules" aria-hidden="true">
+              {ticks.map((t) => (
+                <span class:list={['tick', { minor: t.minor }]} style={`--x:${t.x.toFixed(3)}%`}>
+                  {t.label && <b>{t.year}</b>}
+                </span>
+              ))}
+            </div>
+            <svg
+              class="hist-svg"
+              viewBox={`0 0 ${YEARS} ${H}`}
+              preserveAspectRatio="none"
+              role="img"
+              aria-label={`${Noun}s by year, ${axis.lo} to ${axis.hi - 1}. The decade list below gives the figures.`}
+              data-hist-svg
+            >
+              <path class="h-firm" d={firmPath} data-h-firm />
+              <path class="h-soft" d={softPath} data-h-soft />
+              <path class="h-lit" d="" data-h-lit />
+            </svg>
+            <span class="hist-sel" aria-hidden="true" hidden data-hist-sel></span>
+            <span class="hist-cursor" aria-hidden="true" hidden data-hist-cursor></span>
+          </div>
+
+          {/* The decades are the way in, for every kind of reader: real
+              buttons with real figures, so the chart itself can stay a
+              picture. When they fit, they ARE the chart's axis: one column
+              under each decade of bars. */}
+          <div
+            class:list={['decades', { 'decades--axis': ALIGN_DECADES }]}
+            style={`--n:${decades.length}`}
+            role="group"
+            aria-label="Browse by decade"
+          >
+            {decades.map((d) => (
+              <button
+                type="button"
+                class="decade"
+                aria-pressed="false"
+                aria-controls="decade-panel"
+                data-decade={d.from}
+                disabled={d.could === 0}
+              >
+                <span class="decade-y">{d.from}s</span>
+                <span class="decade-n" data-decade-n>{d.could > 0 ? `~${d.est}` : '\u2013'}</span>
+              </button>
+            ))}
+          </div>
+          <p class="hist-readout" aria-hidden="true" data-hist-readout>&nbsp;</p>
+        </div>
+
+        <div class="legend">
+          <span><i class="swatch firm"></i>Certain or probable date</span>
+          <span><i class="swatch soft"></i>Possible date</span>
+          {undated > 0 && <span>{plural(undated, NOUN)} undated, not counted</span>}
+        </div>
+
+        <div id="decade-panel" class="panel" hidden data-panel>
+          <div class="panel-head">
+            <h3 class="panel-title" data-panel-title></h3>
+            <button type="button" class="panel-close" data-panel-close aria-label="Close the decade">&#10005;</button>
+          </div>
+          <ul class="panel-grid" data-panel-grid></ul>
+          <p class="panel-note" data-panel-note hidden></p>
+          <button type="button" class="panel-more" data-panel-more hidden>Show more</button>
+        </div>
+
+        <p class="sr-only" aria-live="polite" data-chron-status></p>
+      </section>
+    )}
+
+
+    <!-- Colophon -->
+    <div class="colophon">
+      <p>
+        Every {NOUN} here is published as IIIF, so its images open at full
+        resolution in any IIIF viewer, such as Mirador or the Universal Viewer.
+        Names follow the <a href="/collections/names" class="text-caprock hover:underline">name
+        authority file</a>, and a date is given as a range wherever the evidence
+        allows nothing closer.
+      </p>
+    </div>
   </div>
 </RootLayout>
 
@@ -764,7 +948,6 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   .bleed {
     border-image: conic-gradient(var(--c-desk) 0 0) fill 0 / / 0 100vmax;
   }
-
   /* 0. The front ---------------------------------------------------- */
   .front {
     padding: 2.5rem 0 2.5rem;
@@ -793,26 +976,137 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     margin-top: 2rem;
   }
 
+  /* THE FRONT, in two columns on a wide screen: the words and the finder
+     at left, the spread of prints at right. */
+  .front-top {
+    display: grid;
+    gap: 2rem;
+  }
+  @media (min-width: 48rem) {
+    .front-top {
+      grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
+      align-items: center;
+      gap: 2.5rem;
+    }
+  }
+  .front-text .finder {
+    margin-top: 1.75rem;
+  }
+
+  /* THE SPREAD. The table keeps one shape; every print is placed and sized
+     in percentages of it, centred on its point and turned a few degrees.
+     Pointing at one straightens it, lifts it to the top of the pile and
+     reads its label underneath. */
+  .table-fig {
+    margin: 0;
+  }
+  .spread {
+    position: relative;
+    aspect-ratio: var(--table-ar, 1.18);
+    margin: 0.5rem 0.25rem 0;
+  }
+  .spread-print {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    z-index: var(--z);
+    width: calc(var(--w) * 1%);
+    transform: translate(-50%, -50%) rotate(var(--r));
+    box-shadow:
+      0 1px 1px rgb(59 56 51 / 0.2),
+      0 10px 18px -10px rgb(59 56 51 / 0.55);
+    transition:
+      transform 0.3s ease,
+      box-shadow 0.3s ease;
+    animation: deal 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+    animation-delay: calc(var(--i) * 75ms + 120ms);
+  }
+  .spread-print img {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+  }
+  .spread-print:hover,
+  .spread-print:focus-visible {
+    z-index: 30;
+    transform: translate(-50%, -50%) rotate(0deg) scale(1.1);
+    box-shadow:
+      0 2px 3px rgb(59 56 51 / 0.2),
+      0 24px 34px -16px rgb(59 56 51 / 0.6);
+  }
+  .spread-print:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 3px;
+  }
+  /* Dealt onto the table: each print arrives from a little above, turned
+     further, and settles. Transform and opacity only. */
+  @keyframes deal {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -50%) translateY(-2.5rem) rotate(calc(var(--r) * 2.5)) scale(1.05);
+    }
+  }
+  .table-cap {
+    min-height: 1.5em;
+    margin-top: 0.75rem;
+    color: var(--c-sage);
+    font: 0.7rem/1.5 var(--mono);
+    letter-spacing: 0.06em;
+  }
+  .table-read.is-reading {
+    color: var(--c-iron);
+  }
+
   /* The wall of faces: small mounted crops in a grid, like cartes de
      visite laid out on the desk. Point at one and the rest step back. */
   .wall-fig {
     margin: 2.25rem 0 0;
   }
+  /* THE RUN OF BIRTHS. One rule under the whole wall, broken by a tick
+     and a label wherever a new birth decade begins, so the order the faces
+     are in - by birth - reads as generations rather than as a grid. The
+     cells carry no horizontal gap, so the rule runs unbroken across them. */
   .wall {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(4.4rem, 1fr));
-    gap: 0.7rem;
+    display: flex;
+    flex-wrap: wrap;
+    row-gap: 1.1rem;
     margin: 0;
     padding: 0;
     list-style: none;
   }
+  .wall-cell {
+    position: relative;
+    width: 7.25rem;
+    padding: 1.45rem 0.8rem 0 0;
+    border-top: 1px solid var(--c-haze);
+  }
+  .wall-cell.is-first::before {
+    content: attr(data-decade);
+    position: absolute;
+    top: 0.35rem;
+    left: 0;
+    color: var(--c-sage);
+    font: 0.66rem/1 var(--mono);
+    letter-spacing: 0.06em;
+    white-space: nowrap;
+  }
+  .wall-cell.is-first::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: 0;
+    width: 1px;
+    height: 9px;
+    background: var(--c-iron);
+  }
   @media (max-width: 40rem) {
-    .wall {
-      grid-template-columns: repeat(auto-fill, minmax(3.4rem, 1fr));
-      gap: 0.5rem;
+    .wall-cell {
+      width: 5.1rem;
+      padding: 1.35rem 0.55rem 0 0;
     }
-    /* A phone gets four or five rows, not seven. */
-    .wall li:nth-child(n + 21) {
+    /* A phone gets five or so rows, not seven. */
+    .wall-cell:nth-child(n + 16) {
       display: none;
     }
   }
@@ -871,6 +1165,22 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     text-decoration: underline;
   }
 
+  /* The colophon that closes the page. */
+  .colophon {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--c-haze);
+  }
+  .colophon p {
+    max-width: 40rem;
+    margin: 0;
+    font-size: 0.95rem;
+    font-style: italic;
+    line-height: 1.55;
+    opacity: 0.78;
+    text-wrap: pretty;
+  }
+
   /* The chronology's band. */
   .chron-band {
     margin-top: 3.5rem;
@@ -878,8 +1188,14 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .wall-face {
+    .wall-face,
+    .spread-print {
       transition: none;
+      animation: none;
+    }
+    .spread-print:hover,
+    .spread-print:focus-visible {
+      transform: translate(-50%, -50%) rotate(0deg);
     }
     .wall-face:hover,
     .wall-face:focus-visible {
@@ -1417,6 +1733,17 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     border-left: 1px solid rgb(59 56 51 / 0.45);
     pointer-events: none;
   }
+  /* The open decade, held on the chart while its panel is open. */
+  .hist-sel {
+    position: absolute;
+    top: 0;
+    bottom: 1.5rem;
+    left: var(--x);
+    width: var(--w);
+    background: rgb(156 91 63 / 0.1);
+    border-top: 2px solid var(--c-caprock);
+    pointer-events: none;
+  }
   .hist-readout {
     min-height: 1.4em;
     margin: 0.35rem 0 0;
@@ -1493,6 +1820,48 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     font-size: 0.66rem;
     letter-spacing: 0.04em;
     opacity: 0.75;
+  }
+
+  /* THE DECADES AS THE AXIS. On a wide screen, when they fit, one column
+     per decade directly under its bars; the tick labels step aside, since
+     the columns now name the years. The axis is equal decades from a
+     round year, so equal columns line up with the bars exactly. */
+  @media (min-width: 48rem) {
+    .decades--axis {
+      display: grid;
+      grid-template-columns: repeat(var(--n), minmax(0, 1fr));
+      gap: 0;
+      margin-top: 0;
+    }
+    .decades--axis .decade {
+      min-width: 0;
+      align-items: center;
+      padding: 0.45rem 0.15rem 0.5rem;
+      border: 0;
+      border-left: 1px solid var(--c-haze);
+      text-align: center;
+    }
+    .decades--axis .decade:last-child {
+      border-right: 1px solid var(--c-haze);
+    }
+    .decades--axis .decade:hover:not(:disabled):not([aria-pressed='true']) {
+      background: rgb(156 91 63 / 0.08);
+    }
+    .decades--axis .decade-y {
+      font-size: 0.92rem;
+    }
+    .hist.is-aligned .hist-plot {
+      height: 9.5rem;
+      padding-bottom: 0;
+    }
+    .hist.is-aligned .tick,
+    .hist.is-aligned .hist-cursor,
+    .hist.is-aligned .hist-sel {
+      bottom: 0;
+    }
+    .hist.is-aligned .tick b {
+      display: none;
+    }
   }
 
   .panel {
@@ -1716,6 +2085,9 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   const count = (n: number, one: string, many = `${one}s`) =>
     `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
 
+  // "photograph" until anything else is described; set by the page.
+  let NOUN = 'photograph';
+
   /* ---------------------------------------------------------------- *
    * PAGEFIND. Loaded on first use, never on page load. The index only
    * exists after `astro build && pagefind --site dist`, so in `astro dev`
@@ -1783,6 +2155,12 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     const lit = hist.querySelector<SVGPathElement>('[data-h-lit]')!;
     const cursor = hist.querySelector<HTMLElement>('[data-hist-cursor]')!;
     const readout = hist.querySelector<HTMLElement>('[data-hist-readout]')!;
+    const sel = hist.querySelector<HTMLElement>('[data-hist-sel]');
+    // A decade's span on the chart, as the --x / --w the overlays read.
+    const spanStyle = (node: HTMLElement, from: number) => {
+      node.style.setProperty('--x', `${((from - C.lo) / C.n) * 100}%`);
+      node.style.setProperty('--w', `${(Math.min(10, C.n - (from - C.lo)) / C.n) * 100}%`);
+    };
     const status = root.querySelector<HTMLElement>('[data-chron-status]');
     const collBtns = [...root.querySelectorAll<HTMLButtonElement>('[data-facet="c"]')];
     const surSel = root.querySelector<HTMLSelectElement>('[data-surname]');
@@ -1859,7 +2237,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
         b.setAttribute(
           'aria-label',
           could
-            ? `${b.dataset.decade}s: about ${Math.round(est)} made, ${count(could, 'photograph')} could date from it`
+            ? `${b.dataset.decade}s: about ${Math.round(est)} made, ${count(could, NOUN)} could date from it`
             : `${b.dataset.decade}s: none`
         );
       });
@@ -1877,7 +2255,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       cursor.style.setProperty('--x', `${(k / C.n) * 100}%`);
       cursor.style.setProperty('--w', `${(1 / C.n) * 100}%`);
       cursor.hidden = false;
-      readout.textContent = `${C.lo + k}: ${about(W[k])} made; ${count(COV[k], 'photograph')} could date from it`;
+      readout.textContent = `${C.lo + k}: ${about(W[k])} made; ${count(COV[k], NOUN)} could date from it`;
     });
     plot.addEventListener('pointerleave', () => {
       cursor.hidden = true;
@@ -1926,6 +2304,10 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       const mine = ++seq;
       openAt = from;
       decadeBtns.forEach((b) => b.setAttribute('aria-pressed', String(Number(b.dataset.decade) === from)));
+      if (sel) {
+        spanStyle(sel, from);
+        sel.hidden = false;
+      }
       panel.hidden = false;
       pGrid.replaceChildren();
       pNote.hidden = true;
@@ -1936,7 +2318,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       if (mine !== seq) return;
       if (!pf) {
         pNote.textContent =
-          'The photograph index is made when the site is built, so the decades open on the published site, not in development.';
+          'The search index is made when the site is built, so the decades open on the published site, not in development.';
         pNote.hidden = false;
         return;
       }
@@ -1947,8 +2329,8 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       if (mine !== seq) return;
       found = res?.results ?? [];
       shown = 0;
-      pTitle.textContent = `The ${from}s${label ? ` \u00b7 ${label}` : ''} \u00b7 ${count(found.length, 'photograph')}`;
-      if (status) status.textContent = `The ${from}s: ${count(found.length, 'photograph')}.`;
+      pTitle.textContent = `The ${from}s${label ? ` \u00b7 ${label}` : ''} \u00b7 ${count(found.length, NOUN)}`;
+      if (status) status.textContent = `The ${from}s: ${count(found.length, NOUN)}.`;
       if (!found.length) {
         pNote.textContent = 'Nothing described from this decade yet.';
         pNote.hidden = false;
@@ -1961,16 +2343,37 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       const was = decadeBtns.find((b) => Number(b.dataset.decade) === openAt);
       openAt = null;
       panel.hidden = true;
+      if (sel) sel.hidden = true;
       decadeBtns.forEach((b) => b.setAttribute('aria-pressed', 'false'));
       was?.focus();
     };
-    decadeBtns.forEach((b) =>
+    decadeBtns.forEach((b) => {
       b.addEventListener('click', () => {
         const d = Number(b.dataset.decade);
         if (openAt === d) closePanel();
         else openDecade(d);
-      })
-    );
+      });
+      // Pointing at a decade lights its span on the chart and reads its
+      // figures, the same as pointing at the bars.
+      const light = () => {
+        if (b.disabled) return;
+        spanStyle(cursor, Number(b.dataset.decade));
+        cursor.hidden = false;
+        readout.textContent = b.getAttribute('aria-label') ?? '\u00a0';
+      };
+      const unlight = () => {
+        cursor.hidden = true;
+        readout.textContent = '\u00a0';
+      };
+      b.addEventListener('pointerenter', (e) => {
+        if (e.pointerType === 'mouse') light();
+      });
+      b.addEventListener('pointerleave', (e) => {
+        if (e.pointerType === 'mouse') unlight();
+      });
+      b.addEventListener('focus', light);
+      b.addEventListener('blur', unlight);
+    });
     pMore.addEventListener('click', () => more(seq));
     pClose.addEventListener('click', closePanel);
 
@@ -2041,7 +2444,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
           kind: 'Name',
           main: p.d ? `${p.n}, ${p.d}` : p.n,
           see: hit >= 2 ? `found as ${p.f[hit]}` : '',
-          meta: count(p.c, 'photograph'),
+          meta: count(p.c, NOUN),
           href: p.h,
         });
       }
@@ -2110,7 +2513,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       // A date is not a name, so a query with a year in it is photographs only.
       const names = dates.length ? [] : namesFor(text);
       // Names first, at once, while Pagefind is fetched.
-      paint(names.slice(0, MAX), 'Searching the photographs\u2026');
+      paint(names.slice(0, MAX), `Searching the ${NOUN}s\u2026`);
 
       const pf = await pagefind();
       if (mine !== seq) return;
@@ -2118,7 +2521,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       let total = 0;
       let note = '';
       if (!pf) {
-        note = 'Photograph search opens on the published site.';
+        note = `${NOUN[0].toUpperCase()}${NOUN.slice(1)} search opens on the published site.`;
       } else {
         const opts: Record<string, unknown> = {};
         if (dates.length) opts.filters = dateFilter(dates);
@@ -2133,19 +2536,19 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
         const top = await Promise.all(found.slice(0, nPhotos).map((r) => r.data()));
         if (mine !== seq) return;
         photos = top.map((d) => ({
-          kind: 'Photograph',
+          kind: NOUN[0].toUpperCase() + NOUN.slice(1),
           main: d.meta.title ?? d.url,
           see: '',
           meta: [d.meta.date, d.meta.collection].filter(Boolean).join(' \u00b7 '),
           href: d.url,
         }));
         const shownNames = names.slice(0, nNames);
-        if (total > photos.length) note = `${count(total - photos.length, 'more photograph')} \u2014 add a word or a year to narrow it.`;
+        if (total > photos.length) note = `${count(total - photos.length, `more ${NOUN}`)} \u2014 add a word or a year to narrow it.`;
         const all = [...shownNames, ...photos];
         paint(all, all.length ? note : 'Nothing found under that name, title or date.');
         if (status) {
           status.textContent = all.length
-            ? `${count(shownNames.length, 'name')} and ${count(total, 'photograph')}.`
+            ? `${count(shownNames.length, 'name')} and ${count(total, NOUN)}.`
             : 'No matches.';
         }
         return;
@@ -2188,16 +2591,18 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   /* ---------------------------------------------------------------- *
    * 0. The wall: the line under it names the face you are on
    * ---------------------------------------------------------------- */
-  function initWall(root: HTMLElement) {
-    const read = root.querySelector<HTMLElement>('[data-wall-read]');
+  // A line under a group of links that names the one you are on. Used by
+  // the wall of faces and by the spread of prints.
+  function initReadout(root: HTMLElement, lineSel: string, linkSel: string, attr: string) {
+    const read = root.querySelector<HTMLElement>(lineSel);
     if (!read) return;
     const rest = read.textContent ?? '';
     const say = (text: string | null) => {
       read.textContent = text ?? rest;
       read.classList.toggle('is-reading', !!text);
     };
-    root.querySelectorAll<HTMLElement>('.wall-face').forEach((a) => {
-      const text = a.dataset.caption ?? null;
+    root.querySelectorAll<HTMLElement>(linkSel).forEach((a) => {
+      const text = a.getAttribute(attr);
       a.addEventListener('pointerenter', () => say(text));
       a.addEventListener('pointerleave', () => say(null));
       a.addEventListener('focus', () => say(text));
@@ -2225,7 +2630,9 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     const root = document.querySelector<HTMLElement>('[data-guide]');
     if (!root || root.dataset.ready) return;
     root.dataset.ready = '1';
-    initWall(root);
+    NOUN = root.dataset.noun || 'photograph';
+    initReadout(root, '[data-wall-read]', '.wall-face', 'data-caption');
+    initReadout(root, '[data-table-read]', '.spread-print', 'data-label');
     initChronology(root);
     initFinder(root);
     initCrosswalk(root);

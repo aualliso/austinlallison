@@ -501,9 +501,11 @@ export const COLLECTION: Collection = {
       format: 'real photo postcard',
       place: 'Hagerman, New Mexico',
       date: {
-        display: '[1910]',
-        basis: ['The verso assigns a date of 1910. Nothing here objects to this.'],
-        confidence: 'certain',
+        display: '[1910-1914]',
+        earliest: 1910,
+        latest: 1914,
+        basis: ['The verso assigns a date of 1910. Nothing here objects to this necessarily, but two of the teachers, Eula and Hannah Grizzle, would have been fairly young in 1910. Eula Grizzle would have been 19, and Hannah Grizzle would have been 17. A 1910 is not impossible, but I am assigning a probable date range of 1910 through 1914.'],
+        confidence: 'probable',
       },
       recto: {
         file: 'allison-oscar-teacher-recto.jpg',
@@ -512,7 +514,7 @@ export const COLLECTION: Collection = {
         file: 'allison-oscar-teacher-verso.jpg',
       },
       description:
-        'This photograph depicts Oscar Allison as at teacher meeting in 1910 at Hagerman. Oscar is standing fifth from the left. Several others are identifed on the verso.',
+        'This photograph depicts Oscar Allison at teacher meeting in 1910 at Hagerman. Oscar is standing fifth from the left. Several others are identifed on the verso.',
       inscriptions: [
         {
           location: 'verso',

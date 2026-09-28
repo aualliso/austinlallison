@@ -176,11 +176,10 @@ export const COLLECTION: Collection = {
           region: { face: 'recto', x: 62.8, y: 62.2, w: 1.7, h: 2.4 },
           },
       ],
-      needsWork: [
-        'Where "the home place" is.',
-        'Whether the bearded man at centre is Malcom Swann.',
-        'Whether the gin appears in any county or fire-insurance record that would date the photograph itself.',
-      ],
+      details: [
+        { face: 'recto', x: 38.7, y: 57.5, w: 19.3, h: 21.6, caption: 'Malcom Swann sitting on a bale with "345" stenciled upside down' },
+        { face: 'verso', x: 32.6, y: 26.9, w: 63.3, h: 29.4, caption: 'Pencilled on the back: "The Old Malcom Swann Gin - at the home place"' },
+      ]
     },
   
 
@@ -246,11 +245,8 @@ export const COLLECTION: Collection = {
           relation: ''
         },
       ],
-      needsWork: [
-        'RESCAN. This is a phone photograph of the object, and the second figure cannot be resolved from it.',
-        'Compare this face with the bearded man at the centre of c.1.4.1. If they are the same man, the gin identification moves from possible to probable and the two objects start to corroborate each other.',
-        'Who is at the wagon.',
-        'Where in Oklahoma, and why they were camped rather than settled.',
+      details: [
+        { face: 'recto', x: 33.4, y: 31.1, w: 34.8, h: 40.2, caption: 'Malcom Swann sitting next to a wagon examining an item.' }
       ],
     },
     {
@@ -4498,6 +4494,39 @@ export const COLLECTION: Collection = {
           confidence: 'certain',  // REQUIRED on every depiction
           basis: 'Identified on photogoraph',
           region: { face: 'recto', x: 40.5, y: 16.3, w: 16.4, h: 12.1 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'bouknight-juanita-portrait',
+      title: '[Juanita Bouknight portrait, 1910]',
+      controlNumber: 'a.1.8.2',
+      titleSource: 'supplied',
+      place: 'Texas',
+      date: {
+        display: '[1910]',
+        basis: [
+          'The signature at the bottom right hand of the portrait identifies a 1910 date.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'mounted photograph',
+      recto: { file: 'bouknight-juanita-portrait-recto.jpg' },
+      verso: { file: 'bouknight-juanita-portrait-verso.jpg' },
+      description: 'This photograph depicts Juanita Bouknight around 19 years of age in 1910.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'harrison-juanita-bouknight',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Identified on photogoraph',
+          region: { face: 'recto', x: 31.8, y: 21.4, w: 34.5, h: 31.9 },
         },
       ],
       rights: {

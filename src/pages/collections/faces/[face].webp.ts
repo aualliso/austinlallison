@@ -173,11 +173,16 @@ async function region(
 /* ------------------------------------------------------------------ *
  * The crop
  * ------------------------------------------------------------------ */
+// A plain Uint8Array means Uint8Array<ArrayBufferLike> since TypeScript 5.7,
+// which Response will not accept as a body (the buffer could be shared).
+// `new Uint8Array(buffer)` copies into a fresh ArrayBuffer, so say so.
+type Bytes = Uint8Array<ArrayBuffer>;
+
 // Both densities come from one assembly. Keyed by face id; the build asks for
 // <id> and <id>@2x separately and the second finds this waiting.
-const made = new Map<string, Promise<[Uint8Array, Uint8Array]>>();
+const made = new Map<string, Promise<[Bytes, Bytes]>>();
 
-function cut(id: string): Promise<[Uint8Array, Uint8Array]> {
+function cut(id: string): Promise<[Bytes, Bytes]> {
   const cached = made.get(id);
   if (cached) return cached;
 
@@ -229,7 +234,7 @@ function cut(id: string): Promise<[Uint8Array, Uint8Array]> {
           .toBuffer()
       )
     );
-    return [new Uint8Array(one), new Uint8Array(two)] as [Uint8Array, Uint8Array];
+    return [new Uint8Array(one), new Uint8Array(two)] as [Bytes, Bytes];
   })();
 
   made.set(id, job);

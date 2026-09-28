@@ -4179,6 +4179,44 @@ export const COLLECTION: Collection = {
         },
       ]
     },
-    
+    {
+      slug: 'mckinstry-jean-4H-calf',
+      title: '[Jean McKinstry with 4H calf, circa 1923]',
+      titleSource: 'supplied',
+      controlNumber: 'f.1.12',
+      format: 'snapshot',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1938]',
+        basis: [
+          'The verso lists that Jean was 15 here, which either places the photo in late 1937 or 1938. A 1938 is more likely.',
+        ],
+        confidence: 'probable',
+      },
+      recto: { file: 'mckinstry-jean-4H-calf-recto.jpg', },
+      description:
+        'This is a photograph of Jean McKinstry with her 4H calf that she entered into stock shows.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+      inscriptions: [
+        { location: 'recto',
+          medium: 'ink',
+          text: 'Jean McKinstry, age 15 \n with 4H calf.',
+        },
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Identified on photograph.',
+          region: { face: 'recto', x: 31.9, y: 6.2, w: 28, h: 27.4 },
+        },
+      ]
+    },
   ],
 };

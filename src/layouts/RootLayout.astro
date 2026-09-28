@@ -67,6 +67,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
 
 <meta name="twitter:card" content={image ? 'summary_large_image' : 'summary'} />
 {image && <meta name="twitter:image" content={image} />}
+		{/* Page-specific head tags - preconnects, alternates. A page adds them
+		   as children with slot="head", e.g. <link slot="head" rel="preconnect" ... />. */}
+		<slot name="head" />
 		<ClientRouter />
 	</head>
 	<body class="min-h-screen flex flex-col selection:bg-caprock/20 selection:text-caprock">
