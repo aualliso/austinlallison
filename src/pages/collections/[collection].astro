@@ -42,6 +42,7 @@ import {
   itemsOf,
   collectionBySlug,
   depictedNames,
+  mentionedNames,
   extentOf,
   compareArrangement,
   compareChronology,
@@ -140,6 +141,7 @@ const hayOf = (i: ResolvedItem) =>
       i.date.display,
       i.description,
       ...depictedNames(i),
+      ...mentionedNames(i),
       ...i.depicts.flatMap((d) => (d.person ? personById.get(d.person)?.variants ?? [] : [])),
     ]
       .filter(Boolean)
@@ -475,11 +477,20 @@ const custodyKnown = !/^TODO/i.test(c.custody);
                     {i.format && <span>{i.format} &middot; </span>}
                     <span>{i.date.display}</span>
                     {i.verso && <span> &middot; verso</span>}
+                    {i.pageCount > 0 && <span> &middot; {i.pageCount} {i.pageCount === 1 ? 'page' : 'pages'}</span>}
                   </div>
                   <div class="entry-names text-sm opacity-75 mt-0.5">
-                    {i.depicts.length > 0
-                      ? depictedNames(i).join(', ')
-                      : <span class="italic opacity-70">no one named</span>}
+                    {i.depicts.length > 0 ? (
+                      depictedNames(i).join(', ')
+                    ) : i.mentions.length > 0 ? (
+                      (() => {
+                        const named = mentionedNames(i);
+                        const shown = named.slice(0, 6);
+                        return `Names ${shown.join(', ')}${named.length > shown.length ? `, and ${named.length - shown.length} more` : ''}`;
+                      })()
+                    ) : (
+                      <span class="italic opacity-70">no one named</span>
+                    )}
                   </div>
                 </div>
               </li>

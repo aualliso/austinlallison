@@ -24,6 +24,7 @@ import type {
   Person,
   Confidence,
   Inscription,
+  Mention,
   Region,
   Relation,
   ResolvedItem,
@@ -38,6 +39,92 @@ export const inscriptionFace = (ins: Inscription): string =>
 const faceKey = (label: string) =>
   label.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 import { UNDATED_ESTIMATE, heading, naturalName } from './types';
+
+/* ------------------------------------------------------------------ *
+ * Transcriptions
+ *
+ * One plain-text file per paged item, named for its slug:
+ *   src/data/collections/transcriptions/midway-grange-journal.md
+ * Each page starts with a heading giving its IMAGE POSITION - the n of p<n>,
+ * not the volume's own page number - and anything after the number on that
+ * line is for you and ignored:
+ *
+ *   ## 5  (p. 1 in the volume)
+ *   Midway Grange No. 1054
+ *   Minutes of the meeting of March 12th 1884 ...
+ *
+ * The text is shown exactly as typed, line breaks kept: a transcription
+ * follows the lines of the page, and nothing in it is read as formatting.
+ * Pages with no heading simply have no transcription yet. Anything above
+ * the first heading is a note to yourself and never shown.
+ * ------------------------------------------------------------------ */
+const TRANSCRIPTION_FILES = import.meta.glob('./transcriptions/*.md', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+}) as Record<string, string>;
+
+// A transcription saved anywhere else is never read - and nothing would say
+// so. Look for strays across src/ and name them. (Keys only: nothing loaded.)
+{
+  const HOME = '/src/data/collections/transcriptions/';
+  const strays = Object.keys(import.meta.glob('/src/**/transcriptions/*.{md,txt}')).filter(
+    (k) => !(k.startsWith(HOME) && k.endsWith('.md') && !k.slice(HOME.length).includes('/'))
+  );
+  for (const k of strays) {
+    console.warn(
+      `[collections] ${k} is not read. Transcriptions must be .md files directly in ` +
+        `${HOME.slice(1)} - move it there.`
+    );
+  }
+}
+
+const TRANSCRIPTIONS = new Map<string, Map<number, string>>(
+  Object.entries(TRANSCRIPTION_FILES).map(([path, text]) => {
+    const slug = path.replace(/^.*\//, '').replace(/\.md$/, '');
+    const pages = new Map<number, string>();
+    let at: number | null = null;
+    let lines: string[] = [];
+    let lineNo = 0;
+    const flush = () => {
+      if (at === null) return;
+      if (pages.has(at)) {
+        throw new Error(`transcriptions/${slug}.md: page ${at} has two headings.`);
+      }
+      const body = lines.join('\n').replace(/^\s*\n|\s+$/g, '');
+      if (body) pages.set(at, body);
+    };
+    for (const line of text.replace(/\r\n?/g, '\n').split('\n')) {
+      lineNo++;
+      const h = line.match(/^##\s+(\d+)\b/);
+      // Something that was MEANT as a page heading and is not one - '##3',
+      // '## Page 3', an indented '  ## 3' - would silently fold its page into
+      // the one before. Stop instead, and say which line.
+      if (!h && /^\s*##/.test(line)) {
+        throw new Error(
+          `transcriptions/${slug}.md, line ${lineNo}: "${line.trim()}" looks like a page ` +
+            `heading but is not one. Write it as "## " and the image position, at the ` +
+            `start of the line: "## 3".`
+        );
+      }
+      if (h) {
+        flush();
+        at = Number(h[1]);
+        lines = [];
+      } else if (at !== null) {
+        lines.push(line);
+      }
+    }
+    flush();
+    // Said once per build, so there is always a way to see that the file was
+    // found and how much of it was read.
+    console.log(
+      `[collections] transcriptions/${slug}.md: ${pages.size} page${pages.size === 1 ? '' : 's'} with text` +
+        (pages.size ? ` (${[...pages.keys()].slice(0, 8).join(', ')}${pages.size > 8 ? ', ...' : ''})` : '')
+    );
+    return [slug, pages] as const;
+  })
+);
 import { PEOPLE, personById, NAME_INDEX } from './people';
 
 import { COLLECTION as SWANN_FAMILY } from './swann-family';
@@ -247,11 +334,42 @@ export const ALL_ITEMS: ResolvedItem[] = COLLECTIONS.flatMap((c) =>
       capture: sur.capture ?? d.capture ?? 'unrecorded',
     });
 
-    // Every view of the object, in display order, labelled and keyed.
-    const faces: ResolvedItem['faces'] = [
-      { key: 'recto', label: i.recto.label ?? 'Recto', surrogate: withCapture(i.recto) },
-    ];
-    if (i.verso) {
+    // Every view of the object, in display order, labelled and keyed. An
+    // item with pages is read by its pages, p1..pN, and never by recto and
+    // verso - a volume has pages, not a back.
+    const pages = i.pages ?? [];
+    const tx = TRANSCRIPTIONS.get(i.slug);
+    if (tx && pages.length === 0) {
+      throw new Error(
+        `transcriptions/${i.slug}.md exists, but ${i.slug} has no pages. ` +
+          `A transcription belongs to an item with a \`pages\` list.`
+      );
+    }
+    if (pages.length > 0 && i.verso) {
+      throw new Error(
+        `${i.slug} has pages and a verso. An item with pages is read page by ` +
+          `page; put the back cover in as its last page instead.`
+      );
+    }
+    for (const n of tx?.keys() ?? []) {
+      if (n < 1 || n > pages.length) {
+        throw new Error(
+          `transcriptions/${i.slug}.md has a page ${n}, but the item has ` +
+            `${pages.length} page${pages.length === 1 ? '' : 's'}. Headings give ` +
+            `the image position, 1-${pages.length}.`
+        );
+      }
+    }
+    const faces: ResolvedItem['faces'] = pages.length
+      ? pages.map((pg, n) => ({
+          key: `p${n + 1}`,
+          label: pg.label ?? `Page ${n + 1}`,
+          surrogate: withCapture(pg),
+          page: n + 1,
+          transcription: tx?.get(n + 1),
+        }))
+      : [{ key: 'recto', label: i.recto.label ?? 'Recto', surrogate: withCapture(i.recto) }];
+    if (!pages.length && i.verso) {
       faces.push({
         key: 'verso',
         label: i.verso.label ?? 'Verso',
@@ -302,11 +420,25 @@ export const ALL_ITEMS: ResolvedItem[] = COLLECTIONS.flatMap((c) =>
         checkBox(ins.region, ins.region.face ?? inscriptionFace(ins), `inscription ${n + 1}`);
       }
     });
+    for (const m of i.mentions ?? []) {
+      const who = m.person ?? m.as;
+      if (m.page && !keys.has(m.page)) {
+        throw new Error(
+          `${i.slug}: "${who}" is named on page "${m.page}", which this item ` +
+            `does not have. Pages are keyed by image position: p1-p${pages.length}.`
+        );
+      }
+      if (m.region) {
+        checkBox(m.region, m.region.face ?? m.page ?? faces[0].key, `the region for "${who}"`);
+      }
+    }
 
     return {
       ...i,
       collection: c.slug,
+      kind: i.kind ?? 'photograph',
       faces,
+      pageCount: pages.length,
       href: `/collections/${c.slug}/${i.slug}`,
       titleSource: i.titleSource ?? 'supplied',
       date: resolveDate(i.slug, i.date),
@@ -326,9 +458,34 @@ export const ALL_ITEMS: ResolvedItem[] = COLLECTIONS.flatMap((c) =>
         }
         return { ...dep, basis };
       }),
+      mentions: (i.mentions ?? []).map((m) => {
+        const basis = basisFor(m.basis);
+        if (!basis) {
+          throw new Error(
+            `${i.slug} names "${m.person ?? m.as}" in its text with no basis, and ` +
+              `neither the item nor the collection sets a default. Say where ` +
+              `the name is written, or set identificationBasis once for the item.`
+          );
+        }
+        return { ...m, basis };
+      }),
     };
   })
 );
+
+// A transcription file for an item that does not exist is a mistyped file
+// name, and its text would otherwise never be seen.
+{
+  const slugs = new Set(ALL_ITEMS.map((i) => i.slug));
+  for (const slug of TRANSCRIPTIONS.keys()) {
+    if (!slugs.has(slug)) {
+      throw new Error(
+        `transcriptions/${slug}.md does not match any item's slug. Name the ` +
+          `file for the item it transcribes.`
+      );
+    }
+  }
+}
 
 /* ------------------------------------------------------------------ *
  * Integrity. These throw at build rather than producing a page that is
@@ -382,6 +539,16 @@ for (const item of ALL_ITEMS) {
       throw new Error(
         `${item.slug} has a depiction with neither a person nor an "as" name.`
       );
+    }
+  }
+  for (const m of item.mentions) {
+    if (m.person && !personById.has(m.person)) {
+      throw new Error(
+        `${item.slug} names unknown person "${m.person}". Add a record to people.ts.`
+      );
+    }
+    if (!m.person && !m.as) {
+      throw new Error(`${item.slug} has a mention with neither a person nor an "as" name.`);
     }
   }
 }
@@ -498,12 +665,23 @@ export type Appearance = {
   region?: Region;
   /** Set when this appearance has a region, and so a face crop. */
   face?: Face;
+  /**
+   * TRUE when the person is NAMED in the item's text rather than pictured -
+   * a journal, a letter. Such an appearance never has a face crop.
+   */
+  named?: boolean;
+  /** For a named appearance: the page it is on, and a note. */
+  page?: { key: string; label: string; n: number; href: string };
+  note?: string;
 };
 
-/** Every appearance of a person, across every collection. */
+/** The address of one page of a paged item: the reader opens on it. */
+export const pageHref = (item: ResolvedItem, n: number) => `${item.href}#page=${n}`;
+
+/** Every appearance of a person, across every collection: pictured, then named. */
 export const appearancesOf = (personId: string): Appearance[] =>
-  ALL_ITEMS.flatMap((item) =>
-    item.depicts.flatMap((d, n) =>
+  ALL_ITEMS.flatMap((item) => [
+    ...item.depicts.flatMap((d, n) =>
       d.person === personId
         ? [
             {
@@ -516,8 +694,23 @@ export const appearancesOf = (personId: string): Appearance[] =>
             },
           ]
         : []
-    )
-  );
+    ),
+    ...item.mentions.flatMap((m): Appearance[] => {
+      if (m.person !== personId) return [];
+      const f = m.page ? item.faces.find((x) => x.key === m.page) : undefined;
+      return [
+        {
+          item,
+          confidence: m.confidence,
+          basis: m.basis,
+          region: m.region,
+          named: true,
+          note: m.note,
+          page: f?.page ? { key: f.key, label: f.label, n: f.page, href: pageHref(item, f.page) } : undefined,
+        },
+      ];
+    }),
+  ]);
 
 /* Relations, both ways ---------------------------------------------- */
 
@@ -621,6 +814,16 @@ export const depictedNames = (item: ResolvedItem): string[] =>
     const p = d.person ? personById.get(d.person) : undefined;
     return p ? naturalName(p) : (d.as as string);
   });
+
+/** Who is named in an item's text, in reading order, once each. */
+export const mentionedNames = (item: ResolvedItem): string[] => [
+  ...new Set(
+    item.mentions.map((m) => {
+      const p = m.person ? personById.get(m.person) : undefined;
+      return p ? naturalName(p) : (m.as as string);
+    })
+  ),
+];
 export const itemBySlug = new Map(ALL_ITEMS.map((i) => [i.slug, i]));
 
 /** Lookup by your internal number, for the items that have one. */
@@ -736,7 +939,7 @@ export const keyItemsOf = (slug: string, n = 3): ResolvedItem[] => {
 };
 
 export { PEOPLE, personById, NAME_INDEX };
-export { heading, headingDates, naturalName, naturalNameWithDates } from './types';
+export { heading, headingDates, naturalName, naturalNameWithDates, KIND_NOUN } from './types';
 export type { Collection, Item, Person, ResolvedItem };
 
 /* ------------------------------------------------------------------ *

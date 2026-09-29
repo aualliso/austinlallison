@@ -127,13 +127,14 @@ export const COLLECTION: Collection = {
         basis: 'No studio imprint.',
       },
       date: {
-        display: '[1885-1900]',
-        earliest: 1885,
-        latest: 1900,
+        display: '[1890-1895]',
+        earliest: 1890,
+        latest: 1895,
         basis: [
-          'The verso reads "Built ab[out] 1885" - which dates THE GIN, not the photograph. The photograph can only be later.',
+          'The verso reads "Built ab[out] 1885," which dates the gin, but not the photograph. The photograph can only be later.',
           'The gin is described as "old" by the person who wrote the caption, but that inscription is undated and may be much later than the exposure.',
-          'Malcom Swann and Austin Swann are visible in this photograph. Austin Swann got married around 1886, but he looks older here than in his wedding picture.'
+          'Malcom Swann and Austin Swann are visible in this photograph. Austin Swann got married around 1886, but he looks older here than in his wedding picture.',
+          'A estimated date of 1890 to 1895 is assigned based on the factors presented.'
         ],
         confidence: 'probable',
       },
@@ -945,6 +946,9 @@ export const COLLECTION: Collection = {
       ],
       format: 'tintype',
       recto: { file: 'atkinson-women.jpg' },
+      views: [
+        { file: 'atkinson-women-version2-recto.jpg', label: 'Second scan of same photograph.'}
+      ],
       description: 'This photograph shows three women, two standing and one sitting. The woman on the right may be Nancy C. Atkinson Swann. Her appearance matches other photographs of Nancy that are available. The other two women cannot be identified with certainty. They may be relatives of Nancy, potentially her stepmother Fannie Bledsoe Atkinson and her sister Artemissia.',
       rights: {
         status: 'public-domain',
@@ -1713,7 +1717,7 @@ export const COLLECTION: Collection = {
           region: { face: 'recto', x: 74.8, y: 26.2, w: 11.1, h: 19.4 },
         },
         {
-          as: 'Annie Miller',  // an id in people.ts. Build throws if unknown.
+          person: 'stevenson-annie-miller',  // an id in people.ts. Build throws if unknown.
           confidence: 'certain',  // REQUIRED on every depiction
           // Omit to inherit identificationBasis. If neither exists, the
           // build throws - a name with no grounds is the one thing this
@@ -2575,7 +2579,6 @@ export const COLLECTION: Collection = {
           person: 'swann-austin',  // an id in people.ts. Build throws if unknown.
           confidence: 'certain',  // REQUIRED on every depiction
           basis: 'Identified on photogoraph',
-          region: { face: 'recto', x: 13.4, y: 21.3, w: 18.7, h: 37.1 },
         },
       ],
       rights: {
@@ -2972,7 +2975,7 @@ export const COLLECTION: Collection = {
           region: { face: 'recto', x: 43.9, y: 44.3, w: 6.2, h: 6.6 },
         },
         {
-          as: 'Malcolm T. Swann',  // an id in people.ts. Build throws if unknown.
+          person: 'swann-malcolm-t',  // an id in people.ts. Build throws if unknown.
           confidence: 'certain',  // REQUIRED on every depiction
           basis: 'Identified on photogoraph',
           region: { face: 'recto', x: 55.4, y: 43.7, w: 6.2, h: 7.8 },
@@ -3184,7 +3187,7 @@ export const COLLECTION: Collection = {
           region: { face: 'recto', x: 39.6, y: 52.2, w: 2.9, h: 3.5 },
         },
         {
-          as: 'Malcolm T. Swann',  // an id in people.ts. Build throws if unknown.
+          person: 'swann-malcolm-t',  // an id in people.ts. Build throws if unknown.
           confidence: 'probable',  // REQUIRED on every depiction
           basis: 'Matches likeness around this period.',
           region: { face: 'recto', x: 50, y: 51.9, w: 3, h: 3.5 },
@@ -3413,13 +3416,13 @@ export const COLLECTION: Collection = {
           region: { face: 'recto', x: 43.9, y: 45.6, w: 12.4, h: 9.8 },
         },
         {
-          as: 'Mable',  // an id in people.ts. Build throws if unknown.
+          person: 'waddle-mable-swann',  // an id in people.ts. Build throws if unknown.
           confidence: 'certain',  // REQUIRED on every depiction
           basis: 'Identified on photogoraph',
           region: { face: 'recto', x: 59.8, y: 45.8, w: 12, h: 9.1 },
         },
         {
-          as: 'Lucille',  // an id in people.ts. Build throws if unknown.
+          person: 'foster-lucille-swann',  // an id in people.ts. Build throws if unknown.
           confidence: 'certain',  // REQUIRED on every depiction
           basis: 'Identified on photogoraph',
           region: { face: 'recto', x: 38.6, y: 32.6, w: 10.7, h: 8.3 },
@@ -4300,7 +4303,7 @@ export const COLLECTION: Collection = {
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 22.7, y: 13.3, w: 15.7, h: 13.9 },
+          region: { face: 'recto', x: 19.4, y: 9.2, w: 17.7, h: 15.7 },
         },
         {
           person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
@@ -4321,13 +4324,13 @@ export const COLLECTION: Collection = {
           region: { face: 'recto', x: 57.9, y: 44.9, w: 15.5, h: 14.8 },
         },
         {
-          as: 'Annie Miller',  // an id in people.ts. Build throws if unknown.
+          person: 'stevenson-annie-miller',  // an id in people.ts. Build throws if unknown.
           confidence: 'certain',  // REQUIRED on every depiction
           // Omit to inherit identificationBasis. If neither exists, the
           // build throws - a name with no grounds is the one thing this
           // schema will not store.
           basis: 'Identified on verso.',
-          region: { face: 'recto', x: 57.2, y: 12.4, w: 15.2, h: 14 },
+          region: { face: 'recto', x: 56.8, y: 7, w: 18.1, h: 17.1 },
         },
       ],
       description: 'This photograph depicts sisters Minnie, Eva, and Loveta Swann and a cousin Annie Miller. A date on the verso of another photograph from this session suggests this photograph was taken about 1910. Nothing disputes that.',
@@ -4533,6 +4536,119 @@ export const COLLECTION: Collection = {
         status: 'public-domain',
         note: 'Photographer unidentified; unpublished.',
       },
+    },
+        /* ---------------------------------------------------------------- */
+    {
+      slug: 'midway-grange-journal',
+      title: '[Minutes of the Midway Grange No.1351]',
+      titleSource: 'supplied',
+      kind: 'journal',
+      format: 'bound manuscript volume',
+      dimensions: '25 x 20 cm',
+      // TODO: Midway where? County and state, as specific as the volume allows.
+      place: 'Midway, Hunt County, Texas',
+      date: {
+        // TODO: the dates of the first and last entries, e.g. '1884-1889'.
+        display: '[1883-1890]',
+        earliest: 1883,
+        latest: 1890,
+        basis: [
+          // TODO: e.g. 'First entry dated March 12, 1884; last dated ...'
+          'Dates of the entries.',
+        ],
+        confidence: 'certain',
+      },
+      // The cover: what the item is represented BY in lists and on the table.
+      recto: { file: 'midway-grange-journal/page-001.jpg' },
+      // Paste the pages list printed by:
+      //   node --env-file=.env scripts/journal-pages.mjs swann-family/midway-grange-journal --slug midway-grange-journal
+      // then label the covers and the first page the volume itself numbers.
+      pages: [
+        { file: 'midway-grange-journal/page-001.jpg', label: 'Front cover' },
+        { file: 'midway-grange-journal/page-002.jpg', label: 'End Paper' },
+        { file: 'midway-grange-journal/page-003.jpg', label: 'End Paper' },
+        { file: 'midway-grange-journal/page-004.jpg', label: 'End Paper' },
+        { file: 'midway-grange-journal/page-005.jpg', label: 'p.1' },
+        { file: 'midway-grange-journal/page-006.jpg', label: 'p.2' },
+        { file: 'midway-grange-journal/page-007.jpg', label: 'p.3' },
+        { file: 'midway-grange-journal/page-008.jpg', label: 'p.4' },
+        { file: 'midway-grange-journal/page-009.jpg', label: 'p.5' },
+        { file: 'midway-grange-journal/page-010.jpg', label: 'p.6' },
+        { file: 'midway-grange-journal/page-011.jpg', label: 'p.7' },
+        { file: 'midway-grange-journal/page-012.jpg', label: 'p.8' },
+        { file: 'midway-grange-journal/page-013.jpg', label: 'p.9' },
+        { file: 'midway-grange-journal/page-014.jpg', label: 'p.10' },
+        { file: 'midway-grange-journal/page-015.jpg', label: 'p.11' },
+        { file: 'midway-grange-journal/page-016.jpg', label: 'p.12' },
+        { file: 'midway-grange-journal/page-017.jpg', label: 'p.13' },
+        { file: 'midway-grange-journal/page-018.jpg', label: 'p.14' },
+        { file: 'midway-grange-journal/page-019.jpg', label: 'p.15' },
+        { file: 'midway-grange-journal/page-020.jpg', label: 'p.16' },
+        { file: 'midway-grange-journal/page-021.jpg', label: 'p.17' },
+        { file: 'midway-grange-journal/page-022.jpg', label: 'p.18' },
+        { file: 'midway-grange-journal/page-023.jpg', label: 'p.19' },
+        { file: 'midway-grange-journal/page-024.jpg', label: 'p.20' },
+        { file: 'midway-grange-journal/page-025.jpg', label: 'p.21' },
+        { file: 'midway-grange-journal/page-026.jpg', label: 'p.22' },
+        { file: 'midway-grange-journal/page-027.jpg', label: 'p.23' },
+        { file: 'midway-grange-journal/page-028.jpg', label: 'p.24' },
+        { file: 'midway-grange-journal/page-029.jpg', label: 'p.25' },
+        { file: 'midway-grange-journal/page-030.jpg', label: 'p.26' },
+        { file: 'midway-grange-journal/page-031.jpg', label: 'p.27' },
+        { file: 'midway-grange-journal/page-032.jpg', label: 'p.28' },
+        { file: 'midway-grange-journal/page-033.jpg', label: 'p.29' },
+        { file: 'midway-grange-journal/page-034.jpg', label: 'p.30' },
+        { file: 'midway-grange-journal/page-035.jpg', label: 'p.31' },
+        { file: 'midway-grange-journal/page-038.jpg', label: 'p.32' },
+        { file: 'midway-grange-journal/page-039.jpg', label: 'p.33' },
+        { file: 'midway-grange-journal/page-040.jpg', label: 'p.34' },
+        { file: 'midway-grange-journal/page-041.jpg', label: 'p.35' },
+        { file: 'midway-grange-journal/page-042.jpg', label: 'p.36' },
+        { file: 'midway-grange-journal/page-043.jpg', label: 'p.37' },
+        { file: 'midway-grange-journal/page-044.jpg', label: 'p.38' },
+        { file: 'midway-grange-journal/page-045.jpg', label: 'p.39' },
+        { file: 'midway-grange-journal/page-046.jpg', label: 'p.40' },
+        { file: 'midway-grange-journal/page-047.jpg', label: 'p.41' },
+        { file: 'midway-grange-journal/page-048.jpg', label: 'p.42' },
+        { file: 'midway-grange-journal/page-049.jpg', label: 'p.43' },
+        { file: 'midway-grange-journal/page-050.jpg', label: 'p.44' },
+        { file: 'midway-grange-journal/page-051.jpg', label: 'p.45' },
+        { file: 'midway-grange-journal/page-052.jpg', label: 'p.46' },
+        { file: 'midway-grange-journal/page-053.jpg', label: 'p.47' },
+        { file: 'midway-grange-journal/page-054.jpg', label: 'p.48' },
+        { file: 'midway-grange-journal/page-055.jpg', label: 'End Paper' },
+        { file: 'midway-grange-journal/page-056.jpg', label: 'End Paper' },
+        { file: 'midway-grange-journal/page-057.jpg', label: 'End Paper' },
+        { file: 'midway-grange-journal/page-058.jpg', label: 'Back Cover' },
+        { file: 'midway-grange-journal/page-036.jpg', label: 'Clipping' },
+        { file: 'midway-grange-journal/page-059.jpg', label: 'Sheet 1 Recto' },
+        { file: 'midway-grange-journal/page-060.jpg', label: 'Sheet 1 Verso' },
+        { file: 'midway-grange-journal/page-061.jpg', label: 'Sheet 2' },
+        { file: 'midway-grange-journal/page-062.jpg', label: 'Sheet 3' },
+        { file: 'midway-grange-journal/page-063.jpg', label: 'Dues Page Recto' },
+        { file: 'midway-grange-journal/page-064.jpg', label: 'Dues Page Verso' },
+        { file: 'midway-grange-journal/page-065.jpg', label: 'Midway Grange Account 1' },
+        { file: 'midway-grange-journal/page-066.jpg', label: 'Midway Grange Account 2' },
+        { file: 'midway-grange-journal/page-067.jpg', label: 'Roll of Membership 1885' },
+        { file: 'midway-grange-journal/page-068.jpg', label: 'Roll of Membership 1885-2' },
+        { file: 'midway-grange-journal/page-069.jpg', label: 'Roll of Membership 1885' },
+        { file: 'midway-grange-journal/page-070.jpg', label: 'Sheet 4' },
+        { file: 'midway-grange-journal/page-071.jpg', label: 'Lecturer\'s Communication Recto' },
+        { file: 'midway-grange-journal/page-072.jpg', label: 'Lecturer\'s Communication Verso' },
+        // ... the rest, unlabelled unless the numbering differs from "Page n"
+      ],
+      description:
+        'This secretary\'s journal holds the minutes for the Midway Grange organization starting in 1883 with bulk dates to 1886. Some looses heets date to 1890, but the book itself dates mostly from 1883 to 1886. Loose sheets include information about dues, membership, etc. Nicolas A. "Abe" Swann was the organization\'s secretary for the majority of its meetings.',
+      // Where the names below come from, said once for all of them.
+      identificationBasis: 'Named in the minutes.',
+      mentions: [
+       // { person: 'swann-malcom', page: 'p5', confidence: 'probable',}
+        //   note: 'As "W. M. Swann", presiding.' },
+        // { as: 'J. H. Bledsoe', page: 'p5', confidence: 'certain',
+        //   note: 'Elected secretary.' },
+      ],
+      // TODO: how the volume reached you, if different from the collection's.
+      provenance: 'TODO',
     },
   ],
 };

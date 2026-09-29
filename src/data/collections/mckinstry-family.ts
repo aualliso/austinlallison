@@ -4181,7 +4181,7 @@ export const COLLECTION: Collection = {
     },
     {
       slug: 'mckinstry-jean-4H-calf',
-      title: '[Jean McKinstry with 4H calf, circa 1923]',
+      title: '[Jean McKinstry with 4H calf, circa 1938]',
       titleSource: 'supplied',
       controlNumber: 'f.1.12',
       format: 'snapshot',

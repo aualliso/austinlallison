@@ -191,15 +191,17 @@ export const PEOPLE: Person[] = [
 
     ],
   },
-   {
+  {
     id: 'miller-emma-thomas',
     authorized: 'Miller, Emma Thomas',
     surname: 'Miller',
     given: 'Emma',
     birth: '1867',
+    death: '1941',
     variants: ['Thomas, Emma'],
     status: 'established',
     relations: [
+      { type: 'child', person: 'stevenson-annie-miller', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'thomas-benjamin-b', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'thomas-minerva-hunter', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'patterson-rockett-thomas', basis: 'Established relationship', confidence: 'certain' },
@@ -208,6 +210,19 @@ export const PEOPLE: Person[] = [
       { type: 'sibling', person: 'thomas-john', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'darby-mattie-thomas', basis: 'Established relationship', confidence: 'certain' },
 
+    ],
+  },
+  {
+    id: 'stevenson-annie-miller',
+    authorized: 'Stevenson, Annie Miller',
+    surname: 'Stevenson',
+    given: 'Annie Miller',
+    birth: '1886',
+    death: '1967',
+    variants: ['Miller, Annie', 'Stevenson, Annie'],
+    status: 'established',
+    relations: [
+      { type: 'parent', person: 'miller-emma-thomas', basis: 'Established relationship', confidence: 'certain' }
     ],
   },
   {
@@ -301,6 +316,23 @@ export const PEOPLE: Person[] = [
     ],
   },
   {
+    id: 'swann-nicolas-abe',
+    authorized: 'Swann, Nicolas "Abe"',
+    surname: 'Swann',
+    given: 'Nicolas',
+    variants: ['Swann, Nicolas A.', 'Abe Swann'],
+    birth: '1855',
+    death: '1904',
+    status: 'established',
+    sources: [
+      'Find a Grave memorial 159906154',
+    ],
+    scopeNote:
+      'Nicolas A. "Abe" Swann was a first cousin of Malcom Swann. He was the son of Nicolas Swann, Sr. ',
+    relations: [
+    ],
+  },
+  {
     id: 'swann-malcom',
     authorized: 'Swann, Malcom',
     surname: 'Swann',
@@ -335,16 +367,16 @@ export const PEOPLE: Person[] = [
    * ---------------------------------------------------------------- */
   {
     id: 'swann-nancy-atkinson',
-    authorized: 'Swann, Nancy C. Atkinson',
+    authorized: 'Swann, Nancy California Atkinson',
     surname: 'Swann',
-    given: 'Nancy C.',
+    given: 'Nancy California',
     variants: ['Atkinson, Nancy C.', 'Swann, Nancy', 'Swann, Nancy California Atkinson'],
     birth: '1836',
     death: '1899',
     status: 'established',
-    scopeNote: 'Wife of Malcom Swann; mother of Austin Swann. Some records indicate that her middle name is "California." ',
+    scopeNote: 'The Swann family Bible lists her name reliably as "Nancy California Atkinsson Swann." She was born in 1836 in Mississippi. She married Malcom Swann on March 30, 1858 in Mississippi.',
     sources: [
-      'Find a Grave memorial 8153613, as linked from Malcom Swann\'s memorial (8153610) as his spouse: "Nancy C Atkinson Swann 1836-1899"; the memorial page itself not yet read',
+      'Find a Grave memorial 8153613, as linked from Malcom Swann\'s memorial (8153610) as his spouse: "Nancy C Atkinson Swann 1836-1899."',
     ],
     relations: [
       { type: 'spouse', person: 'swann-malcom', basis: 'Established relationship', confidence: 'certain' },
@@ -387,7 +419,7 @@ export const PEOPLE: Person[] = [
     death: '1931',
     status: 'established',
     scopeNote:
-      'Born near Macon, Mississippi; came to Hunt County, Texas as a child; removed to Hagerman, New Mexico in 1908 and died there.',
+      'Born near Macon, Mississippi; came to Hunt County, Texas as a child around 1870; removed to Hagerman, New Mexico in 1908 and died there. He married Nannie Thomas in 1885. She died in 1896 in Texas from tuberculosis.',
     sources: [
       'Find a Grave memorial 7284582, read in full: "Austin Swann", 30 Dec 1860 (Mississippi) - 30 May 1931 (Hagerman, Chaves County, N.M.), buried Concord Cemetery, Jacobia, Hunt County, Tex.; accessed 10 Sep 2026',
       'Hunt County, Texas, Marriages 1846-1911, p. 471, vol. E p. 12: Austin Swann and Nannie G. Thomas, married 16 Apr 1885 (transcribed on the memorial above)',
@@ -448,6 +480,9 @@ export const PEOPLE: Person[] = [
       'Named as the one member of the threshing crew whose family did not travel with the outfit.',
     relations: [
       { type: 'spouse', person: 'swann-gussie-cody', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'waddle-mable-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'foster-lucille-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'swann-malcolm-t', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-malcom', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-nancy-atkinson', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'swann-annie', basis: 'Established relationship', confidence: 'certain' },
@@ -470,6 +505,9 @@ export const PEOPLE: Person[] = [
     ],
     relations: [
       { type: 'spouse', person: 'swann-john-milton', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'waddle-mable-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'foster-lucille-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'swann-malcolm-t', basis: 'Established relationship', confidence: 'certain' },
     ],
   },
   {
@@ -486,6 +524,44 @@ export const PEOPLE: Person[] = [
     relations: [
       { type: 'parent', person: 'swann-john-milton', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-gussie-cody', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'foster-lucille-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'swann-malcolm-t', basis: 'Established relationship', confidence: 'certain' },
+    ],
+  },
+  {
+    id: 'foster-lucille-swann',
+    authorized: 'Foster, Lucille Swann',
+    surname: 'Foster',
+    given: 'Lucille Swann',
+    birth: '1896',
+    death: '1979',
+    status: 'established',
+    sources: [
+      'Findagrave record number 8153619',
+    ],
+    relations: [
+      { type: 'parent', person: 'swann-john-milton', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'swann-gussie-cody', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'waddle-mable-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'swann-malcolm-t', basis: 'Established relationship', confidence: 'certain' },
+    ],
+  },
+  {
+    id: 'swann-malcolm-t',
+    authorized: 'Swann, Malcolm T.',
+    surname: 'Swann',
+    given: 'Malcolm T.',
+    birth: '1901',
+    death: '1961',
+    status: 'established',
+    sources: [
+      'Findagrave record number 8153632',
+    ],
+    relations: [
+      { type: 'parent', person: 'swann-john-milton', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'swann-gussie-cody', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'waddle-mable-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'foster-lucille-swann', basis: 'Established relationship', confidence: 'certain' },
     ],
   },
   {

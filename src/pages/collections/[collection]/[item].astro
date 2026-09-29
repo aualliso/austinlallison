@@ -86,8 +86,12 @@ const faces = await Promise.all(
       ...f,
       n,
       img,
-      alt: n === 0 ? (item.description ?? item.title) : `${f.label}: ${item.title}`,
-      title: n === 0 ? item.title : `${f.label} ${EM} ${item.title}`,
+      alt: f.page
+        ? `${f.label} of ${item.title}${f.page === 1 && item.description ? `. ${item.description}` : ''}`
+        : n === 0
+          ? (item.description ?? item.title)
+          : `${f.label}: ${item.title}`,
+      title: n === 0 && !f.page ? item.title : `${f.label} ${EM} ${item.title}`,
     };
   })
 );
@@ -102,7 +106,22 @@ const WIDE_AT = 1.2;
 const wide = faces[0].img.width >= faces[0].img.height * WIDE_AT;
 // A seven-line record has no description, people, details or inscriptions.
 // Then the facts stand alone rather than in the narrow half of a split.
-const hasMain = !!item.description || item.depicts.length > 0 || (item.details ?? []).length > 0 || item.inscriptions.length > 0;
+const hasMain =
+  !!item.description ||
+  item.depicts.length > 0 ||
+  (item.details ?? []).length > 0 ||
+  item.inscriptions.length > 0 ||
+  item.mentions.length > 0 ||
+  faces.some((f) => f.transcription);
+
+// A PAGED ITEM - a journal, a letter of several leaves - is read page by
+// page: a pager and a strip of pages under the plate, the page's
+// transcription beside it, and each page its own address (#page=12). The
+// faces machinery is the same one recto and verso use; only the controls
+// for choosing a face differ.
+const paged = item.pageCount > 0;
+const transcribed = faces.filter((f) => f.transcription).length;
+const NOUN = item.kind === 'photograph' ? 'photograph' : item.kind;
 
 // Upper bounds, from the container (max-w-6xl, 72rem) less the page's own
 // 4.5rem of side padding and, when split, the 2.5rem gap and the 7:5 split.
@@ -184,6 +203,29 @@ item.inscriptions.forEach((ins, n) => {
   };
   marks.push(m);
   inscriptionMark.set(n, m);
+});
+// People NAMED on a page, where the page says where. Drawn as the same kind
+// of box as an inscription - it is writing, not a face.
+const mentionMark = new Map<number, Mark>();
+item.mentions.forEach((m, n) => {
+  if (!m.region) return;
+  const who = m.person ? naturalName(personById.get(m.person)!) : (m.as as string);
+  const mk: Mark = {
+    id: `named-${n + 1}`,
+    kind: 'inscription',
+    face: m.region.face ?? m.page ?? faces[0].key,
+    x: m.region.x,
+    y: m.region.y,
+    w: m.region.w,
+    h: m.region.h,
+    tag: '',
+    caption: who,
+    name: '',
+    qual: '',
+    doubtful: false,
+  };
+  marks.push(mk);
+  mentionMark.set(n, mk);
 });
 const faceLabel = new Map(faces.map((f) => [f.key, f.label]));
 const box = (m: Region) => `--x:${m.x}%;--y:${m.y}%;--w:${m.w}%;--h:${m.h}%`;
@@ -297,7 +339,9 @@ const pageData = json({
     w: f.img.width,
     h: f.img.height,
     iiif: f.img.iiif,
+    page: f.page ?? 0,
   })),
+  paged,
   marks: marks.map(({ id, kind, face, x, y, w, h, caption }) => ({ id, kind, face, x, y, w, h, caption })),
 });
 
@@ -398,6 +442,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     <style is:inline>
       .stack { display: block !important; }
       .face { visibility: visible !important; opacity: 1 !important; margin-bottom: 1.25rem; }
+      .stack--paged .face { display: block !important; }
       [data-js-only] { display: none !important; }
     </style>
   </noscript>
@@ -471,7 +516,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       <!-- THE PLATE -->
       <div class="plate-col">
         <div class="mat" data-mat>
-          <div class="stack">
+          <div class:list={['stack', { 'stack--paged': paged }]}>
             {faces.map((f) => {
               const attrs = {
                 src: f.img.view,
@@ -523,14 +568,29 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
             </svg>
             Examine
           </button>
-          {faces.length > 1 && (
-            <div class="seg" role="group" aria-label="View">
-              {faces.map((f) => (
-                <button type="button" class="seg-btn" data-face-btn={f.key} aria-pressed={f.n === 0 ? 'true' : 'false'}>
-                  {f.label}
-                </button>
-              ))}
+          {paged ? (
+            <div class="leaf-nav" role="group" aria-label="Pages">
+              <button type="button" class="leaf-btn" data-page-step="-1" aria-label="Previous page" title="Previous page">
+                <span aria-hidden="true">&larr;</span>
+              </button>
+              <p class="leaf-at">
+                <span class="leaf-label" data-page-label>{faces[0].label}</span>
+                <span class="leaf-of" data-page-of>1 of {faces.filter((f) => f.page).length}</span>
+              </p>
+              <button type="button" class="leaf-btn" data-page-step="1" aria-label="Next page" title="Next page">
+                <span aria-hidden="true">&rarr;</span>
+              </button>
             </div>
+          ) : (
+            faces.length > 1 && (
+              <div class="seg" role="group" aria-label="View">
+                {faces.map((f) => (
+                  <button type="button" class="seg-btn" data-face-btn={f.key} aria-pressed={f.n === 0 ? 'true' : 'false'}>
+                    {f.label}
+                  </button>
+                ))}
+              </div>
+            )
           )}
           {personMark.size > 0 && (
             <button type="button" class="seg-btn seg-solo" data-names aria-pressed="false">
@@ -538,6 +598,28 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
             </button>
           )}
         </div>
+
+        {/* THE PAGES, as a strip: where you are in the volume, and a way to
+            any page in one tap. Thumbnails load as the strip scrolls. */}
+        {paged && (
+          <ol class="page-strip" aria-label="All pages" data-page-strip data-js-only data-pagefind-ignore>
+            {faces.map((f) => (
+              <li>
+                <button
+                  type="button"
+                  class="page-thumb"
+                  data-face-btn={f.key}
+                  aria-pressed={f.n === 0 ? 'true' : 'false'}
+                  aria-label={f.label}
+                  title={f.label}
+                >
+                  <img src={f.img.index} width={f.img.width} height={f.img.height} alt="" loading="lazy" decoding="async" />
+                  <span class="page-thumb-n" aria-hidden="true">{f.page ?? f.label}</span>
+                </button>
+              </li>
+            ))}
+          </ol>
+        )}
       </div>
 
       <!-- THE RECORD -->
@@ -553,6 +635,71 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
             <section class="mb-7" aria-labelledby="desc-h">
               <h2 id="desc-h" class={H2}>Description</h2>
               <p class="m-0 prose-line">{item.description}</p>
+            </section>
+          )}
+
+          {/* THE TRANSCRIPTION, one page at a time beside that page. Without
+              the script, every transcribed page is listed in order. */}
+          {transcribed > 0 && (
+            <section class="mb-7 tx" aria-labelledby="tx-h" data-tx-section>
+              <h2 id="tx-h" class={H2}>Transcription</h2>
+              {faces
+                .filter((f) => f.page)
+                .map((f) => (
+                  <article
+                    class:list={['tx-page', { 'tx-page--empty': !f.transcription, 'is-on': f.n === 0 }]}
+                    data-tx={f.key}
+                    aria-label={f.label}
+                  >
+                    <h3 class="tx-label">{f.label}</h3>
+                    {f.transcription ? (
+                      <p class="tx-text">{f.transcription}</p>
+                    ) : (
+                      <p class="tx-none">This page is not transcribed yet.</p>
+                    )}
+                  </article>
+                ))}
+              <p class="tx-count">
+                {transcribed === item.pageCount
+                  ? `Every page transcribed.`
+                  : `${transcribed} of ${item.pageCount} pages transcribed.`}
+                {' '}Line breaks follow the page; spelling is as written.
+              </p>
+            </section>
+          )}
+
+          {item.mentions.length > 0 && (
+            <section class="mb-7" aria-labelledby="named-h">
+              <h2 id="named-h" class={H2}>Named in the text</h2>
+              <ul class="list-none p-0 m-0">
+                {item.mentions.map((m, n) => {
+                  const mk = mentionMark.get(n);
+                  const pf = m.page ? faces.find((f) => f.key === m.page) : undefined;
+                  return (
+                    <li class="person" data-hover-mark={mk?.id}>
+                      <div class="person-line">
+                        {m.person ? (
+                          <a href={personHref(m.person)} class={LINK}>{nameOf(m)}</a>
+                        ) : (
+                          <span class="italic opacity-60">{nameOf(m)}</span>
+                        )}
+                        {label(m.confidence) && <span class={QUAL}>{label(m.confidence)}</span>}
+                        {pf && (
+                          mk ? (
+                            <button type="button" class="page-go" data-locate={mk.id}>{pf.label} <span aria-hidden="true">&rarr;</span></button>
+                          ) : (
+                            <button type="button" class="page-go" data-page-go={pf.key}>{pf.label} <span aria-hidden="true">&rarr;</span></button>
+                          )
+                        )}
+                      </div>
+                      <div class="text-sm opacity-75 mt-0.5">
+                        {m.basis}
+                        {m.note && <> {EM} {m.note}</>}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
             </section>
           )}
 
@@ -859,7 +1006,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     </div>
 
     {faces.length > 1 && (
-      <aside class="ex-aside" aria-label="The other view">
+      <aside class="ex-aside" aria-label={paged ? 'The facing page' : 'The other view'}>
         <p class="ex-aside-label" id="ex-aside-label"></p>
         <button type="button" class="ex-aside-btn" data-ex="swap" aria-label="Switch to this view">
           <img id="ex-aside-img" alt="" draggable="false" />
@@ -867,43 +1014,107 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       </aside>
     )}
 
+    {/* THE CONTROLS, by purpose. Three clusters - which side, how close,
+        who is in it - and a More menu for what is used now and then. Close
+        is not in the bar at all: it keeps its own corner at every width.
+        On a phone the bar moves to the bottom, within reach of a thumb, and
+        rotate moves into More. */}
     <div class="ex-top" id="ex-top">
       <p class="ex-title" id="ex-title"></p>
-      <div class="ex-ctl">
+      <div class="ex-ctl" id="ex-ctl">
         {faces.length > 1 && (
-          <span class="ex-group">
-            {faces.map((f) => (
-              <button type="button" data-ex-face={f.key} aria-pressed="false">{f.label}</button>
-            ))}
+          <span class="ex-cluster">
+            {paged ? (
+              <span class="ex-group" role="group" aria-label="Pages">
+                <button type="button" data-ex="page-prev" aria-label="Previous page" title="Previous page ([)">&larr;</button>
+                <span class="ex-pct ex-page" id="ex-page" aria-live="polite"></span>
+                <button type="button" data-ex="page-next" aria-label="Next page" title="Next page (])">&rarr;</button>
+              </span>
+            ) : (
+              <span class="ex-group" role="group" aria-label="Side">
+                {faces.map((f) => (
+                  <button type="button" data-ex-face={f.key} aria-pressed="false">{f.label}</button>
+                ))}
+              </span>
+            )}
+            <button type="button" data-ex="compare" aria-pressed="false">
+              <span class="lbl-wide">Side by side</span>
+              <span class="lbl-narrow" aria-hidden="true">Both</span>
+            </button>
           </span>
         )}
-        {faces.length > 1 && (
-          <button type="button" data-ex="compare" aria-pressed="false">Side by side</button>
-        )}
-        <span class="ex-group ex-zoom">
-          <button type="button" data-ex="out" aria-label="Zoom out">&minus;</button>
-          <span id="ex-pct" class="ex-pct">100%</span>
-          <button type="button" data-ex="in" aria-label="Zoom in">+</button>
+        <span class="ex-cluster">
+          <span class="ex-group" role="group" aria-label="Zoom">
+            <button type="button" class="ex-zoom" data-ex="out" aria-label="Zoom out" title="Zoom out (-)">&minus;</button>
+            <span id="ex-pct" class="ex-pct ex-zoom">100%</span>
+            <button type="button" class="ex-zoom" data-ex="in" aria-label="Zoom in" title="Zoom in (+)">+</button>
+            <button type="button" data-ex="fit" title="Fit (0)">Fit</button>
+          </span>
+          <button type="button" class="ex-rotate" data-ex="rotate" aria-label="Rotate a quarter turn" title="Rotate (R)">
+            <svg viewBox="0 0 20 20" aria-hidden="true" class="ex-ico">
+              <path d="M15.5 10a5.5 5.5 0 1 1-1.9-4.15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+              <path d="M14.4 2.6v3.6h-3.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
         </span>
-        <button type="button" data-ex="fit">Fit</button>
-        <button type="button" data-ex="rotate" aria-label="Rotate a quarter turn" title="Rotate (R)">
-          <svg viewBox="0 0 20 20" aria-hidden="true" class="ex-ico">
-            <path d="M15.5 10a5.5 5.5 0 1 1-1.9-4.15" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
-            <path d="M14.4 2.6v3.6h-3.6" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-        {personMark.size > 0 && (
-          <button type="button" data-ex="names" aria-pressed="false">Names</button>
-        )}
-        <button type="button" data-ex="link">Copy link</button>
-        <button type="button" data-ex="info" aria-expanded="false" aria-controls="ex-note">Note</button>
-        <button type="button" data-ex="full" aria-pressed="false" aria-label="Full screen" title="Full screen (F)" hidden>
-          <svg viewBox="0 0 20 20" aria-hidden="true" class="ex-ico">
-            <path d="M3.5 7.5v-4h4M12.5 3.5h4v4M16.5 12.5v4h-4M7.5 16.5h-4v-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-          </svg>
-        </button>
-        <button type="button" data-ex="close" aria-label="Close">&#10005;</button>
+        <span class="ex-cluster">
+          {personMark.size > 0 && (
+            <button type="button" data-ex="names" aria-pressed="false">Names</button>
+          )}
+          <button
+            type="button"
+            class="ex-more"
+            popovertarget="ex-menu"
+            aria-controls="ex-menu"
+            aria-expanded="false"
+            aria-label="More"
+            title="More"
+            data-ex-more
+          >
+            <svg viewBox="0 0 20 20" aria-hidden="true" class="ex-ico">
+              <circle cx="4.5" cy="10" r="1.5" fill="currentColor" />
+              <circle cx="10" cy="10" r="1.5" fill="currentColor" />
+              <circle cx="15.5" cy="10" r="1.5" fill="currentColor" />
+            </svg>
+          </button>
+        </span>
       </div>
+    </div>
+
+    <div id="ex-menu" class="ex-menu" popover data-ex-menu>
+      <button type="button" data-ex="info" aria-expanded="false" aria-controls="ex-note">Note</button>
+      <button type="button" data-ex="link">Copy link to this view</button>
+      <button type="button" class="only-narrow" data-ex="rotate">Rotate a quarter turn</button>
+      <button type="button" data-ex="full" aria-pressed="false" hidden>Full screen</button>
+      <button type="button" class="only-keys" data-ex="keys" aria-expanded="false" aria-controls="ex-keys">Keyboard shortcuts</button>
+    </div>
+
+    <button type="button" class="ex-close" data-ex="close" aria-label="Close" title="Close (Esc)">&#10005;</button>
+
+    <div id="ex-keys" class="ex-note ex-keys" hidden>
+      <p class="ex-keys-h">Keyboard shortcuts</p>
+      <dl>
+        <dt><kbd>&larr;</kbd> <kbd>&uarr;</kbd> <kbd>&rarr;</kbd> <kbd>&darr;</kbd></dt>
+        <dd>Move around the photograph (with <kbd>Shift</kbd>, further)</dd>
+        <dt><kbd>+</kbd> <kbd>&minus;</kbd></dt>
+        <dd>Zoom in, zoom out</dd>
+        <dt><kbd>0</kbd></dt>
+        <dd>Fit the whole photograph</dd>
+        <dt><kbd>R</kbd></dt>
+        <dd>Rotate a quarter turn (with <kbd>Shift</kbd>, back)</dd>
+        {faces.length > 1 && (
+          <>
+            <dt><kbd>[</kbd> <kbd>]</kbd></dt>
+            <dd>{paged ? 'Previous page, next page' : 'The other side'}</dd>
+          </>
+        )}
+        <dt><kbd>F</kbd></dt>
+        <dd>Full screen, where the browser allows it</dd>
+        <dt><kbd>?</kbd></dt>
+        <dd>This list</dd>
+        <dt><kbd>Esc</kbd></dt>
+        <dd>Close</dd>
+      </dl>
     </div>
 
     <div id="ex-note" class="ex-note" hidden><p id="ex-cap"></p></div>
@@ -1172,6 +1383,177 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     flex-wrap: wrap;
     gap: 0.5rem;
     margin-top: 0.75rem;
+  }
+
+  /* PAGES ------------------------------------------------------------ */
+  /* A grid column grows to fit a long row unless told it may not; the
+     strip must scroll inside the column instead. */
+  .plate-col {
+    min-width: 0;
+  }
+  /* Only the page showing and its two neighbours are laid out: a hidden
+     face is still laid out (it fades), and a laid-out lazy image loads, so
+     seventy stacked pages would otherwise all load at once. */
+  .stack--paged .face:not(.is-on):not(.is-near) {
+    display: none;
+  }
+  .leaf-nav {
+    display: inline-flex;
+    align-items: stretch;
+    border: 1px solid var(--c-haze);
+  }
+  .leaf-btn {
+    min-width: 2.4rem;
+    padding: 0 0.6rem;
+    border: 0;
+    background: transparent;
+    color: var(--c-iron);
+    font: 1rem/1 ui-monospace, monospace;
+    cursor: pointer;
+  }
+  .leaf-btn:hover:not(:disabled) {
+    background: rgb(218 211 196 / 0.3);
+  }
+  .leaf-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+  .leaf-btn:focus-visible,
+  .page-thumb:focus-visible,
+  .page-go:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
+  }
+  .leaf-at {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 8.5rem;
+    margin: 0;
+    padding: 0.3rem 0.75rem;
+    border-inline: 1px solid var(--c-haze);
+    line-height: 1.2;
+    text-align: center;
+  }
+  .leaf-label {
+    font-size: 0.98rem;
+  }
+  .leaf-of {
+    color: var(--c-sage);
+    font: 0.64rem/1.3 ui-monospace, monospace;
+    letter-spacing: 0.08em;
+  }
+  /* The strip: every page, small, in order. Scrolls sideways; the page
+     showing is outlined in caprock and kept in view. */
+  .page-strip {
+    display: flex;
+    gap: 0.4rem;
+    margin: 0.75rem 0 0;
+    padding: 0.2rem 0.1rem 0.6rem;
+    list-style: none;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-width: thin;
+  }
+  .page-strip li {
+    flex: none;
+    scroll-snap-align: center;
+  }
+  .page-thumb {
+    position: relative;
+    display: block;
+    padding: 0;
+    border: 1px solid var(--c-haze);
+    background: var(--c-dust, #ede7da);
+    cursor: pointer;
+    opacity: 0.72;
+    transition:
+      opacity 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .page-thumb img {
+    display: block;
+    width: auto;
+    height: 4.25rem;
+    max-width: none;
+  }
+  .page-thumb:hover {
+    opacity: 1;
+  }
+  .page-thumb[aria-pressed='true'] {
+    opacity: 1;
+    border-color: var(--c-caprock);
+    box-shadow: 0 0 0 1px var(--c-caprock);
+  }
+  .page-thumb-n {
+    position: absolute;
+    right: 0.15rem;
+    bottom: 0.15rem;
+    padding: 0 0.2rem;
+    background: rgb(23 21 15 / 0.7);
+    color: #f0ead9;
+    font: 0.56rem/1.35 ui-monospace, monospace;
+  }
+
+  /* The transcription follows the page. Without the script every
+     transcribed page is listed; pages not yet transcribed are left out. */
+  .tx-page {
+    margin: 0 0 1.25rem;
+  }
+  .tx-page--empty,
+  .is-paging .tx-page {
+    display: none;
+  }
+  .is-paging .tx-page.is-on {
+    display: block;
+  }
+  .tx-label {
+    margin: 0 0 0.4rem;
+    color: var(--c-sage);
+    font: 500 0.7rem/1.3 ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .tx-text {
+    margin: 0;
+    padding: 0.8rem 1rem;
+    border-left: 2px solid var(--c-caprock);
+    background: rgb(218 211 196 / 0.22);
+    font-size: 1.02rem;
+    line-height: 1.7;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+  }
+  .tx-none {
+    margin: 0;
+    font-style: italic;
+    opacity: 0.6;
+  }
+  .tx-count {
+    margin: 0;
+    font-size: 0.82rem;
+    opacity: 0.65;
+  }
+  .page-go {
+    margin-left: 0.35rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    color: var(--c-caprock);
+    font: 0.68rem/1.3 ui-monospace, monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+  .page-go:hover {
+    text-decoration: underline;
+  }
+  .ex-page {
+    min-width: 8rem;
+    padding: 0 0.5rem;
+    white-space: nowrap;
   }
   .seg {
     display: inline-flex;
@@ -1498,6 +1880,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     --ex-chrome: 3.7rem;
     --ex-aside: 0px;
     --ex-aside-b: 0px;
+    /* Height of the bar when it sits at the bottom (phones); set by script. */
+    --ex-foot: 0px;
     width: 100vw;
     height: 100vh;
     height: 100dvh;
@@ -1521,6 +1905,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
   }
   /* A swipe down fades the furniture as the photograph is pulled away. */
   .ex-top,
+  .ex-close,
   .ex-note,
   .ex-map {
     opacity: calc(1 - var(--pull, 0));
@@ -1539,7 +1924,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
   .ex-map {
     position: absolute;
     right: calc(var(--ex-pad) + var(--ex-aside));
-    bottom: calc(var(--ex-pad) + var(--ex-aside-b));
+    bottom: calc(var(--ex-pad) + var(--ex-aside-b) + var(--ex-foot));
     z-index: 2;
     overflow: hidden;
     border: 1px solid rgb(247 244 236 / 0.35);
@@ -1568,7 +1953,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     pointer-events: none;
   }
   @media (max-width: 640px) {
-    .ex.note-open .ex-map {
+    .ex.note-open .ex-map,
+    .ex.keys-open .ex-map {
       display: none;
     }
   }
@@ -1603,7 +1989,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: var(--ex-chrome) calc(var(--ex-pad) + var(--ex-aside)) calc(var(--ex-pad) + var(--ex-aside-b)) var(--ex-pad);
+    padding: var(--ex-chrome) calc(var(--ex-pad) + var(--ex-aside)) calc(var(--ex-pad) + var(--ex-aside-b) + var(--ex-foot)) var(--ex-pad);
     overflow: hidden;
     touch-action: none;
     outline: none;
@@ -1691,6 +2077,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     opacity: 1;
   }
 
+  /* THE BAR. Title at left, then the three clusters and More. Close is
+     not in it (see .ex-close), so the bar leaves its corner free. */
   .ex-top {
     position: absolute;
     top: 0;
@@ -1701,7 +2089,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     align-items: center;
     justify-content: space-between;
     gap: 0.5rem 0.9rem;
-    padding: var(--ex-pad);
+    padding: var(--ex-pad) calc(var(--ex-pad) + 2.3rem + 0.9rem) var(--ex-pad) var(--ex-pad);
     pointer-events: none;
     background: linear-gradient(to bottom, rgb(10 9 6 / 0.94), rgb(10 9 6 / 0.7) 58%, rgb(10 9 6 / 0));
   }
@@ -1725,14 +2113,26 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     flex-wrap: wrap;
     justify-content: flex-end;
     align-items: center;
+    /* The space BETWEEN clusters is what makes them read as clusters. */
+    gap: 0.4rem 1.15rem;
+  }
+  .ex-cluster {
+    display: flex;
+    align-items: center;
     gap: 0.4rem;
   }
+  /* Joined buttons share one outline; the group clips the corners, so the
+     buttons inside draw their focus ring inward. */
   .ex-group {
     display: flex;
     align-items: center;
     gap: 1px;
+    border-radius: 2px;
+    overflow: hidden;
   }
-  .ex-ctl button {
+  .ex-ctl button,
+  .ex-close,
+  .ex-menu button {
     min-width: 2.3rem;
     height: 2.3rem;
     padding: 0 0.62rem;
@@ -1740,35 +2140,44 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     border-radius: 2px;
     background: rgb(247 244 236 / 0.07);
     color: #e8e2d6;
-    font: 0.64rem/1 ui-monospace, monospace;
-    letter-spacing: 0.1em;
+    font: 0.72rem/1 ui-monospace, monospace;
+    letter-spacing: 0.08em;
     text-transform: uppercase;
     cursor: pointer;
   }
   .ex-group button {
     border-radius: 0;
   }
-  .ex-group > :first-child {
-    border-radius: 2px 0 0 2px;
-  }
-  .ex-group > :last-child {
-    border-radius: 0 2px 2px 0;
-  }
-  .ex-ctl button:hover {
+  .ex-ctl button:hover,
+  .ex-close:hover,
+  .ex-menu button:hover {
     background: rgb(247 244 236 / 0.16);
     border-color: rgb(247 244 236 / 0.42);
   }
   .ex-ctl button:focus-visible,
+  .ex-close:focus-visible,
+  .ex-menu button:focus-visible,
   .ex-aside-btn:focus-visible {
     outline: 2px solid #c4785a;
     outline-offset: 1px;
   }
-  .ex-ctl button[aria-pressed='true'] {
+  .ex-group button:focus-visible {
+    outline-offset: -2px;
+  }
+  .ex-ctl button[aria-pressed='true'],
+  .ex-menu button[aria-pressed='true'],
+  .ex-menu button.is-on,
+  .ex-menu button[aria-expanded='true'] {
     background: #9c5b3f;
     border-color: #9c5b3f;
     color: #f7f4ec;
   }
-  .ex-ctl button:disabled {
+  .ex-more[aria-expanded='true'] {
+    background: rgb(247 244 236 / 0.2);
+    border-color: rgb(247 244 236 / 0.5);
+  }
+  .ex-ctl button:disabled,
+  .ex-menu button:disabled {
     opacity: 0.32;
     cursor: default;
     background: none;
@@ -1779,28 +2188,143 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     justify-content: center;
     min-width: 3.1rem;
     height: 2.3rem;
+    box-sizing: border-box;
     border-block: 1px solid rgb(247 244 236 / 0.17);
     background: rgb(247 244 236 / 0.04);
     color: #a79d89;
-    font: 0.62rem/1 ui-monospace, monospace;
+    font: 0.66rem/1 ui-monospace, monospace;
   }
-  /* Pinch is the zoom on a touch screen; the buttons only take room there.
-     And on a phone the title gives its row back to the photograph. */
+  .lbl-narrow,
+  .only-narrow {
+    display: none;
+  }
+
+  /* CLOSE keeps its corner at every width, whatever the bar does. */
+  .ex-close {
+    position: absolute;
+    top: max(var(--ex-pad), env(safe-area-inset-top));
+    right: max(var(--ex-pad), env(safe-area-inset-right));
+    z-index: 3;
+    padding: 0;
+    font-size: 0.8rem;
+    background: rgb(23 21 15 / 0.72);
+  }
+
+  /* MORE. A popover, so it sits above everything, closes on Escape or a tap
+     elsewhere, and needs no script to open. Placed by script beside the
+     button - below it in the top bar, above it in the phone's bottom bar. */
+  .ex-menu {
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    min-width: 13rem;
+    padding: 0.35rem;
+    border: 1px solid rgb(247 244 236 / 0.2);
+    border-radius: 3px;
+    background: #211e17;
+    color: #e8e2d6;
+    box-shadow: 0 14px 32px rgb(0 0 0 / 0.55);
+  }
+  .ex-menu:popover-open {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+  .ex-menu button {
+    width: 100%;
+    padding: 0 0.8rem;
+    border-color: transparent;
+    background: none;
+    text-align: left;
+  }
+  /* Keyboard shortcuts mean nothing to a finger. */
   @media (pointer: coarse) {
-    .ex-zoom {
+    .ex-zoom,
+    .only-keys {
       display: none;
     }
   }
+
+  /* THE PHONE. The title gives its row back to the photograph; the bar goes
+     to the bottom edge; rotate goes into More; "Side by side" says "Both". */
   @media (max-width: 640px) {
     .ex-title {
       display: none;
     }
+    .ex-top {
+      position: static;
+      padding: 0;
+      background: none;
+    }
+    .ex-ctl {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 2;
+      justify-content: center;
+      gap: 0.4rem 0.75rem;
+      padding: 1.6rem var(--ex-pad) max(var(--ex-pad), env(safe-area-inset-bottom));
+      background: linear-gradient(to top, rgb(10 9 6 / 0.94), rgb(10 9 6 / 0.7) 60%, rgb(10 9 6 / 0));
+      pointer-events: none;
+    }
+    .ex-ctl > * {
+      pointer-events: auto;
+    }
+    .ex-ctl button {
+      padding: 0 0.5rem;
+      font-size: 0.68rem;
+    }
+    .ex-rotate,
+    .lbl-wide {
+      display: none;
+    }
+    .lbl-narrow {
+      display: inline;
+    }
+    .only-narrow {
+      display: block;
+    }
+  }
+
+  /* THE SHORTCUTS, in the note's place. */
+  .ex-keys-h {
+    margin: 0 0 0.55rem !important;
+    color: #a79d89 !important;
+    font: 0.64rem/1 ui-monospace, monospace !important;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .ex-keys dl {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0.35rem 0.9rem;
+    margin: 0;
+    font-size: 0.88rem;
+    line-height: 1.4;
+    color: #dcd5c6;
+  }
+  .ex-keys dt {
+    white-space: nowrap;
+  }
+  .ex-keys dd {
+    margin: 0;
+  }
+  .ex-keys kbd {
+    display: inline-block;
+    min-width: 1.35em;
+    padding: 0.1em 0.35em;
+    border: 1px solid rgb(247 244 236 / 0.3);
+    border-bottom-width: 2px;
+    border-radius: 3px;
+    font: 0.72rem/1.2 ui-monospace, monospace;
+    text-align: center;
   }
 
   .ex-note {
     position: absolute;
     left: var(--ex-pad);
-    bottom: calc(var(--ex-pad) + var(--ex-aside-b));
+    bottom: calc(var(--ex-pad) + var(--ex-aside-b) + var(--ex-foot));
     box-sizing: border-box;
     max-width: min(54ch, calc(100% - var(--ex-pad) * 2 - var(--ex-aside)));
     max-height: 40vh;
@@ -1849,6 +2373,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     }
     .ex.is-compare .ex-aside {
       top: auto;
+      bottom: var(--ex-foot);
       left: 0;
       width: auto;
       height: var(--ex-aside-b);
@@ -1883,7 +2408,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
   .ex-toast {
     position: absolute;
     left: 50%;
-    bottom: calc(var(--ex-pad) + var(--ex-aside-b));
+    bottom: calc(var(--ex-pad) + var(--ex-aside-b) + var(--ex-foot));
     max-width: calc(100% - 2rem);
     margin: 0;
     padding: 0.5rem 0.8rem;
@@ -1966,6 +2491,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     .plate-tools,
     .cite-tools,
     .pager,
+    .page-strip,
     .record-json,
     .photo-find,
     .ins-show,
@@ -2084,6 +2610,14 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       max-width: 48%;
       break-inside: avoid;
     }
+    /* A volume prints the page showing, with its transcription - not the
+       neighbours held ready on screen, and not all seventy. */
+    .stack--paged .face:not(.is-on) {
+      display: none;
+    }
+    .stack--paged .face.is-on {
+      max-width: 100%;
+    }
     .face-box img {
       max-height: 11cm;
       width: auto;
@@ -2176,6 +2710,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     h: number;
     /** IIIF image service for this face: full resolution, as tiles. */
     iiif?: string;
+    /** Position among the pages, from 1; 0 for a view that is not a page. */
+    page: number;
   };
   type MarkData = {
     id: string;
@@ -2193,6 +2729,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     next: string | null;
     faces: FaceData[];
     marks: MarkData[];
+    paged: boolean;
   };
   type Box = { x: number; y: number; w: number; h: number };
 
@@ -2253,12 +2790,81 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     const faceBtns = $$<HTMLButtonElement>('[data-face-btn]', root);
     let plateFace = data.faces[0]?.key ?? 'recto';
 
+    /* PAGES. For a paged item the same faces are pages: only the page
+       showing and its neighbours are laid out (so seventy pages do not all
+       load at once, and the next one is ready), the pager and strip follow,
+       the transcription follows, and the address carries #page=n. */
+    const pageKeys = data.faces.filter((f) => f.page > 0).map((f) => f.key);
+    const pageLabel = $('[data-page-label]', root);
+    const pageOf = $('[data-page-of]', root);
+    const strip = $('[data-page-strip]', root);
+    const txPages = $$('[data-tx]', root);
+    if (data.paged) root.classList.add('is-paging');
+    const pageHash = () => {
+      const n = faceData.get(plateFace)?.page ?? 0;
+      return n > 1 ? `#page=${n}` : '';
+    };
+    const writePageHash = () => {
+      if (!data.paged || dialog?.open || location.pathname !== here) return;
+      history.replaceState(history.state, '', `${location.pathname}${location.search}${pageHash()}`);
+    };
+    const syncPages = (key: string) => {
+      if (!data.paged) return;
+      const at = pageKeys.indexOf(key);
+      plateFaces.forEach((f) => {
+        const i = pageKeys.indexOf(f.dataset.face || '');
+        f.classList.toggle('is-near', at >= 0 && i >= 0 && Math.abs(i - at) === 1);
+      });
+      const fd = faceData.get(key);
+      if (pageLabel && fd) pageLabel.textContent = fd.label;
+      if (pageOf && at >= 0) pageOf.textContent = `${at + 1} of ${pageKeys.length}`;
+      $$<HTMLButtonElement>('[data-page-step]', root).forEach((b) => {
+        const d = Number(b.dataset.pageStep);
+        b.disabled = at < 0 || at + d < 0 || at + d >= pageKeys.length;
+      });
+      txPages.forEach((t) => t.classList.toggle('is-on', t.dataset.tx === key));
+      // Keep the page in view in the strip, without moving the window.
+      const thumb = strip?.querySelector<HTMLElement>(`[data-face-btn="${CSS.escape(key)}"]`);
+      if (strip && thumb) {
+        const sr = strip.getBoundingClientRect();
+        const tr = thumb.getBoundingClientRect();
+        if (tr.left < sr.left || tr.right > sr.right) {
+          strip.scrollBy({ left: tr.left - sr.left - (sr.width - tr.width) / 2, behavior: 'smooth' });
+        }
+      }
+    };
+
     const showFace = (key: string) => {
       if (!faceData.has(key)) return;
       plateFace = key;
       plateFaces.forEach((f) => f.classList.toggle('is-on', f.dataset.face === key));
       faceBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.faceBtn === key)));
+      syncPages(key);
+      writePageHash();
       layoutPlateTags();
+    };
+    const stepPage = (dir: number) => {
+      const at = pageKeys.indexOf(plateFace);
+      const next = pageKeys[at + dir];
+      if (at >= 0 && next) showFace(next);
+    };
+    $$<HTMLButtonElement>('[data-page-step]', root).forEach((b) =>
+      b.addEventListener('click', () => stepPage(Number(b.dataset.pageStep)), { signal })
+    );
+    $$<HTMLButtonElement>('[data-page-go]', root).forEach((b) =>
+      b.addEventListener(
+        'click',
+        () => {
+          showFace(b.dataset.pageGo || '');
+          $('.plate-col', root)?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+        },
+        { signal }
+      )
+    );
+    // A page named in the address: #page=12.
+    const pageFromHash = () => {
+      const n = Number(new URLSearchParams(location.hash.slice(1)).get('page'));
+      return data.paged && Number.isInteger(n) && n >= 1 ? pageKeys[n - 1] : undefined;
     };
     faceBtns.forEach((b) => b.addEventListener('click', () => showFace(b.dataset.faceBtn || 'recto'), { signal }));
 
@@ -2434,6 +3040,14 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     const infoBtn = $<HTMLButtonElement>('[data-ex="info"]', dialog);
     const compareBtn = $<HTMLButtonElement>('[data-ex="compare"]', dialog);
     const fullBtn = $<HTMLButtonElement>('[data-ex="full"]', dialog);
+    const ctlBar = $('#ex-ctl', dialog)!;
+    const closeBtn = $<HTMLButtonElement>('.ex-close', dialog);
+    const moreBtn = $<HTMLButtonElement>('[data-ex-more]', dialog);
+    const menu = $<HTMLElement>('[data-ex-menu]', dialog);
+    const keysPanel = $('#ex-keys', dialog);
+    const keysBtn = $<HTMLButtonElement>('[data-ex="keys"]', dialog);
+    // The bar sits at the bottom on a phone; the same query as the CSS.
+    const barAtFoot = window.matchMedia('(max-width: 640px)');
     const exFaceBtns = $$<HTMLButtonElement>('[data-ex-face]', dialog);
     const exMarks = $$('[data-ex-mark]', dialog);
     const asideImg = $<HTMLImageElement>('#ex-aside-img', dialog);
@@ -3012,7 +3626,15 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       layoutExTags();
     };
 
-    const otherFace = () => data.faces.find((f) => f.key !== face);
+    // For a paged item the other view is the FACING page: the next one, or
+    // the one before if this is the last - side by side reads an opening.
+    const otherFace = () => {
+      if (data.paged) {
+        const i = data.faces.findIndex((f) => f.key === face);
+        return data.faces[i + 1] ?? data.faces[i - 1];
+      }
+      return data.faces.find((f) => f.key !== face);
+    };
     const updateAside = () => {
       const o = otherFace();
       if (!compare || !o || !asideImg || !asideLabel) return;
@@ -3050,6 +3672,13 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       sharpen(f.big, 1);
       titleEl.textContent = f.title;
       exFaceBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.exFace === face)));
+      if (data.paged) {
+        const at = data.faces.findIndex((x) => x.key === face);
+        const exPage = $('#ex-page', dialog);
+        if (exPage) exPage.textContent = `${f.label} \u00b7 ${at + 1}/${data.faces.length}`;
+        $$<HTMLButtonElement>('[data-ex="page-prev"]', dialog).forEach((b) => (b.disabled = at <= 0));
+        $$<HTMLButtonElement>('[data-ex="page-next"]', dialog).forEach((b) => (b.disabled = at >= data.faces.length - 1));
+      }
       exMarks.forEach((m) => m.classList.toggle('on-face', m.dataset.face === face));
       setActiveMark(null);
       showFace(face);
@@ -3068,6 +3697,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       const n = data.faces.length;
       if (n < 2) return;
       const i = data.faces.findIndex((f) => f.key === face);
+      // Views go round; pages stop at the covers.
+      if (data.paged && (i + dir < 0 || i + dir >= n)) return;
       const next = data.faces[(i + dir + n) % n];
       loadFace(next.key);
       setNote(data.note, false);
@@ -3184,7 +3815,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
           // Our entry is on top: step back off it.
           history.back();
         } else if (location.pathname === here && location.hash) {
-          history.replaceState({ ...(history.state ?? {}), examine: false }, '', `${location.pathname}${location.search}`);
+          history.replaceState({ ...(history.state ?? {}), examine: false }, '', `${location.pathname}${location.search}${pageHash()}`);
         }
         pushed = false;
       },
@@ -3216,6 +3847,19 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
         if (dialog.open || location.pathname !== here) return;
         const h = parseHash();
         if (h) open(h.face, { box: h.box, rot: h.rot, history: 'replace' });
+        else {
+          const pg = pageFromHash();
+          if (pg) showFace(pg);
+        }
+      },
+      { signal }
+    );
+    // Back off the viewer lands on the entry from before it opened, which
+    // may name an older page: the address follows the page actually showing.
+    window.addEventListener(
+      'popstate',
+      () => {
+        if (!dialog.open && location.pathname === here && !history.state?.examine) writePageHash();
       },
       { signal }
     );
@@ -3252,6 +3896,9 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
         const t = (e.target as Element).closest<HTMLButtonElement>('[data-ex]');
         if (!t) return;
         const action = t.dataset.ex;
+        if (menu && menu.contains(t)) closeMenu();
+        if (action === 'keys') setKeys(!!keysPanel?.hidden);
+        if (action === 'info') setKeys(false);
         if (action === 'close') dialog.close();
         if (action === 'in') zoomTo(k * 1.6);
         if (action === 'out') zoomTo(k / 1.6);
@@ -3286,6 +3933,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
           layout();
           commit();
         }
+        if (action === 'page-prev') stepFace(-1);
+        if (action === 'page-next') stepFace(1);
         if (action === 'swap') {
           const o = otherFace();
           if (o) {
@@ -3590,6 +4239,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
           case 'F': toggleFull(); break;
           case '[': stepFace(-1); break;
           case ']': stepFace(1); break;
+          case '?': setKeys(!!keysPanel?.hidden); break;
           default: handled = false;
         }
         if (handled) e.preventDefault();
@@ -3619,13 +4269,103 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       { signal }
     );
 
-    // The bar wraps to two rows on a narrow screen; the stage keeps clear of
-    // however tall it actually is.
-    const ro = new ResizeObserver(() => {
-      dialog.style.setProperty('--ex-chrome', `${Math.ceil(topBar.getBoundingClientRect().height)}px`);
-    });
+    // The stage keeps clear of the controls, however tall they actually
+    // are: the top bar on a wide screen; on a phone, the Close corner at the
+    // top and the bar along the bottom.
+    const measureChrome = () => {
+      const foot = barAtFoot.matches;
+      const closeBottom = closeBtn ? closeBtn.offsetTop + closeBtn.offsetHeight + 6 : 0;
+      const top = foot ? closeBottom : Math.max(topBar.getBoundingClientRect().height, closeBottom);
+      dialog.style.setProperty('--ex-chrome', `${Math.ceil(top)}px`);
+      dialog.style.setProperty('--ex-foot', foot ? `${Math.ceil(ctlBar.getBoundingClientRect().height)}px` : '0px');
+    };
+    const ro = new ResizeObserver(measureChrome);
     ro.observe(topBar);
+    ro.observe(ctlBar);
+    barAtFoot.addEventListener('change', measureChrome, { signal });
     signal.addEventListener('abort', () => ro.disconnect());
+
+    /* MORE. A popover where the browser has them (it opens itself from
+       popovertarget, closes on Escape or a tap elsewhere); a plain toggle
+       where it has not. Either way it is placed beside its button, and any
+       choice inside it closes it. */
+    const hasPopover = typeof (menu as { showPopover?: unknown } | null)?.showPopover === 'function';
+    const placeMenu = () => {
+      if (!menu || !moreBtn) return;
+      const b = moreBtn.getBoundingClientRect();
+      const m = menu.getBoundingClientRect();
+      const left = Math.max(8, Math.min(window.innerWidth - m.width - 8, b.right - m.width));
+      const top = barAtFoot.matches ? b.top - m.height - 6 : b.bottom + 6;
+      menu.style.left = `${Math.round(left)}px`;
+      menu.style.top = `${Math.round(Math.max(8, top))}px`;
+    };
+    const menuOpen = () => (hasPopover ? menu!.matches(':popover-open') : !menu!.hidden);
+    const closeMenu = () => {
+      if (!menu || !menuOpen()) return;
+      if (hasPopover) menu.hidePopover();
+      else {
+        menu.hidden = true;
+        moreBtn?.setAttribute('aria-expanded', 'false');
+      }
+    };
+    if (menu && moreBtn) {
+      if (hasPopover) {
+        menu.addEventListener(
+          'beforetoggle',
+          (e) => {
+            if ((e as ToggleEvent).newState === 'open') menu.style.visibility = 'hidden';
+          },
+          { signal }
+        );
+        menu.addEventListener(
+          'toggle',
+          (e) => {
+            const open = (e as ToggleEvent).newState === 'open';
+            moreBtn.setAttribute('aria-expanded', String(open));
+            if (open) {
+              placeMenu();
+              menu.style.visibility = '';
+              menu.querySelector<HTMLButtonElement>('button:not([hidden]):not(:disabled)')?.focus();
+            }
+          },
+          { signal }
+        );
+      } else {
+        menu.hidden = true;
+        moreBtn.addEventListener(
+          'click',
+          () => {
+            menu.hidden = !menu.hidden;
+            moreBtn.setAttribute('aria-expanded', String(!menu.hidden));
+            if (!menu.hidden) {
+              menu.style.position = 'fixed';
+              placeMenu();
+            }
+          },
+          { signal }
+        );
+      }
+      window.addEventListener('resize', closeMenu, { signal });
+    }
+
+    // Nothing from the menu or the shortcuts outlives the viewer.
+    dialog.addEventListener(
+      'close',
+      () => {
+        closeMenu();
+        setKeys(false);
+      },
+      { signal }
+    );
+
+    /* The keyboard shortcuts, in the note's place; one or the other. */
+    const setKeys = (open: boolean) => {
+      if (!keysPanel) return;
+      keysPanel.hidden = !open;
+      dialog.classList.toggle('keys-open', open);
+      keysBtn?.setAttribute('aria-expanded', String(open));
+      if (open) setNote(cap.textContent || data.note, false);
+    };
 
     /* ---------------------------------------------------------------- *
      * Citation and links
@@ -3661,6 +4401,12 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       (e) => {
         if (dialog.open || e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
         if ((e.target as Element).closest('input, textarea, select, [contenteditable]')) return;
+        // On a paged item the arrows turn the pages, and stop at the covers.
+        if (data.paged && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) {
+          e.preventDefault();
+          stepPage(e.key === 'ArrowLeft' ? -1 : 1);
+          return;
+        }
         const href = e.key === 'ArrowLeft' ? data.prev : e.key === 'ArrowRight' ? data.next : null;
         if (href) {
           e.preventDefault();
@@ -3752,6 +4498,15 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       attachPicker(frameEl, () => face, true);
       $$('.face-box img', root).forEach((i) => i.addEventListener('dragstart', (e) => e.preventDefault(), { signal }));
       toast('Region mode: drag on the photograph to copy a region. In Examine, zoom in and Shift+drag.');
+    }
+
+    /* ---------------------------------------------------------------- *
+     * Arriving on a page of a paged item: #page=12
+     * ---------------------------------------------------------------- */
+    if (data.paged) {
+      syncPages(plateFace);
+      const start = pageFromHash();
+      if (start) showFace(start);
     }
 
     /* ---------------------------------------------------------------- *

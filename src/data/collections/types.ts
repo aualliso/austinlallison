@@ -55,7 +55,18 @@ export type ObjectFormat =
   | 'tintype'
   | 'copy print'
   | 'ambrotype'
+  | 'bound manuscript volume'
+  | 'letter'
+  | 'document'
   | 'unknown';
+
+/**
+ * WHAT KIND OF THING an item is. Omit it and the item is a photograph, which
+ * most of them are. The pages use it for their words - a person is "in 2
+ * photographs and 1 journal" - and to decide how the item is read: anything
+ * with `pages` gets a page reader, whatever its kind.
+ */
+export type ItemKind = 'photograph' | 'journal' | 'letter' | 'document' | 'artifact';
 
 /**
  * Most family photographs are UNPUBLISHED works, so the pre-1930 rule that
@@ -118,6 +129,53 @@ export interface Depiction {
    * the same claim made precise.
    */
   region?: Region;
+}
+
+/**
+ * A PERSON NAMED IN THE TEXT of a journal, letter or document, as opposed to
+ * one pictured in a photograph. Same rule as a depiction: a name needs its
+ * confidence and its grounds - "Named in the minutes of 12 March 1884 as
+ * Worthy Master" is a basis; a name alone is not.
+ */
+export interface Mention {
+  /** Key into PEOPLE. Omit when the person has no record yet. */
+  person?: string;
+  /** The name exactly as written, when it differs or has no record. */
+  as?: string;
+  /**
+   * WHICH PAGE, by its key: 'p1', 'p2' ... in image order. Omit only when the
+   * item has no pages. For a name written several times, list the page it is
+   * most usefully found on and say the rest in `note`.
+   */
+  page?: string;
+  confidence: Confidence;
+  /** Omit to inherit the item's `identificationBasis`, as depictions do. */
+  basis?: string;
+  /** Anything else: the office held, the other pages the name appears on. */
+  note?: string;
+  /**
+   * Where on the page the name is written, as percentages - the same box as
+   * everywhere else. The page reader outlines it when a reader points at the
+   * name. `face` is taken from `page` when the region does not give one.
+   */
+  region?: Region;
+}
+
+/**
+ * ONE PAGE of a bound volume or a multi-leaf document, in IMAGE ORDER. The
+ * key of the n-th page is 'p' + n - 'p1', 'p12' - and that is what a mention,
+ * a detail or a region names. Keys follow the images, never the volume's own
+ * numbering, which rarely starts on the first image and is not always there.
+ */
+export interface Page extends Surrogate {
+  /**
+   * What this page is, as a reader would say it: 'Front cover', 'Inside
+   * front cover', 'p. 1', '[unnumbered]', 'Blank'. Omit it and the page is
+   * called 'Page n' by its image position. Set it wherever the volume's own
+   * pagination differs from image order, which is usually from the first
+   * page on.
+   */
+  label?: string;
 }
 
 export interface Inscription {
@@ -233,6 +291,26 @@ export interface Item {
    * case. `recto` stays the view the item is represented BY.
    */
   views?: Surrogate[];
+
+  /** Omit for a photograph. See ItemKind. */
+  kind?: ItemKind;
+  /**
+   * THE PAGES of a journal, a letter of several leaves, any multi-page
+   * document - one image each, in order. An item with pages is read page by
+   * page: a strip of pages under the plate, a transcription beside it, and
+   * each page with its own address. `recto` stays the image the item is
+   * represented BY in lists (normally the cover, which may be the same file
+   * as the first page), and `verso` is not used - a volume has pages, not a
+   * back. Further `views` (the spine, the volume closed) follow the pages.
+   *
+   * Seventy of these are not typed by hand: scripts/journal-pages.mjs reads
+   * the folder and writes the list. The transcriptions live apart, in
+   * src/data/collections/transcriptions/<item-slug>.md - see the README
+   * there.
+   */
+  pages?: Page[];
+  /** People named in the text. See Mention. */
+  mentions?: Mention[];
 
   /**
    * What is VISIBLE. One honest sentence satisfies this. Optional - but when
@@ -430,13 +508,25 @@ export interface Person {
 export interface ResolvedItem extends Item {
   collection: string;
   titleSource: 'inscribed' | 'supplied';
+  kind: ItemKind;
   recto: Surrogate & { capture: string };
   /**
    * Every view of the object in display order, already labelled and keyed.
    * The page iterates THIS and never has to know that recto and verso are
-   * spelled differently in the data.
+   * spelled differently in the data. For an item with pages, the pages come
+   * first, keyed p1, p2 ..., each with its position (`page`, from 1) and
+   * the transcription of that page when there is one.
    */
-  faces: { key: string; label: string; surrogate: Surrogate }[];
+  faces: {
+    key: string;
+    label: string;
+    surrogate: Surrogate;
+    page?: number;
+    transcription?: string;
+  }[];
+  /** How many pages; 0 for anything read as views rather than pages. */
+  pageCount: number;
+  mentions: (Mention & { basis: string })[];
   /** Where this item lives: /collections/<collection>/<slug>. */
   href: string;
   date: DateEstimate;
@@ -539,6 +629,15 @@ export const RIGHTS: Record<RightsStatus, { label: string; statement: string; ur
     statement: 'Copyright Undetermined',
     uri: 'http://rightsstatements.org/vocab/UND/1.0/',
   },
+};
+
+/** What each kind is called, singular. */
+export const KIND_NOUN: Record<ItemKind, string> = {
+  photograph: 'photograph',
+  journal: 'journal',
+  letter: 'letter',
+  document: 'document',
+  artifact: 'artifact',
 };
 
 export const CONFIDENCE_LABEL: Record<Confidence, string> = {

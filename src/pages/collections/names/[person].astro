@@ -25,10 +25,24 @@
 //   THE SHELF. The photographs stand on a hairline at their true
 //   proportions, as on the collections guide; the list beneath keeps the
 //   grounds for each identification.
-//   THE CATALOGUE CARD. Heading, see-from forms, sources and identifiers
-//   typed on a 3x5 authority card; the MARC view stays below it.
 //   Kin faces and the card window share transition:name, so a relative's
 //   face grows into their portrait on the way to their page.
+//
+// 2026-09-28 PASS. Everything is shown once.
+//   FACES: every marked face, large, in date order, each with its date,
+//   age, confidence and grounds. COMPARE is there only when asked for: a
+//   quiet "Compare faces" button opens a panel above the gallery, already
+//   holding the pair most worth weighing, and puts a small toggle on each
+//   face. "Done" or Escape puts it all away. The comparison is kept in the
+//   address (#compare=id,id) so it can be sent to someone.
+//   THE SHELF and THE LIST are one list: each photograph's row carries its
+//   print at true proportions beside its title, date, age and grounds.
+//   THE RECORD replaces the typed catalogue card: a plain two-column list
+//   (heading, status, also found as, sources, elsewhere, permalink) with
+//   the MARC view opening from its foot.
+//   VOCABULARY follows the collections guide: an item's optional `kind`
+//   (default photograph) decides whether this person is "in 3 photographs"
+//   or "in 2 photographs and 1 journal".
 //
 // STANDING CONSTRAINTS
 //   No filter, blend, mask, clip-path or 3D. Motion is opacity and
@@ -71,6 +85,7 @@ const RANK: Record<string, number> = { certain: 0, probable: 1, possible: 2, uni
 const firm = (c: string) => c === 'certain' || c === 'probable';
 const label = (c: string) => (c === 'certain' ? '' : c.charAt(0).toUpperCase() + c.slice(1));
 const cap1 = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+const plural = (n: number, one: string) => `${n} ${n === 1 ? one : `${one}s`}`;
 
 /* ------------------------------------------------------------------ *
  * Life dates, as numbers
@@ -122,6 +137,25 @@ const thumbs = new Map(
   )
 );
 const collectionsHere = new Set(appearances.map((a) => a.item.collection));
+
+// WHAT KIND OF THING each appearance is in. Read loosely, as on the
+// collections guide: `kind` is optional and a photograph by default. One
+// object counts once, however many times the person is in it.
+const kindOf = (i: object) =>
+  ((i as { kind?: string }).kind ?? 'photograph').trim().toLowerCase() || 'photograph';
+const kindCounts = new Map<string, number>();
+for (const slug of new Set(appearances.map((a) => a.item.slug))) {
+  const item = appearances.find((a) => a.item.slug === slug)!.item;
+  kindCounts.set(kindOf(item), (kindCounts.get(kindOf(item)) ?? 0) + 1);
+}
+const allPhotos = [...kindCounts.keys()].every((k) => k === 'photograph');
+const NOUN = allPhotos ? 'photograph' : 'item';
+const objectCount = [...kindCounts.values()].reduce((a, b) => a + b, 0);
+const inWhat = [...kindCounts.entries()]
+  .sort((a, b) => b[1] - a[1])
+  .map(([k, n]) => plural(n, k));
+const inWhatLine =
+  inWhat.length <= 1 ? inWhat.join('') : `${inWhat.slice(0, -1).join(', ')} and ${inWhat[inWhat.length - 1]}`;
 // Each collection this person appears in, with a link to its inventory
 // already filtered to them (the collection page reads ?q=).
 const inventories = [...collectionsHere].map((slug) => ({
@@ -224,26 +258,27 @@ const bigDates = (() => {
   return `${born !== undefined ? c + born : ''}${T}${EN}${T}${died !== undefined ? c + died : ''}`;
 })();
 
-// WHAT TO COMPARE FIRST. If any placement is only possible, the strongest
-// placement beside the first possible one: that is the question the page can
-// help answer. Otherwise the earliest and latest faces, which show a life.
+// WHAT TO COMPARE FIRST, when a reader asks to compare. If any placement is
+// only possible, the strongest placement beside the first possible one:
+// that is the question the page can help answer. Otherwise the earliest and
+// latest faces, which show a life.
+const COMPARE_MAX = 4;
 const doubtful = faces.filter((x) => !firm(x.f.confidence));
 const datedFaces = faces.filter((x) => x.span);
-let comparePicks: string[] = [];
-let compareNote = '';
+let suggest: string[] = [];
+let suggestNote = '';
 if (faces.length >= 2) {
   if (doubtful.length && portrait) {
-    comparePicks = [portrait.f.id, doubtful[0].f.id];
-    compareNote = 'A possible placement beside the strongest one.';
+    suggest = [portrait.f.id, doubtful[0].f.id];
+    suggestNote = 'A possible placement beside the strongest one.';
   } else if (datedFaces.length >= 2) {
-    comparePicks = [datedFaces[0].f.id, datedFaces[datedFaces.length - 1].f.id];
-    compareNote = 'The earliest and the latest.';
+    suggest = [datedFaces[0].f.id, datedFaces[datedFaces.length - 1].f.id];
+    suggestNote = 'The earliest and the latest.';
   } else {
-    comparePicks = [faces[0].f.id, faces[1].f.id];
-    compareNote = 'Two faces side by side.';
+    suggest = [faces[0].f.id, faces[1].f.id];
+    suggestNote = 'Two faces side by side.';
   }
 }
-const COMPARE_MAX = 4;
 
 /* ------------------------------------------------------------------ *
  * A life in photographs
@@ -307,8 +342,8 @@ const life = (() => {
   // FACES ALONG THE LIFE. Each placed, dated face stands above the chart at
   // the middle of its date span. Faces go into at most three rows, spaced
   // so none overlaps at the narrowest width the rail shows (40rem, where a
-  // 3rem face is about 9% of the chart). One that will not fit stays in the
-  // strip below and off the rail.
+  // 3rem face is about 9% of the chart). One that will not fit stays off the
+  // rail; it is still among the faces below.
   const RAIL_GAP = 9;
   const RAIL_ROWS = 3;
   const rowEnds: number[] = [];
@@ -480,7 +515,18 @@ const structured = json({
     .map((a) => ({ '@type': 'Photograph', name: a.item.title, url: abs(a.item.href) })),
 });
 
-const pageData = json({ prev: prev ? personHref(prev.id) : null, next: next ? personHref(next.id) : null, max: COMPARE_MAX });
+const pageData = json({
+  prev: prev ? personHref(prev.id) : null,
+  next: next ? personHref(next.id) : null,
+  max: COMPARE_MAX,
+  suggest,
+  suggestNote,
+});
+
+// What the status means, in a sentence, where it needs one.
+const STATUS_GLOSS: Record<string, string> = {
+  provisional: 'The heading rests on the collection\u2019s own objects.',
+};
 
 const H2 = 'sec-h mb-3';
 const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
@@ -580,11 +626,9 @@ const LINK = 'text-caprock hover:underline';
           </p>
         )}
         <p class="tally">
-          {appearances.length === 0
-            ? 'No photograph known'
-            : `In ${appearances.length} ${appearances.length === 1 ? 'photograph' : 'photographs'}`}
+          {objectCount === 0 ? `No ${NOUN} known yet` : `In ${inWhatLine}`}
           {collectionsHere.size > 1 && <> &middot; {collectionsHere.size} collections</>}
-          {faces.length > 0 && <> &middot; face placed in {faces.length}</>}
+          {faces.length > 0 && <> &middot; face marked in {faces.length}</>}
         </p>
       </div>
     </header>
@@ -668,77 +712,102 @@ const LINK = 'text-caprock hover:underline';
     )}
 
     <!-- FACES -->
+    {/* Every marked face, large and in date order, each with the grounds
+        for placing it. In date order they already stand side by side, so
+        this is also where an identification is weighed. */}
     {faces.length > 0 && (
-      <section class="section" aria-labelledby="faces-h">
-        <h2 id="faces-h" class={H2}>{faces.length === 1 ? 'The face' : 'Faces, by date'}</h2>
+      <section class="section faces-sec" aria-labelledby="faces-h" data-faces>
+        <div class="faces-head">
+          <h2 id="faces-h" class={H2}>{faces.length === 1 ? 'The face' : 'Faces, by date'}</h2>
+          {faces.length > 1 && (
+            <button
+              type="button"
+              class="cmp-toggle"
+              aria-expanded="false"
+              aria-controls="cmp-panel"
+              data-cmp-toggle
+              data-js-only
+            >Compare faces</button>
+          )}
+        </div>
         <p class="note">
-          Cut from each photograph where this person is placed in it, and never
-          retouched. {faces.length > 1 && 'Choose faces to compare them side by side.'}
+          Cut from each {NOUN} where this person is marked, and never retouched.
+          {faces.length > 1 && ' In date order, so they can be weighed against one another.'}
         </p>
-        <ol class="strip">
+
+        {/* THE COMPARISON. Not there until asked for. Every face has its
+            figure here, hidden; the script shows the chosen ones. They sit
+            in date order because the figures are in date order. */}
+        {faces.length > 1 && (
+          <div id="cmp-panel" class="cmp-panel" role="region" aria-label="Faces side by side" hidden data-cmp-panel>
+            <div class="cmp-head">
+              <p class="cmp-note" tabindex="-1" data-cmp-note>{suggestNote}</p>
+              <button type="button" class="cmp-done" data-cmp-done>Done</button>
+            </div>
+            <div class="cmp-grid">
+              {faces.map((x) => (
+                <figure class:list={['cmp', { 'cmp--doubt': !firm(x.f.confidence) }]} data-cmp={x.f.id} data-key={x.key} hidden>
+                  <a href={x.link} class="cmp-face" aria-label={`${name} in ${x.f.item.title}. Open it at this face.`}>
+                    <img src={faceHref(x.f.id, 2)} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" />
+                  </a>
+                  <figcaption>
+                    <span class="fc-when">
+                      <span class="fc-date">{x.f.item.date.display}</span>
+                      {x.age && <span class="fc-age">{cap1(x.age)}</span>}
+                    </span>
+                    <span class="cmp-title"><a href={x.f.item.href} class={LINK}>{x.f.item.title}</a></span>
+                    <span class="cmp-basis">
+                      {label(x.f.confidence) && <span class={QUAL}>{label(x.f.confidence)}</span>}
+                      {label(x.f.confidence) && x.f.basis && <> &mdash; </>}
+                      {x.f.basis}
+                    </span>
+                    <button type="button" class="cmp-remove" data-unpick={x.f.id}>Remove</button>
+                  </figcaption>
+                </figure>
+              ))}
+            </div>
+            <p class="sr-only" aria-live="polite" data-cmp-status></p>
+          </div>
+        )}
+
+        <ol class="faces">
           {faces.map((x) => (
-            <li class="strip-item" data-key={x.key}>
-              <a href={x.link} class="strip-face" aria-label={`${name} in ${x.f.item.title}. Open the photograph at this face.`}>
+            <li class:list={['fc', { 'fc--doubt': !firm(x.f.confidence) }]} data-key={x.key}>
+              <a href={x.link} class="fc-face" aria-label={`${name} in ${x.f.item.title}. Open it at this face.`}>
                 <img
-                  src={faceHref(x.f.id)}
-                  srcset={`${faceHref(x.f.id)} 1x, ${faceHref(x.f.id, 2)} 2x`}
+                  src={faceHref(x.f.id, 2)}
                   width={FACE_W}
                   height={FACE_H}
                   alt=""
                   loading="lazy"
                   decoding="async"
                 />
-                {!firm(x.f.confidence) && <span class="strip-flag">{label(x.f.confidence)}</span>}
+                {!firm(x.f.confidence) && <span class="fc-flag">{label(x.f.confidence)}</span>}
               </a>
-              <span class="strip-date font-mono">{x.f.item.date.display}</span>
-              {x.age && <span class="strip-age">{x.age}</span>}
               {faces.length > 1 && (
                 <button
                   type="button"
-                  class="pick"
+                  class="fc-pick"
+                  aria-pressed="false"
+                  aria-label={`Compare the face in ${x.f.item.title}`}
                   data-pick={x.f.id}
-                  aria-pressed={comparePicks.includes(x.f.id) ? 'true' : 'false'}
-                  data-js-only
-                >Compare</button>
+                  hidden
+                >
+                  <svg viewBox="0 0 16 16" aria-hidden="true">
+                    <path class="fc-pick-plus" d="M8 3.5v9M3.5 8h9" />
+                    <path class="fc-pick-tick" d="M3.5 8.4l3 3 6-6.6" />
+                  </svg>
+                </button>
               )}
+              <p class="fc-when">
+                <span class="fc-date">{x.f.item.date.display}</span>
+                {x.age && <span class="fc-age">{cap1(x.age)}</span>}
+              </p>
+              <p class="fc-title"><a href={x.f.item.href} class={LINK}>{x.f.item.title}</a></p>
+              {x.f.basis && <p class="fc-basis">{x.f.basis}</p>}
             </li>
           ))}
         </ol>
-      </section>
-    )}
-
-    <!-- COMPARE -->
-    {faces.length > 1 && (
-      <section class="section compare" aria-labelledby="compare-h">
-        <h2 id="compare-h" class={H2}>Compare faces</h2>
-        <p class="note" data-compare-note>{compareNote}</p>
-        <div class="compare-grid">
-          {faces.map((x) => (
-            <figure class:list={['cmp', { 'is-picked': comparePicks.includes(x.f.id) }]} data-cmp={x.f.id} data-key={x.key}>
-              <a href={x.link} class="cmp-face">
-                <img
-                  src={faceHref(x.f.id, 2)}
-                  width={FACE_W}
-                  height={FACE_H}
-                  alt={`${name} in ${x.f.item.title}`}
-                  loading="lazy"
-                  decoding="async"
-                />
-              </a>
-              <figcaption>
-                <span class="cmp-title"><a href={x.f.item.href} class={LINK}>{x.f.item.title}</a></span>
-                <span class={`${MONO} block mt-1`}>{x.f.item.date.display}{x.age && <> &middot; {x.age}</>}</span>
-                <span class="cmp-basis">
-                  {label(x.f.confidence) && <span class={QUAL}>{label(x.f.confidence)}</span>}
-                  {label(x.f.confidence) && <> &mdash; </>}
-                  {x.f.basis}
-                </span>
-                <button type="button" class="cmp-remove" data-unpick={x.f.id} data-js-only>Remove</button>
-              </figcaption>
-            </figure>
-          ))}
-        </div>
-        <p class="sr-only" aria-live="polite" data-compare-status></p>
       </section>
     )}
 
@@ -793,7 +862,6 @@ const LINK = 'text-caprock hover:underline';
                 <span class="kin-face kin-face--none" aria-hidden="true">{p.surname.charAt(0)}</span>
               )}
               <span class="kin-text">
-                <span class="kin-role">This record</span>
                 <span class="kin-name">{name}</span>
                 {dates && <span class="kin-dates">{dates}</span>}
               </span>
@@ -837,7 +905,7 @@ const LINK = 'text-caprock hover:underline';
           )}
         </div>
 
-        <h3 class={`${MONO} mt-6 mb-2`}>Grounds</h3>
+        <h3 class={`${MONO} mt-6 mb-2`}>How each relationship is known</h3>
         <ul class="grounds">
           {kin.map((k) => (
             <li>
@@ -855,9 +923,11 @@ const LINK = 'text-caprock hover:underline';
     )}
 
     <!-- PHOTOGRAPHS -->
+    {/* One row per object: the print at its true proportions, then what it
+        is, when, where it is kept, the person's age, and the grounds. */}
     <section class="section" aria-labelledby="photos-h">
-      <h2 id="photos-h" class={H2}>Photographs</h2>
-      {inventories.length === 1 && (
+      <h2 id="photos-h" class={H2}>{allPhotos ? 'Photographs' : 'Where this person appears'}</h2>
+      {inventories.length === 1 && appearances.length > 0 && (
         <p class="note">
           See {appearances.length === 1 ? 'it' : 'them'} in the inventory of the{' '}
           <a href={inventories[0].href} class={LINK}>{inventories[0].title}</a>, filtered to {name}.
@@ -875,36 +945,18 @@ const LINK = 'text-caprock hover:underline';
         </p>
       )}
       {appearances.length === 0 ? (
-        <p class="m-0 italic opacity-60">
-          No photograph of this person is known. The record exists because the
-          name is written on the back of one.
-        </p>
+        <p class="m-0 italic opacity-60">No {NOUN} of this person is known yet.</p>
       ) : (
-        <>
-        {/* THE SHELF. The photographs stand on one hairline at their true
-            proportions - a cabinet card beside a wide group print, as they
-            would stand on a mantel. A visual index: the list below carries
-            the links, the dates and the grounds. */}
-        <ul class="shelf" aria-hidden="true">
-          {appearances.map((a) => {
-            const t = thumbs.get(a.item.slug)!;
-            return (
-              <li class="print" data-key={a.key}>
-                <a href={a.item.href} tabindex="-1" class="print-link" title={`${a.item.title}, ${a.item.date.display}`}>
-                  <img src={t.index} srcset={t.indexSrcset} width={t.width} height={t.height} alt="" loading="lazy" decoding="async" />
-                  {!firm(a.confidence) && <span class="print-flag">{label(a.confidence)}</span>}
-                </a>
-                <span class="print-date">{a.item.date.display}</span>
-              </li>
-            );
-          })}
-        </ul>
         <ul class="photos">
           {appearances.map((a) => {
+            const t = thumbs.get(a.item.slug)!;
             const coll = collectionBySlug.get(a.item.collection)?.title ?? '';
             const age = ageAt(a.span);
             return (
               <li class="photo" data-key={a.key}>
+                <a href={a.item.href} class="photo-print" tabindex="-1" aria-hidden="true">
+                  <img src={t.index} srcset={t.indexSrcset} width={t.width} height={t.height} alt="" loading="lazy" decoding="async" />
+                </a>
                 <div class="photo-text">
                   <a href={a.item.href} class={`${LINK} photo-title`}>{a.item.title}</a>
                   <div class={`${MONO} mt-1`}>
@@ -918,59 +970,96 @@ const LINK = 'text-caprock hover:underline';
                     {label(a.confidence) && <> &mdash; </>}
                     {a.basis}
                   </div>
+                  {a.named && a.note && <div class="photo-basis">{a.note}</div>}
                   {a.face && (
-                    <a href={viewLink(a.face)} class="photo-find">Find the face in the photograph <span aria-hidden="true">&rarr;</span></a>
+                    <a href={viewLink(a.face)} class="photo-find">Find the face <span aria-hidden="true">&rarr;</span></a>
+                  )}
+                  {a.named && a.page && (
+                    <a href={a.page.href} class="photo-find">
+                      Named on {a.page.label.replace(/^Page /, 'page ')} <span aria-hidden="true">&rarr;</span>
+                    </a>
                   )}
                 </div>
               </li>
             );
           })}
         </ul>
-        </>
       )}
     </section>
 
-    <!-- THE CATALOGUE CARD -->
-    <section class="section" aria-labelledby="record-h">
-      <h2 id="record-h" class={H2}>The authority record</h2>
-      <div class="catcard">
-        <span class:list={['cc-status', `cc-status--${status}`]}>{status}</span>
-        <p class="cc-heading">{heading(p)}</p>
-        {(p.variants ?? []).map((v) => (
-          <p class="cc-line"><span class="cc-x" title="see from">x</span> {v}</p>
-        ))}
-        {(p.sources ?? []).length > 0 && (
-          <>
-            <p class="cc-label">Sources</p>
-            {p.sources!.map((src) => <p class="cc-line cc-hang">{src}</p>)}
-          </>
+    <!-- THE RECORD -->
+    {/* The authority record, set plainly: what a cataloguer would check,
+        in the order they would check it. MARC opens from its foot. */}
+    <section class="section record" aria-labelledby="record-h">
+      <h2 id="record-h" class={H2}>The record</h2>
+      <dl class="rec">
+        <div class="rec-row">
+          <dt>Heading</dt>
+          <dd class="rec-heading">{heading(p)}</dd>
+        </div>
+        <div class="rec-row">
+          <dt>Status</dt>
+          <dd>
+            <span class:list={['rec-status', `rec-status--${status}`]}>{cap1(status)}</span>
+            {STATUS_GLOSS[status] && <span class="rec-gloss">{STATUS_GLOSS[status]}</span>}
+          </dd>
+        </div>
+        {p.variants && p.variants.length > 0 && (
+          <div class="rec-row">
+            <dt>Also found as</dt>
+            <dd>
+              <ul class="rec-list">
+                {p.variants.map((v) => <li>{v}</li>)}
+              </ul>
+            </dd>
+          </div>
         )}
+        <div class="rec-row">
+          <dt>Sources</dt>
+          <dd>
+            {(p.sources ?? []).length > 0 ? (
+              <ol class="rec-list rec-sources">
+                {p.sources!.map((src) => <li>{src}</li>)}
+              </ol>
+            ) : (
+              <span class="rec-empty">None recorded for this heading yet.</span>
+            )}
+          </dd>
+        </div>
         {identifiers.length > 0 && (
-          <>
-            <p class="cc-label">Also known to</p>
-            {identifiers.map((i) => (
-              <p class="cc-line">
-                {i.label}: <a href={i.href} rel="external noopener">{i.value}</a>
-              </p>
-            ))}
-          </>
+          <div class="rec-row">
+            <dt>Elsewhere</dt>
+            <dd>
+              <ul class="rec-list">
+                {identifiers.map((i) => (
+                  <li>
+                    {i.label} <a href={i.href} class={LINK} rel="external noopener">{i.value}</a>
+                  </li>
+                ))}
+              </ul>
+            </dd>
+          </div>
         )}
-        {(p.sources ?? []).length === 0 && identifiers.length === 0 && (
-          <p class="cc-line cc-empty">No sources recorded for this heading yet.</p>
-        )}
-        <span class="cc-foot" aria-hidden="true">{permalink.replace(/^https?:\/\//, '')}</span>
-      </div>
-    </section>
+        <div class="rec-row">
+          <dt>Permalink</dt>
+          <dd class="rec-link">
+            <a href={permalink} class={LINK}>{permalink.replace(/^https?:\/\//, '')}</a>
+            <button type="button" class="rec-copy" data-copy-link={permalink} data-js-only>Copy</button>
+          </dd>
+        </div>
+      </dl>
 
-    <details class="marc">
-      <summary>
-        <span class={MONO}>View as a MARC 21 authority record</span>
-      </summary>
-      <pre class="marc-pre">{marc.map((f) => (
-        <span class="marc-line"><span class="marc-tag">{f.tag}</span> <span class="marc-ind">{f.ind.replace(/ /g, '\u2002')}</span> {f.subs.map(([code, value], n) => <>{n > 0 && ' '}<span class="marc-code">${code}</span> {value}</>)}</span>
-      ))}</pre>
-      <p class={`${MONO} mt-2`}>Leader and fixed fields omitted.</p>
-    </details>
+      <details class="marc">
+        <summary>
+          <span class={MONO}>View as a MARC 21 authority record</span>
+        </summary>
+        <pre class="marc-pre">{marc.map((f) => (
+          <span class="marc-line"><span class="marc-tag">{f.tag}</span> <span class="marc-ind">{f.ind.replace(/ /g, '\u2002')}</span> {f.subs.map(([code, value], n) => <>{n > 0 && ' '}<span class="marc-code">${code}</span> {value}</>)}</span>
+        ))}</pre>
+        <p class={`${MONO} mt-2`}>Leader and fixed fields omitted.</p>
+      </details>
+      <p class="sr-only" aria-live="polite" data-copy-status></p>
+    </section>
   </div>
 </RootLayout>
 
@@ -1419,119 +1508,190 @@ const LINK = 'text-caprock hover:underline';
   }
 
   /* Faces, by date -------------------------------------------------- */
-  .strip {
+  /* Large enough to weigh one against another: two across on a phone,
+     as many as fit at about 11rem on a wider screen. Each in a pale mount,
+     with the date and age under it, then the photograph and the grounds. */
+  .faces {
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 8.5rem;
-    gap: 1rem;
-    margin: 0;
-    padding: 0.25rem 0.1rem 0.9rem;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.75rem 1rem;
+    margin: 0.5rem 0 0;
+    padding: 0;
     list-style: none;
-    overflow-x: auto;
-    scroll-snap-type: x proximity;
-    scrollbar-width: thin;
   }
-  .strip-item {
+  @media (min-width: 40rem) {
+    .faces {
+      grid-template-columns: repeat(auto-fill, minmax(10.5rem, 1fr));
+      gap: 2rem 1.25rem;
+    }
+  }
+  .fc {
+    position: relative;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
-    scroll-snap-align: start;
+    min-width: 0;
   }
-  .strip-face {
+  .fc-face {
     position: relative;
     display: block;
-    padding: 0.3rem;
+    padding: 0.4rem;
     background: var(--c-mount);
     border: 1px solid var(--c-haze);
+    box-shadow: 0 14px 24px -20px rgb(59 56 51 / 0.65);
     transition:
       border-color 0.2s ease,
       transform 0.25s ease;
   }
-  .strip-face img {
+  .fc-face img {
     display: block;
     width: 100%;
     height: auto;
   }
-  .strip-face:hover,
-  .strip-face:focus-visible,
-  .strip-item.is-lit .strip-face {
+  .fc-face:hover,
+  .fc-face:focus-visible,
+  .fc.is-lit .fc-face {
     border-color: var(--c-caprock);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
     outline: none;
   }
-  .strip-flag {
+  .fc-face:focus-visible {
+    box-shadow: 0 0 0 2px var(--c-caprock);
+  }
+  /* A placement that is only possible reads as one: a dashed mount. */
+  .fc--doubt .fc-face {
+    border-style: dashed;
+    border-color: var(--c-sage);
+  }
+  .fc-flag {
     position: absolute;
-    left: 0.3rem;
-    bottom: 0.3rem;
-    padding: 0.1rem 0.3rem;
+    left: 0.4rem;
+    bottom: 0.4rem;
+    padding: 0.1rem 0.35rem;
     background: rgb(23 21 15 / 0.78);
     color: #f0ead9;
     font: 0.62rem/1.3 ui-monospace, monospace;
     letter-spacing: 0.1em;
     text-transform: uppercase;
   }
-  .strip-date {
-    margin-top: 0.45rem;
-    font-size: 0.68rem;
+  .fc-when {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.5rem;
+    margin: 0.6rem 0 0;
+  }
+  .fc-date {
     color: var(--c-sage);
+    font: 0.7rem/1.4 ui-monospace, monospace;
+    letter-spacing: 0.04em;
   }
-  .strip-age {
-    font-size: 0.88rem;
+  .fc-age {
+    font-size: 0.92rem;
     font-style: italic;
-    line-height: 1.25;
+    line-height: 1.3;
   }
-  .pick {
-    align-self: flex-start;
-    margin-top: 0.35rem;
-    padding: 0.18rem 0.45rem;
+  .fc-title {
+    margin: 0.15rem 0 0;
+    font-size: 0.98rem;
+    line-height: 1.3;
+  }
+  .fc-basis {
+    margin: 0.3rem 0 0;
+    font-size: 0.86rem;
+    line-height: 1.45;
+    opacity: 0.78;
+  }
+
+  /* Compare, when asked for ---------------------------------------- */
+  .faces-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.25rem 1rem;
+  }
+  .cmp-toggle,
+  .cmp-done {
+    padding: 0.3rem 0.7rem;
     border: 1px solid var(--c-haze);
     background: transparent;
     color: var(--c-iron);
-    font: 500 0.66rem/1.2 ui-monospace, monospace;
+    font: 500 0.66rem/1.3 ui-monospace, monospace;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     cursor: pointer;
+    transition: border-color 0.2s ease;
   }
-  .pick:hover {
+  .cmp-toggle:hover,
+  .cmp-done:hover {
     border-color: var(--c-caprock);
   }
-  .pick[aria-pressed='true'] {
+  .cmp-toggle[aria-expanded='true'] {
+    border-color: var(--c-caprock);
     background: var(--c-caprock);
-    border-color: var(--c-caprock);
     color: var(--c-canvas);
   }
-  .pick:focus-visible,
-  .cmp-remove:focus-visible {
+  .cmp-toggle:focus-visible,
+  .cmp-done:focus-visible,
+  .cmp-remove:focus-visible,
+  .fc-pick:focus-visible {
     outline: 2px solid var(--c-caprock);
     outline-offset: 2px;
   }
-
-  /* Compare -------------------------------------------------------- */
+  .cmp-panel[hidden],
+  .cmp[hidden],
+  .fc-pick[hidden] {
+    display: none;
+  }
+  /* The panel: a pale ground ruled top and bottom, so it reads as laid over
+     the gallery rather than as another section. */
+  .cmp-panel {
+    margin: 1rem 0 2rem;
+    padding: 1rem 1rem 1.25rem;
+    border-block: 1px solid var(--c-haze);
+    background: rgb(218 211 196 / 0.2);
+  }
+  .cmp-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.4rem 1rem;
+    margin-bottom: 1rem;
+  }
+  .cmp-note {
+    margin: 0;
+    font-size: 0.98rem;
+    font-style: italic;
+    outline: none;
+  }
   /* Two across even on a phone: a comparison is only one if the faces are
-     side by side. */
-  .compare-grid {
+     side by side. Larger than the gallery on a wide screen. */
+  .cmp-grid {
     display: grid;
-    gap: 1.25rem 1rem;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem 1rem;
   }
   @media (min-width: 40rem) {
-    .compare-grid {
-      grid-template-columns: repeat(auto-fill, 13.5rem);
+    .cmp-grid {
+      grid-template-columns: repeat(auto-fill, minmax(12.5rem, 15rem));
+      gap: 1.5rem 1.25rem;
     }
   }
   .cmp {
-    display: none;
     margin: 0;
-  }
-  .cmp.is-picked {
-    display: block;
+    min-width: 0;
   }
   .cmp-face {
     display: block;
-    padding: 0.5rem;
+    padding: 0.45rem;
     background: var(--c-mount);
     border: 1px solid var(--c-haze);
-    box-shadow: 0 14px 26px -20px rgb(59 56 51 / 0.6);
+    box-shadow: 0 14px 26px -20px rgb(59 56 51 / 0.65);
+  }
+  .cmp--doubt .cmp-face {
+    border-style: dashed;
+    border-color: var(--c-sage);
   }
   .cmp.is-lit .cmp-face {
     border-color: var(--c-caprock);
@@ -1547,28 +1707,74 @@ const LINK = 'text-caprock hover:underline';
     margin-top: 0.6rem;
   }
   .cmp-title {
-    font-size: 1rem;
-    line-height: 1.25;
+    margin-top: 0.15rem;
+    font-size: 0.98rem;
+    line-height: 1.3;
   }
   .cmp-basis {
-    margin-top: 0.35rem;
-    font-size: 0.88rem;
+    margin-top: 0.3rem;
+    font-size: 0.86rem;
+    line-height: 1.45;
     opacity: 0.8;
   }
   .cmp-remove {
     align-self: flex-start;
-    margin-top: 0.5rem;
+    margin-top: 0.45rem;
     padding: 0;
     border: 0;
     background: none;
     color: var(--c-sage);
-    font: 0.68rem/1.3 ui-monospace, monospace;
+    font: 0.66rem/1.3 ui-monospace, monospace;
     letter-spacing: 0.12em;
     text-transform: uppercase;
     cursor: pointer;
   }
   .cmp-remove:hover {
     color: var(--c-caprock);
+  }
+  /* The toggle on each face, only while comparing: a small round mark in
+     the mount's corner - a plus, or a tick once chosen. */
+  .fc-pick {
+    position: absolute;
+    top: 0.65rem;
+    right: 0.65rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.9rem;
+    height: 1.9rem;
+    padding: 0;
+    border: 1px solid rgb(247 244 236 / 0.8);
+    border-radius: 50%;
+    background: rgb(23 21 15 / 0.62);
+    color: #f7f4ec;
+    cursor: pointer;
+  }
+  .fc-pick svg {
+    width: 0.95rem;
+    height: 0.95rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .fc-pick-tick,
+  .fc-pick[aria-pressed='true'] .fc-pick-plus {
+    display: none;
+  }
+  .fc-pick[aria-pressed='true'] .fc-pick-tick {
+    display: inline;
+  }
+  .fc-pick[aria-pressed='true'] {
+    border-color: var(--c-caprock);
+    background: var(--c-caprock);
+  }
+  .fc-pick:hover {
+    border-color: #fff;
+  }
+  .faces-sec.is-comparing .fc:has(.fc-pick[aria-pressed='true']) .fc-face {
+    border-color: var(--c-caprock);
   }
 
   /* Family --------------------------------------------------------- */
@@ -1698,84 +1904,9 @@ const LINK = 'text-caprock hover:underline';
   }
 
   /* Photographs ---------------------------------------------------- */
-  /* The shelf ----------------------------------------------------- */
-  .shelf {
-    --shelf-h: 10rem;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: flex-end;
-    gap: 1.9rem 1.5rem;
-    margin: 0.75rem 0 2.25rem;
-    padding: 0;
-    list-style: none;
-  }
-  @media (max-width: 40rem) {
-    .shelf {
-      --shelf-h: 7rem;
-      gap: 1.5rem 1rem;
-    }
-  }
-  .print {
-    display: flex;
-    flex-direction: column;
-    max-width: 100%;
-  }
-  .print-link {
-    position: relative;
-    display: block;
-    transition: transform 0.25s ease;
-  }
-  /* max-height, not height: a fixed height with a max-width would squash a
-     wide print on a narrow screen. Both limits keep the proportions. */
-  .print-link img {
-    display: block;
-    width: auto;
-    height: auto;
-    max-width: 100%;
-    max-height: var(--shelf-h);
-    box-shadow:
-      0 1px 1px rgb(26 25 25 / 0.18),
-      0 12px 18px -12px rgb(26 25 25 / 0.55);
-  }
-  /* The hairline they stand on, run half a gap past each print so a row
-     reads as one line. */
-  .print-link::after {
-    content: '';
-    position: absolute;
-    left: -0.75rem;
-    right: -0.75rem;
-    bottom: -1px;
-    border-bottom: 1px solid rgb(26 25 25 / 0.28);
-  }
-  .print-link:hover,
-  .print.is-lit .print-link {
-    transform: translateY(-4px);
-  }
-  .print-flag {
-    position: absolute;
-    left: 0.3rem;
-    bottom: 0.35rem;
-    padding: 0.1rem 0.35rem;
-    background: rgb(26 25 25 / 0.72);
-    color: #f5f3ed;
-    font: 0.62rem/1.3 ui-monospace, monospace;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-  /* Width 0 and min-width 100%: the date takes the print's width without
-     widening it, and trims rather than wraps. */
-  .print-date {
-    width: 0;
-    min-width: 100%;
-    margin-top: 0.5rem;
-    overflow: hidden;
-    color: var(--c-sage);
-    font: 0.68rem/1.3 ui-monospace, monospace;
-    letter-spacing: 0.04em;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
+  /* One row each. The print keeps its own shape: every print is the same
+     HEIGHT and as wide as it is, up to a limit, so a cabinet card and a
+     wide group photograph sit in the same column at their true shapes. */
   .photos {
     margin: 0;
     padding: 0;
@@ -1783,13 +1914,46 @@ const LINK = 'text-caprock hover:underline';
   }
   .photo {
     display: flex;
+    align-items: flex-start;
     gap: 1.25rem;
-    padding: 1rem 0.5rem 1rem 0;
+    padding: 1.1rem 0.5rem 1.1rem 0;
     border-top: 1px solid var(--c-haze);
     transition: background-color 0.2s ease;
   }
   .photo.is-lit {
     background: rgb(218 211 196 / 0.22);
+  }
+  .photo-print {
+    flex: none;
+    display: flex;
+    justify-content: flex-start;
+    width: 9rem;
+  }
+  .photo-print img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 7rem;
+    box-shadow:
+      0 1px 1px rgb(26 25 25 / 0.18),
+      0 10px 16px -10px rgb(26 25 25 / 0.55);
+    transition: transform 0.25s ease;
+  }
+  .photo:hover .photo-print img,
+  .photo.is-lit .photo-print img {
+    transform: translateY(-3px);
+  }
+  @media (max-width: 40rem) {
+    .photo {
+      gap: 0.9rem;
+    }
+    .photo-print {
+      width: 5.5rem;
+    }
+    .photo-print img {
+      max-height: 5.5rem;
+    }
   }
   .photo-text {
     min-width: 0;
@@ -1820,104 +1984,112 @@ const LINK = 'text-caprock hover:underline';
     text-decoration: underline;
   }
 
-  /* The catalogue card --------------------------------------------- */
-  /* A 3x5 authority card: buff stock, typed, the rod hole at the foot, the
-     status stamped in the corner. Set down a fraction off square. */
-  .catcard {
-    position: relative;
-    max-width: 36rem;
-    min-height: 13rem;
-    margin-top: 0.5rem;
-    padding: 1.4rem 1.6rem 3rem 2.1rem;
-    border: 1px solid rgb(26 25 25 / 0.12);
-    border-radius: 3px;
-    background: #f7f2e4;
-    box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.6),
-      0 14px 26px -18px rgb(26 25 25 / 0.5);
-    color: #2a2826;
-    font-family: 'Courier New', Courier, ui-monospace, monospace;
-    font-size: 0.92rem;
-    line-height: 1.55;
-    transform: rotate(0.35deg);
+  /* The record ----------------------------------------------------- */
+  /* Two columns on a wide screen - the field, then its value - ruled like
+     the rest of the site's lists. On a phone the field sits over its
+     value. */
+  .rec {
+    margin: 0.25rem 0 0;
   }
-  .catcard::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    bottom: 0.8rem;
-    width: 1.05rem;
-    height: 1.05rem;
-    margin-left: -0.525rem;
-    border-radius: 50%;
-    background: var(--c-canvas);
-    box-shadow: inset 0 1px 2px rgb(26 25 25 / 0.4);
+  .rec-row {
+    display: grid;
+    gap: 0.2rem 1.5rem;
+    padding: 0.7rem 0;
+    border-top: 1px solid var(--c-haze);
   }
-  .cc-heading {
-    margin: 0 6.5rem 0.55rem 0;
-    font-weight: 700;
+  .rec-row:last-child {
+    border-bottom: 1px solid var(--c-haze);
   }
-  .cc-line {
+  @media (min-width: 40rem) {
+    .rec-row {
+      grid-template-columns: 9.5rem minmax(0, 1fr);
+      align-items: baseline;
+    }
+  }
+  .rec dt {
+    color: var(--c-sage);
+    font: 0.7rem/1.5 ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+  .rec dd {
     margin: 0;
+    min-width: 0;
+    font-size: 0.98rem;
+    line-height: 1.5;
     overflow-wrap: anywhere;
   }
-  /* Sources run on with a hanging indent, as typed cards did. */
-  .cc-hang {
-    padding-left: 3ch;
-    text-indent: -3ch;
+  .rec-heading {
+    font-size: 1.15rem !important;
+    font-weight: 600;
   }
-  .cc-x {
-    color: var(--c-caprock);
+  .rec-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
   }
-  .cc-label {
-    margin: 0.85rem 0 0.1rem;
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
+  .rec-list li + li {
+    margin-top: 0.3rem;
   }
-  .cc-empty {
+  /* Sources are citations: a hanging indent keeps each one together. */
+  .rec-sources li {
+    padding-left: 1.25rem;
+    text-indent: -1.25rem;
+  }
+  .rec-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    font-weight: 600;
+  }
+  .rec-status::before {
+    content: '';
+    width: 0.55rem;
+    height: 0.55rem;
+    border: 1.5px solid var(--c-sage);
+    border-radius: 50%;
+  }
+  .rec-status--established::before {
+    border-color: var(--c-caprock);
+    background: var(--c-caprock);
+  }
+  .rec-gloss {
+    display: block;
+    margin-top: 0.15rem;
+    font-size: 0.9rem;
+    font-style: italic;
+    opacity: 0.75;
+  }
+  .rec-empty {
     font-style: italic;
     opacity: 0.6;
   }
-  .catcard a {
-    color: var(--c-caprock);
+  .rec-link {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 0.75rem;
   }
-  .catcard a:hover {
-    text-decoration: underline;
-  }
-  /* The status, as a rubber stamp. */
-  .cc-status {
-    position: absolute;
-    top: 1rem;
-    right: 1.1rem;
-    padding: 0.1rem 0.45rem;
-    border: 1.5px solid currentColor;
-    border-radius: 2px;
-    color: var(--c-sage);
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.16em;
+  .rec-copy {
+    padding: 0.15rem 0.5rem;
+    border: 1px solid var(--c-haze);
+    background: transparent;
+    color: var(--c-iron);
+    font: 500 0.64rem/1.3 ui-monospace, monospace;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    transform: rotate(-4deg);
+    cursor: pointer;
   }
-  .cc-status--established {
-    color: var(--c-caprock);
+  .rec-copy:hover {
+    border-color: var(--c-caprock);
   }
-  .cc-foot {
-    position: absolute;
-    left: 2.1rem;
-    bottom: 0.85rem;
-    max-width: calc(50% - 3rem);
-    overflow: hidden;
-    font-size: 0.66rem;
-    opacity: 0.5;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .rec-copy:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
   }
 
   .marc {
-    margin-top: 2rem;
-    border-top: 1px solid var(--c-haze);
-    padding-top: 0.75rem;
+    margin-top: 1rem;
   }
   .marc summary {
     cursor: pointer;
@@ -1953,23 +2125,21 @@ const LINK = 'text-caprock hover:underline';
 
   @media (prefers-reduced-motion: reduce) {
     .bar,
-    .strip-face,
+    .fc-face,
     .kin,
     .photo,
+    .photo-print img,
     .cabinet,
-    .rail-face,
-    .print-link {
+    .rail-face {
       transition: none;
     }
     .cabinet:hover,
     .cabinet:focus-visible,
-    .print-link:hover,
-    .print.is-lit .print-link {
-      transform: none;
-    }
-    .strip-face:hover,
-    .strip-face:focus-visible,
-    .strip-item.is-lit .strip-face {
+    .photo:hover .photo-print img,
+    .photo.is-lit .photo-print img,
+    .fc-face:hover,
+    .fc-face:focus-visible,
+    .fc.is-lit .fc-face {
       transform: none;
     }
   }
@@ -1978,8 +2148,7 @@ const LINK = 'text-caprock hover:underline';
     .bleed {
       border-image: none;
     }
-    .cabinet,
-    .catcard {
+    .cabinet {
       transform: none;
       box-shadow: none;
     }
@@ -1990,10 +2159,19 @@ const LINK = 'text-caprock hover:underline';
       --rail: 0px;
     }
     .pager,
-    .pick,
-    .cmp-remove,
-    .compare {
+    .rec-copy,
+    .cmp-toggle,
+    .cmp-panel,
+    .fc-pick {
       display: none !important;
+    }
+    .faces {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+    .fc,
+    .photo,
+    .rec-row {
+      break-inside: avoid;
     }
     .marc[open] .marc-pre,
     .marc .marc-pre {
@@ -2016,7 +2194,13 @@ const LINK = 'text-caprock hover:underline';
     const signal = ac.signal;
     document.addEventListener('astro:before-swap', () => ac.abort(), { once: true });
 
-    const data = JSON.parse(dataEl.textContent || '{}') as { prev: string | null; next: string | null; max: number };
+    const data = JSON.parse(dataEl.textContent || '{}') as {
+      prev: string | null;
+      next: string | null;
+      max: number;
+      suggest: string[];
+      suggestNote: string;
+    };
     const $$ = <T extends Element = HTMLElement>(sel: string) => Array.from(root.querySelectorAll<T>(sel));
 
     /* One photograph, lit everywhere it appears ------------------------- */
@@ -2034,49 +2218,154 @@ const LINK = 'text-caprock hover:underline';
       el.addEventListener('focusout', () => light(null), { signal });
     });
 
-    /* Compare ----------------------------------------------------------- */
-    const picks = $$<HTMLButtonElement>('[data-pick]');
-    const figs = $$('[data-cmp]');
-    const note = root.querySelector<HTMLElement>('[data-compare-note]');
-    const status = root.querySelector<HTMLElement>('[data-compare-status]');
-    // A Set keeps the order faces were chosen in, so the oldest choice is the
-    // one that makes room when the comparison is full.
-    const chosen = new Set(figs.filter((f) => f.classList.contains('is-picked')).map((f) => f.dataset.cmp!));
-    const first = note?.textContent ?? '';
-    let touched = false;
+    /* Compare, when asked for ----------------------------------------- *
+     * Off until the reader presses "Compare faces". Then the panel opens
+     * holding the suggested pair, and each face in the gallery shows a
+     * toggle. Up to `max` faces; choosing one more lets the oldest choice
+     * go. The choice is kept in the address as #compare=id,id so it can be
+     * sent to someone, and read back on arrival.
+     * ------------------------------------------------------------------ */
+    const sec = root.querySelector<HTMLElement>('[data-faces]');
+    const panel = root.querySelector<HTMLElement>('[data-cmp-panel]');
+    const cmpToggle = root.querySelector<HTMLButtonElement>('[data-cmp-toggle]');
+    if (sec && panel && cmpToggle) {
+      const picks = $$<HTMLButtonElement>('[data-pick]');
+      const figs = $$('[data-cmp]');
+      const note = panel.querySelector<HTMLElement>('[data-cmp-note]');
+      const status = panel.querySelector<HTMLElement>('[data-cmp-status]');
+      const known = new Set(figs.map((f) => f.dataset.cmp!));
+      // A Set keeps the order faces were chosen in, so the oldest choice is
+      // the one that makes room when the comparison is full.
+      let chosen = new Set<string>();
+      let touched = false;
+      let comparing = false;
 
-    const render = () => {
-      figs.forEach((f) => f.classList.toggle('is-picked', chosen.has(f.dataset.cmp!)));
-      picks.forEach((b) => b.setAttribute('aria-pressed', String(chosen.has(b.dataset.pick!))));
-      if (note) {
-        note.textContent =
-          chosen.size < 2
-            ? 'Choose another face above to set beside this one.'
-            : touched
-              ? `${chosen.size} faces side by side, in date order.`
-              : first;
+      const HASH = 'compare=';
+      const writeHash = () => {
+        const base = `${location.pathname}${location.search}`;
+        const ids = [...chosen].map(encodeURIComponent).join(',');
+        history.replaceState(history.state, '', comparing && ids ? `${base}#${HASH}${ids}` : base);
+      };
+      const readHash = () => {
+        const h = location.hash.slice(1);
+        if (!h.startsWith(HASH)) return [];
+        return h
+          .slice(HASH.length)
+          .split(',')
+          .map((x) => decodeURIComponent(x))
+          .filter((x) => known.has(x))
+          .slice(0, data.max);
+      };
+
+      const render = () => {
+        figs.forEach((f) => (f.hidden = !chosen.has(f.dataset.cmp!)));
+        picks.forEach((b) => b.setAttribute('aria-pressed', String(chosen.has(b.dataset.pick!))));
+        if (note) {
+          note.textContent =
+            chosen.size === 0
+              ? 'Choose faces below to set them side by side.'
+              : chosen.size === 1
+                ? 'Choose another face below to set beside this one.'
+                : touched
+                  ? `${chosen.size} faces side by side, in date order.`
+                  : data.suggestNote;
+        }
+        writeHash();
+      };
+
+      const open = (ids: string[], focus: boolean) => {
+        comparing = true;
+        chosen = new Set(ids);
+        touched = false;
+        sec.classList.add('is-comparing');
+        panel.hidden = false;
+        picks.forEach((b) => (b.hidden = false));
+        cmpToggle.setAttribute('aria-expanded', 'true');
+        render();
+        if (focus) note?.focus({ preventScroll: true });
+      };
+      const close = () => {
+        comparing = false;
+        chosen = new Set();
+        sec.classList.remove('is-comparing');
+        panel.hidden = true;
+        picks.forEach((b) => (b.hidden = true));
+        cmpToggle.setAttribute('aria-expanded', 'false');
+        writeHash();
+        cmpToggle.focus();
+      };
+      const toggle = (id: string) => {
+        touched = true;
+        if (chosen.has(id)) chosen.delete(id);
+        else {
+          if (chosen.size >= data.max) chosen.delete(chosen.values().next().value as string);
+          chosen.add(id);
+        }
+        render();
+        if (status) status.textContent = `${chosen.size} ${chosen.size === 1 ? 'face' : 'faces'} in the comparison.`;
+      };
+
+      cmpToggle.addEventListener('click', () => (comparing ? close() : open(data.suggest, true)), { signal });
+      panel.querySelector('[data-cmp-done]')?.addEventListener('click', close, { signal });
+      picks.forEach((b) => b.addEventListener('click', () => toggle(b.dataset.pick!), { signal }));
+      $$<HTMLButtonElement>('[data-unpick]').forEach((b) =>
+        b.addEventListener('click', () => toggle(b.dataset.unpick!), { signal })
+      );
+      sec.addEventListener(
+        'keydown',
+        (e) => {
+          if (e.key === 'Escape' && comparing) {
+            e.preventDefault();
+            close();
+          }
+        },
+        { signal }
+      );
+
+      // Arriving on a shared comparison: open it and bring it into view.
+      const shared = readHash();
+      if (shared.length) {
+        open(shared, false);
+        requestAnimationFrame(() => panel.scrollIntoView({ block: 'start' }));
       }
-      if (note && chosen.size === 0) note.textContent = 'Choose faces above to compare them side by side.';
-    };
-    const toggle = (id: string) => {
-      touched = true;
-      if (chosen.has(id)) chosen.delete(id);
-      else {
-        if (chosen.size >= data.max) chosen.delete(chosen.values().next().value as string);
-        chosen.add(id);
-      }
-      render();
-      if (status) status.textContent = `${chosen.size} ${chosen.size === 1 ? 'face' : 'faces'} in the comparison.`;
-    };
-    picks.forEach((b) => b.addEventListener('click', () => toggle(b.dataset.pick!), { signal }));
-    $$<HTMLButtonElement>('[data-unpick]').forEach((b) => b.addEventListener('click', () => toggle(b.dataset.unpick!), { signal }));
+    }
+
+    /* Copy the permalink --------------------------------------------- */
+    const copyStatus = root.querySelector<HTMLElement>('[data-copy-status]');
+    $$<HTMLButtonElement>('[data-copy-link]').forEach((b) =>
+      b.addEventListener(
+        'click',
+        async () => {
+          const text = b.dataset.copyLink ?? location.href;
+          let ok = false;
+          try {
+            await navigator.clipboard.writeText(text);
+            ok = true;
+          } catch {
+            // No clipboard permission: select the link so a copy is one key away.
+            const a = b.previousElementSibling;
+            if (a) {
+              const range = document.createRange();
+              range.selectNodeContents(a);
+              const sel = window.getSelection();
+              sel?.removeAllRanges();
+              sel?.addRange(range);
+            }
+          }
+          b.textContent = ok ? 'Copied' : 'Selected';
+          if (copyStatus) copyStatus.textContent = ok ? 'Link copied.' : 'Link selected; press Ctrl+C to copy it.';
+          window.setTimeout(() => (b.textContent = 'Copy'), 1800);
+        },
+        { signal }
+      )
+    );
 
     /* Previous / next --------------------------------------------------- */
     document.addEventListener(
       'keydown',
       (e) => {
         if (e.defaultPrevented || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
-        if ((e.target as Element).closest('input, textarea, select, [contenteditable], .strip, pre')) return;
+        if ((e.target as Element).closest('input, textarea, select, [contenteditable], pre')) return;
         const href = e.key === 'ArrowLeft' ? data.prev : e.key === 'ArrowRight' ? data.next : null;
         if (href) {
           e.preventDefault();

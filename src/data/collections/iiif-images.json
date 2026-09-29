@@ -8991,6 +8991,60 @@
     },
     "hash": "d7ff4a1f5c0557203648ed3423bd81a16ec6146c8674a2af45c8301edf49e711"
   },
+  "swann-family/atkinson-women-version2-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/atkinson-women-version2-recto-ffba70087b",
+    "width": 2640,
+    "height": 3922,
+    "sizes": [
+      {
+        "width": 330,
+        "height": 491
+      },
+      {
+        "width": 340,
+        "height": 505
+      },
+      {
+        "width": 680,
+        "height": 1010
+      },
+      {
+        "width": 800,
+        "height": 1188
+      },
+      {
+        "width": 1200,
+        "height": 1783
+      },
+      {
+        "width": 1750,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2823
+      },
+      {
+        "width": 2640,
+        "height": 3922
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1750,
+      "study": 2640
+    },
+    "hash": "ffba70087b3e833374fc04fb994d63a38b9fff856577f87c077582f70be884aa"
+  },
   "swann-family/atkinson-women.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/swann-family/atkinson-women-3437eef465",
@@ -12192,6 +12246,3886 @@
       "study": null
     },
     "hash": "282584c3f317d4d82c60f080d0364821f5bcd1674fe92e1ef098601a92257510"
+  },
+  "swann-family/midway-grange-journal/page-001.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-001-7924801320",
+    "width": 4228,
+    "height": 5072,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 317
+      },
+      {
+        "width": 340,
+        "height": 408
+      },
+      {
+        "width": 680,
+        "height": 816
+      },
+      {
+        "width": 800,
+        "height": 960
+      },
+      {
+        "width": 1200,
+        "height": 1440
+      },
+      {
+        "width": 1900,
+        "height": 2279
+      },
+      {
+        "width": 2167,
+        "height": 2600
+      },
+      {
+        "width": 4168,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2167,
+      "study": 4168
+    },
+    "hash": "7924801320e3b22870d9cacd34ca6de7342d9385f948b177cd5749768f7b3b21"
+  },
+  "swann-family/midway-grange-journal/page-002.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-002-4671f4b725",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "4671f4b725b2a314c422283b67a512505f72cf1f639d78eb7aca2edefe805327"
+  },
+  "swann-family/midway-grange-journal/page-003.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-003-3615cda523",
+    "width": 4219,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 264,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 404
+      },
+      {
+        "width": 680,
+        "height": 808
+      },
+      {
+        "width": 800,
+        "height": 950
+      },
+      {
+        "width": 1200,
+        "height": 1426
+      },
+      {
+        "width": 1900,
+        "height": 2257
+      },
+      {
+        "width": 2189,
+        "height": 2600
+      },
+      {
+        "width": 4209,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2189,
+      "study": 4209
+    },
+    "hash": "3615cda523b1e4b216df1b39330331b84fd9a67d074e08451513ad0717787536"
+  },
+  "swann-family/midway-grange-journal/page-004.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-004-1478c6d85d",
+    "width": 4231,
+    "height": 4982,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 312
+      },
+      {
+        "width": 340,
+        "height": 400
+      },
+      {
+        "width": 680,
+        "height": 801
+      },
+      {
+        "width": 800,
+        "height": 942
+      },
+      {
+        "width": 1200,
+        "height": 1413
+      },
+      {
+        "width": 1900,
+        "height": 2237
+      },
+      {
+        "width": 2208,
+        "height": 2600
+      },
+      {
+        "width": 4231,
+        "height": 4982
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2208,
+      "study": 4231
+    },
+    "hash": "1478c6d85da5a36a4243efed0eadcdcfb60714ac1d46c07ab8e2beed0e9b1ee3"
+  },
+  "swann-family/midway-grange-journal/page-005.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-005-a314a55a8a",
+    "width": 4117,
+    "height": 5006,
+    "sizes": [
+      {
+        "width": 258,
+        "height": 313
+      },
+      {
+        "width": 340,
+        "height": 413
+      },
+      {
+        "width": 680,
+        "height": 827
+      },
+      {
+        "width": 800,
+        "height": 973
+      },
+      {
+        "width": 1200,
+        "height": 1459
+      },
+      {
+        "width": 1900,
+        "height": 2310
+      },
+      {
+        "width": 2138,
+        "height": 2600
+      },
+      {
+        "width": 4112,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2138,
+      "study": 4112
+    },
+    "hash": "a314a55a8ae2d2235bca6558e98e0f0aa77798b0c655f8d3083aefba06ab641e"
+  },
+  "swann-family/midway-grange-journal/page-006.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-006-44a48cf416",
+    "width": 4231,
+    "height": 5008,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 313
+      },
+      {
+        "width": 340,
+        "height": 402
+      },
+      {
+        "width": 680,
+        "height": 805
+      },
+      {
+        "width": 800,
+        "height": 947
+      },
+      {
+        "width": 1200,
+        "height": 1420
+      },
+      {
+        "width": 1900,
+        "height": 2249
+      },
+      {
+        "width": 2197,
+        "height": 2600
+      },
+      {
+        "width": 4224,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2197,
+      "study": 4224
+    },
+    "hash": "44a48cf41647acb24e18d9d1bd515520358dd851dd6fca1894faab11431af452"
+  },
+  "swann-family/midway-grange-journal/page-007.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-007-91f5cf682c",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "91f5cf682c1e96b34d37caf69566799d3f73340bd54c7daf1eb55f708b1cc0e6"
+  },
+  "swann-family/midway-grange-journal/page-008.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-008-e47a4bd573",
+    "width": 4231,
+    "height": 5008,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 313
+      },
+      {
+        "width": 340,
+        "height": 402
+      },
+      {
+        "width": 680,
+        "height": 805
+      },
+      {
+        "width": 800,
+        "height": 947
+      },
+      {
+        "width": 1200,
+        "height": 1420
+      },
+      {
+        "width": 1900,
+        "height": 2249
+      },
+      {
+        "width": 2197,
+        "height": 2600
+      },
+      {
+        "width": 4224,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2197,
+      "study": 4224
+    },
+    "hash": "e47a4bd573b3e99f3feafbcfe13cd58f5fe3e829efde30f1204a68061c13d44b"
+  },
+  "swann-family/midway-grange-journal/page-009.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-009-2b12f65833",
+    "width": 4229,
+    "height": 5006,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 313
+      },
+      {
+        "width": 340,
+        "height": 402
+      },
+      {
+        "width": 680,
+        "height": 805
+      },
+      {
+        "width": 800,
+        "height": 947
+      },
+      {
+        "width": 1200,
+        "height": 1420
+      },
+      {
+        "width": 1900,
+        "height": 2249
+      },
+      {
+        "width": 2196,
+        "height": 2599
+      },
+      {
+        "width": 4224,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2196,
+      "study": 4224
+    },
+    "hash": "2b12f658337eb7dc9bd00d3fd51279fa34ecb03bb43eba1ad8b3b632f447bf8e"
+  },
+  "swann-family/midway-grange-journal/page-010.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-010-442056a94f",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "442056a94fd7c0fd89726c6c064c5b97ead933340919726a58f97f8cd623ba2b"
+  },
+  "swann-family/midway-grange-journal/page-011.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-011-45508631d7",
+    "width": 4229,
+    "height": 5006,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 313
+      },
+      {
+        "width": 340,
+        "height": 402
+      },
+      {
+        "width": 680,
+        "height": 805
+      },
+      {
+        "width": 800,
+        "height": 947
+      },
+      {
+        "width": 1200,
+        "height": 1420
+      },
+      {
+        "width": 1900,
+        "height": 2249
+      },
+      {
+        "width": 2196,
+        "height": 2599
+      },
+      {
+        "width": 4224,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2196,
+      "study": 4224
+    },
+    "hash": "45508631d70b931f7784a039c3a1be5afb8de252632c74a28a37bcf632d93216"
+  },
+  "swann-family/midway-grange-journal/page-012.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-012-c779ba4759",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "c779ba475990c2c5d79e04d5e837e51e9901c49b554aed5fc5a449e66fe32c27"
+  },
+  "swann-family/midway-grange-journal/page-013.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-013-c9d36afb99",
+    "width": 4211,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 264,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 405
+      },
+      {
+        "width": 680,
+        "height": 809
+      },
+      {
+        "width": 800,
+        "height": 952
+      },
+      {
+        "width": 1200,
+        "height": 1428
+      },
+      {
+        "width": 1900,
+        "height": 2261
+      },
+      {
+        "width": 2184,
+        "height": 2599
+      },
+      {
+        "width": 4201,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2184,
+      "study": 4201
+    },
+    "hash": "c9d36afb990a69474db254762e79b51563bd719936e91a967e85735afebd76eb"
+  },
+  "swann-family/midway-grange-journal/page-014.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-014-5915df209c",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "5915df209c51c77aeb4c34a891376669046f9415240c2d24fcda80bbf6989d41"
+  },
+  "swann-family/midway-grange-journal/page-015.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-015-29ad30fa42",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "29ad30fa4289ebbed9f3c069b09e216c62365886dd1a703b5ff1195d040d0452"
+  },
+  "swann-family/midway-grange-journal/page-016.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-016-d9d9a72d4f",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "d9d9a72d4fda2ab7365e6870e598f7db867c54b49417ac0d01cda5a87c0bc91f"
+  },
+  "swann-family/midway-grange-journal/page-017.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-017-ca7c4da1bf",
+    "width": 4231,
+    "height": 4997,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 313
+      },
+      {
+        "width": 340,
+        "height": 402
+      },
+      {
+        "width": 680,
+        "height": 803
+      },
+      {
+        "width": 800,
+        "height": 945
+      },
+      {
+        "width": 1200,
+        "height": 1417
+      },
+      {
+        "width": 1900,
+        "height": 2244
+      },
+      {
+        "width": 2201,
+        "height": 2599
+      },
+      {
+        "width": 4231,
+        "height": 4997
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2201,
+      "study": 4231
+    },
+    "hash": "ca7c4da1bf5b9e1261e0c1d82e4a0f7ffd6824df0d0ea8bee271842f69c3e754"
+  },
+  "swann-family/midway-grange-journal/page-018.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-018-76906f6866",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "76906f68662c7470346f03c75f0cc5d1f8322682f7baaa7a9c7f341bb0737b19"
+  },
+  "swann-family/midway-grange-journal/page-019.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-019-8d0c0055b3",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "8d0c0055b388708e3f909943ab72c08e204c7efe1c04da80a8394739cf0f11f7"
+  },
+  "swann-family/midway-grange-journal/page-020.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-020-78accaddfb",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "78accaddfb865de968eb1f4e6931162a938dec411f9733d2b81becce5677c358"
+  },
+  "swann-family/midway-grange-journal/page-021.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-021-a4f3cf82be",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "a4f3cf82be41874149686dc1eb95f96228eb7a1218ca7e2d293ce07c2aa6ba99"
+  },
+  "swann-family/midway-grange-journal/page-022.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-022-dbc106cf30",
+    "width": 4231,
+    "height": 4985,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 312
+      },
+      {
+        "width": 340,
+        "height": 401
+      },
+      {
+        "width": 680,
+        "height": 801
+      },
+      {
+        "width": 800,
+        "height": 943
+      },
+      {
+        "width": 1200,
+        "height": 1414
+      },
+      {
+        "width": 1900,
+        "height": 2239
+      },
+      {
+        "width": 2207,
+        "height": 2600
+      },
+      {
+        "width": 4231,
+        "height": 4985
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2207,
+      "study": 4231
+    },
+    "hash": "dbc106cf30b6ad9349715e96673dc0ee2a5f4a0c38833e4a5d2f9b8d2dddc3d9"
+  },
+  "swann-family/midway-grange-journal/page-023.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-023-e4e28c4adf",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "e4e28c4adf9354c528675142ff507c830e1b4ac5d4d57776bb99f5132854f794"
+  },
+  "swann-family/midway-grange-journal/page-024.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-024-de87ba66ad",
+    "width": 4231,
+    "height": 4953,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 310
+      },
+      {
+        "width": 340,
+        "height": 398
+      },
+      {
+        "width": 680,
+        "height": 796
+      },
+      {
+        "width": 800,
+        "height": 937
+      },
+      {
+        "width": 1200,
+        "height": 1405
+      },
+      {
+        "width": 1900,
+        "height": 2224
+      },
+      {
+        "width": 2221,
+        "height": 2600
+      },
+      {
+        "width": 4231,
+        "height": 4953
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2221,
+      "study": 4231
+    },
+    "hash": "de87ba66adf43f1a9524ff7e9d03cb0db1d81371a8f0e6a55e1e206c126adb2a"
+  },
+  "swann-family/midway-grange-journal/page-025.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-025-dcfb33f984",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "dcfb33f984edab643304e1b939a84144ca694c29094dd0b9b2e6941eb08d07bc"
+  },
+  "swann-family/midway-grange-journal/page-026.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-026-d9d5b17792",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "d9d5b1779279f5d4695864ab1cd02661906ab25d46f6c0a59cd9f572bf6146f3"
+  },
+  "swann-family/midway-grange-journal/page-027.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-027-dd87e2e9cc",
+    "width": 4231,
+    "height": 4993,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 313
+      },
+      {
+        "width": 340,
+        "height": 401
+      },
+      {
+        "width": 680,
+        "height": 802
+      },
+      {
+        "width": 800,
+        "height": 944
+      },
+      {
+        "width": 1200,
+        "height": 1416
+      },
+      {
+        "width": 1900,
+        "height": 2242
+      },
+      {
+        "width": 2203,
+        "height": 2600
+      },
+      {
+        "width": 4231,
+        "height": 4993
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2203,
+      "study": 4231
+    },
+    "hash": "dd87e2e9cc619c621caf5f69a148a79e4e1c230081aec0ab7c398566649195b6"
+  },
+  "swann-family/midway-grange-journal/page-028.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-028-b69af83587",
+    "width": 4231,
+    "height": 4991,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 312
+      },
+      {
+        "width": 340,
+        "height": 401
+      },
+      {
+        "width": 680,
+        "height": 802
+      },
+      {
+        "width": 800,
+        "height": 944
+      },
+      {
+        "width": 1200,
+        "height": 1416
+      },
+      {
+        "width": 1900,
+        "height": 2241
+      },
+      {
+        "width": 2204,
+        "height": 2600
+      },
+      {
+        "width": 4231,
+        "height": 4991
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2204,
+      "study": 4231
+    },
+    "hash": "b69af83587941707e4fcd2acceb855d6a71e0598641527e4f491dd92115c2ad7"
+  },
+  "swann-family/midway-grange-journal/page-029.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-029-072ecd6e71",
+    "width": 4231,
+    "height": 4972,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 311
+      },
+      {
+        "width": 340,
+        "height": 400
+      },
+      {
+        "width": 680,
+        "height": 799
+      },
+      {
+        "width": 800,
+        "height": 940
+      },
+      {
+        "width": 1200,
+        "height": 1410
+      },
+      {
+        "width": 1900,
+        "height": 2233
+      },
+      {
+        "width": 2213,
+        "height": 2601
+      },
+      {
+        "width": 4231,
+        "height": 4972
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2213,
+      "study": 4231
+    },
+    "hash": "072ecd6e71dc0ace56ac2f4b68fb37685215a857dfa098d8e0b96dc8a5730aca"
+  },
+  "swann-family/midway-grange-journal/page-030.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-030-4f356ab0e8",
+    "width": 4231,
+    "height": 4996,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 313
+      },
+      {
+        "width": 340,
+        "height": 401
+      },
+      {
+        "width": 680,
+        "height": 803
+      },
+      {
+        "width": 800,
+        "height": 945
+      },
+      {
+        "width": 1200,
+        "height": 1417
+      },
+      {
+        "width": 1900,
+        "height": 2244
+      },
+      {
+        "width": 2202,
+        "height": 2600
+      },
+      {
+        "width": 4231,
+        "height": 4996
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2202,
+      "study": 4231
+    },
+    "hash": "4f356ab0e8ca76cc8f6d5e6323d99ef3fa693352d71ad2f26bf3108c529f9768"
+  },
+  "swann-family/midway-grange-journal/page-031.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-031-28a755adb1",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "28a755adb162cbb631a56cfe7e85b06c3b98d55c164eb9b401c820f3d803a0a1"
+  },
+  "swann-family/midway-grange-journal/page-032.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-032-c8c3f5ae3e",
+    "width": 4231,
+    "height": 4980,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 312
+      },
+      {
+        "width": 340,
+        "height": 400
+      },
+      {
+        "width": 680,
+        "height": 800
+      },
+      {
+        "width": 800,
+        "height": 942
+      },
+      {
+        "width": 1200,
+        "height": 1412
+      },
+      {
+        "width": 1900,
+        "height": 2236
+      },
+      {
+        "width": 2209,
+        "height": 2600
+      },
+      {
+        "width": 4231,
+        "height": 4980
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2209,
+      "study": 4231
+    },
+    "hash": "c8c3f5ae3e4dabaec2660b1e3edc52069715ad22ec0d45d6572b6242e13d988a"
+  },
+  "swann-family/midway-grange-journal/page-033.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-033-c4545eab36",
+    "width": 4231,
+    "height": 4996,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 313
+      },
+      {
+        "width": 340,
+        "height": 401
+      },
+      {
+        "width": 680,
+        "height": 803
+      },
+      {
+        "width": 800,
+        "height": 945
+      },
+      {
+        "width": 1200,
+        "height": 1417
+      },
+      {
+        "width": 1900,
+        "height": 2244
+      },
+      {
+        "width": 2202,
+        "height": 2600
+      },
+      {
+        "width": 4231,
+        "height": 4996
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2202,
+      "study": 4231
+    },
+    "hash": "c4545eab36dbba7be9ba70e250d343af2cdbca7175c125ebc0d1c3dd16b528b7"
+  },
+  "swann-family/midway-grange-journal/page-034.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-034-497c91c4b7",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "497c91c4b78ed3ba241c3d9e09531876d59596ba2d822a4f8370337c27dc4623"
+  },
+  "swann-family/midway-grange-journal/page-035.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-035-930b1d8dbc",
+    "width": 4231,
+    "height": 5004,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 313
+      },
+      {
+        "width": 340,
+        "height": 402
+      },
+      {
+        "width": 680,
+        "height": 804
+      },
+      {
+        "width": 800,
+        "height": 946
+      },
+      {
+        "width": 1200,
+        "height": 1419
+      },
+      {
+        "width": 1900,
+        "height": 2247
+      },
+      {
+        "width": 2198,
+        "height": 2600
+      },
+      {
+        "width": 4228,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2198,
+      "study": 4228
+    },
+    "hash": "930b1d8dbca8593cf861a88d95887440dc207d7ee2aed3c856d0912669fcad77"
+  },
+  "swann-family/midway-grange-journal/page-036.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-036-6573c3d2aa",
+    "width": 1607,
+    "height": 3411,
+    "sizes": [
+      {
+        "width": 201,
+        "height": 427
+      },
+      {
+        "width": 340,
+        "height": 722
+      },
+      {
+        "width": 680,
+        "height": 1443
+      },
+      {
+        "width": 800,
+        "height": 1698
+      },
+      {
+        "width": 1200,
+        "height": 2547
+      },
+      {
+        "width": 1225,
+        "height": 2600
+      },
+      {
+        "width": 1607,
+        "height": 3411
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1607
+      ],
+      "detail": 1225,
+      "study": 1607
+    },
+    "hash": "6573c3d2aac5b7e11bec685ee67bb3fb6545ffc657a7d129087bec64d15c1537"
+  },
+  "swann-family/midway-grange-journal/page-037.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-037-6573c3d2aa",
+    "width": 1607,
+    "height": 3411,
+    "sizes": [
+      {
+        "width": 201,
+        "height": 427
+      },
+      {
+        "width": 340,
+        "height": 722
+      },
+      {
+        "width": 680,
+        "height": 1443
+      },
+      {
+        "width": 800,
+        "height": 1698
+      },
+      {
+        "width": 1200,
+        "height": 2547
+      },
+      {
+        "width": 1225,
+        "height": 2600
+      },
+      {
+        "width": 1607,
+        "height": 3411
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1607
+      ],
+      "detail": 1225,
+      "study": 1607
+    },
+    "hash": "6573c3d2aac5b7e11bec685ee67bb3fb6545ffc657a7d129087bec64d15c1537"
+  },
+  "swann-family/midway-grange-journal/page-038.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-038-f3f7012e57",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "f3f7012e5721653f70af576e60bb405ba6ad279e6ba06cc1fdd709873cdc0894"
+  },
+  "swann-family/midway-grange-journal/page-039.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-039-f5abaa056e",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "f5abaa056e05ac430f427f12e0318af9d6aafb6b1f222f9cffc18a152cbbc0cf"
+  },
+  "swann-family/midway-grange-journal/page-040.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-040-18eabf3d97",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "18eabf3d97bb9a7bb6d427a74c72b9cce12fe34e01113b587480aa378d1f6c23"
+  },
+  "swann-family/midway-grange-journal/page-041.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-041-c8f4d7320e",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "c8f4d7320e5fdca65e1f2de94bb827e3483c7ae66bb9c8201f0e6cffa16292ae"
+  },
+  "swann-family/midway-grange-journal/page-042.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-042-5737f88519",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "5737f885192dc22f5010beccd3416dffadb18572b20c4c38ae8e44fa2af4100f"
+  },
+  "swann-family/midway-grange-journal/page-043.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-043-58c8390dbf",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "58c8390dbfa3f4d83f13dd2e097a07fa7601f87813ee209a31fdce670f7cf4ad"
+  },
+  "swann-family/midway-grange-journal/page-044.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-044-89d1871e2e",
+    "width": 4231,
+    "height": 5011,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 805
+      },
+      {
+        "width": 800,
+        "height": 947
+      },
+      {
+        "width": 1200,
+        "height": 1421
+      },
+      {
+        "width": 1900,
+        "height": 2250
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4222,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4222
+    },
+    "hash": "89d1871e2e521bdcbec41e6f8d7b505a3be2995bc4d0e09c03f41af58decf1e2"
+  },
+  "swann-family/midway-grange-journal/page-045.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-045-ac369dc1e2",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "ac369dc1e220f825ce45fb1945991d4f8264ed109c4b3b3dfdf2d63db066bd65"
+  },
+  "swann-family/midway-grange-journal/page-046.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-046-87d7954859",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "87d795485903503468574ec67f8607235aef489ca5985072acc819b23b2e318a"
+  },
+  "swann-family/midway-grange-journal/page-047.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-047-c9c6d23d13",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "c9c6d23d136efcb86400103c6ded75e7c7b83deceb4a9cfbdd918c6e863b3988"
+  },
+  "swann-family/midway-grange-journal/page-048.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-048-f028e24c12",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "f028e24c12d6d2a8da294f3e5b3d81df79f63c696cb172cad76a5ada6316386d"
+  },
+  "swann-family/midway-grange-journal/page-049.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-049-a304453b83",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "a304453b83d38572af179ad273f98f24bce8e4e07cd546190dccfeebcdbaa65e"
+  },
+  "swann-family/midway-grange-journal/page-050.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-050-4b5f0c1deb",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "4b5f0c1debf1e6dd7b7adfd7c7dcbe6af8f92b7e8826287aba9a7533c87e46d6"
+  },
+  "swann-family/midway-grange-journal/page-051.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-051-25c0adc4f7",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "25c0adc4f747b25d48ef2c4fbd7bf7af76e07c17d3bdca2e01ea4092630cc435"
+  },
+  "swann-family/midway-grange-journal/page-052.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-052-22ab35cbee",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "22ab35cbee78098e2dfdbb3000ee3b9716b472f1c3bb36c6945e9b580e633e18"
+  },
+  "swann-family/midway-grange-journal/page-053.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-053-5aa69cd016",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "5aa69cd0167235006f225d762b8f12afbbbda539ce779fd23c7903bd5fd70c20"
+  },
+  "swann-family/midway-grange-journal/page-054.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-054-a7be4ca07a",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "a7be4ca07a21a2ff0da0ec8d1dd4a112296bf948d960273ddd73d876fda377eb"
+  },
+  "swann-family/midway-grange-journal/page-055.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-055-9b0b937a65",
+    "width": 4116,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 258,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 414
+      },
+      {
+        "width": 680,
+        "height": 828
+      },
+      {
+        "width": 800,
+        "height": 974
+      },
+      {
+        "width": 1200,
+        "height": 1461
+      },
+      {
+        "width": 1900,
+        "height": 2314
+      },
+      {
+        "width": 2135,
+        "height": 2600
+      },
+      {
+        "width": 4106,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2135,
+      "study": 4106
+    },
+    "hash": "9b0b937a6541d6fdfd4986194da6fc810688826d2b4b6bc8e8019319dcd360c6"
+  },
+  "swann-family/midway-grange-journal/page-056.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-056-088372cf69",
+    "width": 4231,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 265,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 403
+      },
+      {
+        "width": 680,
+        "height": 806
+      },
+      {
+        "width": 800,
+        "height": 948
+      },
+      {
+        "width": 1200,
+        "height": 1422
+      },
+      {
+        "width": 1900,
+        "height": 2251
+      },
+      {
+        "width": 2195,
+        "height": 2600
+      },
+      {
+        "width": 4221,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2195,
+      "study": 4221
+    },
+    "hash": "088372cf69a4c97352f4eed1f89ddf1b0fe2c58961323707f5e501348beef83f"
+  },
+  "swann-family/midway-grange-journal/page-057.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-057-3945696671",
+    "width": 4220,
+    "height": 5012,
+    "sizes": [
+      {
+        "width": 264,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 404
+      },
+      {
+        "width": 680,
+        "height": 808
+      },
+      {
+        "width": 800,
+        "height": 950
+      },
+      {
+        "width": 1200,
+        "height": 1425
+      },
+      {
+        "width": 1900,
+        "height": 2257
+      },
+      {
+        "width": 2189,
+        "height": 2600
+      },
+      {
+        "width": 4210,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2189,
+      "study": 4210
+    },
+    "hash": "3945696671dc5a06e40acf0fd8c6ced81288f5a998dac314d9e730fed171c019"
+  },
+  "swann-family/midway-grange-journal/page-058.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-058-951833d627",
+    "width": 4431,
+    "height": 5135,
+    "sizes": [
+      {
+        "width": 277,
+        "height": 321
+      },
+      {
+        "width": 340,
+        "height": 394
+      },
+      {
+        "width": 680,
+        "height": 788
+      },
+      {
+        "width": 800,
+        "height": 927
+      },
+      {
+        "width": 1200,
+        "height": 1391
+      },
+      {
+        "width": 1900,
+        "height": 2202
+      },
+      {
+        "width": 2244,
+        "height": 2601
+      },
+      {
+        "width": 4315,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2244,
+      "study": 4315
+    },
+    "hash": "951833d62716815fc285a82715707a05e2e0cfc76aec180992faa788187af751"
+  },
+  "swann-family/midway-grange-journal/page-059.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-059-9a65869fcd",
+    "width": 7544,
+    "height": 6056,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 273
+      },
+      {
+        "width": 472,
+        "height": 379
+      },
+      {
+        "width": 680,
+        "height": 546
+      },
+      {
+        "width": 800,
+        "height": 642
+      },
+      {
+        "width": 1200,
+        "height": 963
+      },
+      {
+        "width": 1900,
+        "height": 1525
+      },
+      {
+        "width": 2600,
+        "height": 2087
+      },
+      {
+        "width": 5000,
+        "height": 4014
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "9a65869fcdd15dc09772e112fb9e76c217d5023637c31a1154d58c42608bf238"
+  },
+  "swann-family/midway-grange-journal/page-060.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-060-0c99a7369f",
+    "width": 7422,
+    "height": 6094,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 279
+      },
+      {
+        "width": 464,
+        "height": 381
+      },
+      {
+        "width": 680,
+        "height": 558
+      },
+      {
+        "width": 800,
+        "height": 657
+      },
+      {
+        "width": 1200,
+        "height": 985
+      },
+      {
+        "width": 1900,
+        "height": 1560
+      },
+      {
+        "width": 2600,
+        "height": 2135
+      },
+      {
+        "width": 5000,
+        "height": 4105
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "0c99a7369fd604f5964bb155ebe8a554f367205911c92eff532fdeed290aa2dd"
+  },
+  "swann-family/midway-grange-journal/page-061.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-061-6b2780f019",
+    "width": 4985,
+    "height": 7682,
+    "sizes": [
+      {
+        "width": 312,
+        "height": 481
+      },
+      {
+        "width": 340,
+        "height": 524
+      },
+      {
+        "width": 680,
+        "height": 1048
+      },
+      {
+        "width": 800,
+        "height": 1233
+      },
+      {
+        "width": 1200,
+        "height": 1849
+      },
+      {
+        "width": 1687,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2928
+      },
+      {
+        "width": 3245,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1687,
+      "study": 3245
+    },
+    "hash": "6b2780f01948c1a7d6074ca1d83a7f848ea390a44b9bba193577d5dbec2f569f"
+  },
+  "swann-family/midway-grange-journal/page-062.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-062-463386b240",
+    "width": 5062,
+    "height": 7690,
+    "sizes": [
+      {
+        "width": 317,
+        "height": 481
+      },
+      {
+        "width": 340,
+        "height": 517
+      },
+      {
+        "width": 680,
+        "height": 1033
+      },
+      {
+        "width": 800,
+        "height": 1215
+      },
+      {
+        "width": 1200,
+        "height": 1823
+      },
+      {
+        "width": 1711,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2886
+      },
+      {
+        "width": 3291,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1711,
+      "study": 3291
+    },
+    "hash": "463386b2406a8f619c4f193a3356ae721ab6c8b93f2fc3296e414bb49747e129"
+  },
+  "swann-family/midway-grange-journal/page-063.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-063-16de831152",
+    "width": 5047,
+    "height": 3652,
+    "sizes": [
+      {
+        "width": 316,
+        "height": 229
+      },
+      {
+        "width": 340,
+        "height": 246
+      },
+      {
+        "width": 680,
+        "height": 492
+      },
+      {
+        "width": 800,
+        "height": 579
+      },
+      {
+        "width": 1200,
+        "height": 868
+      },
+      {
+        "width": 1900,
+        "height": 1375
+      },
+      {
+        "width": 2600,
+        "height": 1881
+      },
+      {
+        "width": 5000,
+        "height": 3618
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "16de8311523dd94285bf47c7ab26e1ddb57e759870f0668f2ffc01467827b56f"
+  },
+  "swann-family/midway-grange-journal/page-064.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-064-86613ec912",
+    "width": 5047,
+    "height": 3667,
+    "sizes": [
+      {
+        "width": 316,
+        "height": 230
+      },
+      {
+        "width": 340,
+        "height": 247
+      },
+      {
+        "width": 680,
+        "height": 494
+      },
+      {
+        "width": 800,
+        "height": 581
+      },
+      {
+        "width": 1200,
+        "height": 872
+      },
+      {
+        "width": 1900,
+        "height": 1380
+      },
+      {
+        "width": 2600,
+        "height": 1889
+      },
+      {
+        "width": 5000,
+        "height": 3633
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "86613ec912dd3769e197699dc9b35747b3193bdcc3d0cf79f94ad1490cbeaeab"
+  },
+  "swann-family/midway-grange-journal/page-065.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-065-12927ded80",
+    "width": 6264,
+    "height": 5020,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 272
+      },
+      {
+        "width": 392,
+        "height": 314
+      },
+      {
+        "width": 680,
+        "height": 545
+      },
+      {
+        "width": 800,
+        "height": 641
+      },
+      {
+        "width": 1200,
+        "height": 962
+      },
+      {
+        "width": 1900,
+        "height": 1523
+      },
+      {
+        "width": 2600,
+        "height": 2084
+      },
+      {
+        "width": 5000,
+        "height": 4007
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "12927ded806dcc2cddaddf9720c5e89e077364b4cfd1ad43be3db79d6f068de7"
+  },
+  "swann-family/midway-grange-journal/page-066.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-066-d4cfca67ca",
+    "width": 6264,
+    "height": 5020,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 272
+      },
+      {
+        "width": 392,
+        "height": 314
+      },
+      {
+        "width": 680,
+        "height": 545
+      },
+      {
+        "width": 800,
+        "height": 641
+      },
+      {
+        "width": 1200,
+        "height": 962
+      },
+      {
+        "width": 1900,
+        "height": 1523
+      },
+      {
+        "width": 2600,
+        "height": 2084
+      },
+      {
+        "width": 5000,
+        "height": 4007
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "d4cfca67ca03e8ca73510331ca4e1a79bab45bba804eebf0af2d1d6b1bb0aaed"
+  },
+  "swann-family/midway-grange-journal/page-067.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-067-5903e7fd7a",
+    "width": 3244,
+    "height": 5020,
+    "sizes": [
+      {
+        "width": 203,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 526
+      },
+      {
+        "width": 680,
+        "height": 1052
+      },
+      {
+        "width": 800,
+        "height": 1238
+      },
+      {
+        "width": 1200,
+        "height": 1857
+      },
+      {
+        "width": 1680,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2940
+      },
+      {
+        "width": 3231,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1680,
+      "study": 3231
+    },
+    "hash": "5903e7fd7a06ea182468e0293b766b469e45b4ab9a520d613e485fa8b86558f3"
+  },
+  "swann-family/midway-grange-journal/page-068.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-068-de863c2552",
+    "width": 3216,
+    "height": 9824,
+    "sizes": [
+      {
+        "width": 101,
+        "height": 307
+      },
+      {
+        "width": 340,
+        "height": 1039
+      },
+      {
+        "width": 680,
+        "height": 2077
+      },
+      {
+        "width": 800,
+        "height": 2444
+      },
+      {
+        "width": 851,
+        "height": 2600
+      },
+      {
+        "width": 1200,
+        "height": 3666
+      },
+      {
+        "width": 1637,
+        "height": 5001
+      },
+      {
+        "width": 1900,
+        "height": 5804
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 851,
+      "study": 1637
+    },
+    "hash": "de863c2552a05336ec5a52cd7fda45ea1266ac72bea93bb79f1c00d0ac15e9d9"
+  },
+  "swann-family/midway-grange-journal/page-069.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-069-d3ab3a34c0",
+    "width": 3319,
+    "height": 5020,
+    "sizes": [
+      {
+        "width": 208,
+        "height": 314
+      },
+      {
+        "width": 340,
+        "height": 514
+      },
+      {
+        "width": 680,
+        "height": 1029
+      },
+      {
+        "width": 800,
+        "height": 1210
+      },
+      {
+        "width": 1200,
+        "height": 1815
+      },
+      {
+        "width": 1719,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2874
+      },
+      {
+        "width": 3306,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1719,
+      "study": 3306
+    },
+    "hash": "d3ab3a34c0a50d51d2ff9e13865533ce302815a103d9bcaa37e65188b2a90663"
+  },
+  "swann-family/midway-grange-journal/page-070.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-070-4575af4cf8",
+    "width": 4972,
+    "height": 4043,
+    "sizes": [
+      {
+        "width": 311,
+        "height": 253
+      },
+      {
+        "width": 340,
+        "height": 276
+      },
+      {
+        "width": 680,
+        "height": 553
+      },
+      {
+        "width": 800,
+        "height": 651
+      },
+      {
+        "width": 1200,
+        "height": 976
+      },
+      {
+        "width": 1900,
+        "height": 1545
+      },
+      {
+        "width": 2600,
+        "height": 2114
+      },
+      {
+        "width": 4972,
+        "height": 4043
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4972
+    },
+    "hash": "4575af4cf845a3b6f857b1d3318fd9262049227dc4d1d803474851cedb87f634"
+  },
+  "swann-family/midway-grange-journal/page-071.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-071-19f3ad4c36",
+    "width": 3590,
+    "height": 5741,
+    "sizes": [
+      {
+        "width": 225,
+        "height": 359
+      },
+      {
+        "width": 340,
+        "height": 544
+      },
+      {
+        "width": 680,
+        "height": 1087
+      },
+      {
+        "width": 800,
+        "height": 1279
+      },
+      {
+        "width": 1200,
+        "height": 1919
+      },
+      {
+        "width": 1626,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 3038
+      },
+      {
+        "width": 3127,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1626,
+      "study": 3127
+    },
+    "hash": "19f3ad4c3664159e90cb7643dc2d61e30b30c2b14152af8bd8fe67859907c8a6"
+  },
+  "swann-family/midway-grange-journal/page-072.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/midway-grange-journal/page-072-4b0df75b39",
+    "width": 3590,
+    "height": 5741,
+    "sizes": [
+      {
+        "width": 225,
+        "height": 359
+      },
+      {
+        "width": 340,
+        "height": 544
+      },
+      {
+        "width": 680,
+        "height": 1087
+      },
+      {
+        "width": 800,
+        "height": 1279
+      },
+      {
+        "width": 1200,
+        "height": 1919
+      },
+      {
+        "width": 1626,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 3038
+      },
+      {
+        "width": 3127,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1626,
+      "study": 3127
+    },
+    "hash": "4b0df75b39a8e877d3525b87fcec565414fa803abc824e0464bac2f33e1efda7"
   },
   "swann-family/outdoor-party-recto.jpg": {
     "v": 2,
