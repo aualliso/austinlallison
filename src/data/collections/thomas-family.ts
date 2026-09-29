@@ -438,7 +438,7 @@ export const COLLECTION: Collection = {
     },
     {
       slug: 'thomas-matt',
-      controlNumber: 'c.1.19.3',
+      controlNumber: 'd.1.19.3',
       title: '[Aunt Matt Thomas Darby]',
       titleSource: 'supplied',
       format: 'cabinet card',

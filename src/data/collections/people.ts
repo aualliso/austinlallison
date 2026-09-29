@@ -540,10 +540,44 @@ export const PEOPLE: Person[] = [
       'Findagrave record number 8153619',
     ],
     relations: [
+      { type: 'spouse', person: 'foster-kenneth', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'cowdin-camille-susan-foster', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-john-milton', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'swann-gussie-cody', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'waddle-mable-swann', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'swann-malcolm-t', basis: 'Established relationship', confidence: 'certain' },
+    ],
+  },
+  {
+    id: 'foster-kenneth',
+    authorized: 'Foster, Kenneth',
+    surname: 'Foster',
+    given: 'Kenneth',
+    birth: '1897',
+    death: '1978',
+    status: 'established',
+    sources: [
+      'FamilySearch ID: GMC4-K52',
+    ],
+    relations: [
+      { type: 'spouse', person: 'foster-lucille-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'cowdin-camille-susan-foster', basis: 'Established relationship', confidence: 'certain' },
+    ],
+  },
+  {
+    id: 'cowdin-camille-susan-foster',
+    authorized: 'Cowdin, Camille Susan Foster',
+    surname: 'Cowdin',
+    given: 'Camille Susan Foster',
+    birth: '1921',
+    death: '1955',
+    status: 'established',
+    sources: [
+      'Findagrave record number 159966415',
+    ],
+    relations: [
+      { type: 'parent', person: 'foster-lucille-swann', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'foster-kenneth', basis: 'Established relationship', confidence: 'certain' },
     ],
   },
   {

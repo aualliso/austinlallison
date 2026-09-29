@@ -65,4 +65,10 @@ export default defineConfig({
       },
     },
   },
+  build: {
+    // Build pages 8 at a time. The face crops spend nearly all their time
+    // waiting on R2, not computing, so they overlap well; one at a time,
+    // every face waits for the face before it.
+    concurrency: 8,
+  },
 });

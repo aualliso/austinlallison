@@ -4537,6 +4537,7 @@ export const COLLECTION: Collection = {
         note: 'Photographer unidentified; unpublished.',
       },
     },
+    
         /* ---------------------------------------------------------------- */
     {
       slug: 'midway-grange-journal',
