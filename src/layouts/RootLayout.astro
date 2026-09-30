@@ -6,6 +6,7 @@ import { ClientRouter } from 'astro:transitions';
 import signature from '../assets/signature.svg';
 import Header from '../components/Header.astro'; // IMPORT THE NEW HEADER HERE
 import Footer from '../components/Footer.astro'; // IMPORT THE NEW HEADER HERE
+import SkyFavicon from '../components/SkyFavicon.astro';
 
 interface Props {
   title: string;
@@ -53,7 +54,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url).href;
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<SkyFavicon />
     <link rel="stylesheet" href="https://use.typekit.net/szd4cpt.css">
 		<title>{title}</title>
 		<link rel="canonical" href={canonical} />

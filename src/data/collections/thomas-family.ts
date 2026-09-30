@@ -393,12 +393,13 @@ export const COLLECTION: Collection = {
         basis: 'No studio imprint visible on the recto.',
       },
       date: {
-        display: '[undated]',
+        display: '[1890-1895]',
+        earliest: 1890,
+        latest: 1895,
         basis: [
-          'No date on the object.',
-          'ASSESSMENT, NOT ESTABLISHED - the cabinet-card format was current from the late 1860s to the early 1900s; the mount, the painted backdrop and the clothing would narrow it, but I would want the verso and the mount edge before printing a range.',
+          'No date on the object, but clothing style, the age of Bud Thomas, and other factors suggest a 1890 to 1895 time frame.',
         ],
-        confidence: 'unidentified',
+        confidence: 'probable',
       },
       recto: {
         file: 'boyd-naylor-thomas-band-recto.jpg',
@@ -408,24 +409,31 @@ export const COLLECTION: Collection = {
       },
       description:
         'Three young men posed against a painted studio backdrop with a prop rock and grass. At left, a man in a light broad-brimmed hat and dark sack coat sits holding a violin upright by the neck, the bow across his knee. At centre, a man in a dark bowler and a patterned neck scarf stands leaning against the rock, holding a cornet by the valves, a watch chain at his waistcoat. At right, a moustached man in a pale hat sits with a guitar across his lap, one hand on the strings. Albumen or similar warm-toned print on a card mount with rounded corners; the mount is abraded at the corners and along the lower edge, with a pale stain at the left margin.',
-      inscriptions: [],
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'pencil',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Ewing Boyd - violinist \n Charley Naylor - cornetist \n suppose you know that other one \n Bud Thomas.',
+        },
+      ],
       depicts: [
         {
           person: 'boyd-ewing',
-          confidence: 'probable',
+          confidence: 'certain',
           basis:
             'Supplied with the item; the source of the names is not recorded on the object.',
           region: { face: 'recto', x: 18.3, y: 24.8, w: 14, h: 24.3 },
         },
         {
           person: 'naylor-charley',
-          confidence: 'probable',
+          confidence: 'certain',
           basis: 'Supplied with the item; source not recorded on the object.',
           region: { face: 'recto', x: 37, y: 8.4, w: 11.1, h: 22.6 },
         },
         {
           person: 'thomas-norphlet-bud',
-          confidence: 'probable',
+          confidence: 'certain',
           basis:
             'Supplied with the item as "Bud Thomas". Identified with N. B. ("Bud") Thomas, named as a son of Benjamin Thomas on the verso of the Benjamin B. Thomas portrait - same nickname within a family group represented across this material, which is grounds for a link but not proof of one.',
           region: { face: 'recto', x: 60.6, y: 18.6, w: 13.6, h: 28.4 },
@@ -518,6 +526,107 @@ export const COLLECTION: Collection = {
           medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
           // Transcribe AS WRITTEN, spelling included. \n for line breaks.
           text: 'Eva Swann',
+        },
+      ],
+
+    },
+    {
+      slug: 'thomas-bud-maud-len',
+      controlNumber: 'f.1.2',
+      title: '[Bud, Maud, and Len Thomas]',
+      titleSource: 'supplied',
+      format: 'silver gelatin print',
+      date: {
+        display: '[1914-1918]',
+        earliest: 1914,
+        latest: 1918,
+        basis: ['Len Thomas, the younger man, appears to be between 18 and 22 in this image. A rough estimate of 1916 to 1920 is probable.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'thomas-bud-maud-len-recto.jpg',
+      },
+       verso: {
+        file: 'thomas-bud-maud-len-verso.jpg',
+      },
+      description:
+        'This is a formal portrait of Norphlet "Bud" Thomas, his wife Maud, and their son Len. This photograph was in the collection of Jean Allison, because it depicts family members of their grandmother, Nannie Thomas Swann.',
+      depicts: [
+        {
+          person: 'thomas-norphlet-bud',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 18.8, y: 27.9, w: 24.9, h: 22.2 },
+        },
+        {
+          person: 'thomas-maud-white-hendrix',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 52.9, y: 38.3, w: 22.7, h: 20.6 },
+        },
+        {
+          person: 'thomas-len-holly',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 46.5, y: 14.5, w: 21.5, h: 21.3 },
+        },
+      ],
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Uncle Bud, Aunt Maud, and Len',
+        },
+      ],
+
+    },
+    {
+      slug: 'thomas-bud-john',
+      controlNumber: 'f.1.3',
+      title: '[Bud and John Thomas]',
+      titleSource: 'supplied',
+      format: 'silver gelatin print',
+      date: {
+        display: '[1914-1918]',
+        earliest: 1914,
+        latest: 1918,
+        basis: ['This photograph was taken at the same time as the portrait of Bud, Maud, and Len Thomas, which carried an estimated date of 1914 through 1918.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'thomas-bud-john-recto.jpg',
+      },
+       verso: {
+        file: 'thomas-bud-john-verso.jpg',
+      },
+      description:
+        'This is a formal portrait of Norphlet "Bud" Thomas and his brother John Thomas. The verso of this photograph says "Uncle Bud and Daddy (John). This photograph must have belong to one of John\'s children, Frances or Maxie.',
+      depicts: [
+        {
+          person: 'thomas-norphlet-bud',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 19.3, y: 23, w: 25, h: 23.4 },
+        },
+        {
+          person: 'thomas-john',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 56.3, y: 24.9, w: 26, h: 22.6 },
+        },
+      ],
+      inscriptions: [
+        {
+          location: 'verso',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Uncle Bud and Daddy (John)',
         },
       ],
 

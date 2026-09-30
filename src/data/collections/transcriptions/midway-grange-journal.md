@@ -90,11 +90,82 @@ Signed W.M.
 ## 10  (page-010.jpg)
 
 ## 11  (page-011.jpg)
+Midway Grange No. 1351
 
+Dec. 1st, 1883
+
+Grange convened today according to
+appointment. Mrs. N.C. Swann appointed
+L.A.S. Pro. Tem. All examined and found
+correct except two. Grange then open
+in the first degree for the purpose
+of iniating candidates. Ballot taken to
+see if M.D.P. Morris be admitted for
+initiation in two degrees. Carried unan-
+imously. First two degrees then con-
+fered. Two degrees confered on Mrs. M.E.A.
+Green as a charter member, and
+owing to a lack of time, the initiation in
+the other degrees was postponed till next
+meeting. Minutes of last meeting read and 
+adopted. The committee on candidates reported
+favorably on Mr. Abbott's application for mem-
+bership. The committee on bylaws asked for
+and was granted further time, $2.05 two dol-
+lars and 5 cts due S.L. Shipp for curtains and
+fixtures. Paid out of Treas. acct. against
+Grange for express package. Paid.
+
+Standing committee instructed to
+procure a trunk for holding tools
 ## 12  (page-012.jpg)
+and utensils belonging to the Grange.
 
+Balloting to ascertain whether Mr. Abbott
+will be admitted membership in the order.
+Vote unanimous. Our worth Ch. W.F. Lane
+chosen to inform Mr. Abbott that his appli-
+caton is favorably received.
+
+Grange then closed to meet again at
+the next regular appointment.
+
+N.A. Swann
+Sec.
+
+Signed, W.M.
 ## 13  (page-013.jpg)
+Midway Grange No. 1351
 
+Jan. 5th, 1884
+
+The usual formality of opening the Grange
+was dispensed with today , as the weather
+was very cold and but few members present.
+
+Work begun by reading minutes of last
+meeting which were approved. This being
+the time for the elction and installation
+of officers, that business was next attended
+to with the following results. M. Swann, W.M.,
+D.E. Shipp, W.C., A.J. Wommack, 
+W.L., W.C. Dunbar, Steward, W.M. Lane, A.S.
+W.F. Lane, Chp., L.T. Shipp, Treas., N.A. Swann
+Sec., Geo. F. Lane, gatekeeper. Lady officers
+Mrs. A.M. Dunbar, Ceres, Mrs. A.J. Wommack,
+Flora. Mrs. M.E. Shipp, Pamona, Mrs. Emma
+Girdner, L.A.S. The following were not
+present and have not yet been installed. A.J.
+Wommack, Mrs. A.M. Dunbar, Mrs. A.J. Wommack, 
+Mrs. M.E. Shipp, Mrs. Emma Girdner.
+
+The work of the day being concluded the 
+Grange was duly closed.
+
+N.A. Swann
+Sec.
+
+Signed W.M.
 ## 14  (page-014.jpg)
 
 ## 15  (page-015.jpg)

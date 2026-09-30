@@ -1,0 +1,125 @@
+---
+/**
+ * SkyFavicon — the tab icon is a small window onto the Lubbock sky.
+ *
+ * The A — Cormorant Garamond Bold, the site's own face — stands on the
+ * horizon; its crossbar IS the horizon line. Behind it
+ * the sky runs through the day at Lubbock's real solar position (same
+ * station as the header, LBB), the sun crosses east-left to west-right
+ * using the header's handedness, the A casts a long shadow at low sun, and
+ * after sunset the ink flips pale and a few stars come out.
+ *
+ * Place once in RootLayout's <head>, replacing the static icon link.
+ * /favicon.svg (the noon sky) is the fallback for no-JS and for Safari,
+ * which ignores favicon changes after load.
+ */
+---
+
+<link rel="icon" href="/favicon.svg" type="image/svg+xml" data-sky-favicon />
+<link rel="icon" href="/favicon.ico" sizes="48x48" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+<script>
+// Lubbock, the same station the header reads (LBB).
+const LAT = 33.58, LON = -101.85;
+const R = Math.PI / 180;
+type Sun = { alt: number; az: number };
+
+/** Solar altitude + azimuth (deg, azimuth from north through east). */
+function sunPosition(date: Date): Sun {
+  const d = date.getTime() / 864e5 + 2440587.5 - 2451545;
+  const g = (357.529 + 0.98560028 * d) * R;
+  const q = 280.459 + 0.98564736 * d;
+  const L = (q + 1.915 * Math.sin(g) + 0.02 * Math.sin(2 * g)) * R;
+  const e = (23.439 - 3.6e-7 * d) * R;
+  const ra = Math.atan2(Math.cos(e) * Math.sin(L), Math.cos(L));
+  const dec = Math.asin(Math.sin(e) * Math.sin(L));
+  const gmst = (18.697374558 + 24.06570982441908 * d) % 24;
+  const H = (gmst * 15 + LON) * R - ra;
+  const lat = LAT * R;
+  const alt = Math.asin(Math.sin(lat) * Math.sin(dec) + Math.cos(lat) * Math.cos(dec) * Math.cos(H));
+  const az = Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(lat) - Math.tan(dec) * Math.cos(lat)) / R + 180;
+  return { alt: alt / R, az: ((az % 360) + 360) % 360 };
+}
+
+// Sky keyed to solar altitude: [alt, zenith, horizon, ground]
+const SKY: [number, string, string, string][] = [
+  [-18, '#0e1524', '#1a2336', '#120c09'],
+  [-10, '#131c30', '#26324a', '#160e0b'],
+  [-5,  '#222e4a', '#4c5568', '#1f140f'],
+  [-2,  '#34405e', '#9a6a5c', '#2c1b14'],
+  [0,   '#4c5a78', '#e08a4a', '#3e261b'],
+  [4,   '#6a7e9e', '#efb27a', '#6a4030'],
+  [12,  '#7a9cc2', '#dccfb8', '#8c5439'],
+  [40,  '#5b8cc0', '#cfdbe3', '#9c5b3f'],
+];
+const hex = (h: string): number[] => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16));
+const mix = (a: string, b: string, t: number): string => '#' + hex(a).map((v, i) => Math.round(v + (hex(b)[i] - v) * t).toString(16).padStart(2, '0')).join('');
+function skyAt(alt: number): [string, string, string] {
+  const cols = (r: [number, string, string, string]): [string, string, string] => [r[1], r[2], r[3]];
+  if (alt <= SKY[0][0]) return cols(SKY[0]);
+  for (let i = 1; i < SKY.length; i++) if (alt <= SKY[i][0]) {
+    const a = SKY[i - 1], b = SKY[i];
+    const t = (alt - a[0]) / (b[0] - a[0]);
+    return [mix(a[1], b[1], t), mix(a[2], b[2], t), mix(a[3], b[3], t)];
+  }
+  return cols(SKY[SKY.length - 1]);
+}
+const clamp = (v: number, a: number, b: number): number => Math.min(b, Math.max(a, v));
+
+/**
+ * The icon as an SVG string for a given sun.
+ * The A is Cormorant Garamond Bold's own outline, optically sized for 16px:
+ * a 0.7-unit stroke in the fill colour thickens the hairline leg and the
+ * serifs enough to survive, without changing the letter's proportions.
+ */
+function skyIcon({ alt, az }: Sun, { round = true } = {}): string {
+  const [zen, hor, ground] = skyAt(alt);
+  const HZ = 19.50;                             // horizon = lower edge of the A's crossbar
+  const night = alt < 0.5;                      // ink flip, as in the header
+  const ink = night ? '#e8dcb8' : '#231712';
+  // East left, south centre, west right — the header's own handedness.
+  const sx = clamp(16 + ((az - 180) / 120) * 13, 2, 30);
+  const sy = HZ - clamp(alt, -4, 50) / 50 * 17.5;  // tops out clear of the cap
+  const warm = clamp(1 - alt / 14, 0, 1);        // grazing light
+  const sun = mix('#fff6de', '#f28a3a', warm);
+  const glowA = (0.25 + 0.5 * warm).toFixed(2);
+  // Shadow: cast away from the sun, long when low, gone below ~1°.
+  let shadow = '';
+  if (alt > 0.8 && alt < 50) {
+    const len = clamp(3.2 / Math.tan(alt * R), 0, 15);
+    const dir = sx < 16 ? 1 : -1;
+    const x0 = 16, x1 = clamp(x0 + dir * (5 + len), -2, 34);
+    shadow = `<path d="M${x0 - dir * 4} 26.6L${x0 + dir * 4} 26.6L${x1} 27.6L${x1} 28.3L${x0 - dir * 4} 27.6Z" fill="#000" opacity="${(0.18 + 0.3 * warm).toFixed(2)}"/>`;
+  }
+  const stars = alt < -9
+    ? '<g fill="#e8dcb8" opacity=".85"><circle cx="5" cy="5" r=".55"/><circle cx="26.5" cy="7.5" r=".45"/><circle cx="9.5" cy="12" r=".4"/><circle cx="23" cy="3.2" r=".35"/></g>' : '';
+  const tile = round ? 6 : 0;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs>
+<clipPath id="t"><rect width="32" height="32" rx="${tile}"/></clipPath>
+<clipPath id="s"><rect width="32" height="${HZ}"/></clipPath>
+<linearGradient id="k" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${zen}"/><stop offset="${(HZ / 32).toFixed(3)}" stop-color="${hor}"/></linearGradient>
+<radialGradient id="g"><stop offset="0" stop-color="${sun}" stop-opacity="${glowA}"/><stop offset="1" stop-color="${sun}" stop-opacity="0"/></radialGradient>
+</defs><g clip-path="url(#t)">
+<rect width="32" height="32" fill="url(#k)"/>${stars}
+<g clip-path="url(#s)">${alt > -4 ? `<circle cx="${sx.toFixed(2)}" cy="${sy.toFixed(2)}" r="7" fill="url(#g)"/><circle cx="${sx.toFixed(2)}" cy="${sy.toFixed(2)}" r="2.6" fill="${sun}"/>` : ''}</g>
+<rect y="${HZ}" width="32" height="${32 - HZ}" fill="${ground}"/>${shadow}
+<g fill="${ink}"><path transform="translate(4.382 26.6) scale(0.03254 -0.03254)" d="M717 12Q722 12 722.0 6.0Q722 0 717 0Q687 0 654.5 2.0Q622 4 592 4Q558 4 533.0 2.0Q508 0 477 0Q473 0 473.0 6.0Q473 12 477 12Q518 12 524.5 28.5Q531 45 506 94L438 229H192L153 142Q126 82 152.0 47.0Q178 12 234 12Q239 12 239.0 6.0Q239 0 234 0Q204 0 179.0 2.0Q154 4 116 4Q77 4 53.5 2.0Q30 0 -4 0Q-8 0 -8.0 6.0Q-8 12 -4 12Q23 12 42.5 23.5Q62 35 81.5 65.5Q101 96 126 152L343 629Q344 632 352.0 632.5Q360 633 361 629L611 137Q635 90 652.5 62.5Q670 35 685.5 23.5Q701 12 717 12ZM423 257 308 485 205 257Z" stroke="${ink}" stroke-width="21.5" stroke-miterlimit="6"/><rect y="17.85" width="32" height="1.65"/></g>
+</g></svg>`;
+}
+
+const REFRESH_MS = 5 * 60 * 1000;
+
+function paint(): void {
+  const link = document.querySelector<HTMLLinkElement>('link[data-sky-favicon]');
+  if (!link) return;
+  link.href = 'data:image/svg+xml,' + encodeURIComponent(skyIcon(sunPosition(new Date())));
+}
+
+paint();
+setInterval(paint, REFRESH_MS);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) paint(); });
+// Client-side navigation swaps <head> and puts the static href back —
+// the same trap as the header's <html> attributes, so re-stamp after every swap.
+document.addEventListener('astro:after-swap', paint);
+</script>

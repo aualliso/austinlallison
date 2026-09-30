@@ -239,6 +239,8 @@ export const PEOPLE: Person[] = [
     ],
     scopeNote: 'Son of Benjamin B. Thomas. The two forms are treated as one person on the strength of the nickname within a single family group; see the basis on the cabinet card.',
     relations: [
+      { type: 'spouse', person: 'thomas-maud-white-hendrix', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'thomas-len-holly', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'thomas-benjamin-b', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'thomas-minerva-hunter', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'patterson-rockett-thomas', basis: 'Established relationship', confidence: 'certain' },
@@ -247,6 +249,42 @@ export const PEOPLE: Person[] = [
       { type: 'sibling', person: 'thomas-john', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'darby-mattie-thomas', basis: 'Established relationship', confidence: 'certain' },
 
+    ],
+  },
+  {
+    id: 'thomas-maud-white-hendrix',
+    authorized: 'Thomas, Maud White Hendrix',
+    surname: 'Thomas',
+    given: 'Maud White Hendrix',
+    birth: '1877',
+    death: '1947',
+    variants: ['Thomas, Maud', 'Maud Thomas', 'Hendrix, Maud', 'Hendrix, Maud White'],
+    status: 'established',
+    sources: [
+      'Familysearch ID: LXW9-M47',
+    ],
+    scopeNote: 'Maud White Hendrix Thomas was the wife of Norphlet "Bud" Thomas. She was born in 1877 and she died in 1947.',
+    relations: [
+      { type: 'spouse', person: 'thomas-norphlet-bud', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'thomas-len-holly', basis: 'Established relationship', confidence: 'certain' },
+    ],
+  },
+  {
+    id: 'thomas-len-holly',
+    authorized: 'Thomas, Len Holly',
+    surname: 'Thomas',
+    given: 'Len Holly',
+    birth: '1896',
+    death: '1978',
+    variants: ['Thomas, Len Holly', 'Len Thomas', 'Thomas, Len'],
+    status: 'established',
+    sources: [
+      'Familysearch ID: GCH1-DR2',
+    ],
+    scopeNote: 'Len Holly Thomas was the son of Norphlet "Bud" Thomas and Maud Thomas. He was born in 1896 and he died in 1978.',
+    relations: [
+      { type: 'parent', person: 'thomas-norphlet-bud', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'thomas-maud-white-hendrix', basis: 'Established relationship', confidence: 'certain' },
     ],
   },
   {
@@ -1303,12 +1341,14 @@ export const PEOPLE: Person[] = [
     },
     {
       id: 'naylor-charley',
-      authorized: 'Naylor, Charley',
+      authorized: 'Naylor, Charles',
       surname: 'Naylor',
-      given: 'Charley',
-      variants: ['Naylor, Charlie'],
-      status: 'provisional',
-      sources: ['Supplied with the musicians cabinet card; source unrecorded'],
+      given: 'Charles',
+      birth: '1870',
+      death: '1925',
+      variants: ['Naylor, Charlie', 'Charley Naylor', 'Naylor, Charley'],
+      status: 'established',
+      sources: ['Supplied with the musicians cabinet card; Findagrave record number: 53923212'],
     },
     {
     id: 'smith-eula-belle-girdner',

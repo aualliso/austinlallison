@@ -52,6 +52,7 @@ export type ObjectFormat =
   | 'real photo postcard'
   | 'snapshot'
   | 'crayon enlargement'
+  | 'silver gelatin print'
   | 'tintype'
   | 'copy print'
   | 'ambrotype'
