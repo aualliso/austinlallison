@@ -1351,6 +1351,17 @@ export const PEOPLE: Person[] = [
       sources: ['Supplied with the musicians cabinet card; Findagrave record number: 53923212'],
     },
     {
+      id: 'precure-kenneth',
+      authorized: 'Precure, Kenneth',
+      surname: 'Precure',
+      given: 'Kenneth',
+      birth: '1926',
+      death: '2011',
+      variants: ['Kenneth Precure'],
+      status: 'established',
+      sources: ['Findagrave record number: 68028497'],
+    },
+    {
     id: 'smith-eula-belle-girdner',
     authorized: 'Smith, Eula Belle Girdner',
     surname: 'Smith',

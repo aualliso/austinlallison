@@ -574,5 +574,103 @@ export const COLLECTION: Collection = {
           },
       ],
     },
+    {
+      slug: 'allison-harold-jean-loveta-mckinstry-camellia-room',
+      title: '[Harold and Jean Allison with Loveta McKinstry at the Camellia Room in Savannah, Georgia]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Savannah, Georgia',
+      controlNumber: 'f.1.4',
+      date: {
+        display: '[1944-1945]',
+        basis: ['This photograph was likely taken between 1944 and 1945 while Jean moved across the country with Harold during his military training.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-jean-loveta-mckinstry-camellia-room-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-jean-loveta-mckinstry-camellia-room-verso.jpg',
+      },
+      description:
+        'This photograph depicts Jean McKinstry Allison, Loveta McKinstry, and Harold Allison while at the Camellia Room at Hotel Savannah in Savannah, Georgia. This photograph was likely taken during the period that Jean traveled with Harold during his military training. This photograph is housed in a small folder that shows that it was received from Hotel Savannah.',
+      inscriptions: [
+    
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 71.1, y: 25.8, w: 16.2, h: 33.9 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 11.3, y: 28.2, w: 18.6, h: 41 },
+        },
+        {
+          person: 'mckinstry-loveta-swann',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 36.6, y: 25.8, w: 15.2, h: 34.3 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-oscar-kenneth-precure',
+      title: '[Kenneth Precure, Oscar Allison, and Harold Allison with mustaches]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Savannah, Georgia',
+      controlNumber: 'f.1.10',
+      date: {
+        display: '[1960-1965]',
+        basis: ['There is no date on this photograph, but an estimated date of 1960 to 1965 is likely.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-oscar-kenneth-precure-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-oscar-kenneth-precure-verso.jpg',
+      },
+      description:
+        'This photograph depicts brothers Harold and Oscar Allison with good friend Kenneth Precure. It appears this professional portrait was taken to highlight and showcase each person\'s mustache.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Kenneth Precure \n Oscar Allison \n Harold Allison'
+        }
+      ],
+      depicts: [
+        {
+          person: 'precure-kenneth',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 4.2, y: 6.2, w: 29.7, h: 56.4 },
+        },
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 33.6, y: 17.3, w: 27.3, h: 49.5 },
+        },
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 63.9, y: 13.1, w: 31.6, h: 51.7 },
+        },
+      ],
+    },
   ]
 }

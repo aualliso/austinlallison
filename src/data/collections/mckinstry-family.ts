@@ -4196,6 +4196,7 @@ export const COLLECTION: Collection = {
         confidence: 'probable',
       },
       recto: { file: 'mckinstry-jean-4H-calf-recto.jpg', },
+      verso: { file: 'mckinstry-jean-4H-calf-verso.jpg'},
       description:
         'This is a photograph of Jean McKinstry with her 4H calf that she entered into stock shows.',
       rights: {

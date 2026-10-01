@@ -32,7 +32,7 @@ export const COLLECTION: Collection = {
       slug: 'benjamin-b-thomas-portrait',
       title: '[Benjamin B. Thomas]',
       titleSource: 'supplied',
-      
+      controlNumber: 'c.1.39.1',
       // The soft graphite modelling of the face against flat wash in the coat
       // is characteristic of a CRAYON ENLARGEMENT - a photographic enlargement
       // worked over by hand, sold door to door from about 1880 to 1910. But it
@@ -104,7 +104,7 @@ export const COLLECTION: Collection = {
       slug: 'minerva-hunter-thomas-portrait',
       title: '[Minerva Hunter Thomas]',
       titleSource: 'supplied',
-      
+      controlNumber: 'c.1.40.1',
       format: 'crayon enlargement',
       photographer: {
         name: 'Unknown',
@@ -145,7 +145,7 @@ export const COLLECTION: Collection = {
       slug: 'thomas-ben-family',
       title: '[Ben Thomas and Family]',
       titleSource: 'supplied',
-      
+      controlNumber: 'c.1.6.1',
       format: 'mounted photograph',
       photographer: {
         name: 'Unknown',
@@ -202,7 +202,7 @@ export const COLLECTION: Collection = {
       slug: 'grandmas-grandpa-thomas',
       title: '[Grandma and Grandpa Thomas]',
       titleSource: 'supplied',
-      
+      controlNumber: 'c.1.7.1',
       format: 'mounted photograph',
       photographer: {
         name: 'Unknown',
@@ -303,7 +303,7 @@ export const COLLECTION: Collection = {
       slug: 'darby-mattie-thomas',
       title: '[Aunt Matt Thomas Darby]',
       titleSource: 'supplied',
-      
+      controlNumber: 'a.1.6.2',
       format: 'mounted photograph',
       photographer: {
         name: 'Unknown',
@@ -340,6 +340,7 @@ export const COLLECTION: Collection = {
       title: '[Rockett Thomas Patterson]',
       titleSource: 'supplied',
       format: 'mounted photograph',
+      controlNumber: 'b.1.19.1',
       photographer: {
         name: 'Miller & Barrett',
         confidence: 'certain',

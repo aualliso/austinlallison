@@ -7,7 +7,8 @@
  * the sky runs through the day at Lubbock's real solar position (same
  * station as the header, LBB), the sun crosses east-left to west-right
  * using the header's handedness, the A casts a long shadow at low sun, and
- * after sunset the ink flips pale and a few stars come out.
+ * after dark a few stars come out. The A itself is gilt at every hour, with a
+ * dark keyline, like the stamp on the Register's cover.
  *
  * Place once in RootLayout's <head>, replacing the static icon link.
  * /favicon.svg (the noon sky) is the fallback for no-JS and for Safari,
@@ -72,12 +73,14 @@ const clamp = (v: number, a: number, b: number): number => Math.min(b, Math.max(
  * The A is Cormorant Garamond Bold's own outline, optically sized for 16px:
  * a 0.7-unit stroke in the fill colour thickens the hairline leg and the
  * serifs enough to survive, without changing the letter's proportions.
+ * It is drawn twice: a wider dark keyline underneath, then the gilt on top.
  */
 function skyIcon({ alt, az }: Sun, { round = true } = {}): string {
   const [zen, hor, ground] = skyAt(alt);
   const HZ = 19.50;                             // horizon = lower edge of the A's crossbar
-  const night = alt < 0.5;                      // ink flip, as in the header
-  const ink = night ? '#e8dcb8' : '#231712';
+  // The A is gilt at every hour, like the stamp on the Register's cover, with
+  // a dark keyline that separates it from bright sky and redbed ground alike.
+  const KEY = '#1a110d';
   // East left, south centre, west right — the header's own handedness.
   const sx = clamp(16 + ((az - 180) / 120) * 13, 2, 30);
   const sy = HZ - clamp(alt, -4, 50) / 50 * 17.5;  // tops out clear of the cap
@@ -96,6 +99,7 @@ function skyIcon({ alt, az }: Sun, { round = true } = {}): string {
     ? '<g fill="#e8dcb8" opacity=".85"><circle cx="5" cy="5" r=".55"/><circle cx="26.5" cy="7.5" r=".45"/><circle cx="9.5" cy="12" r=".4"/><circle cx="23" cy="3.2" r=".35"/></g>' : '';
   const tile = round ? 6 : 0;
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs>
+<linearGradient id="ag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6efdb"/><stop offset=".55" stop-color="#e2d3a8"/><stop offset="1" stop-color="#c4ad78"/></linearGradient>
 <clipPath id="t"><rect width="32" height="32" rx="${tile}"/></clipPath>
 <clipPath id="s"><rect width="32" height="${HZ}"/></clipPath>
 <linearGradient id="k" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${zen}"/><stop offset="${(HZ / 32).toFixed(3)}" stop-color="${hor}"/></linearGradient>
@@ -104,7 +108,8 @@ function skyIcon({ alt, az }: Sun, { round = true } = {}): string {
 <rect width="32" height="32" fill="url(#k)"/>${stars}
 <g clip-path="url(#s)">${alt > -4 ? `<circle cx="${sx.toFixed(2)}" cy="${sy.toFixed(2)}" r="7" fill="url(#g)"/><circle cx="${sx.toFixed(2)}" cy="${sy.toFixed(2)}" r="2.6" fill="${sun}"/>` : ''}</g>
 <rect y="${HZ}" width="32" height="${32 - HZ}" fill="${ground}"/>${shadow}
-<g fill="${ink}"><path transform="translate(4.382 26.6) scale(0.03254 -0.03254)" d="M717 12Q722 12 722.0 6.0Q722 0 717 0Q687 0 654.5 2.0Q622 4 592 4Q558 4 533.0 2.0Q508 0 477 0Q473 0 473.0 6.0Q473 12 477 12Q518 12 524.5 28.5Q531 45 506 94L438 229H192L153 142Q126 82 152.0 47.0Q178 12 234 12Q239 12 239.0 6.0Q239 0 234 0Q204 0 179.0 2.0Q154 4 116 4Q77 4 53.5 2.0Q30 0 -4 0Q-8 0 -8.0 6.0Q-8 12 -4 12Q23 12 42.5 23.5Q62 35 81.5 65.5Q101 96 126 152L343 629Q344 632 352.0 632.5Q360 633 361 629L611 137Q635 90 652.5 62.5Q670 35 685.5 23.5Q701 12 717 12ZM423 257 308 485 205 257Z" stroke="${ink}" stroke-width="21.5" stroke-miterlimit="6"/><rect y="17.85" width="32" height="1.65"/></g>
+<g fill="${KEY}" opacity=".8"><path transform="translate(4.382 26.6) scale(0.03254 -0.03254)" d="M717 12Q722 12 722.0 6.0Q722 0 717 0Q687 0 654.5 2.0Q622 4 592 4Q558 4 533.0 2.0Q508 0 477 0Q473 0 473.0 6.0Q473 12 477 12Q518 12 524.5 28.5Q531 45 506 94L438 229H192L153 142Q126 82 152.0 47.0Q178 12 234 12Q239 12 239.0 6.0Q239 0 234 0Q204 0 179.0 2.0Q154 4 116 4Q77 4 53.5 2.0Q30 0 -4 0Q-8 0 -8.0 6.0Q-8 12 -4 12Q23 12 42.5 23.5Q62 35 81.5 65.5Q101 96 126 152L343 629Q344 632 352.0 632.5Q360 633 361 629L611 137Q635 90 652.5 62.5Q670 35 685.5 23.5Q701 12 717 12ZM423 257 308 485 205 257Z" stroke="${KEY}" stroke-width="55.3" stroke-miterlimit="6"/><rect y="17.85" width="32" height="1.65" stroke="${KEY}" stroke-width="1.1"/></g>
+<g fill="url(#ag)"><path transform="translate(4.382 26.6) scale(0.03254 -0.03254)" d="M717 12Q722 12 722.0 6.0Q722 0 717 0Q687 0 654.5 2.0Q622 4 592 4Q558 4 533.0 2.0Q508 0 477 0Q473 0 473.0 6.0Q473 12 477 12Q518 12 524.5 28.5Q531 45 506 94L438 229H192L153 142Q126 82 152.0 47.0Q178 12 234 12Q239 12 239.0 6.0Q239 0 234 0Q204 0 179.0 2.0Q154 4 116 4Q77 4 53.5 2.0Q30 0 -4 0Q-8 0 -8.0 6.0Q-8 12 -4 12Q23 12 42.5 23.5Q62 35 81.5 65.5Q101 96 126 152L343 629Q344 632 352.0 632.5Q360 633 361 629L611 137Q635 90 652.5 62.5Q670 35 685.5 23.5Q701 12 717 12ZM423 257 308 485 205 257Z" stroke="url(#ag)" stroke-width="21.5" stroke-miterlimit="6"/><rect y="17.85" width="32" height="1.65"/></g>
 </g></svg>`;
 }
 
