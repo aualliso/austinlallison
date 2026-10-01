@@ -4537,6 +4537,47 @@ export const COLLECTION: Collection = {
         note: 'Photographer unidentified; unpublished.',
       },
     },
+    {
+      slug: 'swann-nannie-thomas-tintype',
+      title: 'Portrait of Nannie Thomas Swann',
+      controlNumber: 'e.1.38',
+      titleSource: 'supplied',
+      place: 'Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1890-1895]',
+        earliest: 1890,
+        latest: 1895,
+        basis: [
+          'There is nothing on this photograph to pinpoint a certain date. Nannie Swann appears older in this photograph than the wedding photoraph from 1886. There is a complementary portrait of Austin Swann likely taken at the same time as this one. She died in 1896, so these photos must be from before then.',
+        ],
+        confidence: 'probable',
+      },
+      depicts: [
+        {
+          person: 'swann-nannie-thomas',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          // Omit to inherit identificationBasis. If neither exists, the
+          // build throws - a name with no grounds is the one thing this
+          // schema will not store.
+          basis: 'Can confirm the identity.',
+          region: { face: 'recto', x: 30.4, y: 27.6, w: 30.3, h: 35 },
+        },
+      ],
+      format: 'tintype',
+      inscriptions: [
+        { location: 'recto',
+          medium: 'ink',
+          text: 'Grandmother Swann'
+        }
+      ],
+      recto: { file: 'swann-nannie-thomas-tintype-recto.jpg' },
+      description: 'This is a portrait of Nannie Thomas Swann likely dating from between 1890 and 1895. She died in 1896.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
     
         /* ---------------------------------------------------------------- */
     {

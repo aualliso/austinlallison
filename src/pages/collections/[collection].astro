@@ -36,6 +36,47 @@
 //   with the names and format, is one button away; ?view=list keeps it.
 //   Both views are the same rows restyled, so the filter and the order
 //   work in either.
+//
+// THE FRONTISPIECE (2026-10). The page opens on ONE print, large, on a
+// dark ground - the only dark surface in the collections. It is the key
+// print (the one the guide shows large), so it grows here from the guide;
+// `frontispiece: '<item-slug>'` on the collection chooses another.
+//
+// WHAT STANDS BESIDE IT. By default, THE RECORD: the print's title, the
+// people in it with the same confidence words as the item page (silent when
+// certain), and its date - all from the description, so a correction made
+// there reaches the frontispiece on the next build. Optionally, above that,
+// an EPIGRAPH the collection states in `epigraph` - words chosen on purpose
+// and attributed by hand. NOTHING IS QUOTED AUTOMATICALLY. (An earlier pass
+// lifted the first inscription it found; on the first collection visited that
+// put a mistaken identification from a verso in the largest type on the page,
+// out of the context that showed it was mistaken. An inscription is evidence,
+// not a caption.)
+//
+// THE SPREAD (2026-10, second pass). The dark band is now a book's opening:
+// the frontispiece at left with its record as the plate's caption, and the
+// TITLE PAGE at right - which collection this is ("Collection 02 of 05",
+// the same folder number as its entry on the guide), the h1, the scope, the
+// epigraph if one is stated, and the figures. At its foot a line names what
+// is below and links to it ("The inventory: 214 photographs in 4 series"),
+// and the print is sized so the band fits the window with the next band
+// showing beneath it, so the page plainly goes on. On a narrow screen the
+// title page comes first, then the print.
+//
+// THE PRINT ROOM (2026-10). The band is lit by the sun over Lubbock at the
+// moment of the visit: a window's light across the desk, its bearing, length,
+// softness, colour and strength from the sun's real position, the print's
+// shadow cut out of it; after sunset a twilight, then a lamp, and moonlight
+// when the moon is up. Drawn by src/lib/print-room.ts on a transparent
+// canvas BEHIND the content - the light touches the desk, never the
+// photograph. Before the script runs (or without it) the band is the flat
+// dark ground it always was.
+//
+// THE MOUNT TONE (2026-10). The dark ground and the pale desk bands take
+// their hue from this collection's own key print, sampled at build time (see
+// src/data/collections/mount.ts), so no two collections are the same cream.
+// `mount: '#rrggbb'` on the collection pins or overrules it. Without either,
+// the page falls back to the site palette.
 import RootLayout from '../../layouts/RootLayout.astro';
 import {
   COLLECTIONS,
@@ -61,6 +102,8 @@ import {
 } from '../../data/collections/index';
 import type { ResolvedItem, Face } from '../../data/collections/index';
 import { plate } from '../../data/collections/images';
+import { mountTokens, mountStyle } from '../../data/collections/mount';
+import { CONFIDENCE_LABEL } from '../../data/collections/types';
 
 export function getStaticPaths() {
   return COLLECTIONS.map((c) => ({ params: { collection: c.slug } }));
@@ -179,7 +222,76 @@ const NAMES_ID = 'collection-names';
 // so their transition names pair and they carry across from the guide.
 const keys = keyItemsOf(c.slug, 4);
 const key = keys[0] ?? null;
-const strip = keys.slice(1, 4);
+
+/* ---------------------------------------------------------------- *
+ * The frontispiece, its record, and the epigraph if the collection has one
+ * ---------------------------------------------------------------- */
+// The build stops on a slug that is not this collection's own, the same
+// rule as keyItems: a frontispiece that silently falls back is a choice the
+// page quietly ignored.
+const ownItem = (slug: string, field: string) => {
+  const found = items.find((i) => i.slug === slug);
+  if (!found) {
+    throw new Error(
+      `[collections] ${c.slug}: ${field} '${slug}' is not an item in this collection.`
+    );
+  }
+  return found;
+};
+const fronti = c.frontispiece ? ownItem(c.frontispiece, 'frontispiece') : key;
+const frontR = fronti ? thumbs.get(fronti.slug)! : null;
+const frontAr = frontR ? frontR.width / frontR.height : 1;
+// The shelf beside the title: the other key prints, never the frontispiece.
+const shelf = keys.filter((i) => i.slug !== fronti?.slug).slice(0, 3);
+
+// THE RECORD beside the print. Named people first, each with its
+// confidence word when it is less than certain; the unidentified are counted
+// rather than listed, and a crowd is cut short.
+const RECORD_NAMES_MAX = 6;
+const recordPeople = (i: ResolvedItem) => {
+  const named: { name: string; qualifier: string }[] = [];
+  let unknown = 0;
+  for (const d of i.depicts) {
+    const p = d.person ? personById.get(d.person) : undefined;
+    const name = p ? naturalName(p) : d.as?.trim();
+    if (!name || d.confidence === 'unidentified') {
+      unknown++;
+      continue;
+    }
+    named.push({ name, qualifier: d.confidence === 'certain' ? '' : CONFIDENCE_LABEL[d.confidence] });
+  }
+  const shown = named.slice(0, RECORD_NAMES_MAX);
+  const more = named.length - shown.length;
+  const tail = [
+    more > 0 ? `${more} more named` : '',
+    unknown > 0 ? (unknown === 1 ? 'one unidentified person' : `${unknown} unidentified people`) : '',
+  ].filter(Boolean);
+  return { shown, tail: tail.length ? `${named.length ? 'and ' : ''}${tail.join(', ')}` : '' };
+};
+const dateOf = (i: ResolvedItem) => (i.date.display && !/^\[?undated\]?$/i.test(i.date.display) ? i.date.display : '');
+const record = fronti
+  ? { title: fronti.title, href: fronti.href, date: dateOf(fronti), ...recordPeople(fronti) }
+  : null;
+
+// THE EPIGRAPH, only when the collection states one. Line breaks in the
+// text are kept. `source` may name an item, which the attribution then links.
+const epigraph = c.epigraph
+  ? {
+      lines: c.epigraph.text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean),
+      attribution: c.epigraph.attribution,
+      source: c.epigraph.source ? ownItem(c.epigraph.source, 'epigraph source') : null,
+    }
+  : null;
+
+// The mount tone, sampled from the KEY print (as on the guide, so the two
+// pages agree) unless pinned with `mount`.
+// Which collection this is, numbered as on the guide.
+const collNo = COLLECTIONS.findIndex((x) => x.slug === c.slug) + 1;
+const pad2 = (n: number) => String(n).padStart(2, '0');
+// What the line at the foot of the band promises.
+const cueFig = `${plural(items.length, 'photograph')}${sections.length > 1 ? ` in ${sections.length} series` : ''}`;
+
+const tone = await mountTokens(c.slug, c.mount, key ? thumbs.get(key.slug)?.index : undefined, Astro.site ?? Astro.url);
 
 // The people in it: each person's best face FROM THIS COLLECTION (identified
 // as certain or probable, the largest share of its photograph), in order of
@@ -247,9 +359,104 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     </style>
   </noscript>
 
-  <div class="collection max-w-4xl mx-auto py-6 text-iron font-serif" data-collection>
+  <div class="collection max-w-4xl mx-auto py-6 text-iron font-serif" style={mountStyle(tone)} data-collection>
+    <!-- THE SPREAD: frontispiece and title page -->
+    {fronti && frontR && record && (
+      <section class="fronti" aria-labelledby="coll-title" data-room>
+        <canvas class="room" aria-hidden="true" data-room-canvas></canvas>
+        <nav class="fronti-crumb" aria-label="Breadcrumb">
+          <a href="/collections">Collections</a>
+        </nav>
+        <div class="fronti-grid">
+          <div class="tp">
+            <p class="tp-no">Collection {pad2(collNo)} <span>of {pad2(COLLECTIONS.length)}</span></p>
+            <h1 id="coll-title" class="tp-title">{c.title}</h1>
+            <p class="tp-lede">{c.scope}</p>
+            {epigraph && (
+              <figure class="epi">
+                <blockquote class="epi-text">
+                  {epigraph.lines.map((l) => <span class="epi-line">{l}</span>)}
+                </blockquote>
+                <figcaption class="epi-cap">
+                  {epigraph.source ? (
+                    <a href={epigraph.source.href} class="cap-t">{epigraph.attribution}</a>
+                  ) : (
+                    <span>{epigraph.attribution}</span>
+                  )}
+                </figcaption>
+              </figure>
+            )}
+            <dl class="tp-figs">
+              <div>
+                <dt>Photographs</dt>
+                <dd>{items.length.toLocaleString('en-US')}</dd>
+              </div>
+              {extent && (
+                <div>
+                  <dt>Dates</dt>
+                  <dd>{years(extent.from, extent.to)}</dd>
+                </div>
+              )}
+              {names.length > 0 && (
+                <div>
+                  <dt>People</dt>
+                  <dd>{names.length.toLocaleString('en-US')}</dd>
+                </div>
+              )}
+            </dl>
+          </div>
+
+          <figure class="plate-fig">
+            <div class="fronti-stage">
+              <a href={fronti.href} class="fronti-print" tabindex="-1" aria-hidden="true" style={`--ar:${frontAr.toFixed(4)}`}>
+                <img
+                  src={frontR.view}
+                  srcset={frontR.viewSrcset}
+                  sizes={`min(92vw, ${(62 * frontAr).toFixed(1)}vh)`}
+                  width={frontR.width}
+                  height={frontR.height}
+                  alt=""
+                  decoding="async"
+                  fetchpriority="high"
+                  transition:name={`plate-${fronti.slug}`}
+                />
+              </a>
+            </div>
+            {/* The plate's caption is its record: title, people with their
+                confidence words, date - never an inscription. */}
+            <figcaption class="rec">
+              <a href={record.href} class="rec-link">{record.title}</a>
+              {(record.shown.length > 0 || record.tail) && (
+                <span class="rec-people">
+                  {record.shown.map((n, k) => (
+                    <>
+                      {k > 0 && <span class="rec-sep">; </span>}
+                      <span class="rec-name">{n.name}</span>
+                      {n.qualifier && <span class="rec-q">{n.qualifier.toLowerCase()}</span>}
+                    </>
+                  ))}
+                  {record.tail && <span class="rec-tail">{record.shown.length ? '; ' : ''}{record.tail}</span>}
+                </span>
+              )}
+              {record.date && <span class="rec-date">{record.date}</span>}
+            </figcaption>
+          </figure>
+        </div>
+
+        {items.length > 0 && (
+          <a href="#inventory" class="cue">
+            <span class="cue-k">The inventory</span>
+            <span class="cue-fig">{cueFig}</span>
+            <span class="cue-arrow" aria-hidden="true">&darr;</span>
+          </a>
+        )}
+      </section>
+    )}
+
     <!-- THE FRONT -->
-    <header class:list={['front', 'bleed', { 'has-plates': !!key }]}>
+    {(!fronti || people.length > 0) && (
+    <header class:list={['front', 'bleed', { 'has-plates': !fronti && shelf.length > 0, 'is-people': !!fronti }]}>
+      {!fronti && (
       <div class="front-text">
         <nav class="front-crumb" aria-label="Breadcrumb">
           <a href="/collections">Collections</a>
@@ -275,22 +482,21 @@ const custodyKnown = !/^TODO/i.test(c.custody);
           )}
         </dl>
       </div>
+      )}
 
-      {key && (
+      {!fronti && shelf.length > 0 && (
         <div class="front-shelf" aria-hidden="true">
-          {[key, ...strip].map((it, n) => {
+          {shelf.map((it) => {
             const r = thumbs.get(it.slug)!;
             return (
-              <a href={it.href} tabindex="-1" class:list={['plate', n === 0 ? 'plate--key' : 'plate--small']} style={`--ar:${(r.width / r.height).toFixed(4)}`}>
+              <a href={it.href} tabindex="-1" class="plate plate--small" style={`--ar:${(r.width / r.height).toFixed(4)}`}>
                 <img
-                  src={n === 0 ? r.view : r.index}
-                  srcset={n === 0 ? r.viewSrcset : r.indexSrcset}
-                  sizes={n === 0 ? '(min-width: 48rem) 300px, 60vw' : undefined}
+                  src={r.index}
+                  srcset={r.indexSrcset}
                   width={r.width}
                   height={r.height}
                   alt=""
                   decoding="async"
-                  fetchpriority={n === 0 ? 'high' : undefined}
                   transition:name={`plate-${it.slug}`}
                 />
               </a>
@@ -328,7 +534,9 @@ const custodyKnown = !/^TODO/i.test(c.custody);
         </figure>
       )}
     </header>
+    )}
 
+    <span id="inventory" class="inv-anchor" aria-hidden="true"></span>
     <dl class="mt-6 border-t border-haze">
       <div class={ROW}>
         <dt class={DT}>Custody</dt>
@@ -531,13 +739,323 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     --c-dust: var(--color-dust, #ede7da);
     --c-iron: var(--color-iron, #3b3833);
     --c-mount: var(--color-caliche, #e8e1d1);
-    --c-desk: var(--color-desk, #f5f3ed);
+    /* The desk bands take this collection's mount tone when it has one. */
+    --c-desk: var(--m-tint, var(--color-desk, #f5f3ed));
     --mono: var(--font-mono, ui-monospace, monospace);
   }
   /* FULL-WIDTH BANDS by border-image outset (ink overflow: no scrollbar),
      as on the guide and the person pages. */
   .bleed {
     border-image: conic-gradient(var(--c-desk) 0 0) fill 0 / / 0 100vmax;
+  }
+
+  /* The spread ---------------------------------------------------- */
+  /* A dark ground in the collection's own hue, wider than the reading
+     column (up to 76rem, never past the window less 2.5rem, so no sideways
+     scroll), carried to the window edges by the same border-image outset as
+     the bands. The negative top margin cancels the page's py-6, so the
+     ground meets the header. No filter, blend, mask or 3D; the only motion
+     is the cue's arrow, twice, and not at all under reduced motion. */
+  .fronti {
+    --fw: min(76rem, 100vw - 2.5rem);
+    width: var(--fw);
+    margin: -1.5rem calc((100% - var(--fw)) / 2) 0;
+    padding: clamp(1.1rem, 2.5vw, 1.6rem) 0 0;
+    border-image: conic-gradient(var(--m-ground, #26221d) 0 0) fill 0 / / 0 100vmax;
+    color: var(--m-ink, #efe8da);
+    position: relative;
+  }
+  /* The print room's light: a transparent canvas filling the band's box,
+     under everything in it. It fades in once drawn, so a slow script never
+     shows a half-lit room. */
+  .room {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .room.is-lit {
+    opacity: 1;
+  }
+  .fronti > :not(.room) {
+    position: relative;
+  }
+  .fronti-crumb a {
+    color: var(--m-quiet, #b3ab9c);
+    font: 0.7rem/1.4 var(--mono);
+    letter-spacing: 0.1em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  .fronti-crumb a:hover {
+    color: var(--m-ink, #efe8da);
+    text-decoration: underline;
+  }
+  /* Narrow: the title page, then the print. Wide: the print at left, the
+     title page facing it, as a frontispiece faces its title. */
+  .fronti-grid {
+    display: grid;
+    gap: 2.25rem;
+    margin-top: clamp(1rem, 2.5vw, 1.5rem);
+  }
+  @media (min-width: 60rem) {
+    .fronti-grid {
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      grid-template-areas: 'plate tp';
+      align-items: center;
+      gap: clamp(2.5rem, 5vw, 4.5rem);
+    }
+    .tp {
+      grid-area: tp;
+    }
+    .plate-fig {
+      grid-area: plate;
+    }
+  }
+
+  /* The title page. */
+  .tp {
+    max-width: 34rem;
+  }
+  .tp-no {
+    margin: 0;
+    color: var(--m-rule, #b8957c);
+    font: 0.72rem/1.4 var(--mono);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+  .tp-no span {
+    color: var(--m-quiet, #b3ab9c);
+  }
+  .tp-title {
+    margin: 0.6rem 0 0;
+    font-size: clamp(2.4rem, 1.4rem + 3.4vw, 4.1rem);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+  .tp-lede {
+    margin: 1rem 0 0;
+    font-size: 1.12rem;
+    line-height: 1.5;
+    opacity: 0.84;
+    text-wrap: pretty;
+  }
+  .epi {
+    margin: 1.75rem 0 0;
+  }
+  .epi-text {
+    margin: 0;
+    padding-left: clamp(0.9rem, 1.6vw, 1.25rem);
+    border-left: 2px solid var(--m-rule, #b8957c);
+    font-size: clamp(1.15rem, 0.95rem + 0.7vw, 1.45rem);
+    font-style: italic;
+    line-height: 1.35;
+    text-wrap: balance;
+  }
+  .epi-line {
+    display: block;
+  }
+  .epi-cap {
+    margin: 0.7rem 0 0;
+    padding-left: calc(clamp(0.9rem, 1.6vw, 1.25rem) + 2px);
+    color: var(--m-quiet, #b3ab9c);
+    font: 0.68rem/1.6 var(--mono);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  .cap-t {
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 1px solid var(--m-rule, #b8957c);
+  }
+  .cap-t:hover {
+    color: var(--m-ink, #efe8da);
+  }
+  /* The figures, at the foot of the title page like an imprint. */
+  .tp-figs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 2.25rem;
+    margin: 1.9rem 0 0;
+    padding-top: 1rem;
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+  }
+  .tp-figs dt {
+    color: var(--m-quiet, #b3ab9c);
+    font: 0.68rem/1.4 var(--mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .tp-figs dd {
+    margin: 0.2rem 0 0;
+    font-size: clamp(1.45rem, 1.1rem + 1.2vw, 1.95rem);
+    font-weight: 500;
+    font-variant-numeric: oldstyle-nums proportional-nums;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  /* The plate and its caption. */
+  .plate-fig {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+  }
+  /* The stage is a size container, so the print is sized from the width it
+     actually has. Its HEIGHT is the smallest of: the window less the header
+     and the rest of the band (so the cue and a sliver of the next band show
+     on a desktop), a ceiling, and the column width over its own ratio. Width
+     follows, so nothing is squashed. Where container units are unknown the
+     min() is dropped whole and max-height / max-width keep the proportions. */
+  .fronti-stage {
+    container-type: inline-size;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+  .fronti-print {
+    display: block;
+    line-height: 0;
+  }
+  .fronti-print img {
+    display: block;
+    margin: 0;
+    width: auto;
+    max-width: 100%;
+    max-height: 62vh;
+    height: min(max(17rem, calc(100vh - var(--header-h, 5.5rem) - 18rem)), 44rem, calc(100cqi / var(--ar, 1)));
+    height: min(max(17rem, calc(100svh - var(--header-h, 5.5rem) - 18rem)), 44rem, calc(100cqi / var(--ar, 1)));
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.45),
+      0 30px 56px -28px rgb(0 0 0 / 0.85);
+  }
+  @media (min-width: 60rem) {
+    .fronti-print img {
+      max-height: none;
+    }
+  }
+  @media (max-width: 40rem) {
+    .fronti-print img {
+      height: min(60svh, calc(100cqi / var(--ar, 1)));
+    }
+  }
+  .rec {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.3rem;
+    max-width: 32rem;
+    margin-top: 1.1rem;
+    text-align: center;
+  }
+  .rec-link {
+    color: var(--m-ink, #efe8da);
+    font-size: 1.1rem;
+    font-style: italic;
+    line-height: 1.3;
+    text-decoration: none;
+    text-wrap: balance;
+  }
+  .rec-link:hover {
+    text-decoration: underline;
+    text-decoration-color: var(--m-rule, #b8957c);
+    text-underline-offset: 0.15em;
+  }
+  .rec-people {
+    font-size: 0.98rem;
+    line-height: 1.45;
+    opacity: 0.9;
+    text-wrap: pretty;
+  }
+  /* The confidence word, as on the item page: small capitals after the name,
+     absent when the identification is certain. */
+  .rec-q {
+    margin-left: 0.35em;
+    color: var(--m-rule, #b8957c);
+    font-variant-caps: all-small-caps;
+    letter-spacing: 0.06em;
+  }
+  .rec-sep,
+  .rec-tail {
+    color: var(--m-quiet, #b3ab9c);
+  }
+  .rec-tail {
+    font-style: italic;
+  }
+  .rec-date {
+    color: var(--m-quiet, #b3ab9c);
+    font: 0.72rem/1.6 var(--mono);
+    letter-spacing: 0.08em;
+  }
+
+  /* THE CUE. The band's last line: what is below, how much, and a link to
+     it - an index line, not a bouncing chevron. */
+  .cue {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.25rem 1rem;
+    margin-top: clamp(1.75rem, 3.5vw, 2.5rem);
+    padding: 0.85rem 0 1rem;
+    border-top: 1px solid rgb(255 255 255 / 0.14);
+    color: var(--m-quiet, #b3ab9c);
+    font: 0.72rem/1.4 var(--mono);
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    text-transform: uppercase;
+  }
+  .cue-k {
+    color: var(--m-rule, #b8957c);
+  }
+  .cue-arrow {
+    display: inline-block;
+    margin-left: auto;
+    font-size: 0.95rem;
+    color: var(--m-ink, #efe8da);
+    animation: cue-nudge 1.4s ease-in-out 1.2s 2;
+  }
+  .cue:hover .cue-k,
+  .cue:hover .cue-arrow {
+    color: var(--m-ink, #efe8da);
+  }
+  .cue:hover .cue-fig {
+    color: var(--m-ink, #efe8da);
+  }
+  @keyframes cue-nudge {
+    0%,
+    100% {
+      transform: none;
+    }
+    45% {
+      transform: translateY(0.3rem);
+    }
+  }
+  .rec-link:focus-visible,
+  .cap-t:focus-visible,
+  .cue:focus-visible,
+  .fronti-crumb a:focus-visible {
+    outline: 2px solid var(--m-rule, #b8957c);
+    outline-offset: 3px;
+  }
+  /* Where the cue lands: clear of the sticky header. */
+  .inv-anchor {
+    display: block;
+    scroll-margin-top: calc(var(--header-h, 5.5rem) + 1rem);
+  }
+  /* With the spread above it, the light band carries only the people. */
+  .front.is-people {
+    padding: 1.6rem 0 1.75rem;
+    margin-bottom: 0.5rem;
+  }
+  .front.is-people .people {
+    margin-top: 0;
   }
 
   /* The front ------------------------------------------------------- */
@@ -627,11 +1145,10 @@ const custodyKnown = !/^TODO/i.test(c.custody);
       0 1px 1px rgb(26 25 25 / 0.16),
       0 16px 26px -18px rgb(26 25 25 / 0.6);
   }
-  .plate--key {
-    height: min(clamp(11rem, 28vw, 17.5rem), calc(min(19rem, 60vw) / var(--ar, 1)));
-  }
+  /* With the key print gone to the frontispiece, the shelf beside the
+     title holds the other three, a size up from the old strip. */
   .plate--small {
-    height: min(clamp(5rem, 11vw, 7.5rem), calc(min(6.5rem, 18vw) / var(--ar, 1)));
+    height: min(clamp(5.5rem, 13vw, 9rem), calc(min(8rem, 22vw) / var(--ar, 1)));
   }
   .front-shelf:hover .plate {
     transform: translateY(-3px);
@@ -1049,6 +1566,12 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     .people-face {
       transition: none;
     }
+    .cue-arrow {
+      animation: none;
+    }
+    .room {
+      transition: none;
+    }
     .is-sheet .entry:hover .entry-print,
     .is-sheet .entry:focus-within .entry-print,
     .front-shelf:hover .plate,
@@ -1061,10 +1584,76 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     .bleed {
       border-image: none;
     }
+    .fronti {
+      width: auto;
+      margin: 0 0 1rem;
+      border-image: none;
+    }
+    .fronti,
+    .fronti a,
+    .tp-no,
+    .tp-no span,
+    .tp-figs dt,
+    .epi-cap,
+    .rec-sep,
+    .rec-tail,
+    .rec-date,
+    .rec-q {
+      color: #3b3833 !important;
+    }
+    .fronti-print img {
+      height: auto;
+      max-height: 55vh;
+      box-shadow: none !important;
+    }
+    .cue,
+    .room {
+      display: none;
+    }
   }
 </style>
 
 <script>
+  import { lightAt, drawRoom } from '../../lib/print-room';
+
+  // THE PRINT ROOM. Draw the light for now; again on resize, when the print
+  // or the fonts settle (either moves the print), and every five minutes
+  // while the page is open. Nothing animates between draws.
+  function wireRoom(root: HTMLElement, signal: AbortSignal) {
+    const band = root.querySelector<HTMLElement>('[data-room]');
+    const canvas = band?.querySelector<HTMLCanvasElement>('[data-room-canvas]');
+    const print = band?.querySelector<HTMLImageElement>('.fronti-print img');
+    if (!band || !canvas || !print) return;
+    const work = document.createElement('canvas');
+    let queued = 0;
+    const paint = () => {
+      queued = 0;
+      if (signal.aborted) return;
+      const tint = getComputedStyle(root).getPropertyValue('--m-tint');
+      try {
+        const shadow = drawRoom(canvas, print, tint, lightAt(Date.now()), work);
+        if (shadow) print.style.boxShadow = shadow;
+        canvas.classList.add('is-lit');
+      } catch {
+        // The room stays its flat ground; nothing else depends on this.
+      }
+    };
+    const soon = () => {
+      if (!queued) queued = requestAnimationFrame(paint);
+    };
+    const ro = new ResizeObserver(soon);
+    ro.observe(band);
+    if (!print.complete) print.addEventListener('load', soon, { once: true, signal });
+    document.fonts?.ready.then(soon);
+    const timer = window.setInterval(soon, 5 * 60 * 1000);
+    signal.addEventListener('abort', () => {
+      ro.disconnect();
+      window.clearInterval(timer);
+      if (queued) cancelAnimationFrame(queued);
+    });
+    soon();
+  }
+
   function wire() {
     const root = document.querySelector<HTMLElement>('[data-collection]');
     if (!root || root.dataset.wired) return;
@@ -1075,6 +1664,7 @@ const custodyKnown = !/^TODO/i.test(c.custody);
     wireFilter(root, ac.signal);
     wireView(root, ac.signal);
     wirePeople(root, ac.signal);
+    wireRoom(root, ac.signal);
     const buttons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-order]'));
     const status = root.querySelector<HTMLElement>('[data-order-status]');
     buttons.forEach((b) =>

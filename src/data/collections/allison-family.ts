@@ -15,7 +15,7 @@ export const COLLECTION: Collection = {
   title: 'Allison Family Photographs',
   custody: 'Various origins.',
   scope:
-    'Photographs of the Allison family. Photographs date to Redmon and Betty Allison, but the bulk revolves around Harold and Jean Allison.',
+    'Photographs of the Allison family. Photographs date to Redmon and Betty Allison, but the bulk revolves around Harold and Jean Allison. The collection includes photographs of associated families, including the McKinstry, Ingle, and Swann families.',
   lines: ['Allison', 'McKinstry', 'Ingle', 'Swann'],
   places: ['Texas', 'New Mexico'],
   defaults: {

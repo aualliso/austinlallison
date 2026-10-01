@@ -410,6 +410,38 @@ export interface Collection {
   keyItems?: string[];
 
   /**
+   * THE FRONTISPIECE: the print the collection page opens on, large, on a
+   * dark ground. OPTIONAL; omit it and the first key item is used. The build
+   * throws on a slug that is not one of this collection's own items.
+   */
+  frontispiece?: string;
+
+  /**
+   * AN EPIGRAPH for the frontispiece. OPTIONAL, and never filled in for you:
+   * nothing is quoted on the page unless it is stated here. Without it the
+   * print stands beside its own record - title, people, date.
+   *
+   *   text         the words; line breaks are kept
+   *   attribution  written out in full, as it should read:
+   *                'Inscribed on the back of the portrait of Benjamin B. Thomas'
+   *   source       OPTIONAL slug of the item the words come from; the
+   *                attribution then links to it (the build throws on a slug
+   *                that is not this collection's)
+   *
+   * Choose words you stand behind. An inscription is evidence, not a caption:
+   * set out of context in the largest type on the page, a mistaken name on a
+   * verso reads as a fact.
+   */
+  epigraph?: { text: string; attribution: string; source?: string };
+
+  /**
+   * THE MOUNT TONE, as '#rrggbb'. OPTIONAL; omit it and the build samples the
+   * key print's mount (see mount.ts), logging the value so it can be pinned
+   * here. Set it to fix a collection's colour or to overrule a sample.
+   */
+  mount?: string;
+
+  /**
    * Applied to every item that does not state its own. THIS IS WHERE THE
    * REPETITION GOES: five hundred prints scanned the same way should say so
    * once, not five hundred times.

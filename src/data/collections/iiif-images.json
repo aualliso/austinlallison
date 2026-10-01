@@ -10006,6 +10006,114 @@
     },
     "hash": "c88d2b83525fb0ff43fd6426ce9043a5357c91fac7f1ecbc65b440182960ed21"
   },
+  "mckinstry-family/mckinstry-jean-1941-class-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-1941-class-recto-e5c47bf1d6",
+    "width": 8517,
+    "height": 11954,
+    "sizes": [
+      {
+        "width": 267,
+        "height": 374
+      },
+      {
+        "width": 340,
+        "height": 477
+      },
+      {
+        "width": 680,
+        "height": 954
+      },
+      {
+        "width": 800,
+        "height": 1123
+      },
+      {
+        "width": 1200,
+        "height": 1684
+      },
+      {
+        "width": 1852,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2667
+      },
+      {
+        "width": 3562,
+        "height": 4999
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1852,
+      "study": 3562
+    },
+    "hash": "e5c47bf1d6dc938452aef4f5cfba6dc251041f4f3e334a625c6e2c93fd36a11d"
+  },
+  "mckinstry-family/mckinstry-jean-1941-class-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-1941-class-verso-9859be4182",
+    "width": 8213,
+    "height": 11840,
+    "sizes": [
+      {
+        "width": 257,
+        "height": 370
+      },
+      {
+        "width": 340,
+        "height": 490
+      },
+      {
+        "width": 680,
+        "height": 980
+      },
+      {
+        "width": 800,
+        "height": 1153
+      },
+      {
+        "width": 1200,
+        "height": 1730
+      },
+      {
+        "width": 1804,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 2739
+      },
+      {
+        "width": 3468,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1804,
+      "study": 3468
+    },
+    "hash": "9859be418244d0f161e74dea5f98fc7b557e2979c49a74b8068266ad00fbfa0a"
+  },
   "mckinstry-family/mckinstry-jean-4H-calf-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-4H-calf-recto-9609c7e76c",
@@ -10525,6 +10633,114 @@
       "study": 4361
     },
     "hash": "2bdf951fb78154721d9dd98886d388578df9aa188e689feaec495a12668286ca"
+  },
+  "mckinstry-family/mckinstry-jean-frank-lajdziak-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-frank-lajdziak-recto-908fca497a",
+    "width": 10006,
+    "height": 12459,
+    "sizes": [
+      {
+        "width": 313,
+        "height": 390
+      },
+      {
+        "width": 340,
+        "height": 423
+      },
+      {
+        "width": 680,
+        "height": 847
+      },
+      {
+        "width": 800,
+        "height": 996
+      },
+      {
+        "width": 1200,
+        "height": 1494
+      },
+      {
+        "width": 1900,
+        "height": 2366
+      },
+      {
+        "width": 2088,
+        "height": 2600
+      },
+      {
+        "width": 4016,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2088,
+      "study": 4016
+    },
+    "hash": "908fca497ac88f48f2a3d5c3186992b0189f113c34d984b7098c0f9d6a65dff7"
+  },
+  "mckinstry-family/mckinstry-jean-frank-lajdziak-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-frank-lajdziak-verso-92b8201992",
+    "width": 9882,
+    "height": 12326,
+    "sizes": [
+      {
+        "width": 309,
+        "height": 386
+      },
+      {
+        "width": 340,
+        "height": 424
+      },
+      {
+        "width": 680,
+        "height": 848
+      },
+      {
+        "width": 800,
+        "height": 998
+      },
+      {
+        "width": 1200,
+        "height": 1497
+      },
+      {
+        "width": 1900,
+        "height": 2370
+      },
+      {
+        "width": 2084,
+        "height": 2599
+      },
+      {
+        "width": 4009,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2084,
+      "study": 4009
+    },
+    "hash": "92b82019927f6cd2918293c06020945cb4b64e13d3ccac01e503d1d3abc8af0c"
   },
   "mckinstry-family/mckinstry-jean-peggy-1-recto.jpg": {
     "v": 2,
@@ -29787,6 +30003,52 @@
       "study": 2831
     },
     "hash": "937f0dfafbc62c267b8dae251f7b3cd6198f0b049313ec7796446ff442921961"
+  },
+  "swann-family/swann-nannie-thomas-tintype-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/swann-nannie-thomas-tintype-recto-76c2603afa",
+    "width": 1880,
+    "height": 2461,
+    "sizes": [
+      {
+        "width": 235,
+        "height": 308
+      },
+      {
+        "width": 340,
+        "height": 445
+      },
+      {
+        "width": 680,
+        "height": 890
+      },
+      {
+        "width": 800,
+        "height": 1047
+      },
+      {
+        "width": 1200,
+        "height": 1571
+      },
+      {
+        "width": 1880,
+        "height": 2461
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1880
+      ],
+      "detail": 1880,
+      "study": null
+    },
+    "hash": "76c2603afa15d023b87394a7672042d96b09d3bd1e531606e918f73be022541b"
   },
   "swann-family/swann-thresher-steam-engine-recto.jpg": {
     "v": 2,

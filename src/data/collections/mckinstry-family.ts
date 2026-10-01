@@ -7140,5 +7140,96 @@ export const COLLECTION: Collection = {
         note: 'Photographer unidentified; unpublished.',
       },
     },
+    {
+      slug: 'mckinstry-jean-1941-class',
+      title: '[Hagerman High School class of 1941]',
+      controlNumber: 'f.1.11',
+      titleSource: 'supplied',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '1941',
+        basis: [
+          'This photograph is assigned a 1941 date based on the fact that it is the 1941 graduating class of Hagerman High School.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-jean-1941-class-recto.jpg' },
+      verso: { file: 'mckinstry-jean-1941-class-verso.jpg' },
+      description: 'This photograph depicts the 1941 graduating class of Hagerman High School. Jean McKinstry\'s picture is the first photograph in the top row.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'pencil',
+          text: 'Jean McKinstry'
+        },
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Hagerman, N.M.'
+        }
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 8.8, y: 6.1, w: 15, h: 14.6 },
+        },
+        
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-jean-frank-lajdziak',
+      title: '[Jean McKinstry and Frank Lajdziak dancing]',
+      controlNumber: 'f.1.14',
+      titleSource: 'supplied',
+      place: 'Roswell, New Mexico',
+      date: {
+        display: '1943',
+        basis: [
+          'A date of 1943 is assigned on the verso. Nothing here objects to it. Austin Allison has a postcard sent from Frank Lajdziak to Jean McKinstry in 1943, so this date is consistent with that.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-jean-frank-lajdziak-recto.jpg' },
+      verso: { file: 'mckinstry-jean-frank-lajdziak-verso.jpg' },
+      description: 'This photograph depicts Jean McKisntry (left) and Frank Lajdziak (right) dancing together at some type of social event.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: '1943'
+        },
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Jean McKinstry and Frank.'
+        }
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 21, y: 17.2, w: 13.4, h: 15.9 },
+        },
+        {
+          as: 'Frank Lajdziak',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 43.9, y: 15.8, w: 13.3, h: 13.3 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
   ],
 };

@@ -71,6 +71,12 @@
 //     when there are few enough to fit; hovering one lights its span.
 //   - The surname crosswalk moved above the chronology, so the page ends on
 //     the decades and their photographs, then a short colophon.
+//
+// 2026-10: THE MOUNT TONE. Each holdings entry rests on a pale band in its
+// collection's own hue, sampled from its key print at build time, and its
+// folder number takes the tone - the same tone its collection page uses for
+// its frontispiece and bands. See src/data/collections/mount.ts; `mount:
+// '#rrggbb'` on a collection (types.ts) pins it. Without a tone an entry looks as before.
 
 import RootLayout from '../../layouts/RootLayout.astro';
 import {
@@ -92,6 +98,7 @@ import {
 import type { Face } from '../../data/collections/index';
 import { plate } from '../../data/collections/images';
 import type { Rendered } from '../../data/collections/images';
+import { mountTokens, mountStyle } from '../../data/collections/mount';
 
 const EN = '\u2013';
 const years = (a: number, b: number) => (a === b ? `${a}` : `${a}${EN}${b}`);
@@ -144,6 +151,17 @@ const renders = new Map<string, Rendered>(
   )
 );
 const renderOf = (slug: string) => renders.get(slug) as Rendered;
+
+// Each collection's mount tone, from its key print's smallest rung. Cached
+// by slug for the whole build, so its collection page reuses the sample.
+const tones = new Map(
+  await Promise.all(
+    COLLECTIONS.map(async (c) => {
+      const k = keysOf.get(c.slug)?.[0];
+      return [c.slug, await mountTokens(c.slug, c.mount, k ? renderOf(k.slug).index : undefined, Astro.site ?? Astro.url)] as const;
+    })
+  )
+);
 
 /* ---------------------------------------------------------------- *
  * 1. Summary
@@ -672,7 +690,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       </p>
       <div class="entries">
         {cards.map(({ c, count, extent: e, key, strip }, n) => (
-          <article class="entry" data-collection={c.slug}>
+          <article class="entry" style={mountStyle(tones.get(c.slug) ?? null)} data-collection={c.slug}>
             <div class="entry-mark" aria-hidden="true">{String(n + 1).padStart(2, '0')}</div>
             <div class="entry-head">
               <div class="entry-text">
@@ -1421,6 +1439,28 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   .entry:focus-within {
     outline: 2px solid var(--c-caprock);
     outline-offset: 4px;
+  }
+  /* THE MOUNT TONE. An entry carries a style attribute only when its
+     collection has a tone, so [style] is the test: it rests on a band of
+     its own hue and its folder number takes the tone. Hover deepens the band
+     toward the tone (where color-mix is unknown, the band simply stays). */
+  .entry[style] {
+    background: var(--m-tint);
+  }
+  .entry[style]:hover,
+  .entry[style]:focus-within {
+    background: var(--m-tint);
+    background: color-mix(in oklab, var(--m-tint) 86%, var(--m-mark));
+  }
+  .entry[style] .entry-mark {
+    color: var(--m-mark);
+    opacity: 0.6;
+    transition: opacity 0.25s ease;
+  }
+  .entry[style]:hover .entry-mark,
+  .entry[style]:focus-within .entry-mark {
+    color: var(--m-mark);
+    opacity: 1;
   }
 
   .entry-head {

@@ -29,6 +29,25 @@
 //     plate sticky); landscape items take the full width above it. Either
 //     way the plate is capped to the window's height (--plate-max-h).
 //
+// THE PRINT ROOM (2026-10). The plate sits on the same lit desk as the
+// collection page's frontispiece: the collection's mount-tone ground, lit by
+// the sun over Lubbock at the moment of the visit (src/lib/print-room.ts),
+// the window light across the desk and the print's shadow cut from it. The
+// light is drawn on a canvas BEHIND the plate and never touches the
+// photograph. Redrawn when the view changes (recto, verso, a page), on
+// resize, and every five minutes. Without script the desk is its flat ground.
+//
+// THE KEY (2026-10). The convention of a nineteenth-century group
+// photograph: a tracing laid over the print, each identified face circled
+// and numbered, the names listed beneath. Built from the same person regions
+// as everything else, so it appears only on items whose faces have regions.
+// Off by default; "Key" lays the tracing over the plate (the photograph
+// shows faintly through it) and the legend appears under the plate - or, on
+// a wide screen with the record beside the plate, the People list IS the
+// legend, numbered to match. Pointing at a number in either lights the
+// other. The key and "Names on the photograph" are two answers to the same
+// question, so turning one on turns the other off.
+//
 // STANDING CONSTRAINTS
 //   - No filter, mix-blend-mode, mask-image, clip-path or 3D anywhere. The
 //     viewer moves on transform and commits to layout size when it settles;
@@ -52,10 +71,12 @@ import {
   appearancesOf,
   spanOf,
   inscriptionFace,
+  keyItemsOf,
 } from '../../../data/collections/index';
 import { naturalName, naturalNameWithDates, RIGHTS } from '../../../data/collections/types';
 import type { Region } from '../../../data/collections/types';
 import { plate } from '../../../data/collections/images';
+import { mountTokens, mountStyle } from '../../../data/collections/mount';
 
 export function getStaticPaths() {
   return ALL_ITEMS.map((i) => ({
@@ -229,6 +250,22 @@ item.mentions.forEach((m, n) => {
 });
 const faceLabel = new Map(faces.map((f) => [f.key, f.label]));
 const box = (m: Region) => `--x:${m.x}%;--y:${m.y}%;--w:${m.w}%;--h:${m.h}%`;
+
+// THE KEY: every person with a region, in the order of their numbers.
+const keyMarks = marks.filter((m) => m.kind === 'person');
+
+/* ------------------------------------------------------------------ *
+ * The print room's colour: the collection's mount tone, sampled from its
+ * key print exactly as the collection page samples it (and cached for the
+ * whole build, so this costs one sample per collection, not per item).
+ * ------------------------------------------------------------------ */
+const keyItem = keyItemsOf(c.slug, 1)[0];
+const keyRender = keyItem
+  ? keyItem.slug === item.slug
+    ? faces[0].img
+    : await plate(keyItem.collection, keyItem.recto.file, keyItem.recto)
+  : null;
+const tone = await mountTokens(c.slug, c.mount, keyRender?.index, site);
 
 /* ------------------------------------------------------------------ *
  * The date, as words and as an interval
@@ -447,7 +484,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     </style>
   </noscript>
 
-  <div class="item-page max-w-6xl mx-auto py-6 text-iron font-serif" data-item-page data-pagefind-body>
+  <div class="item-page max-w-6xl mx-auto py-6 text-iron font-serif" style={mountStyle(tone)} data-item-page data-pagefind-body>
     {/* THE CATALOGUE SHEET. Screen readers and browsers ignore these; they
         appear only on paper, where a printed record needs to say where it
         came from and how to get back to it. */}
@@ -515,7 +552,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     <div class:list={['layout', wide ? 'layout--wide' : 'layout--split']}>
       <!-- THE PLATE -->
       <div class="plate-col">
-        <div class="mat" data-mat>
+        <div class="mat mat--room" data-mat data-room>
+          <canvas class="room" aria-hidden="true" data-room-canvas></canvas>
           <div class:list={['stack', { 'stack--paged': paged }]}>
             {faces.map((f) => {
               const attrs = {
@@ -549,6 +587,17 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
                           )}
                         </span>
                       ))}
+                    {keyMarks.some((m) => m.face === f.key) && (
+                      <div class="key-sheet" aria-hidden="true">
+                        {keyMarks
+                          .filter((m) => m.face === f.key)
+                          .map((m) => (
+                            <span class:list={['key-oval', { 'is-doubtful': m.doubtful }]} data-key-mark={m.id} style={box(m)}>
+                              <b class="key-n">{m.tag}{m.doubtful && <span class="key-q">?</span>}</b>
+                            </span>
+                          ))}
+                      </div>
+                    )}
                   </div>
                 </figure>
               );
@@ -597,7 +646,28 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
               Names on the photograph
             </button>
           )}
+          {keyMarks.length > 0 && (
+            <button type="button" class="seg-btn seg-solo" data-key aria-pressed="false">
+              Key
+            </button>
+          )}
         </div>
+
+        {/* THE KEY'S LEGEND: the names beneath the tracing, numbered to
+            match. Shown only with the key. Hidden on a wide screen with the
+            record beside the plate, where the People list carries the same
+            numbers. No display rule here: visibility rides on `hidden`. */}
+        {keyMarks.length > 0 && (
+          <ol class="key-legend" hidden aria-label="Key to the photograph" data-key-legend data-js-only data-pagefind-ignore>
+            {keyMarks.map((m) => (
+              <li class="key-row" data-key-for={m.id}>
+                <span class="key-row-n">{m.tag}</span>
+                <span class="key-row-name">{m.name}</span>
+                {m.qual && <span class="key-row-q">{m.qual}</span>}
+              </li>
+            ))}
+          </ol>
+        )}
 
         {/* THE PAGES, as a strip: where you are in the volume, and a way to
             any page in one tap. Thumbnails load as the strip scrolls. */}
@@ -1209,6 +1279,157 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
      arguing. */
   .mat {
     position: relative;
+  }
+  /* THE PRINT ROOM. The plate on a dark desk in the collection's mount tone,
+     lit from a canvas behind it. The padding comes out of the height cap,
+     so the desk and the photograph still fit the window. */
+  .mat--room {
+    --mat-pad: clamp(1rem, 3.2vw, 2.5rem);
+    padding: var(--mat-pad);
+    background: var(--m-ground, #26221d);
+    border-radius: 2px;
+  }
+  .mat--room > :not(.room) {
+    position: relative;
+  }
+  .room {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .room.is-drawn {
+    opacity: 1;
+  }
+  .mat--room .face-box {
+    width: min(100%, calc((var(--plate-max-h) - 2 * var(--mat-pad)) * var(--ar, 1)));
+    margin-inline: auto;
+  }
+  .mat--room .face-box img {
+    border-color: rgb(0 0 0 / 0.35);
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.5),
+      0 24px 40px -22px rgb(0 0 0 / 0.8);
+  }
+
+  /* THE KEY. A sheet of tracing paper laid over the print: the photograph
+     shows faintly through it, each identified face circled in ink and
+     numbered. Laid down with a short drop; opacity and transform only. The
+     sheet's visibility follows its opacity, so a hidden sheet takes no
+     pointer events. */
+  .key-sheet {
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    background: rgb(246 242 232 / 0.8);
+    box-shadow: 0 0 0 1px rgb(59 56 51 / 0.25);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-0.5rem);
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease,
+      visibility 0s linear 0.3s;
+  }
+  .mat.is-keyed .key-sheet {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity 0.3s ease,
+      transform 0.3s ease;
+  }
+  /* The circle is drawn a little outside the face's box, as a hand traces
+     round a head rather than along it. */
+  .key-oval {
+    position: absolute;
+    left: var(--x);
+    top: var(--y);
+    width: var(--w);
+    height: var(--h);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid #3b3833;
+    border-radius: 50%;
+    transform: scale(1.14);
+    transition:
+      background-color 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .key-oval.is-doubtful {
+    border-style: dashed;
+  }
+  .key-n {
+    color: #3b3833;
+    font: 500 clamp(0.8rem, 1.5vw, 1.15rem) / 1 var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+    font-variant-numeric: lining-nums;
+  }
+  .key-q {
+    margin-left: 0.05em;
+    color: var(--c-caprock);
+  }
+  .key-oval.is-lit {
+    background: rgb(156 91 63 / 0.16);
+    border-color: var(--c-caprock);
+  }
+  .key-oval.is-lit .key-n {
+    color: var(--c-caprock);
+  }
+  /* With the key down, the outline boxes and their labels stand aside. */
+  .mat.is-keyed .region-box--person {
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+  /* The legend: names beneath the tracing, in columns when there is room. */
+  .key-legend {
+    columns: 2 13rem;
+    column-gap: 1.75rem;
+    margin: 0.9rem 0 0;
+    padding: 0.75rem 0 0;
+    border-top: 1px solid var(--c-haze);
+    list-style: none;
+  }
+  .key-row {
+    break-inside: avoid;
+    padding: 0.2rem 0.35rem;
+    line-height: 1.35;
+  }
+  .key-row.is-lit {
+    background: rgb(218 211 196 / 0.35);
+  }
+  .key-row-n {
+    display: inline-block;
+    min-width: 1.6em;
+    color: var(--c-caprock);
+    font: 500 0.75rem/1 ui-monospace, monospace;
+  }
+  .key-row-q {
+    margin-left: 0.4em;
+    color: var(--c-caprock);
+    font: 0.62rem/1 ui-monospace, monospace;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+  }
+  @media (min-width: 1024px) {
+    .layout--split .key-legend {
+      display: none;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .room,
+    .key-sheet,
+    .mat.is-keyed .key-sheet,
+    .key-oval {
+      transition: none;
+    }
+    .key-sheet {
+      transform: none;
+    }
   }
   /* Every face in ONE grid cell, so the mat is as tall as the tallest face
      and switching views never moves the page. The fade is opacity, and
@@ -2596,6 +2817,18 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       background: none;
       border: 0;
     }
+    .room,
+    .key-sheet,
+    .key-legend {
+      display: none;
+    }
+    .mat--room .face-box {
+      width: auto;
+      margin-inline: 0;
+    }
+    .mat--room .face-box img {
+      box-shadow: none !important;
+    }
     /* Both views, one after the other, each with its label. */
     .stack {
       display: flex;
@@ -2693,6 +2926,57 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
 
 <script>
   import { navigate } from 'astro:transitions/client';
+  import { lightAt, drawRoom } from '../../../lib/print-room';
+
+  // THE PRINT ROOM. Draws the desk's light around whichever view is showing;
+  // again when the view changes, on resize, when fonts settle, and every five
+  // minutes. Nothing animates between draws.
+  function wireRoom(root: HTMLElement, signal: AbortSignal) {
+    const mat = root.querySelector<HTMLElement>('[data-room]');
+    const canvas = mat?.querySelector<HTMLCanvasElement>('[data-room-canvas]');
+    if (!mat || !canvas) return;
+    const work = document.createElement('canvas');
+    let queued = 0;
+    let lastPrint: HTMLElement | null = null;
+    const paint = () => {
+      queued = 0;
+      if (signal.aborted) return;
+      const print = mat.querySelector<HTMLImageElement>('.face.is-on .face-box img');
+      if (!print) return;
+      if (lastPrint && lastPrint !== print) lastPrint.style.boxShadow = '';
+      lastPrint = print;
+      const tint = getComputedStyle(root).getPropertyValue('--m-tint');
+      try {
+        const shadow = drawRoom(canvas, print, tint, lightAt(Date.now()), work);
+        if (shadow) print.style.boxShadow = shadow;
+        canvas.classList.add('is-drawn');
+      } catch {
+        // The desk stays its flat ground; nothing else depends on this.
+      }
+    };
+    const soon = () => {
+      if (!queued) queued = requestAnimationFrame(paint);
+    };
+    const ro = new ResizeObserver(soon);
+    ro.observe(mat);
+    // A change of view is a class change on a .face; everything else that
+    // toggles classes in here (outlines lit by pointing) is ignored.
+    const mo = new MutationObserver((list) => {
+      if (list.some((m) => m.target instanceof HTMLElement && m.target.classList.contains('face'))) soon();
+    });
+    mo.observe(mat, { subtree: true, attributes: true, attributeFilter: ['class'] });
+    const first = mat.querySelector<HTMLImageElement>('.face.is-on .face-box img');
+    if (first && !first.complete) first.addEventListener('load', soon, { once: true, signal });
+    document.fonts?.ready.then(soon);
+    const timer = window.setInterval(soon, 5 * 60 * 1000);
+    signal.addEventListener('abort', () => {
+      ro.disconnect();
+      mo.disconnect();
+      window.clearInterval(timer);
+      if (queued) cancelAnimationFrame(queued);
+    });
+    soon();
+  }
 
   type FaceData = {
     key: string;
@@ -2782,6 +3066,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       from.querySelector<T>(sel);
     const $$ = <T extends Element = HTMLElement>(sel: string, from: ParentNode = document) =>
       Array.from(from.querySelectorAll<T>(sel));
+
+    wireRoom(root, signal);
 
     /* ---------------------------------------------------------------- *
      * The plate
@@ -2941,6 +3227,54 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       },
       { signal }
     );
+    /* THE KEY. Lays the tracing over the plate and shows its legend. It
+       answers the same question as the names on the photograph, so the two
+       never show at once. */
+    const keyBtn = $<HTMLButtonElement>('[data-key]', root);
+    const keyLegend = $('[data-key-legend]', root);
+    const keyOvals = $$('.key-oval', root);
+    const keyRows = $$('[data-key-for]', root);
+    const keyed = () => keyBtn?.getAttribute('aria-pressed') === 'true';
+    const litKey = (id: string | null) => {
+      keyOvals.forEach((o) => o.classList.toggle('is-lit', !!id && o.dataset.keyMark === id));
+      keyRows.forEach((r) => r.classList.toggle('is-lit', !!id && r.dataset.keyFor === id));
+      $$('.person[data-hover-mark]', root).forEach((r) => r.classList.toggle('is-lit', !!id && r.dataset.hoverMark === id));
+    };
+    const setKey = (on: boolean) => {
+      if (!keyBtn || !mat) return;
+      keyBtn.setAttribute('aria-pressed', String(on));
+      mat.classList.toggle('is-keyed', on);
+      if (keyLegend) keyLegend.hidden = !on;
+      if (!on) {
+        litKey(null);
+        return;
+      }
+      if (plateNamed()) namesBtn?.click();
+      // The key is drawn on the view its faces are on: turn the plate to one.
+      if (!keyOvals.some((o) => o.closest('.face')?.classList.contains('is-on'))) {
+        const view = keyOvals[0]?.closest<HTMLElement>('.face')?.dataset.face;
+        if (view) showFace(view);
+      }
+    };
+    keyBtn?.addEventListener('click', () => setKey(!keyed()), { signal });
+    namesBtn?.addEventListener(
+      'click',
+      () => {
+        if (plateNamed() && keyed()) setKey(false);
+      },
+      { signal }
+    );
+    // Point at a number on the tracing, in the legend or in the People list,
+    // and the other two light with it.
+    const pairKey = (el: HTMLElement, id: string | undefined) => {
+      if (!id) return;
+      el.addEventListener('pointerenter', () => keyed() && litKey(id), { signal });
+      el.addEventListener('pointerleave', () => keyed() && litKey(null), { signal });
+    };
+    keyOvals.forEach((o) => pairKey(o, o.dataset.keyMark));
+    keyRows.forEach((r) => pairKey(r, r.dataset.keyFor));
+    $$('.person[data-hover-mark]', root).forEach((r) => pairKey(r, r.dataset.hoverMark));
+
     if (mat) {
       const plateRO = new ResizeObserver(() => layoutPlateTags());
       plateRO.observe(mat);
