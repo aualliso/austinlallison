@@ -34,6 +34,7 @@
 // Output is sRGB JPEG with ALL metadata stripped (sharp's default), so GPS and
 // camera EXIF never reach the web.
 
+import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import {
   existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync,
@@ -308,4 +309,17 @@ if (!ONLY) {
 
 const mins = ((Date.now() - started) / 60000).toFixed(1);
 console.log(`\n${done} processed, ${skipped} unchanged, ${failed} failed, ${tiles} files, ${mins} min`);
+
+// Face crops are cut from these same scans, so any face on a scan processed
+// above is now stale. Recut them while the scans are at hand. The child
+// inherits SCANS_DIR from this process's environment.
+if (!DRY && done) {
+  console.log('\nUpdating face crops...');
+  const faces = spawnSync(process.execPath, ['scripts/faces.mjs'], { stdio: 'inherit' });
+  if (faces.status !== 0) {
+    console.error('Face crops did not finish. Fix the problem above, then run: npm run faces');
+    process.exit(1);
+  }
+}
+
 if (failed) process.exit(1);

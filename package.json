@@ -6,11 +6,12 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build && pagefind --site dist",
+    "dev": "node scripts/faces.mjs --check --warn && astro dev",
+    "build": "node scripts/faces.mjs --check && astro build && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
-    "iiif": "node --env-file=.env scripts/iiif-tiles.mjs"
+    "iiif": "node --env-file=.env scripts/iiif-tiles.mjs",
+    "faces": "node --env-file-if-exists=.env scripts/faces.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
