@@ -46,9 +46,9 @@ export const COLLECTION: Collection = {
         basis: 'No imprint or signature visible in the surrogate.',
       },
       date: {
-        display: '[undated]',
-        basis: ['Nothing on the object dates it.'],
-        confidence: 'unidentified',
+        display: '[1875-1885]',
+        basis: ['Nothing on the object dates it, but it can be reasonably assumed it could be from that time period.'],
+        confidence: 'probable',
       },
       recto: {
         file: 'thomas-benjamin-b-recto.jpg',
@@ -112,9 +112,9 @@ export const COLLECTION: Collection = {
         basis: 'No imprint or signature visible in the surrogate.',
       },
       date: {
-        display: '[undated]',
-        basis: ['Nothing on the object dates it.'],
-        confidence: 'unidentified',
+        display: '[1875-1885]',
+        basis: ['Nothing on the object dates it, but it can be reasonably assumed it could be from that time period.'],
+        confidence: 'probable',
       },
       recto: {
         file: 'thomas-minerva-hunter-recto.jpg',
