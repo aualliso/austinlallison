@@ -7235,7 +7235,7 @@ export const COLLECTION: Collection = {
 
     {
       slug: 'mckinstry-album',
-      title: 'Photographs',
+      title: '[Album of McKinstry photographs]',
       titleSource: 'supplied',
       format: 'bound photograph album',
       dimensions: '20 x 30 cm',
@@ -7309,44 +7309,703 @@ export const COLLECTION: Collection = {
         { file: 'mckinstry-album/mounted-verso.jpg' },
       ],
       prints: [
-          { region: { face: 'p2', x: 18.1, y: 7.7, w: 32.3, h: 36.5 }, 
+          { 
+            region: { face: 'p2', x: 18.1, y: 7.7, w: 32.3, h: 36.5 }, 
             date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
-            title: '[Unknown nurse and a newborn Sammy McKinstry in the McKinstry household]' },
-          { region: { face: 'p2', x: 58.3, y: 7.8, w: 33.7, h: 35.8 }, 
+            title: '[Unknown nurse and a newborn Sammy McKinstry in the McKinstry household]' 
+          },
+          { 
+            region: { face: 'p2', x: 58.3, y: 7.8, w: 33.7, h: 35.8 }, 
             date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
-            title: '[Whicker basket with a baby on top in the McKinstry household]' },
-          { region: { face: 'p2', x: 16.6, y: 54.3, w: 32.8, h: 35.8 }, 
+            title: '[Whicker basket with a baby on top in the McKinstry household]' 
+          },
+          { 
+            region: { face: 'p2', x: 16.6, y: 54.3, w: 32.8, h: 35.8 }, 
             date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
-            title: '[Close up of whicker basket with a baby on top in the McKinstry household]' },
-          { region: { face: 'p2', x: 58.2, y: 53.5, w: 32.9, h: 37.5 }, 
+            title: '[Close up of whicker basket with a baby on top in the McKinstry household]' 
+          },
+          { 
+            region: { face: 'p2', x: 58.2, y: 53.5, w: 32.9, h: 37.5 }, 
             date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
-            title: '[Sammy McKinstry being held by her her aunt, Eva]' },
-          
+            title: '[Sammy McKinstry being held by her her aunt, Eva]' 
+          },
+          { 
+            region: { face: 'p3', x: 8.6, y: 6.8, w: 32.3, h: 37.8 },
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry in whicker basket with her mother, Loveta, peering in]' 
+          },
+          { 
+            region: { face: 'p3', x: 49.4, y: 5.5, w: 25.3, h: 52.3 },
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry being held by her mother, Loveta]' 
+          },
+          { 
+            region: { face: 'p3', x: 7.2, y: 54.3, w: 32.3, h: 36.8 },
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry being held by her her aunt, Eva, while sitting in a whicker chair]' 
+          },
+          { 
+            region: { face: 'p3', x: 46.5, y: 57.9, w: 33.2, h: 36.4 },
+            date: { display: '[1922]', basis: ['Sammy appears to be about two years of age in this image.'], confidence: 'probable' }, 
+            title: '[Sammy McKinstry looking in a mirror outside with her aunts Minnie and Eva nearby]' 
+          },
+          { 
+            region: { face: 'p4', x: 18.5, y: 7.2, w: 22.9, h: 48.5 },
+            date: { display: '[1921]', basis: ['Sammy appears to be about one year of age in this image.'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry sitting in a whicker chair reaching in the air]' 
+          },
+          { 
+            region: { face: 'p4', x: 49.5, y: 12.1, w: 29.5, h: 36 },
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry in a whicker basket]' 
+          },
+          { 
+            region: { face: 'p4', x: 26.2, y: 57.9, w: 29.1, h: 35.5 },
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry in a whicker basket]' 
+          },
+          { 
+            region: { face: 'p5', x: 9.3, y: 9.3, w: 30.7, h: 33.3 },
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry being held by her her aunt, Eva, while sitting in a whicker chair]' 
+          },
+          { 
+            region: { face: 'p5', x: 55.2, y: 14.9, w: 23.7, h: 49 },
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry being held by her mother, Loveta]' 
+          },
+          { 
+            region: { face: 'p5', x: 20.9, y: 50.9, w: 29.8, h: 35.3 },
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry in a whicker basket]' 
+          },
+          { 
+            region: { face: 'p6', x: 21.9, y: 8.8, w: 31.5, h: 34.4 },
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry perched in a whicker chair]' 
+          },
+          { 
+            region: { face: 'p6', x: 62, y: 15.5, w: 32.7, h: 37.8 },
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Sam McKinstry holding his daughter, Sammy, while standing outside a house]' 
+          },
+          { 
+            region: { face: 'p6', x: 62.8, y: 60, w: 29.7, h: 34.9 },
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry perched in a whicker chair]' 
+          },
+          { 
+            region: { face: 'p7', x: 32.2, y: 26.3, w: 35.8, h: 45.9 },
+            date: { display: '[1920]', basis: ['This appears to be from around the same period Sammy was born'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry perched in a whicker chair sucking her thumb]',
+            description: 'Caption says: "Good old thumb"'
+          },
+          { 
+            region: { face: 'p8', x: 15.7, y: 5.7, w: 39.4, h: 49.6 },
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Loveta McKinstry sitting on the porch of a home holding her daughter, Sammy]',
+            description: 'Caption says: "See my hair cut!"'
+          },
+          { 
+            region: { face: 'p8', x: 60.6, y: 4.7, w: 28.8, h: 52.6 },
+            date: { display: '[1920]', basis: ['This appears to be from around the same period Sammy was born.'], confidence: 'certain' }, 
+            title: '[Sam McKinstry holding his daughter, Sammy, near a structure and a windmill]',
+            description: 'Caption says: "Don\'t we..."'
+          },
+          { 
+            region: { face: 'p8', x: 16.4, y: 51.6, w: 36, h: 44.4 },
+            date: { display: '[1920]', basis: ['This appears to be from around the same period Sammy was born'], confidence: 'certain' }, 
+            title: '[Loveta McKinstry guiding Sara Beth West as she holds an infant Sammy]',
+            description: 'Caption says: "Don\'t drop me"'
+          },
+          { 
+            region: { face: 'p9', x: 7.1, y: 9.4, w: 29.1, h: 34.6 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Minnie McKinstry holding Sammy with Sara Beth West standing to the right]',
+            description: 'No caption'
+          },
+          { 
+            region: { face: 'p9', x: 42.3, y: 7.8, w: 32.7, h: 38.3 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Unknown woman holding Sammy]',
+            description: 'No caption'
+          },
+          { 
+            region: { face: 'p9', x: 6.6, y: 52.5, w: 32.7, h: 38.8 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Unknown nurse tending to Sammy after her birth]',
+            description: 'No caption'
+          },
+          { 
+            region: { face: 'p9', x: 46.6, y: 47, w: 24.2, h: 47.7 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Edith McKinstry West holding Sammy and her daughter, Sara Beth]',
+            description: 'No caption'
+          },
+          { 
+            region: { face: 'p10', x: 13.6, y: 8.1, w: 26.6, h: 57.8 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Unknown woman holding Sammy on a porch]',
+            description: 'Caption: "The camera was broke"'
+          },
+          { 
+            region: { face: 'p10', x: 37.3, y: 14, w: 33.1, h: 41.2 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Loveta McKinstry holding Sammy on the porch of a home]',
+            description: 'Caption: "Mother things I\'m cute"'
+          },
+          { 
+            region: { face: 'p10', x: 69.5, y: 6.6, w: 27.3, h: 53.5 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Sam McKinstry holding Sammy near the corner of a structure and a windmill]',
+            description: 'Caption: "Just out of bed"'
+          },
+          { 
+            region: { face: 'p10', x: 38.1, y: 51.9, w: 34, h: 43.6 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Unknown man holding Sammy while riding a mule]',
+            description: ''
+          },
+          { 
+           region: { face: 'p11', x: 40.7, y: 7.4, w: 31.6, h: 37.7 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Loveta McKinstry holding Sammy with Sara Beth West standing left]',
+            description: ''
+          },
+          { 
+            region: { face: 'p11', x: 6.3, y: 53.3, w: 33.1, h: 37.5 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Unknown woman holding Sammy near a porch]',
+            description: ''
+          },
+          { 
+            region: { face: 'p11', x: 42.4, y: 49.9, w: 33.7, h: 40.5 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Minnie Swann McKinstry holding Sammy with Sara Beth on the right brushing Sammy\'s hair]',
+            description: ''
+          },
+          { 
+            region: { face: 'p12', x: 16.7, y: 7.3, w: 32.3, h: 38.6 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry laying on a blanket outside in the grass]',
+            description: 'Caption: "See my pants?"'
+          },
+          { 
+            region: { face: 'p12', x: 61.1, y: 5.7, w: 33.5, h: 37.5 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry on the front of a wagon]',
+            description: ''
+          },
+          { 
+            region: { face: 'p12', x: 16.1, y: 45.6, w: 23.8, h: 48.9 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry in a washing basin on the porch]',
+            description: ''
+          },
+          { 
+            region: { face: 'p12', x: 44.4, y: 41.7, w: 24, h: 49.7 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry in a whicker highchair]',
+            description: ''
+          },
+          { 
+            region: { face: 'p12', x: 72.2, y: 43.3, w: 23.5, h: 52 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry in a bouncing seat suspended from the ceiling]',
+            description: 'Caption: "Fatty Build"'
+          },
+          { 
+            region: { face: 'p13', x: 29.5, y: 11.1, w: 31.4, h: 38.4 },
+            date: { display: '[1920]', basis: ['Date likely matches others around this one'], confidence: 'certain' }, 
+            title: '[Sam McKinstry on the back of a mule]',
+            description: ''
+          },
+          { 
+            region: { face: 'p13', x: 61.4, y: 26.7, w: 24.7, h: 51.8 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Minnie Swann McKinstry holding Sammy McKinstry in front of a bush]',
+            description: ''
+          },
+          { 
+            region: { face: 'p14', x: 16.7, y: 7, w: 23.2, h: 48.5 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry in a washing basin on the porch]',
+            description: ''
+          },
+          { 
+            region: { face: 'p14', x: 43.9, y: 23.7, w: 22.3, h: 47.5 },
+            date: { display: '[1920]', basis: ['Sammy is less than a year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry in a bouncing seat suspended from the ceiling]',
+            description: ''
+          },
+          { 
+            region: { face: 'p14', x: 71.9, y: 44, w: 22, h: 47.7 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry sitting on a chair outside near a tree or bush]',
+            description: ''
+          },
+          { 
+            region: { face: 'p15', x: 27.1, y: 28, w: 31.2, h: 44.5 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry being pulled in a wagon by an unknown girl]',
+            description: 'Caption: "Get up, Abbie"'
+          },
+          { 
+            region: { face: 'p16', x: 15.5, y: 5.8, w: 33.9, h: 44.4 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry standing near a whicker wagon]',
+            description: 'Caption: "Good-bye'
+          },
+          { 
+            region: { face: 'p16', x: 67.4, y: 13.2, w: 25.8, h: 58.3 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry sitting in the grass near a wood fence]',
+            description: 'Caption: Sun-bonnet Sue'
+          },
+          { 
+            region: { face: 'p17', x: 4.8, y: 6.5, w: 23.7, h: 53.5 },
+            date: { display: '[1921-1922]', earliest: 1921, latest: 1922, basis: ['Sammy appears to be between one and two years old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry with an unknown girl in the grass near a house]',
+            description: 'Caption: Farmers'
+          },
+          { 
+            region: { face: 'p17', x: 51.4, y: 5, w: 33.6, h: 42.1 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry standing near a car with three other children]',
+            description: 'Caption: Playmates'
+          },
+          { 
+            region: { face: 'p17', x: 28.4, y: 37.9, w: 23.8, h: 56.6 },
+            date: { display: '[1921-1922]', earliest: 1921, latest: 1922, basis: ['Sammy appears to be between one and two years old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry with an unknown girl in the grass near a house]',
+            description: 'Caption: Farmer girls'
+          },
+          { 
+            region: { face: 'p17', x: 57, y: 41.8, w: 25.3, h: 54.2 },
+            date: { display: '[1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be about one year old here'], confidence: 'certain' }, 
+            title: '[Sam McKinstry holding Sammy near a cow and a mule]',
+            description: 'Caption: Watching the cow'
+          },
+          { 
+            region: { face: 'p18', x: 12.7, y: 4.3, w: 24.8, h: 55.3 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry sitting in the sun]',
+            description: 'Caption: Taking a sun-bath'
+          },
+          { 
+            region: { face: 'p18', x: 38.3, y: 3.4, w: 26, h: 57 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry standing on the porch facing away from the camera]',
+            description: 'Caption: A rear view'
+          },
+          { 
+            region: { face: 'p18', x: 11.8, y: 54.2, w: 35, h: 42.7 },
+            date: { display: '[1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be about one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry standing behind a fence peering to the other side]',
+            description: 'Caption: Watching the cow'
+          },
+          { 
+            region: { face: 'p18', x: 51.1, y: 54.7, w: 35.9, h: 42.4 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry standing near a car with three other children]',
+            description: 'Caption: Watching the cow'
+          },
+          { 
+            region: { face: 'p19', x: 23.9, y: 26, w: 40.7, h: 50.7 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Edith McKinstry West holding Sammy near a bush]',
+            description: 'Caption: My Auntie Edith loves me'
+          },
+          { 
+            region: { face: 'p20', x: 14.1, y: 5.8, w: 23.8, h: 53.4 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry sitting on the porch]',
+            description: 'Caption: All dressed up'
+          },
+          { 
+            region: { face: 'p20', x: 41.1, y: 4, w: 24.6, h: 51.5 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry with her Aunt Eva sitting on exterior stairs]',
+            description: ''
+          },
+          { 
+            region: { face: 'p20', x: 70.2, y: 4, w: 24.7, h: 53.9 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry sitting in a high chair]',
+            description: 'Caption: I\'m tired'
+          },
+          { 
+            region: { face: 'p20', x: 17.4, y: 56, w: 31.4, h: 39.9 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry peering from the other side of a fence]',
+            description: 'Caption: Peek, Mother'
+          },
+          { 
+            region: { face: 'p20', x: 53.4, y: 56.4, w: 33.5, h: 40.4 },
+            date: { display: '[1920-1921]', earliest: 1920, latest: 1921, basis: ['Sammy appears to be approaching one year old here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry sitting on the porch with Austin Swann churning butter]',
+            description: 'Caption: Helping granddaddy churn'
+          },
       ],
       depicts: [
-        { person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
-        region: { face: 'p2', x: 30.1, y: 25.9, w: 2.3, h: 3.9 } },
-        { person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
-        region: { face: 'p2', x: 70.3, y: 13.4, w: 2.9, h: 4 }, },
-        { person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
-        region: { face: 'p2', x: 24.6, y: 68.4, w: 3.5, h: 6 }, },
-        { person: 'west-eva-swann-powell', confidence: 'certain',
-        region: { face: 'p2', x: 72.1, y: 67.1, w: 3.1, h: 6.1 }, },
-        { person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
-        region: { face: 'p2', x: 74.3, y: 71.2, w: 2.2, h: 3.5 }, },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p2', x: 30.1, y: 25.9, w: 2.3, h: 3.9 } 
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p2', x: 70.3, y: 13.4, w: 2.9, h: 4 } 
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p2', x: 24.6, y: 68.4, w: 3.5, h: 6 } 
+        },
+        { 
+          person: 'west-eva-swann-powell', confidence: 'certain',
+          region: { face: 'p2', x: 72.1, y: 67.1, w: 3.1, h: 6.1 } 
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p2', x: 74.3, y: 71.2, w: 2.2, h: 3.5 } 
+        },
+        { 
+          person: 'mckinstry-loveta-swann', confidence: 'certain',
+          region: { face: 'p3', x: 19.2, y: 12.7, w: 3.4, h: 7.6 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p3', x: 18.4, y: 20.4, w: 2.9, h: 4.3 },
+        },
+        { 
+          person: 'mckinstry-loveta-swann', confidence: 'certain',
+          region: { face: 'p3', x: 61.4, y: 19.5, w: 3.3, h: 6.6 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p3', x: 63.6, y: 21.6, w: 3, h: 4.8 },
+        },
+        { 
+          person: 'west-eva-swann-powell', confidence: 'certain',
+          region: { face: 'p3', x: 23.8, y: 67.5, w: 3.2, h: 5.2 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p3', x: 24.2, y: 70.3, w: 2.5, h: 4.5 },
+        },
+        { 
+          person: 'mckinstry-minnie-swann', confidence: 'certain',
+          region: { face: 'p3', x: 67.9, y: 73.7, w: 2.7, h: 5.7 },
+        },
+        { 
+          person: 'west-eva-swann-powell', confidence: 'certain',
+          region: { face: 'p3', x: 60.9, y: 62.6, w: 1.9, h: 3.4 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p3', x: 59.1, y: 73.3, w: 2, h: 4.2 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p4', x: 27.8, y: 20, w: 4.5, h: 7.3 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p4', x: 56.7, y: 24.9, w: 3.9, h: 6.1 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p4', x: 38, y: 68.5, w: 2.5, h: 3.4 },
+        },
+        { 
+          person: 'west-eva-swann-powell', confidence: 'certain',
+          region: { face: 'p5', x: 24.4, y: 21.6, w: 2.9, h: 4.5 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p5', x: 25, y: 24.1, w: 2.8, h: 4.4 },
+        },
+        { 
+          person: 'mckinstry-loveta-swann', confidence: 'certain',
+          region: { face: 'p5', x: 66.1, y: 27.1, w: 3, h: 6.7 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p5', x: 64.6, y: 29.3, w: 2.6, h: 4 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p5', x: 28.3, y: 64.6, w: 3.2, h: 5.5 },
+        },
+         { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p6', x: 34.4, y: 22.8, w: 3, h: 5.2 },
+        },
+        { 
+          person: 'mckinstry-samuel-small', confidence: 'certain',
+          region: { face: 'p6', x: 74.4, y: 21.4, w: 3.2, h: 6.1 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p6', x: 76.6, y: 24.8, w: 2.3, h: 3.2 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p6', x: 73.6, y: 72.5, w: 3, h: 5.1 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p7', x: 46.1, y: 44.6, w: 2.9, h: 5.3 },
+        },
+        { 
+          person: 'mckinstry-loveta-swann', confidence: 'certain',
+          region: { face: 'p8', x: 34.5, y: 20.4, w: 3, h: 5.5 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p8', x: 36.9, y: 22.2, w: 1.9, h: 4.1 },
+        },
+        { 
+          person: 'mckinstry-samuel-small', confidence: 'certain',
+          region: { face: 'p8', x: 68.4, y: 23.1, w: 2.8, h: 5.9 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p8', x: 72.1, y: 23.9, w: 2, h: 4.5 },
+        },
+        { 
+          person: 'mckinstry-loveta-swann', confidence: 'certain',
+          region: { face: 'p8', x: 33.3, y: 61.9, w: 3.4, h: 6.1 },
+        },
+        { 
+          person: 'wakeman-sara-beth-west', confidence: 'certain',
+          region: { face: 'p8', x: 30.1, y: 66.8, w: 2.3, h: 4.7 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p8', x: 31.9, y: 69.3, w: 2.2, h: 3.5 },
+        },
+        { 
+          person: 'mckinstry-minnie-swann', confidence: 'certain',
+          region: { face: 'p9', x: 17.1, y: 14.4, w: 1.8, h: 4.5 },
+        },
+        { 
+          person: 'wakeman-sara-beth-west', confidence: 'certain',
+          region: { face: 'p9', x: 22.2, y: 26.7, w: 1.6, h: 3.4 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p9', x: 19.2, y: 17, w: 1.6, h: 2.9 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p9', x: 58.8, y: 22.2, w: 2.2, h: 4.2 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p9', x: 19.3, y: 71.2, w: 2.4, h: 3.6 },
+        },
+        { 
+          person: 'west-edith-mary-mckinstry', confidence: 'certain',
+          region: { face: 'p9', x: 53.9, y: 62.3, w: 2.3, h: 5 },
+        },
+        { 
+          person: 'wakeman-sara-beth-west', confidence: 'certain',
+          region: { face: 'p9', x: 56.8, y: 62.6, w: 2, h: 3.7 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p9', x: 55.4, y: 63.7, w: 1.7, h: 3.3 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p10', x: 24.8, y: 29.6, w: 2.7, h: 5.4 },
+        },
+        { 
+          person: 'mckinstry-loveta-swann', confidence: 'certain',
+          region: { face: 'p10', x: 53.1, y: 26, w: 2.6, h: 5.4 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p10', x: 56.6, y: 28.6, w: 2.5, h: 3.7 },
+        },
+        { 
+          person: 'mckinstry-samuel-small', confidence: 'certain',
+          region: { face: 'p10', x: 78, y: 18.5, w: 3.2, h: 5.5 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p10', x: 81.3, y: 21.3, w: 2.7, h: 4.6 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p10', x: 53, y: 63.7, w: 2.1, h: 3.9 },
+        },
+        { 
+          person: 'mckinstry-loveta-swann', confidence: 'certain',
+          region: { face: 'p11', x: 57.9, y: 15.6, w: 3.4, h: 5.5 },
+        },
+        { 
+          person: 'wakeman-sara-beth-west', confidence: 'certain',
+          region: { face: 'p11', x: 53.2, y: 18.9, w: 2.5, h: 3.9 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p11', x: 57.4, y: 20.5, w: 2, h: 3 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p11', x: 22.4, y: 63.5, w: 3.2, h: 5.9 },
+        },
+        { 
+          person: 'mckinstry-minnie-swann', confidence: 'certain',
+          region: { face: 'p11', x: 55.3, y: 60.1, w: 3.3, h: 5.7 },
+        },
+        { 
+          person: 'wakeman-sara-beth-west', confidence: 'certain',
+          region: { face: 'p11', x: 59, y: 62, w: 2.6, h: 4 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p11', x: 56.8, y: 64.6, w: 2.3, h: 3.8 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p12', x: 36.4, y: 19.1, w: 5.1, h: 6.2 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p12', x: 77.6, y: 11, w: 2.7, h: 3.5 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p12', x: 23.7, y: 59, w: 4.8, h: 8.5 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p12', x: 54, y: 54.6, w: 4.6, h: 7.8 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p12', x: 80.8, y: 56.4, w: 5, h: 7.8 },
+        },
+        { 
+          person: 'mckinstry-samuel-small', confidence: 'certain',
+          region: { face: 'p13', x: 41.3, y: 17.5, w: 3, h: 5 },
+        },
+        { 
+          person: 'mckinstry-minnie-swann', confidence: 'certain',
+          region: { face: 'p13', x: 72.7, y: 38.6, w: 3.7, h: 7 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p13', x: 69.9, y: 41.5, w: 2.5, h: 5.4 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p14', x: 25, y: 20.2, w: 6.1, h: 11.1 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p14', x: 52.9, y: 34.4, w: 4.6, h: 8.5 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p14', x: 80.3, y: 56.8, w: 4.1, h: 8.3 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p15', x: 38.3, y: 44.3, w: 2, h: 4 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p16', x: 31.1, y: 11.2, w: 3.9, h: 6.7 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p16', x: 75.7, y: 26.8, w: 6.2, h: 10.9 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p17', x: 14.6, y: 21.3, w: 3.5, h: 6.4 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p17', x: 71.4, y: 20.9, w: 2.9, h: 4.7 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p17', x: 38.9, y: 56.9, w: 4, h: 7.4 },
+        },
+        { 
+          person: 'mckinstry-samuel-small', confidence: 'certain',
+          region: { face: 'p17', x: 66.1, y: 57, w: 2.8, h: 5.2 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p17', x: 68.3, y: 57, w: 2.5, h: 4.4 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p18', x: 19, y: 18.1, w: 5.5, h: 10.6 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p18', x: 47, y: 18.8, w: 4.2, h: 7.4 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p18', x: 29.5, y: 65.2, w: 4.2, h: 6.4 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p18', x: 72.1, y: 71.6, w: 2.4, h: 4 },
+        },
+        { 
+          person: 'west-edith-mary-mckinstry', confidence: 'certain',
+          region: { face: 'p19', x: 42.2, y: 38.2, w: 3, h: 6.4 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p19', x: 41.2, y: 40.8, w: 2.3, h: 4.7 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p20', x: 24.4, y: 20.1, w: 4.2, h: 7.2 },
+        },
+        { 
+          person: 'west-eva-swann-powell', confidence: 'certain',
+          region: { face: 'p20', x: 54.4, y: 19.6, w: 3.5, h: 7.6 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p20', x: 49.9, y: 19.4, w: 3.5, h: 6 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p20', x: 78.2, y: 18.6, w: 3.2, h: 7 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p20', x: 33.2, y: 61.7, w: 3.8, h: 6.2 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p20', x: 65.9, y: 64.3, w: 2.8, h: 5.2 },
+        },
+        { 
+          person: 'swann-austin', confidence: 'certain',
+          region: { face: 'p20', x: 70.2, y: 58.7, w: 2.9, h: 5 },
+        },
       ],
+
       description:
         'This is a photograph album that came from the collection of Veta Jean McKinstry Allison. It contains photographs of Sammy Nan McKinstry Allison as a child, with some photographs showing other family members. The album chiefly shows Sammy and her childhood.',
       // Where the names below come from, said once for all of them.
       identificationBasis: 'Identified from photographs',
       mentions: [
-       // { person: 'swann-malcom', page: 'p5', confidence: 'probable',}
-        //   note: 'As "W. M. Swann", presiding.' },
-        // { as: 'J. H. Bledsoe', page: 'p5', confidence: 'certain',
-        //   note: 'Elected secretary.' },
       ],
       // TODO: how the volume reached you, if different from the collection's.
-      provenance: 'TODO',
+      provenance: 'This photograph album was in the collection of Jean Allison before it was passed on to her grandson, Austin Allison.',
     },
   ],
 };
