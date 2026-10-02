@@ -56,7 +56,9 @@ export type ObjectFormat =
   | 'tintype'
   | 'copy print'
   | 'ambrotype'
+  | 'photograph album'
   | 'bound manuscript volume'
+  | 'bound photograph album'
   | 'letter'
   | 'document'
   | 'unknown';
@@ -97,9 +99,10 @@ export type RightsStatus =
  */
 export interface Region {
   /**
-   * 'recto', 'verso', or the key of one of `views`. Omit it and a person's
-   * region is on the recto, and an inscription's is on the face its
-   * `location` names.
+   * 'recto', 'verso', the key of one of `views`, or a page: 'p12'. Omit it
+   * and a person's region is on the recto, and an inscription's is on the
+   * face its `location` names. An item with pages has no recto to fall back
+   * on, so there the face is always given - ?regions writes it for you.
    */
   face?: string;
   x: number;
@@ -130,6 +133,57 @@ export interface Depiction {
    * the same claim made precise.
    */
   region?: Region;
+}
+
+/**
+ * ONE PRINT ON A PAGE OF AN ALBUM. The album is the item and its leaves are
+ * its `pages`; a print is a box on one of those pages - the same percentage
+ * box as a face or a named detail - with as much of its own description as
+ * you have. Nothing is cut out: the page scan stays the one master, and the
+ * print is shown by framing that scan.
+ *
+ * The whole of a print can be one pasted line:
+ *
+ *   { region: { face: 'p5', x: 16.4, y: 8.1, w: 31.2, h: 34.6 } },
+ *
+ * Open the album with ?regions on the end of the URL, turn to the page, and
+ * drag round each print with Alt (or Ctrl) held: the lines for that page
+ * collect on the clipboard, ready to paste into `prints`. Draw the box round
+ * the print and its corner mounts, not just the picture area.
+ *
+ * WHO IS IN IT is not entered here. People stay in the item's `depicts`,
+ * each with a face region on the page ({ face: 'p5', ... }), and a person
+ * belongs to whichever print their face falls inside. So nothing links a
+ * name to a print by hand, and nothing can drift out of step.
+ */
+export interface Print {
+  /**
+   * WHERE IT IS. `face` is the page and is required here: 'p5' is the fifth
+   * image, whatever the album's own numbering says.
+   */
+  region: Region;
+  /**
+   * A caption written on the leaf, as written; otherwise a supplied title in
+   * brackets. Omit it and the print is known by its picture.
+   */
+  title?: string;
+  /** What is visible. One honest sentence, as for an item. */
+  description?: string;
+  /** Only when this print can be dated more closely than the album. */
+  date?: DateEstimate;
+  /** Only when it differs from the album's. */
+  place?: string;
+  format?: ObjectFormat;
+  /** Of the print itself: '2 1/2 x 4 1/4 in.' */
+  dimensions?: string;
+  /**
+   * THE SLUG OF ITS OWN RECORD, for a print that has earned one - lifted
+   * from its corners and found to have writing on the back, or a duplicate
+   * of a print held loose elsewhere. That item carries the recto and verso;
+   * this line points the album page at it. The build throws on a slug that
+   * does not exist.
+   */
+  item?: string;
 }
 
 /**
@@ -308,10 +362,19 @@ export interface Item {
    * the folder and writes the list. The transcriptions live apart, in
    * src/data/collections/transcriptions/<item-slug>.md - see the README
    * there.
+   *
+   * A PHOTOGRAPH ALBUM is the same thing: each leaf is a page, scanned whole
+   * - leaf, mounts and all - and the prints on it are listed in `prints`.
    */
   pages?: Page[];
   /** People named in the text. See Mention. */
   mentions?: Mention[];
+  /**
+   * THE PRINTS MOUNTED ON THE PAGES of an album, in the order they should be
+   * read - normally page by page, and across each page as the eye goes.
+   * Only an item with `pages` can have them. See Print.
+   */
+  prints?: Print[];
 
   /**
    * What is VISIBLE. One honest sentence satisfies this. Optional - but when
@@ -534,6 +597,29 @@ export interface Person {
 }
 
 /**
+ * A print as the pages read it: placed, numbered and joined to the people
+ * whose faces fall inside it.
+ */
+export interface ResolvedPrint extends Print {
+  /** 'print-<page number>-<position on that page>': 'print-5-2'. */
+  id: string;
+  /** Position in the album, from 1, in the order listed. */
+  n: number;
+  /** The page it is on, by key ('p5') and by position (5). */
+  page: string;
+  pageNo: number;
+  /** Position among the prints on its page, from 1, in the order listed. */
+  onPage: number;
+  /** Its address: the album opens on the page with the print outlined. */
+  href: string;
+  /**
+   * WHO IS IN IT, as indexes into the item's `depicts`: every depiction
+   * whose face region has its centre inside this print's box.
+   */
+  people: number[];
+}
+
+/**
  * What the pages consume. Authoring is loose; consumption is strict - the
  * index fills every optional field from the collection's defaults so no page
  * ever has to handle `undefined`. Loose in, strict out.
@@ -559,6 +645,8 @@ export interface ResolvedItem extends Item {
   }[];
   /** How many pages; 0 for anything read as views rather than pages. */
   pageCount: number;
+  /** The prints of an album, resolved; empty for everything else. */
+  prints: ResolvedPrint[];
   mentions: (Mention & { basis: string })[];
   /** Where this item lives: /collections/<collection>/<slug>. */
   href: string;

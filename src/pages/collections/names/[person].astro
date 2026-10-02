@@ -10,7 +10,7 @@
 //
 // WHAT FEEDS IT
 //   FACES        every depiction with a `region` (index.ts). Each is a small
-//                crop file made at build time by faces/[face].webp.ts.
+//                crop file cut by scripts/faces.mjs (`npm run faces`).
 //   relationsOf  relations from BOTH records, so a relation entered once
 //                appears on both pages.
 //
@@ -44,6 +44,16 @@
 //   (default photograph) decides whether this person is "in 3 photographs"
 //   or "in 2 photographs and 1 journal".
 //
+// ALBUMS (2026-10). In a photograph album the thing a person appears in is
+//   one PRINT on one page, not the album. So each such appearance takes the
+//   print's title (or the album's, with the page), the print's own date where
+//   it has one, and the print's address - the album opens on that page with
+//   the print outlined, never on the front cover. Its picture in the list is
+//   the page image framed by the print's box, as on the album's own page.
+//   Each print counts as a photograph in the tally. And where a face is so
+//   small in its scan that the plate cannot fill the cabinet card's window,
+//   the window takes the face crop instead, which is cut from the full scan.
+//
 // STANDING CONSTRAINTS
 //   No filter, blend, mask, clip-path or 3D. Motion is opacity and
 //   transform, and none of it runs under reduced motion. Listeners register
@@ -57,6 +67,8 @@ import {
   personHref,
   relationsOf,
   spanOf,
+  spanOfDate,
+  pageHref,
   FACES,
   FACE_W,
   FACE_H,
@@ -121,8 +133,31 @@ const ageAt = (s: YearSpan | null): string => {
 /* ------------------------------------------------------------------ *
  * Photographs, in date order (undated last)
  * ------------------------------------------------------------------ */
+// WHAT AN APPEARANCE IS CALLED, WHEN IT WAS, AND WHERE IT LEADS. For a loose
+// photograph: the item's title, date and page. For a print in an album: the
+// print's own title where it has one, otherwise the album's with the page;
+// the print's own date where it has one, otherwise the album's; and the
+// print's address. Everything below reads title / when / href and never
+// has to know which kind it is looking at.
+const pageWords = (s: string) => s.replace(/^Page /, 'page ');
 const appearances = appearancesOf(p.id)
-  .map((a, n) => ({ ...a, n, span: spanOf(a.item), key: `a${n}` }))
+  .map((a, n) => {
+    const pr = a.print;
+    // The album page a pictured person is on: their print's, or - boxed on a
+    // page but inside no print - the page of the box itself.
+    const leaf = a.named ? undefined : a.item.faces.find((f) => f.page && f.key === (pr?.page ?? a.region?.face));
+    const onLeaf = leaf ? `${a.item.title}, ${pageWords(leaf.label)}` : a.item.title;
+    return {
+      ...a,
+      n,
+      key: `a${n}`,
+      leaf,
+      span: pr?.date ? spanOfDate(pr.date) : spanOf(a.item),
+      title: pr?.title ?? onLeaf,
+      when: pr?.date?.display ?? a.item.date.display,
+      href: pr?.href ?? (leaf?.page ? pageHref(a.item, leaf.page) : a.item.href),
+    };
+  })
   .sort((a, b) => {
     const x = a.span ? a.span.from : Infinity;
     const y = b.span ? b.span.from : Infinity;
@@ -138,14 +173,52 @@ const thumbs = new Map(
 );
 const collectionsHere = new Set(appearances.map((a) => a.item.collection));
 
+// A PRINT IN AN ALBUM is shown as the page image framed by the print's box:
+// the image is scaled until the box fills a window of the print's own shape,
+// and shifted so the box's corner sits at the window's corner. One plate per
+// page, however many of its prints this person is in.
+const leafKey = (a: (typeof appearances)[number]) => `${a.item.slug}#${a.leaf?.key}`;
+const leafPlates = new Map(
+  await Promise.all(
+    [...new Map(appearances.filter((a) => a.print && a.leaf).map((a) => [leafKey(a), a] as const)).values()].map(
+      async (a) => [leafKey(a), await plate(a.item.collection, a.leaf!.surrogate.file, a.leaf!.surrogate)] as const
+    )
+  )
+);
+const PRINT_BOX_W = 144; // px: the row's picture column (9rem)
+const PRINT_BOX_H = 112; // px: the tallest a picture stands there (7rem)
+// The arithmetic stays on lines of its own, outside the template strings:
+// see the note on cropOf() in [collection]/[item].astro.
+const printCrop = (a: (typeof appearances)[number]) => {
+  const src = a.print && a.leaf ? leafPlates.get(leafKey(a)) : undefined;
+  if (!src || !a.print) return null;
+  const r = a.print.region;
+  const ratio = (r.w * src.width) / (r.h * src.height);
+  const scale = 10000 / r.w;
+  const left = (-r.x / r.w) * 100;
+  const top = (-r.y / r.h) * 100;
+  const shown = Math.min(PRINT_BOX_W, PRINT_BOX_H * ratio);
+  const drawn = Math.min(2400, Math.round((shown * 100) / r.w));
+  return {
+    src: src.view,
+    srcset: src.viewSrcset,
+    sizes: `${drawn}px`,
+    ar: ratio.toFixed(4),
+    style: `width:${scale.toFixed(2)}%;left:${left.toFixed(2)}%;top:${top.toFixed(2)}%`,
+  };
+};
+
 // WHAT KIND OF THING each appearance is in. Read loosely, as on the
 // collections guide: `kind` is optional and a photograph by default. One
-// object counts once, however many times the person is in it.
+// object counts once, however many times the person is in it - and in an
+// album the object is the PRINT: a child pictured in thirty prints of one
+// album is in thirty photographs, not one.
 const kindOf = (i: object) =>
   ((i as { kind?: string }).kind ?? 'photograph').trim().toLowerCase() || 'photograph';
+const unitOf = (a: (typeof appearances)[number]) => (a.print ? `${a.item.slug}#${a.print.id}` : a.item.slug);
 const kindCounts = new Map<string, number>();
-for (const slug of new Set(appearances.map((a) => a.item.slug))) {
-  const item = appearances.find((a) => a.item.slug === slug)!.item;
+for (const unit of new Set(appearances.map(unitOf))) {
+  const item = appearances.find((a) => unitOf(a) === unit)!.item;
   kindCounts.set(kindOf(item), (kindCounts.get(kindOf(item)) ?? 0) + 1);
 }
 const allPhotos = [...kindCounts.keys()].every((k) => k === 'photograph');
@@ -191,6 +264,9 @@ const faces = await Promise.all(
         key: a.key,
         span: a.span,
         age: ageAt(a.span),
+        title: a.title,
+        when: a.when,
+        href: a.href,
         // Size of the region in source pixels: the bigger the face was
         // photographed, the better it serves as the portrait.
         area: (f.region.w / 100) * src.width * ((f.region.h / 100) * src.height),
@@ -213,8 +289,17 @@ const portrait = faces
 // the window, where a portrait sitter's head sits. The photograph's own
 // srcset serves it, with `sizes` scaled by how much wider the whole
 // photograph is than the window.
+//
+// WHEN THE PLATE IS TOO COARSE. The largest plate file is 2600px across the
+// WHOLE scan. A face on an album page, or far back in a large group, can be
+// so small a part of it that the window would be filled from fewer pixels
+// than it is wide, and go soft. The face crop is cut from the full scan at
+// twice FACE_W, so below WIN_MIN_PX the window shows that instead: tighter
+// on the head than the usual cut, and sharp. Set WIN_MIN_PX to 0 to always
+// cut from the plate.
 const WIN_AR = 0.78; // window width / height, about a cabinet card's
 const WIN_MAX = 240; // px: the window at its widest (15rem)
+const WIN_MIN_PX = WIN_MAX; // px of plate across the window, below which the face crop is used
 const hero = (() => {
   if (!portrait) return null;
   const { f, src } = portrait;
@@ -238,6 +323,18 @@ const hero = (() => {
   const pc = (v: number) => `${(v * 100).toFixed(3)}%`;
   const scale = W / cw;
   const detailW = Math.min(2600, W);
+  const bestFile = detailW > 1900 ? detailW : Math.min(1900, W);
+  const across = (cw / W) * bestFile;
+  if (across < WIN_MIN_PX) {
+    return {
+      src: faceHref(f.id, 2),
+      srcset: undefined as string | undefined,
+      sizes: undefined as string | undefined,
+      style: 'width:100%;height:100%;left:0;top:0;object-fit:cover',
+      w: FACE_W * 2,
+      h: FACE_H * 2,
+    };
+  }
   return {
     src: src.view,
     srcset: `${src.viewSrcset}${src.detail && detailW > 1900 ? `, ${src.detail} ${detailW}w` : ''}`,
@@ -510,9 +607,10 @@ const structured = json({
       })
       .filter(([, list]) => list.length)
   ),
-  subjectOf: appearances
-    .filter((a) => firm(a.confidence))
-    .map((a) => ({ '@type': 'Photograph', name: a.item.title, url: abs(a.item.href) })),
+  // Once per object: thirty prints in one album are one album to a machine.
+  subjectOf: [...new Map(appearances.filter((a) => firm(a.confidence)).map((a) => [a.item.slug, a.item] as const)).values()].map(
+    (i) => ({ '@type': 'Photograph', name: i.title, url: abs(i.href) })
+  ),
 });
 
 const pageData = json({
@@ -582,7 +680,7 @@ const LINK = 'text-caprock hover:underline';
         <a
           href={portrait.link}
           class="cabinet"
-          title={`${portrait.f.item.title}${portrait.span ? `, ${portrait.f.item.date.display}` : ''}`}
+          title={`${portrait.title}${portrait.span ? `, ${portrait.when}` : ''}`}
         >
           <span class="cab-window" transition:name={`person-${p.id}`}>
             <img
@@ -592,7 +690,7 @@ const LINK = 'text-caprock hover:underline';
               width={hero.w}
               height={hero.h}
               style={hero.style}
-              alt={`${name}, from ${portrait.f.item.title}`}
+              alt={`${name}, from ${portrait.title}`}
               fetchpriority="high"
               decoding="async"
             />
@@ -671,7 +769,7 @@ const LINK = 'text-caprock hover:underline';
                   class:list={['rail-face', { soft: !firm(r.x.f.confidence) }]}
                   style={`--x:${r.at.toFixed(3)}%;--row:${r.row}`}
                   data-key={r.x.key}
-                  title={`${r.x.f.item.title}, ${r.x.f.item.date.display}${r.x.age ? `, ${r.x.age}` : ''}`}
+                  title={`${r.x.title}, ${r.x.when}${r.x.age ? `, ${r.x.age}` : ''}`}
                 >
                   <img
                     src={faceHref(r.x.f.id)}
@@ -691,12 +789,12 @@ const LINK = 'text-caprock hover:underline';
           <div class="life-bars" aria-hidden="true">
             {life.bars.map((b) => (
               <a
-                href={b.a.item.href}
+                href={b.a.href}
                 tabindex="-1"
                 class:list={['bar', firm(b.a.confidence) ? 'firm' : 'soft', { 'open-start': b.a.span!.openStart, 'open-end': b.a.span!.openEnd }]}
                 style={`--x:${b.x}%;--w:${b.w}%;--y:${b.lane}`}
                 data-key={b.a.key}
-                title={`${b.a.item.title}, ${b.a.item.date.display}`}
+                title={`${b.a.title}, ${b.a.when}`}
               ></a>
             ))}
           </div>
@@ -747,15 +845,15 @@ const LINK = 'text-caprock hover:underline';
             <div class="cmp-grid">
               {faces.map((x) => (
                 <figure class:list={['cmp', { 'cmp--doubt': !firm(x.f.confidence) }]} data-cmp={x.f.id} data-key={x.key} hidden>
-                  <a href={x.link} class="cmp-face" aria-label={`${name} in ${x.f.item.title}. Open it at this face.`}>
+                  <a href={x.link} class="cmp-face" aria-label={`${name} in ${x.title}. Open it at this face.`}>
                     <img src={faceHref(x.f.id, 2)} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" />
                   </a>
                   <figcaption>
                     <span class="fc-when">
-                      <span class="fc-date">{x.f.item.date.display}</span>
+                      <span class="fc-date">{x.when}</span>
                       {x.age && <span class="fc-age">{cap1(x.age)}</span>}
                     </span>
-                    <span class="cmp-title"><a href={x.f.item.href} class={LINK}>{x.f.item.title}</a></span>
+                    <span class="cmp-title"><a href={x.href} class={LINK}>{x.title}</a></span>
                     <span class="cmp-basis">
                       {label(x.f.confidence) && <span class={QUAL}>{label(x.f.confidence)}</span>}
                       {label(x.f.confidence) && x.f.basis && <> &mdash; </>}
@@ -773,7 +871,7 @@ const LINK = 'text-caprock hover:underline';
         <ol class="faces">
           {faces.map((x) => (
             <li class:list={['fc', { 'fc--doubt': !firm(x.f.confidence) }]} data-key={x.key}>
-              <a href={x.link} class="fc-face" aria-label={`${name} in ${x.f.item.title}. Open it at this face.`}>
+              <a href={x.link} class="fc-face" aria-label={`${name} in ${x.title}. Open it at this face.`}>
                 <img
                   src={faceHref(x.f.id, 2)}
                   width={FACE_W}
@@ -789,7 +887,7 @@ const LINK = 'text-caprock hover:underline';
                   type="button"
                   class="fc-pick"
                   aria-pressed="false"
-                  aria-label={`Compare the face in ${x.f.item.title}`}
+                  aria-label={`Compare the face in ${x.title}`}
                   data-pick={x.f.id}
                   hidden
                 >
@@ -800,10 +898,10 @@ const LINK = 'text-caprock hover:underline';
                 </button>
               )}
               <p class="fc-when">
-                <span class="fc-date">{x.f.item.date.display}</span>
+                <span class="fc-date">{x.when}</span>
                 {x.age && <span class="fc-age">{cap1(x.age)}</span>}
               </p>
-              <p class="fc-title"><a href={x.f.item.href} class={LINK}>{x.f.item.title}</a></p>
+              <p class="fc-title"><a href={x.href} class={LINK}>{x.title}</a></p>
               {x.f.basis && <p class="fc-basis">{x.f.basis}</p>}
             </li>
           ))}
@@ -952,18 +1050,32 @@ const LINK = 'text-caprock hover:underline';
             const t = thumbs.get(a.item.slug)!;
             const coll = collectionBySlug.get(a.item.collection)?.title ?? '';
             const age = ageAt(a.span);
+            const crop = printCrop(a);
             return (
               <li class="photo" data-key={a.key}>
-                <a href={a.item.href} class="photo-print" tabindex="-1" aria-hidden="true">
-                  <img src={t.index} srcset={t.indexSrcset} width={t.width} height={t.height} alt="" loading="lazy" decoding="async" />
+                <a href={a.href} class="photo-print" tabindex="-1" aria-hidden="true">
+                  {crop ? (
+                    <span class="photo-crop" style={`--ar:${crop.ar}`}>
+                      <img src={crop.src} srcset={crop.srcset} sizes={crop.sizes} style={crop.style} alt="" loading="lazy" decoding="async" />
+                    </span>
+                  ) : (
+                    <img src={t.index} srcset={t.indexSrcset} width={t.width} height={t.height} alt="" loading="lazy" decoding="async" />
+                  )}
                 </a>
                 <div class="photo-text">
-                  <a href={a.item.href} class={`${LINK} photo-title`}>{a.item.title}</a>
+                  <a href={a.href} class={`${LINK} photo-title`}>{a.title}</a>
                   <div class={`${MONO} mt-1`}>
-                    {a.item.date.display}
+                    {a.when}
                     {coll && <> &middot; {coll}</>}
                     {a.position && <> &middot; {a.position}</>}
                   </div>
+                  {/* A print with a title of its own still says which album
+                      it is in, and where. */}
+                  {a.print?.title && a.leaf && (
+                    <div class="photo-basis">
+                      In <a href={a.item.href} class={LINK}>{a.item.title}</a>, {pageWords(a.leaf.label)}
+                    </div>
+                  )}
                   {age && <div class="photo-age">{cap1(age)}</div>}
                   <div class="photo-basis">
                     {label(a.confidence) && <span class={QUAL}>{label(a.confidence)}</span>}
@@ -1944,6 +2056,36 @@ const LINK = 'text-caprock hover:underline';
   .photo.is-lit .photo-print img {
     transform: translateY(-3px);
   }
+  /* A PRINT IN AN ALBUM: a window the shape of the print, with the page
+     image behind it, placed by the style the page computes. The window
+     takes the shadow and the lift; the image inside it stays put. Plain
+     overflow - no clip-path, no mask. */
+  .photo-crop {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    width: min(100%, calc(7rem * var(--ar, 1.5)));
+    aspect-ratio: var(--ar, 1.5);
+    box-shadow:
+      0 1px 1px rgb(26 25 25 / 0.18),
+      0 10px 16px -10px rgb(26 25 25 / 0.55);
+    transition: transform 0.25s ease;
+  }
+  .photo-print .photo-crop img {
+    position: absolute;
+    max-width: none;
+    max-height: none;
+    box-shadow: none;
+    transition: none;
+  }
+  .photo:hover .photo-crop,
+  .photo.is-lit .photo-crop {
+    transform: translateY(-3px);
+  }
+  .photo:hover .photo-print .photo-crop img,
+  .photo.is-lit .photo-print .photo-crop img {
+    transform: none;
+  }
   @media (max-width: 40rem) {
     .photo {
       gap: 0.9rem;
@@ -1953,6 +2095,12 @@ const LINK = 'text-caprock hover:underline';
     }
     .photo-print img {
       max-height: 5.5rem;
+    }
+    .photo-crop {
+      width: min(100%, calc(5.5rem * var(--ar, 1.5)));
+    }
+    .photo-print .photo-crop img {
+      max-height: none;
     }
   }
   .photo-text {
@@ -2129,12 +2277,15 @@ const LINK = 'text-caprock hover:underline';
     .kin,
     .photo,
     .photo-print img,
+    .photo-crop,
     .cabinet,
     .rail-face {
       transition: none;
     }
     .cabinet:hover,
     .cabinet:focus-visible,
+    .photo:hover .photo-crop,
+    .photo.is-lit .photo-crop,
     .photo:hover .photo-print img,
     .photo.is-lit .photo-print img,
     .fc-face:hover,

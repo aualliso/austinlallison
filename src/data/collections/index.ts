@@ -28,6 +28,7 @@ import type {
   Region,
   Relation,
   ResolvedItem,
+  ResolvedPrint,
   Surrogate,
 } from './types';
 
@@ -433,13 +434,91 @@ export const ALL_ITEMS: ResolvedItem[] = COLLECTIONS.flatMap((c) =>
       }
     }
 
+    // THE PRINTS OF AN ALBUM. Each is a box on one page; each is numbered on
+    // its page in the order listed, and that pair - page 5, print 2 - is its
+    // address. People are not attached by hand: a depiction belongs to the
+    // print its face region's centre falls inside.
+    const href = `/collections/${c.slug}/${i.slug}`;
+    if (i.prints?.length && pages.length === 0) {
+      throw new Error(
+        `${i.slug} lists prints but has no pages. Prints are boxes on the ` +
+          `pages of an album; give the item its \`pages\` first.`
+      );
+    }
+    const pageNoOf = new Map(faces.filter((f) => f.page).map((f) => [f.key, f.page as number]));
+    const countOn = new Map<string, number>();
+    const prints: ResolvedPrint[] = (i.prints ?? []).map((p, n) => {
+      const what = `print ${n + 1}${p.title ? ` (${p.title})` : ''}`;
+      const page = p.region.face;
+      const pageNo = page ? pageNoOf.get(page) : undefined;
+      if (!page || !pageNo) {
+        throw new Error(
+          `${i.slug}: ${what} ${page ? `is on "${page}", which is not one of this item's pages` : 'does not say which page it is on'}. ` +
+            `Give its region a face: p1-p${pages.length}, by image position.`
+        );
+      }
+      checkBox(p.region, page, what);
+      if (p.date && p.date.earliest !== undefined && p.date.latest !== undefined && p.date.earliest > p.date.latest) {
+        throw new Error(
+          `${i.slug}: ${what} has a date that runs backwards (earliest ${p.date.earliest}, latest ${p.date.latest}).`
+        );
+      }
+      const onPage = (countOn.get(page) ?? 0) + 1;
+      countOn.set(page, onPage);
+      return {
+        ...p,
+        date: p.date ? resolveDate(`${i.slug}, ${what}`, p.date) : undefined,
+        id: `print-${pageNo}-${onPage}`,
+        n: n + 1,
+        page,
+        pageNo,
+        onPage,
+        href: `${href}#page=${pageNo}&print=${onPage}`,
+        people: [],
+      };
+    });
+    const holds = (p: ResolvedPrint, x: number, y: number) =>
+      x >= p.region.x && x <= p.region.x + p.region.w && y >= p.region.y && y <= p.region.y + p.region.h;
+    // Two prints, one place: a face there could belong to either, so say so
+    // rather than choose. (Overlapping corners are fine; a centre inside
+    // another print's box is a box drawn twice or drawn too large.)
+    for (const a of prints) {
+      for (const b of prints) {
+        if (a.n < b.n && a.page === b.page) {
+          const inA = holds(a, b.region.x + b.region.w / 2, b.region.y + b.region.h / 2);
+          const inB = holds(b, a.region.x + a.region.w / 2, a.region.y + a.region.h / 2);
+          if (inA || inB) {
+            console.warn(
+              `[collections] ${i.slug}: prints ${a.onPage} and ${b.onPage} on ${a.page} overlap. ` +
+                `One box is probably drawn twice, or drawn round two prints.`
+            );
+          }
+        }
+      }
+    }
+    (i.depicts ?? []).forEach((dep, n) => {
+      const r = dep.region;
+      if (!r?.face) return;
+      const here = prints.filter((p) => p.page === r.face);
+      if (here.length === 0) return;
+      const home = here.find((p) => holds(p, r.x + r.w / 2, r.y + r.h / 2));
+      if (home) home.people.push(n);
+      else {
+        console.warn(
+          `[collections] ${i.slug}: "${dep.person ?? dep.as}" is on ${r.face} but inside none of ` +
+            `the prints listed for that page. Check the face's box, or add the print.`
+        );
+      }
+    });
+
     return {
       ...i,
       collection: c.slug,
       kind: i.kind ?? 'photograph',
       faces,
       pageCount: pages.length,
-      href: `/collections/${c.slug}/${i.slug}`,
+      prints,
+      href,
       titleSource: i.titleSource ?? 'supplied',
       date: resolveDate(i.slug, i.date),
       place: i.place ?? d.place,
@@ -559,6 +638,17 @@ for (const item of ALL_ITEMS) {
       throw new Error(`${item.slug} relates to unknown item "${r.slug}".`);
     }
   }
+  // A print's own record is another item. An album that points at itself, or
+  // at nothing, would print a link that goes nowhere.
+  for (const p of item.prints) {
+    if (!p.item) continue;
+    if (p.item === item.slug || !seenSlugs.has(p.item)) {
+      throw new Error(
+        `${item.slug}: print ${p.onPage} on ${p.page} gives "${p.item}" as its own record, ` +
+          `${p.item === item.slug ? 'which is the album itself' : 'and no item has that slug'}.`
+      );
+    }
+  }
 }
 
 for (const item of ALL_ITEMS) {
@@ -598,11 +688,12 @@ for (const p of PEOPLE) {
 
 /**
  * A FACE is a depiction that names a person AND records where they are. Each
- * one becomes a small crop cut from the source scan at build time, by the
- * endpoint at src/pages/collections/faces/[face].webp.ts. The crop is a real
- * file, not the whole scan scaled up inside a small box, so a person page with
- * thirty faces loads thirty small images rather than decoding thirty large
- * ones - which a phone would feel.
+ * one becomes a small crop cut from the source scan by scripts/faces.mjs
+ * (`npm run faces`), which reads this list. The crop is a real file, not the
+ * whole scan scaled up inside a small box, so a person page with thirty faces
+ * loads thirty small images rather than decoding thirty large ones - which a
+ * phone would feel. A face on an album page is cut from that page's scan:
+ * `file` is the page's file, so the script needs to know nothing about albums.
  */
 export type Face = {
   /** '<person>--<item slug>', with -2, -3 if someone appears twice in one item. */
@@ -673,10 +764,20 @@ export type Appearance = {
   /** For a named appearance: the page it is on, and a note. */
   page?: { key: string; label: string; n: number; href: string };
   note?: string;
+  /**
+   * For a person pictured in an ALBUM: the print their face is in. Its
+   * `href` opens the album on that page with the print outlined, which is
+   * where a link from a person's page should land - not on the front cover.
+   */
+  print?: ResolvedPrint;
 };
 
 /** The address of one page of a paged item: the reader opens on it. */
 export const pageHref = (item: ResolvedItem, n: number) => `${item.href}#page=${n}`;
+
+/** The prints on one page of an album, in the order listed. */
+export const printsOn = (item: ResolvedItem, page: string): ResolvedPrint[] =>
+  item.prints.filter((p) => p.page === page);
 
 /** Every appearance of a person, across every collection: pictured, then named. */
 export const appearancesOf = (personId: string): Appearance[] =>
@@ -691,6 +792,7 @@ export const appearancesOf = (personId: string): Appearance[] =>
               position: d.position,
               region: d.region,
               face: faceByDepiction.get(`${item.slug}#${n}`),
+              print: item.prints.find((p) => p.people.includes(n)),
             },
           ]
         : []
@@ -848,12 +950,13 @@ export type YearSpan = {
 };
 
 /**
- * The years a photograph could have been made in, or null when undated. A
- * date with only one bound says so through openStart/openEnd rather than
- * quietly passing itself off as a single year.
+ * The years a date statement covers, or null when it gives none. A date with
+ * only one bound says so through openStart/openEnd rather than quietly
+ * passing itself off as a single year. For anything that carries a date of
+ * its own - an item, or one print in an album.
  */
-export const spanOf = (item: ResolvedItem): YearSpan | null => {
-  const { earliest, latest } = item.date;
+export const spanOfDate = (date: DateEstimate): YearSpan | null => {
+  const { earliest, latest } = date;
   if (earliest === undefined && latest === undefined) return null;
   const a = earliest ?? (latest as number);
   const b = latest ?? (earliest as number);
@@ -864,6 +967,9 @@ export const spanOf = (item: ResolvedItem): YearSpan | null => {
     openEnd: latest === undefined,
   };
 };
+
+/** The years a photograph could have been made in, or null when undated. */
+export const spanOf = (item: ResolvedItem): YearSpan | null => spanOfDate(item.date);
 
 export type Extent = {
   dated: number;
@@ -940,7 +1046,7 @@ export const keyItemsOf = (slug: string, n = 3): ResolvedItem[] => {
 
 export { PEOPLE, personById, NAME_INDEX };
 export { heading, headingDates, naturalName, naturalNameWithDates, KIND_NOUN } from './types';
-export type { Collection, Item, Person, ResolvedItem };
+export type { Collection, Item, Person, ResolvedItem, ResolvedPrint };
 
 /* ------------------------------------------------------------------ *
  * A warning, not an error: a photograph dated wholly outside a person's
@@ -955,7 +1061,9 @@ export type { Collection, Item, Person, ResolvedItem };
     const born = year(p.birth);
     const died = year(p.death);
     for (const a of appearancesOf(p.id)) {
-      const s = spanOf(a.item);
+      // A print in an album is judged by its own date where it has one: the
+      // album's span says only when the album was filled.
+      const s = a.print?.date ? spanOfDate(a.print.date) : spanOf(a.item);
       if (!s || s.openStart || s.openEnd) continue;
       if (born !== undefined && s.to < born) {
         console.warn(`[collections] ${a.item.slug}: dated ${s.from}-${s.to}, before ${p.id} was born (${born}).`);

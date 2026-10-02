@@ -48,6 +48,19 @@
 // other. The key and "Names on the photograph" are two answers to the same
 // question, so turning one on turns the other off.
 //
+// THE ALBUM (2026-10). A photograph album is a paged item whose pages hold
+// PRINTS: boxes on the page scan, listed in the item's `prints`. Nothing is
+// cut out as a file - each print's thumbnail is the page image itself,
+// framed by its box. The record follows the page the way a transcription
+// does: under "The prints", the prints on the page showing, each with the
+// people whose faces fall inside it; point at one and it is outlined on the
+// page, press it and Examine flies to it. Faces are numbered afresh on every
+// page (the key and its legend follow), and the People list becomes an index
+// of the whole album - each person once, with the pages they are on. A print
+// has an address, #page=5&print=2, which opens the page with it outlined.
+// In ?regions, Alt+drag (or Ctrl+drag) copies a box as a `prints` line, and
+// the lines for one page collect on the clipboard until the page is turned.
+//
 // STANDING CONSTRAINTS
 //   - No filter, mix-blend-mode, mask-image, clip-path or 3D anywhere. The
 //     viewer moves on transform and commits to layout size when it settles;
@@ -133,6 +146,7 @@ const hasMain =
   (item.details ?? []).length > 0 ||
   item.inscriptions.length > 0 ||
   item.mentions.length > 0 ||
+  item.prints.length > 0 ||
   faces.some((f) => f.transcription);
 
 // A PAGED ITEM - a journal, a letter of several leaves - is read page by
@@ -142,6 +156,9 @@ const hasMain =
 // for choosing a face differ.
 const paged = item.pageCount > 0;
 const transcribed = faces.filter((f) => f.transcription).length;
+// AN ALBUM is a paged item with prints listed on its pages. Everything
+// album-shaped below hangs on this one flag, so a journal reads as before.
+const album = paged && item.prints.length > 0;
 const NOUN = item.kind === 'photograph' ? 'photograph' : item.kind;
 
 // Upper bounds, from the container (max-w-6xl, 72rem) less the page's own
@@ -169,7 +186,7 @@ const sharedBasis = item.depicts.length > 1 && bases.length === 1 ? bases[0] : n
 
 type Mark = Region & {
   id: string;
-  kind: 'detail' | 'person' | 'inscription';
+  kind: 'detail' | 'person' | 'inscription' | 'print';
   face: string;
   tag: string;
   caption: string;
@@ -183,20 +200,105 @@ const marks: Mark[] = [];
 (item.details ?? []).forEach((d, n) =>
   marks.push({ id: `detail-${n + 1}`, kind: 'detail', face: d.face, x: d.x, y: d.y, w: d.w, h: d.h, tag: `${n + 1}`, caption: d.caption, name: '', qual: '', doubtful: false })
 );
+
+// THE ALBUM, PAGE BY PAGE: for each page its prints, each with the people
+// whose faces are inside it (the index has already worked that out), and
+// last anyone boxed on the page who is in none of its prints.
+type PrintRow = (typeof item.prints)[number];
+const pageBlocks = album
+  ? faces
+      .filter((f) => f.page)
+      .map((f) => {
+        const here = item.prints.filter((p) => p.page === f.key);
+        const taken = new Set(here.flatMap((p) => p.people));
+        const loose = item.depicts.flatMap((d, n) => (d.region?.face === f.key && !taken.has(n) ? [n] : []));
+        return {
+          face: f,
+          groups: [
+            ...here.map((p) => ({ print: p as PrintRow | null, people: p.people })),
+            ...(loose.length ? [{ print: null as PrintRow | null, people: loose }] : []),
+          ],
+        };
+      })
+  : [];
+const describedPages = pageBlocks.filter((b) => b.groups.some((g) => g.print)).length;
+
+// A print's thumbnail is the PAGE IMAGE, framed: the image is scaled so the
+// print's box fills the thumbnail and shifted so its corner sits at the
+// thumbnail's corner; overflow hides the rest of the page. `sizes` is the
+// width the whole page is drawn at, so the browser picks a file with enough
+// pixels for the part that shows.
+const PRINT_THUMB_PX = 144;
+//
+// The arithmetic is done on lines of its own, NOT inside the template
+// strings: a division inside `${...}` makes the Astro compiler misread the
+// rest of the frontmatter and emit getStaticPaths twice, which stops the
+// build with "Unexpected export".
+const cropOf = (p: PrintRow, f: (typeof faces)[number]) => {
+  const r = p.region;
+  const ratio = (r.w * f.img.width) / (r.h * f.img.height);
+  const scale = 10000 / r.w;
+  const left = (-r.x / r.w) * 100;
+  const top = (-r.y / r.h) * 100;
+  const drawn = Math.min(2400, Math.round((PRINT_THUMB_PX * 100) / r.w));
+  return {
+    ar: ratio.toFixed(4),
+    style: `width:${scale.toFixed(2)}%;left:${left.toFixed(2)}%;top:${top.toFixed(2)}%`,
+    sizes: `${drawn}px`,
+  };
+};
+
+// The prints as marks: an outline on the page, and a place for Examine to
+// fly to. Before the people, so a face's box lies over its print's.
+item.prints.forEach((p) => {
+  const where = faces.find((f) => f.key === p.page)?.label ?? p.page;
+  const head = (p.title ?? `Print ${p.onPage}, ${where}`).replace(/\.$/, '');
+  marks.push({
+    id: p.id,
+    kind: 'print',
+    face: p.page,
+    x: p.region.x,
+    y: p.region.y,
+    w: p.region.w,
+    h: p.region.h,
+    tag: '',
+    caption: `${head}.${p.description ? ` ${p.description}` : ''}`,
+    name: '',
+    qual: '',
+    doubtful: false,
+  });
+});
+
+// THE ORDER PEOPLE ARE NUMBERED IN. Ordinarily the order they are listed.
+// In an album, the order they are READ: page by page, print by print - and
+// the numbers start again on each page, because the key is read against one
+// page at a time and a face numbered 143 is no use to anyone.
+const depictOrder = album
+  ? (() => {
+      const first = pageBlocks.flatMap((b) => b.groups.flatMap((g) => g.people));
+      const seen = new Set(first);
+      return [...first, ...item.depicts.map((_, n) => n).filter((n) => !seen.has(n))];
+    })()
+  : item.depicts.map((_, n) => n);
 let personNo = 0;
+const personNoOn = new Map<string, number>();
 const personMark = new Map<number, Mark>();
-item.depicts.forEach((d, n) => {
+depictOrder.forEach((n) => {
+  const d = item.depicts[n];
   if (!d.region) return;
   const conf = label(d.confidence);
+  const onFace = d.region.face ?? 'recto';
+  const no = album ? (personNoOn.get(onFace) ?? 0) + 1 : ++personNo;
+  personNoOn.set(onFace, no);
   const m: Mark = {
     id: `person-${n + 1}`,
     kind: 'person',
-    face: d.region.face ?? 'recto',
+    face: onFace,
     x: d.region.x,
     y: d.region.y,
     w: d.region.w,
     h: d.region.h,
-    tag: `${++personNo}`,
+    tag: `${no}`,
     caption: `${nameOf(d)}${conf ? ` ${EM} ${conf}` : ''}. ${d.basis.charAt(0).toUpperCase()}${d.basis.slice(1)}`,
     name: d.person ? naturalName(personById.get(d.person)!) : (d.as as string),
     qual: d.confidence === 'certain' || d.confidence === 'probable' ? '' : conf,
@@ -253,6 +355,25 @@ const box = (m: Region) => `--x:${m.x}%;--y:${m.y}%;--w:${m.w}%;--h:${m.h}%`;
 
 // THE KEY: every person with a region, in the order of their numbers.
 const keyMarks = marks.filter((m) => m.kind === 'person');
+
+// THE ALBUM'S PEOPLE, as an index: each person once, how often they are
+// pictured, and the pages they are on. Whoever the album is about comes
+// first - the person pictured most.
+const albumPeople = album
+  ? (() => {
+      const by = new Map<string, { d: (typeof item.depicts)[number]; count: number; on: Set<string> }>();
+      for (const d of item.depicts) {
+        const key = d.person ?? `as:${d.as}`;
+        const g = by.get(key) ?? { d, count: 0, on: new Set<string>() };
+        g.count++;
+        if (d.region?.face) g.on.add(d.region.face);
+        by.set(key, g);
+      }
+      return [...by.values()]
+        .map((g) => ({ d: g.d, count: g.count, pages: faces.filter((f) => f.page && g.on.has(f.key)) }))
+        .sort((a, b) => b.count - a.count || nameOf(a.d).localeCompare(nameOf(b.d)));
+    })()
+  : [];
 
 /* ------------------------------------------------------------------ *
  * The print room's colour: the collection's mount tone, sampled from its
@@ -413,13 +534,14 @@ const structured = json({
     : {}),
   ...(item.place ? { contentLocation: { '@type': 'Place', name: item.place } } : {}),
   ...(maker ? { creator: { '@type': item.photographer ? 'Person' : 'Organization', name: maker } } : {}),
-  about: item.depicts
-    .filter((d) => d.person && reliable(d.confidence))
-    .map((d) => ({
+  // Once each: in an album the same person is pictured on page after page.
+  about: [...new Set(item.depicts.filter((d) => d.person && reliable(d.confidence)).map((d) => d.person!))].map(
+    (pid) => ({
       '@type': 'Person',
-      name: naturalName(personById.get(d.person!)!),
-      url: abs(personHref(d.person!)),
-    })),
+      name: naturalName(personById.get(pid)!),
+      url: abs(personHref(pid)),
+    })
+  ),
   isPartOf: {
     '@type': ['Collection', 'ArchiveComponent'],
     name: c.title,
@@ -480,6 +602,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       .stack { display: block !important; }
       .face { visibility: visible !important; opacity: 1 !important; margin-bottom: 1.25rem; }
       .stack--paged .face { display: block !important; }
+      .pp { display: block !important; }
+      .pp--empty { display: none !important; }
       [data-js-only] { display: none !important; }
     </style>
   </noscript>
@@ -660,7 +784,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
         {keyMarks.length > 0 && (
           <ol class="key-legend" hidden aria-label="Key to the photograph" data-key-legend data-js-only data-pagefind-ignore>
             {keyMarks.map((m) => (
-              <li class="key-row" data-key-for={m.id}>
+              <li class="key-row" data-key-for={m.id} data-face={album ? m.face : undefined}>
                 <span class="key-row-n">{m.tag}</span>
                 <span class="key-row-name">{m.name}</span>
                 {m.qual && <span class="key-row-q">{m.qual}</span>}
@@ -705,6 +829,130 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
             <section class="mb-7" aria-labelledby="desc-h">
               <h2 id="desc-h" class={H2}>Description</h2>
               <p class="m-0 prose-line">{item.description}</p>
+            </section>
+          )}
+
+          {/* THE PRINTS, one page at a time beside that page - the album read
+              the way a transcription is. Each print is the page image framed
+              by its box; point at a row and the print is outlined on the
+              page, press its picture and Examine flies to it. Without the
+              script, every described page is listed in order. */}
+          {album && (
+            <section class="mb-7" aria-labelledby="prints-h">
+              <h2 id="prints-h" class={H2}>The prints</h2>
+              {pageBlocks.map((b) => (
+                <article
+                  class:list={['pp', { 'pp--empty': b.groups.length === 0, 'is-on': b.face.n === 0 }]}
+                  data-pp={b.face.key}
+                  aria-label={b.face.label}
+                >
+                  <h3 class="tx-label">{b.face.label}</h3>
+                  {b.groups.length === 0 ? (
+                    <p class="tx-none">Nothing on this page is described yet.</p>
+                  ) : (
+                    <ol class="pp-list">
+                      {b.groups.map((g) => {
+                        const p = g.print;
+                        const crop = p ? cropOf(p, b.face) : null;
+                        return (
+                          <li class="pp-row" data-hover-mark={p?.id}>
+                            {p && crop && (
+                              <button
+                                type="button"
+                                class="pp-thumb"
+                                data-locate={p.id}
+                                aria-label={`Examine ${p.title ?? `print ${p.onPage}`}, ${b.face.label}`}
+                              >
+                                <span class="pp-crop" style={`--ar:${crop.ar}`}>
+                                  <img
+                                    src={b.face.img.view}
+                                    srcset={b.face.img.viewSrcset}
+                                    sizes={crop.sizes}
+                                    alt=""
+                                    loading="lazy"
+                                    decoding="async"
+                                    draggable="false"
+                                    style={crop.style}
+                                  />
+                                </span>
+                              </button>
+                            )}
+                            <div class="pp-body">
+                              {p ? (
+                                <>
+                                  {p.title && <p class="pp-title">{p.title}</p>}
+                                  {p.date && (
+                                    <p class="pp-line">
+                                      <span class="font-mono text-sm">{p.date.display}</span>
+                                      {label(p.date.confidence) && <span class={`${QUAL} ml-2`}>{label(p.date.confidence)}</span>}
+                                    </p>
+                                  )}
+                                  {p.date && p.date.basis.length > 0 && (
+                                    <ul class="list-none p-0 m-0 mt-1">
+                                      {p.date.basis.map((line) => (
+                                        <li class="basis-line">{line}</li>
+                                      ))}
+                                    </ul>
+                                  )}
+                                  {(p.place || p.format || p.dimensions) && (
+                                    <p class={`${MONO} pp-line`}>{[p.place, p.format, p.dimensions].filter(Boolean).join(' \u00b7 ')}</p>
+                                  )}
+                                  {p.description && <p class="pp-desc">{p.description}</p>}
+                                </>
+                              ) : (
+                                <p class={`${MONO} pp-line`}>Also on this page</p>
+                              )}
+                              {g.people.length > 0 && (
+                                <ul class="pp-people">
+                                  {g.people.map((n) => {
+                                    const d = item.depicts[n];
+                                    const m = personMark.get(n);
+                                    const who = d.person ? naturalName(personById.get(d.person)!) : (d.as as string);
+                                    return (
+                                      <li class="person" data-hover-mark={m?.id}>
+                                        <div class="person-line">
+                                          {m && (
+                                            <button
+                                              type="button"
+                                              class="pin"
+                                              data-locate={m.id}
+                                              aria-label={`Show ${who} on the page`}
+                                            >{m.tag}</button>
+                                          )}
+                                          {d.person ? (
+                                            <a href={personHref(d.person)} class={LINK}>{who}</a>
+                                          ) : (
+                                            <span class="italic opacity-60">{who}</span>
+                                          )}
+                                          {label(d.confidence) && <span class={QUAL}>{label(d.confidence)}</span>}
+                                          {d.position && <span class={MONO}>{d.position}</span>}
+                                        </div>
+                                        {d.basis !== sharedBasis && (
+                                          <div class="text-sm opacity-75 mt-0.5">{d.basis}</div>
+                                        )}
+                                      </li>
+                                    );
+                                  })}
+                                </ul>
+                              )}
+                              {p?.item && (
+                                <p class="pp-line text-sm">
+                                  <a href={itemBySlug.get(p.item)!.href} class={LINK}>
+                                    This print has its own record <span aria-hidden="true">&rarr;</span>
+                                  </a>
+                                </p>
+                              )}
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ol>
+                  )}
+                </article>
+              ))}
+              <p class="tx-count">
+                {item.prints.length} {item.prints.length === 1 ? 'print' : 'prints'} described, on {describedPages} of {item.pageCount} pages.
+              </p>
             </section>
           )}
 
@@ -773,7 +1021,43 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
             </section>
           )}
 
-          {item.depicts.length > 0 && (
+          {/* AN ALBUM'S PEOPLE ARE AN INDEX. The same person is on page after
+              page, and each appearance is already listed under its print, so
+              here each is named once, with the pages to find them on. */}
+          {album && albumPeople.length > 0 && (
+            <section class="mb-7" aria-labelledby="people-h">
+              <h2 id="people-h" class={H2}>People in this album</h2>
+              {sharedBasis && (
+                <p class="text-sm opacity-75 m-0 mb-2.5">
+                  <span class={QUAL}>All identifications</span> &mdash; {sharedBasis}
+                </p>
+              )}
+              <ul class="list-none p-0 m-0">
+                {albumPeople.map((g) => (
+                  <li class="person">
+                    <div class="person-line">
+                      {g.d.person ? (
+                        <a href={personHref(g.d.person)} class={LINK}>{nameOf(g.d)}</a>
+                      ) : (
+                        <span class="italic opacity-60">{nameOf(g.d)}</span>
+                      )}
+                      <span class={MONO}>{g.count === 1 ? 'once' : `${g.count} times`}</span>
+                    </div>
+                    {g.pages.length > 0 && (
+                      <div class="pp-pages" data-js-only>
+                        <span class={MONO}>{g.pages.length === 1 ? 'Page' : 'Pages'}</span>
+                        {g.pages.map((f) => (
+                          <button type="button" class="page-go" data-page-go={f.key} aria-label={f.label} title={f.label}>{f.page}</button>
+                        ))}
+                      </div>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
+          {item.depicts.length > 0 && !album && (
             <section class="mb-7" aria-labelledby="people-h">
               <h2 id="people-h" class={H2}>People</h2>
 
@@ -1770,6 +2054,144 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
   }
   .page-go:hover {
     text-decoration: underline;
+  }
+
+  /* THE ALBUM ----------------------------------------------------------- */
+  /* The prints follow the page, as a transcription does. Only the page
+     showing is laid out - from the first paint, not once the script has
+     run: these blocks hold lazy images, and a block that is laid out even
+     for a moment starts loading them. Without the script, the <noscript>
+     rules at the top of the page list every described page instead. */
+  .pp {
+    display: none;
+    margin: 0 0 1.25rem;
+  }
+  .pp.is-on {
+    display: block;
+  }
+  .pp-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .pp-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 0.85rem 0;
+    border-top: 1px solid var(--c-haze);
+  }
+  .pp-row:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+  /* The picture IS the button: press it and Examine flies to the print. */
+  .pp-thumb {
+    flex: none;
+    width: 9rem;
+    padding: 0;
+    border: 1px solid var(--c-haze);
+    background: var(--c-dust);
+    cursor: zoom-in;
+  }
+  .pp-thumb:hover,
+  .pp-row:hover > .pp-thumb {
+    border-color: var(--c-caprock);
+  }
+  .pp-thumb:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
+  }
+  /* The page image, framed by the print's box. The box sets the shape; the
+     image inside is the whole page, scaled and shifted (inline, per print)
+     until the print fills it. Plain overflow - no clip-path, no mask. */
+  .pp-crop {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    aspect-ratio: var(--ar, 1.5);
+  }
+  /* EVERYTHING a site-wide image rule might add is set back to nothing here.
+     The crop is arithmetic on the image's own box: a margin moves it, and a
+     border or padding makes it smaller than the width the page computed, so
+     the print slides out of its window. (The site frames images inside an
+     <article> - margin, padding, border, paper behind - and the first build
+     of this showed the page's top edge instead of the print.) */
+  .pp-crop img {
+    position: absolute;
+    display: block;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    transform: none;
+    max-width: none;
+    max-height: none;
+    min-width: 0;
+    min-height: 0;
+    height: auto;
+    user-select: none;
+    -webkit-user-drag: none;
+  }
+  .pp-body {
+    flex: 1;
+    min-width: 0;
+  }
+  .pp-title {
+    margin: 0;
+    font-size: 1.08rem;
+    line-height: 1.3;
+    text-wrap: pretty;
+  }
+  .pp-line {
+    margin: 0.2rem 0 0;
+  }
+  .pp-body > :first-child {
+    margin-top: 0;
+  }
+  .pp-desc {
+    margin: 0.35rem 0 0;
+    font-size: 0.97rem;
+    line-height: 1.45;
+  }
+  .pp-people {
+    margin: 0.55rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .pp-people .person {
+    padding: 0.35rem 0;
+  }
+  .pp-people .person:first-child {
+    padding-top: 0;
+  }
+  /* The index of people: the pages each is on, as numbers to press. */
+  .pp-pages {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.15rem 0.7rem;
+    margin-top: 0.2rem;
+  }
+  .pp-pages .page-go {
+    margin-left: 0;
+    font-size: 0.74rem;
+  }
+  /* The key's legend lists one page at a time in an album; on a page with
+     nobody identified there is nothing to list, and no rule to draw. */
+  .key-legend.is-empty {
+    display: none;
+  }
+  @media (max-width: 480px) {
+    .pp-row {
+      gap: 0.75rem;
+    }
+    .pp-thumb {
+      width: 6.5rem;
+    }
   }
   .ex-page {
     min-width: 8rem;
@@ -2879,8 +3301,17 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     .locs,
     .person,
     .inscription,
+    .pp-row,
     section {
       break-inside: avoid;
+    }
+    /* An album's prints run to more than a sheet; let that one section
+       break between prints rather than be pushed whole to the next page. */
+    section[aria-labelledby='prints-h'] {
+      break-inside: auto;
+    }
+    .pp-thumb {
+      border: 0.5pt solid #000;
     }
     .cite {
       border: 0.5pt solid #000;
@@ -3085,6 +3516,9 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     const pageOf = $('[data-page-of]', root);
     const strip = $('[data-page-strip]', root);
     const txPages = $$('[data-tx]', root);
+    // An album: the prints of each page, and the key's legend row by row.
+    const ppPages = $$('[data-pp]', root);
+    const pagedKeyRows = $$('[data-key-for][data-face]', root);
     if (data.paged) root.classList.add('is-paging');
     const pageHash = () => {
       const n = faceData.get(plateFace)?.page ?? 0;
@@ -3109,6 +3543,13 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
         b.disabled = at < 0 || at + d < 0 || at + d >= pageKeys.length;
       });
       txPages.forEach((t) => t.classList.toggle('is-on', t.dataset.tx === key));
+      ppPages.forEach((t) => t.classList.toggle('is-on', t.dataset.pp === key));
+      // In an album the faces are numbered afresh on every page, so the key's
+      // legend lists the page showing and nothing else.
+      if (pagedKeyRows.length) {
+        pagedKeyRows.forEach((r) => (r.hidden = r.dataset.face !== key));
+        pagedKeyRows[0].parentElement?.classList.toggle('is-empty', pagedKeyRows.every((r) => r.hidden));
+      }
       // Keep the page in view in the strip, without moving the window.
       const thumb = strip?.querySelector<HTMLElement>(`[data-face-btn="${CSS.escape(key)}"]`);
       if (strip && thumb) {
@@ -3151,6 +3592,25 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     const pageFromHash = () => {
       const n = Number(new URLSearchParams(location.hash.slice(1)).get('page'));
       return data.paged && Number.isInteger(n) && n >= 1 ? pageKeys[n - 1] : undefined;
+    };
+    // A print named with its page: #page=12&print=2 - the second print listed
+    // on page 12. Its mark id is built the same way in the index.
+    const printFromHash = () => {
+      const q = new URLSearchParams(location.hash.slice(1));
+      const pg = Number(q.get('page'));
+      const pr = Number(q.get('print'));
+      const id = `print-${pg}-${pr}`;
+      return Number.isInteger(pg) && Number.isInteger(pr) && markData.has(id) ? id : null;
+    };
+    // Turn to the page the address names and, if it names a print, outline
+    // it. The print is read FIRST: showFace() rewrites the address to the
+    // page alone. The outline stays until the reader points at something.
+    const arriveOnPage = () => {
+      const pg = pageFromHash();
+      if (!pg) return;
+      const pr = printFromHash();
+      showFace(pg);
+      if (pr) light(pr);
     };
     faceBtns.forEach((b) => b.addEventListener('click', () => showFace(b.dataset.faceBtn || 'recto'), { signal }));
 
@@ -3201,6 +3661,16 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     };
 
     const mat = $('[data-mat]', root);
+    // Which view to turn to so that some of `els` show. For recto and verso
+    // that is simply the view the first is on; in a volume it is the NEAREST
+    // page that has any - from page 30, not all the way back to page 2.
+    const viewWith = (els: HTMLElement[]) => {
+      const keys = [...new Set(els.map((b) => b.closest<HTMLElement>('.face')?.dataset.face ?? ''))].filter(Boolean);
+      if (!data.paged) return keys[0];
+      const at = pageKeys.indexOf(plateFace);
+      const far = (key: string) => Math.abs(pageKeys.indexOf(key) - at);
+      return keys.sort((a, b) => far(a) - far(b))[0];
+    };
     const namesBtn = $<HTMLButtonElement>('[data-names]', root);
     const plateNamed = () => namesBtn?.getAttribute('aria-pressed') === 'true';
     const layoutPlateTags = () => {
@@ -3218,7 +3688,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
         // the view showing - the plate turned to the back, say - turn it to
         // one that has them, or the button would seem to do nothing.
         if (on && !people.some((b) => b.closest('.face')?.classList.contains('is-on'))) {
-          const view = people[0]?.closest<HTMLElement>('.face')?.dataset.face;
+          const view = viewWith(people);
           if (view) showFace(view);
         }
         people.forEach((b) => b.classList.toggle('is-named', on));
@@ -3252,7 +3722,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       if (plateNamed()) namesBtn?.click();
       // The key is drawn on the view its faces are on: turn the plate to one.
       if (!keyOvals.some((o) => o.closest('.face')?.classList.contains('is-on'))) {
-        const view = keyOvals[0]?.closest<HTMLElement>('.face')?.dataset.face;
+        const view = viewWith(keyOvals);
         if (view) showFace(view);
       }
     };
@@ -3340,8 +3810,14 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     $$('[data-hover-mark]', root).forEach((el) => {
       const id = el.dataset.hoverMark;
       if (!id) return;
+      // In an album a person's row sits inside their print's row. Leaving
+      // the person for the rest of that row hands the outline back to the
+      // print, rather than leaving the row lit by nothing.
+      const outer = el.parentElement?.closest<HTMLElement>('[data-hover-mark]') ?? null;
+      const back = (e: PointerEvent) =>
+        outer && e.relatedTarget instanceof Node && outer.contains(e.relatedTarget) ? outer.dataset.hoverMark || null : null;
       el.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') light(id); }, { signal });
-      el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') light(null); }, { signal });
+      el.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') light(back(e)); }, { signal });
       el.addEventListener('focusin', () => light(id), { signal });
       el.addEventListener('focusout', () => light(null), { signal });
     });
@@ -4181,10 +4657,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
         if (dialog.open || location.pathname !== here) return;
         const h = parseHash();
         if (h) open(h.face, { box: h.box, rot: h.rot, history: 'replace' });
-        else {
-          const pg = pageFromHash();
-          if (pg) showFace(pg);
-        }
+        else arriveOnPage();
       },
       { signal }
     );
@@ -4764,10 +5237,17 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       return pageToastEl;
     }
 
+    // PRINTS, A PAGE AT A TIME. On a paged item, a box drawn with Alt (or
+    // Ctrl) held is a print: it is copied as a whole `prints` line, and the
+    // lines for one page COLLECT - draw round every print on the page, then
+    // paste once. Turning to another page starts a new batch.
+    let printBatch: { face: string; lines: string[] } = { face: '', lines: [] };
+
     const attachPicker = (host: HTMLElement, faceOf: () => string, needShift: boolean) => {
       let start: { x: number; y: number } | null = null;
       let boxEl: HTMLElement | null = null;
       let current: Box = { x: 0, y: 0, w: 0, h: 0 };
+      let asPrint = false;
       // getBoundingClientRect already includes any transform, so this is
       // right at any zoom.
       const rel = (e: PointerEvent) => {
@@ -4786,6 +5266,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
           e.preventDefault();
           e.stopPropagation();
           picking = true;
+          asPrint = data.paged && (e.altKey || e.ctrlKey);
           start = rel(e);
           boxEl = document.createElement('span');
           boxEl.className = 'region-pick';
@@ -4816,7 +5297,20 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
           el.remove();
           return;
         }
-        const line = `region: { face: '${faceOf()}', x: ${round1(current.x)}, y: ${round1(current.y)}, w: ${round1(current.w)}, h: ${round1(current.h)} },`;
+        const on = faceOf();
+        const region = `region: { face: '${on}', x: ${round1(current.x)}, y: ${round1(current.y)}, w: ${round1(current.w)}, h: ${round1(current.h)} }`;
+        if (asPrint) {
+          if (printBatch.face !== on) printBatch = { face: on, lines: [] };
+          printBatch.lines.push(`{ ${region} },`);
+          await copyText(printBatch.lines.join('\n'));
+          const n = printBatch.lines.length;
+          toast(`Copied ${n} print${n === 1 ? '' : 's'} on ${on} - paste into prints: [ ]`);
+          // On the plate the box stays, so the page shows what has been
+          // drawn. Examine's frame is shared by every page, so there it goes.
+          if (host === frameEl) window.setTimeout(() => el.remove(), 5000);
+          return;
+        }
+        const line = `${region},`;
         await copyText(line);
         toast(`Copied  ${line}`);
         window.setTimeout(() => el.remove(), 5000);
@@ -4831,7 +5325,11 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       $$('.face-box', root).forEach((fb) => attachPicker(fb, () => fb.dataset.faceBox || 'recto', false));
       attachPicker(frameEl, () => face, true);
       $$('.face-box img', root).forEach((i) => i.addEventListener('dragstart', (e) => e.preventDefault(), { signal }));
-      toast('Region mode: drag on the photograph to copy a region. In Examine, zoom in and Shift+drag.');
+      toast(
+        data.paged
+          ? 'Region mode: drag to copy a region; hold Alt (or Ctrl) to copy it as a print. In Examine, zoom in and Shift+drag.'
+          : 'Region mode: drag on the photograph to copy a region. In Examine, zoom in and Shift+drag.'
+      );
     }
 
     /* ---------------------------------------------------------------- *
@@ -4839,8 +5337,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
      * ---------------------------------------------------------------- */
     if (data.paged) {
       syncPages(plateFace);
-      const start = pageFromHash();
-      if (start) showFace(start);
+      arriveOnPage();
     }
 
     /* ---------------------------------------------------------------- *

@@ -7231,5 +7231,122 @@ export const COLLECTION: Collection = {
         note: 'Photographer unidentified; unpublished.',
       },
     },
+
+
+    {
+      slug: 'mckinstry-album',
+      title: 'Photographs',
+      titleSource: 'supplied',
+      format: 'bound photograph album',
+      dimensions: '20 x 30 cm',
+      // TODO: Midway where? County and state, as specific as the volume allows.
+      place: 'Hagerman, New Mexico',
+      date: {
+        // TODO: the dates of the first and last entries, e.g. '1884-1889'.
+        display: '[1920-1940]',
+        earliest: 1920,
+        latest: 1940,
+        basis: [
+          // TODO: e.g. 'First entry dated March 12, 1884; last dated ...'
+          'Dates of the entries.',
+        ],
+        confidence: 'certain',
+      },
+      // The cover: what the item is represented BY in lists and on the table.
+      recto: { file: 'mckinstry-album/page-000.jpg' },
+      // Paste the pages list printed by:
+      //   node --env-file=.env scripts/journal-pages.mjs swann-family/midway-grange-journal --slug midway-grange-journal
+      // then label the covers and the first page the volume itself numbers.
+      pages: [
+        { file: 'mckinstry-album/page-000.jpg', label: 'Front cover' },
+        { file: 'mckinstry-album/page-001.jpg', label: 'Page 1' },
+        { file: 'mckinstry-album/page-002.jpg', label: 'Page 2' },
+        { file: 'mckinstry-album/page-003.jpg', label: 'Page 3' },
+        { file: 'mckinstry-album/page-004.jpg', label: 'Page 4' },
+        { file: 'mckinstry-album/page-005.jpg', label: 'Page 5' },
+        { file: 'mckinstry-album/page-006.jpg', label: 'Page 6' },
+        { file: 'mckinstry-album/page-007.jpg', label: 'Page 7' },
+        { file: 'mckinstry-album/page-008.jpg', label: 'Page 8' },
+        { file: 'mckinstry-album/page-009.jpg', label: 'Page 9' },
+        { file: 'mckinstry-album/page-010.jpg', label: 'Page 10' },
+        { file: 'mckinstry-album/page-011.jpg', label: 'Page 11' },
+        { file: 'mckinstry-album/page-012.jpg', label: 'Page 12' },
+        { file: 'mckinstry-album/page-013.jpg', label: 'Page 13' },
+        { file: 'mckinstry-album/page-014.jpg', label: 'Page 14' },
+        { file: 'mckinstry-album/page-015.jpg', label: 'Page 15' },
+        { file: 'mckinstry-album/page-016.jpg', label: 'Page 16' },
+        { file: 'mckinstry-album/page-017.jpg', label: 'Page 17' },
+        { file: 'mckinstry-album/page-018.jpg', label: 'Page 18' },
+        { file: 'mckinstry-album/page-019.jpg', label: 'Page 19' },
+        { file: 'mckinstry-album/page-020.jpg', label: 'Page 20' },
+        { file: 'mckinstry-album/page-021.jpg', label: 'Page 21' },
+        { file: 'mckinstry-album/page-022.jpg', label: 'Page 22' },
+        { file: 'mckinstry-album/page-023.jpg', label: 'Page 23' },
+        { file: 'mckinstry-album/page-024.jpg', label: 'Page 24' },
+        { file: 'mckinstry-album/page-025.jpg', label: 'Page 25' },
+        { file: 'mckinstry-album/page-026.jpg', label: 'Page 26' },
+        { file: 'mckinstry-album/page-027.jpg', label: 'Page 27' },
+        { file: 'mckinstry-album/page-028.jpg', label: 'Page 28' },
+        { file: 'mckinstry-album/page-029.jpg', label: 'Page 29' },
+        { file: 'mckinstry-album/page-030.jpg', label: 'Page 30' },
+        { file: 'mckinstry-album/page-031.jpg', label: 'Page 31' },
+        { file: 'mckinstry-album/page-032.jpg', label: 'Page 32' },
+        { file: 'mckinstry-album/page-033.jpg', label: 'Page 33' },
+        { file: 'mckinstry-album/page-034.jpg', label: 'Page 34' },
+        { file: 'mckinstry-album/page-035.jpg', label: 'Page 35' },
+        { file: 'mckinstry-album/page-036.jpg', label: 'Page 36' },
+        { file: 'mckinstry-album/page-037.jpg', label: 'Page 37' },
+        { file: 'mckinstry-album/page-038.jpg', label: 'Page 38' },
+        { file: 'mckinstry-album/page-039.jpg', label: 'Page 39' },
+        { file: 'mckinstry-album/page-040.jpg', label: 'Page 40' },
+        { file: 'mckinstry-album/page-041.jpg', label: 'Page 41' },
+        { file: 'mckinstry-album/page-042.jpg', label: 'Page 42' },
+        { file: 'mckinstry-album/page-043.jpg', label: 'Page 43' },
+        { file: 'mckinstry-album/page-044.jpg', label: 'Page 44' },
+        { file: 'mckinstry-album/page-045.jpg', label: 'Page 45' },
+        { file: 'mckinstry-album/page-046.jpg', label: 'Page 46' },
+        { file: 'mckinstry-album/mounted-recto.jpg' }, // p1 - give it a label, e.g. label: 'Front cover'
+        { file: 'mckinstry-album/mounted-verso.jpg' },
+      ],
+      prints: [
+          { region: { face: 'p2', x: 18.1, y: 7.7, w: 32.3, h: 36.5 }, 
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Unknown nurse and a newborn Sammy McKinstry in the McKinstry household]' },
+          { region: { face: 'p2', x: 58.3, y: 7.8, w: 33.7, h: 35.8 }, 
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Whicker basket with a baby on top in the McKinstry household]' },
+          { region: { face: 'p2', x: 16.6, y: 54.3, w: 32.8, h: 35.8 }, 
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Close up of whicker basket with a baby on top in the McKinstry household]' },
+          { region: { face: 'p2', x: 58.2, y: 53.5, w: 32.9, h: 37.5 }, 
+            date: { display: '[1920]', basis: ['This appears to be from the day Sammy was born or around the same period.'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry being held by her her aunt, Eva]' },
+          
+      ],
+      depicts: [
+        { person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+        region: { face: 'p2', x: 30.1, y: 25.9, w: 2.3, h: 3.9 } },
+        { person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+        region: { face: 'p2', x: 70.3, y: 13.4, w: 2.9, h: 4 }, },
+        { person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+        region: { face: 'p2', x: 24.6, y: 68.4, w: 3.5, h: 6 }, },
+        { person: 'west-eva-swann-powell', confidence: 'certain',
+        region: { face: 'p2', x: 72.1, y: 67.1, w: 3.1, h: 6.1 }, },
+        { person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+        region: { face: 'p2', x: 74.3, y: 71.2, w: 2.2, h: 3.5 }, },
+      ],
+      description:
+        'This is a photograph album that came from the collection of Veta Jean McKinstry Allison. It contains photographs of Sammy Nan McKinstry Allison as a child, with some photographs showing other family members. The album chiefly shows Sammy and her childhood.',
+      // Where the names below come from, said once for all of them.
+      identificationBasis: 'Identified from photographs',
+      mentions: [
+       // { person: 'swann-malcom', page: 'p5', confidence: 'probable',}
+        //   note: 'As "W. M. Swann", presiding.' },
+        // { as: 'J. H. Bledsoe', page: 'p5', confidence: 'certain',
+        //   note: 'Elected secretary.' },
+      ],
+      // TODO: how the volume reached you, if different from the collection's.
+      provenance: 'TODO',
+    },
   ],
 };

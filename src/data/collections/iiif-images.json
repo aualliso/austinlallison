@@ -531,6 +531,60 @@
     },
     "hash": "5331ecef0ccade5c37562a9e887f2c88595e394b031976f5ca5de3afe65fd3b3"
   },
+  "allison-family/allison-oscar-ingle-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-ingle-1-recto-864ff48008",
+    "width": 4296,
+    "height": 5787,
+    "sizes": [
+      {
+        "width": 269,
+        "height": 362
+      },
+      {
+        "width": 340,
+        "height": 458
+      },
+      {
+        "width": 680,
+        "height": 916
+      },
+      {
+        "width": 800,
+        "height": 1078
+      },
+      {
+        "width": 1200,
+        "height": 1616
+      },
+      {
+        "width": 1900,
+        "height": 2559
+      },
+      {
+        "width": 1930,
+        "height": 2600
+      },
+      {
+        "width": 3712,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1930,
+      "study": 3712
+    },
+    "hash": "864ff4800863d8ae055ca43987e24c9c606eb4968766b1526fd5efb4acbda07d"
+  },
   "allison-family/allison-oscar-teacher-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-teacher-recto-96738ed96c",
@@ -9281,6 +9335,2652 @@
       "study": 3268
     },
     "hash": "a4bcb72161ecc80ee3190f489fa8526c0383e0548ac23c186dc1f18e189897f9"
+  },
+  "mckinstry-family/mckinstry-album/mounted-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/mounted-recto-d63e3b025d",
+    "width": 11224,
+    "height": 8897,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 270
+      },
+      {
+        "width": 351,
+        "height": 279
+      },
+      {
+        "width": 680,
+        "height": 539
+      },
+      {
+        "width": 800,
+        "height": 634
+      },
+      {
+        "width": 1200,
+        "height": 951
+      },
+      {
+        "width": 1900,
+        "height": 1506
+      },
+      {
+        "width": 2600,
+        "height": 2061
+      },
+      {
+        "width": 5000,
+        "height": 3963
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "d63e3b025d0412ecf8b17fb7f4f89f52fe6a2998a1e38603910cbd683a5760a0"
+  },
+  "mckinstry-family/mckinstry-album/mounted-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/mounted-verso-99b9969866",
+    "width": 11650,
+    "height": 9038,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 264
+      },
+      {
+        "width": 365,
+        "height": 283
+      },
+      {
+        "width": 680,
+        "height": 528
+      },
+      {
+        "width": 800,
+        "height": 621
+      },
+      {
+        "width": 1200,
+        "height": 931
+      },
+      {
+        "width": 1900,
+        "height": 1474
+      },
+      {
+        "width": 2600,
+        "height": 2017
+      },
+      {
+        "width": 5000,
+        "height": 3879
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "99b99698661ac6542414219d34ffff3b103fbe97b23060875a41048426c02331"
+  },
+  "mckinstry-family/mckinstry-album/page-000.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-000-d07f0b3471",
+    "width": 6921,
+    "height": 4619,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 227
+      },
+      {
+        "width": 433,
+        "height": 289
+      },
+      {
+        "width": 680,
+        "height": 454
+      },
+      {
+        "width": 800,
+        "height": 534
+      },
+      {
+        "width": 1200,
+        "height": 801
+      },
+      {
+        "width": 1900,
+        "height": 1268
+      },
+      {
+        "width": 2600,
+        "height": 1735
+      },
+      {
+        "width": 5000,
+        "height": 3337
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "d07f0b347142ea3e0688c88decee396010d02e912372f4fc8f224dc80c1e9f11"
+  },
+  "mckinstry-family/mckinstry-album/page-001.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-001-fe2ceab2f0",
+    "width": 13831,
+    "height": 8850,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 218
+      },
+      {
+        "width": 433,
+        "height": 277
+      },
+      {
+        "width": 680,
+        "height": 435
+      },
+      {
+        "width": 800,
+        "height": 512
+      },
+      {
+        "width": 1200,
+        "height": 768
+      },
+      {
+        "width": 1900,
+        "height": 1216
+      },
+      {
+        "width": 2600,
+        "height": 1664
+      },
+      {
+        "width": 5000,
+        "height": 3199
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "fe2ceab2f08326030103c80916110926c5e2f3ef95304dcafeec37228fc4b945"
+  },
+  "mckinstry-family/mckinstry-album/page-002.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-002-08ce2ac159",
+    "width": 13792,
+    "height": 8965,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 221
+      },
+      {
+        "width": 431,
+        "height": 281
+      },
+      {
+        "width": 680,
+        "height": 442
+      },
+      {
+        "width": 800,
+        "height": 520
+      },
+      {
+        "width": 1200,
+        "height": 780
+      },
+      {
+        "width": 1900,
+        "height": 1235
+      },
+      {
+        "width": 2600,
+        "height": 1690
+      },
+      {
+        "width": 5000,
+        "height": 3250
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "08ce2ac159cfb652ec87817c7f10f1ae40721f1ec428dd56d49be0575b23ad1f"
+  },
+  "mckinstry-family/mckinstry-album/page-003.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-003-5b4aad80ae",
+    "width": 13930,
+    "height": 8950,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 218
+      },
+      {
+        "width": 436,
+        "height": 280
+      },
+      {
+        "width": 680,
+        "height": 437
+      },
+      {
+        "width": 800,
+        "height": 514
+      },
+      {
+        "width": 1200,
+        "height": 771
+      },
+      {
+        "width": 1900,
+        "height": 1221
+      },
+      {
+        "width": 2600,
+        "height": 1670
+      },
+      {
+        "width": 5000,
+        "height": 3212
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "5b4aad80aec1beab154977130469eef23deb6d7fc1e485d7e640ca2ec7b9fbd7"
+  },
+  "mckinstry-family/mckinstry-album/page-004.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-004-7c5ef6531f",
+    "width": 14180,
+    "height": 9200,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 221
+      },
+      {
+        "width": 444,
+        "height": 288
+      },
+      {
+        "width": 680,
+        "height": 441
+      },
+      {
+        "width": 800,
+        "height": 519
+      },
+      {
+        "width": 1200,
+        "height": 779
+      },
+      {
+        "width": 1900,
+        "height": 1233
+      },
+      {
+        "width": 2600,
+        "height": 1687
+      },
+      {
+        "width": 5000,
+        "height": 3244
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "7c5ef6531f15da42dced8009be8b8255810d5b07a40696112fa5e8ad5be1463f"
+  },
+  "mckinstry-family/mckinstry-album/page-005.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-005-2a2a59361f",
+    "width": 13726,
+    "height": 8838,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 219
+      },
+      {
+        "width": 429,
+        "height": 277
+      },
+      {
+        "width": 680,
+        "height": 438
+      },
+      {
+        "width": 800,
+        "height": 515
+      },
+      {
+        "width": 1200,
+        "height": 773
+      },
+      {
+        "width": 1900,
+        "height": 1223
+      },
+      {
+        "width": 2600,
+        "height": 1674
+      },
+      {
+        "width": 5000,
+        "height": 3219
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "2a2a59361ffaca08258a25ee1ab25e40ebf6456f7d9b011c2071ef5117a353c5"
+  },
+  "mckinstry-family/mckinstry-album/page-006.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-006-33339c7c71",
+    "width": 14330,
+    "height": 9350,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 222
+      },
+      {
+        "width": 448,
+        "height": 293
+      },
+      {
+        "width": 680,
+        "height": 444
+      },
+      {
+        "width": 800,
+        "height": 522
+      },
+      {
+        "width": 1200,
+        "height": 783
+      },
+      {
+        "width": 1900,
+        "height": 1240
+      },
+      {
+        "width": 2600,
+        "height": 1696
+      },
+      {
+        "width": 5000,
+        "height": 3262
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "33339c7c71216674f6c9ffe7f6b1807528f4a02e93de5767312f7c33514fc042"
+  },
+  "mckinstry-family/mckinstry-album/page-007.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-007-f6beeda19e",
+    "width": 13981,
+    "height": 9300,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 226
+      },
+      {
+        "width": 437,
+        "height": 291
+      },
+      {
+        "width": 680,
+        "height": 452
+      },
+      {
+        "width": 800,
+        "height": 532
+      },
+      {
+        "width": 1200,
+        "height": 798
+      },
+      {
+        "width": 1900,
+        "height": 1264
+      },
+      {
+        "width": 2600,
+        "height": 1729
+      },
+      {
+        "width": 5000,
+        "height": 3326
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "f6beeda19e8a50c379ee1d9001a4e589beb8fbf2b6bbeaa43b72ce36a6b0d0de"
+  },
+  "mckinstry-family/mckinstry-album/page-008.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-008-1065d142e0",
+    "width": 14430,
+    "height": 9200,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 217
+      },
+      {
+        "width": 451,
+        "height": 288
+      },
+      {
+        "width": 680,
+        "height": 434
+      },
+      {
+        "width": 800,
+        "height": 510
+      },
+      {
+        "width": 1200,
+        "height": 765
+      },
+      {
+        "width": 1900,
+        "height": 1211
+      },
+      {
+        "width": 2600,
+        "height": 1658
+      },
+      {
+        "width": 5000,
+        "height": 3188
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "1065d142e0715782925d56bc6a11e055bc61c20c24d6502309994d79172940e0"
+  },
+  "mckinstry-family/mckinstry-album/page-009.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-009-d03fd7bcc0",
+    "width": 14081,
+    "height": 9400,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 227
+      },
+      {
+        "width": 441,
+        "height": 294
+      },
+      {
+        "width": 680,
+        "height": 454
+      },
+      {
+        "width": 800,
+        "height": 534
+      },
+      {
+        "width": 1200,
+        "height": 801
+      },
+      {
+        "width": 1900,
+        "height": 1268
+      },
+      {
+        "width": 2600,
+        "height": 1736
+      },
+      {
+        "width": 5000,
+        "height": 3338
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "d03fd7bcc0b1688b90a532a89bf6fcb4a13cb6cc1c60772e543391dfdc9a34e3"
+  },
+  "mckinstry-family/mckinstry-album/page-010.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-010-8666b27df2",
+    "width": 14180,
+    "height": 9200,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 221
+      },
+      {
+        "width": 444,
+        "height": 288
+      },
+      {
+        "width": 680,
+        "height": 441
+      },
+      {
+        "width": 800,
+        "height": 519
+      },
+      {
+        "width": 1200,
+        "height": 779
+      },
+      {
+        "width": 1900,
+        "height": 1233
+      },
+      {
+        "width": 2600,
+        "height": 1687
+      },
+      {
+        "width": 5000,
+        "height": 3244
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "8666b27df278f3097db7d42260fc3d39bf3ec32f559839d9cec1b153a14fee23"
+  },
+  "mckinstry-family/mckinstry-album/page-011.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-011-eac2912c33",
+    "width": 13881,
+    "height": 9250,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 227
+      },
+      {
+        "width": 434,
+        "height": 290
+      },
+      {
+        "width": 680,
+        "height": 453
+      },
+      {
+        "width": 800,
+        "height": 533
+      },
+      {
+        "width": 1200,
+        "height": 800
+      },
+      {
+        "width": 1900,
+        "height": 1266
+      },
+      {
+        "width": 2600,
+        "height": 1733
+      },
+      {
+        "width": 5000,
+        "height": 3332
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "eac2912c336d581fe9a46188954cdfe3072ba9990b1826abce1f9e6d58fd58dc"
+  },
+  "mckinstry-family/mckinstry-album/page-012.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-012-0b2f386ad9",
+    "width": 14069,
+    "height": 9028,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 218
+      },
+      {
+        "width": 440,
+        "height": 283
+      },
+      {
+        "width": 680,
+        "height": 436
+      },
+      {
+        "width": 800,
+        "height": 513
+      },
+      {
+        "width": 1200,
+        "height": 770
+      },
+      {
+        "width": 1900,
+        "height": 1219
+      },
+      {
+        "width": 2600,
+        "height": 1668
+      },
+      {
+        "width": 5000,
+        "height": 3208
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "0b2f386ad9d66fa436c2f3ee7df2e5a409c76a05c11aee0570d6619ae854c56d"
+  },
+  "mckinstry-family/mckinstry-album/page-013.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-013-c14667ebbf",
+    "width": 14081,
+    "height": 9200,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 222
+      },
+      {
+        "width": 441,
+        "height": 288
+      },
+      {
+        "width": 680,
+        "height": 444
+      },
+      {
+        "width": 800,
+        "height": 523
+      },
+      {
+        "width": 1200,
+        "height": 784
+      },
+      {
+        "width": 1900,
+        "height": 1241
+      },
+      {
+        "width": 2600,
+        "height": 1699
+      },
+      {
+        "width": 5000,
+        "height": 3267
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "c14667ebbfd8355f7d8d44bbcdc9500a5a5a25a505cf04ef0f58f1f8a8e3ba2a"
+  },
+  "mckinstry-family/mckinstry-album/page-014.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-014-09cc0d01f4",
+    "width": 14230,
+    "height": 9200,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 220
+      },
+      {
+        "width": 445,
+        "height": 288
+      },
+      {
+        "width": 680,
+        "height": 440
+      },
+      {
+        "width": 800,
+        "height": 517
+      },
+      {
+        "width": 1200,
+        "height": 776
+      },
+      {
+        "width": 1900,
+        "height": 1228
+      },
+      {
+        "width": 2600,
+        "height": 1681
+      },
+      {
+        "width": 5000,
+        "height": 3233
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "09cc0d01f4dd23e536bf8b274b913c8f76a33ea7105c765cbdbdc9c579fa8f5e"
+  },
+  "mckinstry-family/mckinstry-album/page-015.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-015-4b50b08a16",
+    "width": 13931,
+    "height": 9000,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 220
+      },
+      {
+        "width": 436,
+        "height": 282
+      },
+      {
+        "width": 680,
+        "height": 439
+      },
+      {
+        "width": 800,
+        "height": 517
+      },
+      {
+        "width": 1200,
+        "height": 775
+      },
+      {
+        "width": 1900,
+        "height": 1227
+      },
+      {
+        "width": 2600,
+        "height": 1680
+      },
+      {
+        "width": 5000,
+        "height": 3230
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "4b50b08a165d721877d847c07a4e529cce1e7ed8e577bb478e62d7b2afc9942a"
+  },
+  "mckinstry-family/mckinstry-album/page-016.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-016-285a7a7b80",
+    "width": 14161,
+    "height": 9163,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 220
+      },
+      {
+        "width": 443,
+        "height": 287
+      },
+      {
+        "width": 680,
+        "height": 440
+      },
+      {
+        "width": 800,
+        "height": 518
+      },
+      {
+        "width": 1200,
+        "height": 776
+      },
+      {
+        "width": 1900,
+        "height": 1229
+      },
+      {
+        "width": 2600,
+        "height": 1682
+      },
+      {
+        "width": 5000,
+        "height": 3235
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "285a7a7b80a07f599873610d133f8322448f64a30a053ade5be24c3c7b0551d7"
+  },
+  "mckinstry-family/mckinstry-album/page-017.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-017-660441701f",
+    "width": 13848,
+    "height": 8912,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 219
+      },
+      {
+        "width": 433,
+        "height": 279
+      },
+      {
+        "width": 680,
+        "height": 438
+      },
+      {
+        "width": 800,
+        "height": 515
+      },
+      {
+        "width": 1200,
+        "height": 772
+      },
+      {
+        "width": 1900,
+        "height": 1223
+      },
+      {
+        "width": 2600,
+        "height": 1673
+      },
+      {
+        "width": 5000,
+        "height": 3218
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "660441701f1961e9eb7713a621fe81bc69f18ecd8964411c9bee0e31dcf3e1d5"
+  },
+  "mckinstry-family/mckinstry-album/page-018.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-018-092ed7d81d",
+    "width": 13963,
+    "height": 9027,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 220
+      },
+      {
+        "width": 437,
+        "height": 283
+      },
+      {
+        "width": 680,
+        "height": 440
+      },
+      {
+        "width": 800,
+        "height": 517
+      },
+      {
+        "width": 1200,
+        "height": 776
+      },
+      {
+        "width": 1900,
+        "height": 1228
+      },
+      {
+        "width": 2600,
+        "height": 1681
+      },
+      {
+        "width": 5000,
+        "height": 3232
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "092ed7d81d21c619e08cc2d5493782e4a813ac8ca960cc1f4693dbd48c1a8328"
+  },
+  "mckinstry-family/mckinstry-album/page-019.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-019-67be93a7d6",
+    "width": 14025,
+    "height": 9074,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 220
+      },
+      {
+        "width": 439,
+        "height": 284
+      },
+      {
+        "width": 680,
+        "height": 440
+      },
+      {
+        "width": 800,
+        "height": 518
+      },
+      {
+        "width": 1200,
+        "height": 776
+      },
+      {
+        "width": 1900,
+        "height": 1229
+      },
+      {
+        "width": 2600,
+        "height": 1682
+      },
+      {
+        "width": 5000,
+        "height": 3235
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "67be93a7d6d0a573f1102da6f3d3d4869d94af21e0e66a08b08ef2764446dd4c"
+  },
+  "mckinstry-family/mckinstry-album/page-020.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-020-b14e1e4f8c",
+    "width": 14230,
+    "height": 9100,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 217
+      },
+      {
+        "width": 445,
+        "height": 285
+      },
+      {
+        "width": 680,
+        "height": 435
+      },
+      {
+        "width": 800,
+        "height": 512
+      },
+      {
+        "width": 1200,
+        "height": 767
+      },
+      {
+        "width": 1900,
+        "height": 1215
+      },
+      {
+        "width": 2600,
+        "height": 1663
+      },
+      {
+        "width": 5000,
+        "height": 3197
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "b14e1e4f8c43632b86ebef552177c2c7f09f843e844cdc9d013af58b208e5a2d"
+  },
+  "mckinstry-family/mckinstry-album/page-021.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-021-bbc19f2485",
+    "width": 14230,
+    "height": 9250,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 221
+      },
+      {
+        "width": 445,
+        "height": 290
+      },
+      {
+        "width": 680,
+        "height": 442
+      },
+      {
+        "width": 800,
+        "height": 520
+      },
+      {
+        "width": 1200,
+        "height": 780
+      },
+      {
+        "width": 1900,
+        "height": 1235
+      },
+      {
+        "width": 2600,
+        "height": 1690
+      },
+      {
+        "width": 5000,
+        "height": 3250
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "bbc19f24852484fff21bbe739d3c1e259a303d228515ea6565fc4d3bdd7cdfef"
+  },
+  "mckinstry-family/mckinstry-album/page-022.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-022-44db7d837b",
+    "width": 14081,
+    "height": 8950,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 216
+      },
+      {
+        "width": 441,
+        "height": 280
+      },
+      {
+        "width": 680,
+        "height": 432
+      },
+      {
+        "width": 800,
+        "height": 508
+      },
+      {
+        "width": 1200,
+        "height": 763
+      },
+      {
+        "width": 1900,
+        "height": 1208
+      },
+      {
+        "width": 2600,
+        "height": 1653
+      },
+      {
+        "width": 5000,
+        "height": 3178
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "44db7d837b1c503902534e4e8530ae2b51231051e33c9ae75cc9ab79111eac7e"
+  },
+  "mckinstry-family/mckinstry-album/page-023.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-023-fc84a4bf83",
+    "width": 14180,
+    "height": 9300,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 223
+      },
+      {
+        "width": 444,
+        "height": 291
+      },
+      {
+        "width": 680,
+        "height": 446
+      },
+      {
+        "width": 800,
+        "height": 525
+      },
+      {
+        "width": 1200,
+        "height": 787
+      },
+      {
+        "width": 1900,
+        "height": 1246
+      },
+      {
+        "width": 2600,
+        "height": 1705
+      },
+      {
+        "width": 5000,
+        "height": 3279
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "fc84a4bf83f4f1c1added4c282e6f738ed6033c6f563d7b4612eb8ba44dd9b32"
+  },
+  "mckinstry-family/mckinstry-album/page-024.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-024-a1caacbfd6",
+    "width": 14064,
+    "height": 9069,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 219
+      },
+      {
+        "width": 440,
+        "height": 284
+      },
+      {
+        "width": 680,
+        "height": 438
+      },
+      {
+        "width": 800,
+        "height": 516
+      },
+      {
+        "width": 1200,
+        "height": 774
+      },
+      {
+        "width": 1900,
+        "height": 1225
+      },
+      {
+        "width": 2600,
+        "height": 1677
+      },
+      {
+        "width": 5000,
+        "height": 3224
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "a1caacbfd613272e57516ccf26556b83b1a56b8cebea98484a002f8bdda199a3"
+  },
+  "mckinstry-family/mckinstry-album/page-025.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-025-ff0eeb77ea",
+    "width": 14014,
+    "height": 8886,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 216
+      },
+      {
+        "width": 438,
+        "height": 278
+      },
+      {
+        "width": 680,
+        "height": 431
+      },
+      {
+        "width": 800,
+        "height": 507
+      },
+      {
+        "width": 1200,
+        "height": 761
+      },
+      {
+        "width": 1900,
+        "height": 1205
+      },
+      {
+        "width": 2600,
+        "height": 1649
+      },
+      {
+        "width": 5000,
+        "height": 3170
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "ff0eeb77eaed42aa4d0f9718663fc3e64d29a08e9465b2a2bf521f290d71512c"
+  },
+  "mckinstry-family/mckinstry-album/page-026.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-026-7f13b12c67",
+    "width": 14130,
+    "height": 9400,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 226
+      },
+      {
+        "width": 442,
+        "height": 294
+      },
+      {
+        "width": 680,
+        "height": 452
+      },
+      {
+        "width": 800,
+        "height": 532
+      },
+      {
+        "width": 1200,
+        "height": 798
+      },
+      {
+        "width": 1900,
+        "height": 1264
+      },
+      {
+        "width": 2600,
+        "height": 1730
+      },
+      {
+        "width": 5000,
+        "height": 3326
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "7f13b12c67c81102719ecd655b289e7219458ad069fc3f151c5a2d77e8acb87c"
+  },
+  "mckinstry-family/mckinstry-album/page-027.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-027-a022495ac0",
+    "width": 13986,
+    "height": 9145,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 222
+      },
+      {
+        "width": 438,
+        "height": 286
+      },
+      {
+        "width": 680,
+        "height": 445
+      },
+      {
+        "width": 800,
+        "height": 523
+      },
+      {
+        "width": 1200,
+        "height": 785
+      },
+      {
+        "width": 1900,
+        "height": 1242
+      },
+      {
+        "width": 2600,
+        "height": 1700
+      },
+      {
+        "width": 5000,
+        "height": 3269
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "a022495ac09c1883180dab58e7e009a7e864cfe51c9b07b935447894103a74a0"
+  },
+  "mckinstry-family/mckinstry-album/page-028.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-028-1130a0fbb4",
+    "width": 14180,
+    "height": 9250,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 222
+      },
+      {
+        "width": 444,
+        "height": 290
+      },
+      {
+        "width": 680,
+        "height": 444
+      },
+      {
+        "width": 800,
+        "height": 522
+      },
+      {
+        "width": 1200,
+        "height": 783
+      },
+      {
+        "width": 1900,
+        "height": 1239
+      },
+      {
+        "width": 2600,
+        "height": 1696
+      },
+      {
+        "width": 5000,
+        "height": 3262
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "1130a0fbb4fac2beb63a461777d766d28906a985df67c4c16945c9a31a82768f"
+  },
+  "mckinstry-family/mckinstry-album/page-029.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-029-03b28141c8",
+    "width": 14280,
+    "height": 9400,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 224
+      },
+      {
+        "width": 447,
+        "height": 294
+      },
+      {
+        "width": 680,
+        "height": 448
+      },
+      {
+        "width": 800,
+        "height": 527
+      },
+      {
+        "width": 1200,
+        "height": 790
+      },
+      {
+        "width": 1900,
+        "height": 1251
+      },
+      {
+        "width": 2600,
+        "height": 1711
+      },
+      {
+        "width": 5000,
+        "height": 3291
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "03b28141c815da9989d4cbd599985cf1a658ec5cc6721d844778db8dda46b4c9"
+  },
+  "mckinstry-family/mckinstry-album/page-030.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-030-c76ac0952e",
+    "width": 14180,
+    "height": 9300,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 223
+      },
+      {
+        "width": 444,
+        "height": 291
+      },
+      {
+        "width": 680,
+        "height": 446
+      },
+      {
+        "width": 800,
+        "height": 525
+      },
+      {
+        "width": 1200,
+        "height": 787
+      },
+      {
+        "width": 1900,
+        "height": 1246
+      },
+      {
+        "width": 2600,
+        "height": 1705
+      },
+      {
+        "width": 5000,
+        "height": 3279
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "c76ac0952ef7e4ccfb87a6a87e6d52374cc0a860e6daee9ab370d5096ad70aff"
+  },
+  "mckinstry-family/mckinstry-album/page-031.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-031-ee9b956351",
+    "width": 13830,
+    "height": 8900,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 219
+      },
+      {
+        "width": 433,
+        "height": 279
+      },
+      {
+        "width": 680,
+        "height": 438
+      },
+      {
+        "width": 800,
+        "height": 515
+      },
+      {
+        "width": 1200,
+        "height": 772
+      },
+      {
+        "width": 1900,
+        "height": 1223
+      },
+      {
+        "width": 2600,
+        "height": 1673
+      },
+      {
+        "width": 5000,
+        "height": 3218
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "ee9b9563510f06a0e21f2b529001e405a9bc463708466dacf750fc4151433cd7"
+  },
+  "mckinstry-family/mckinstry-album/page-032.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-032-70f94b0ba9",
+    "width": 13880,
+    "height": 9025,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 221
+      },
+      {
+        "width": 434,
+        "height": 283
+      },
+      {
+        "width": 680,
+        "height": 442
+      },
+      {
+        "width": 800,
+        "height": 520
+      },
+      {
+        "width": 1200,
+        "height": 780
+      },
+      {
+        "width": 1900,
+        "height": 1235
+      },
+      {
+        "width": 2600,
+        "height": 1691
+      },
+      {
+        "width": 5000,
+        "height": 3251
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "70f94b0ba91adfbc6b503318b62f9deb7ce757d73ba93bb7087c901e4508b991"
+  },
+  "mckinstry-family/mckinstry-album/page-033.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-033-5041d948b4",
+    "width": 13880,
+    "height": 9000,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 220
+      },
+      {
+        "width": 434,
+        "height": 282
+      },
+      {
+        "width": 680,
+        "height": 441
+      },
+      {
+        "width": 800,
+        "height": 519
+      },
+      {
+        "width": 1200,
+        "height": 778
+      },
+      {
+        "width": 1900,
+        "height": 1232
+      },
+      {
+        "width": 2600,
+        "height": 1686
+      },
+      {
+        "width": 5000,
+        "height": 3242
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "5041d948b4013c3c435d171b93277da09f101375b574cae02bd932cc9f538b87"
+  },
+  "mckinstry-family/mckinstry-album/page-034.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-034-ca93ed22f8",
+    "width": 13780,
+    "height": 9050,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 223
+      },
+      {
+        "width": 431,
+        "height": 283
+      },
+      {
+        "width": 680,
+        "height": 447
+      },
+      {
+        "width": 800,
+        "height": 525
+      },
+      {
+        "width": 1200,
+        "height": 788
+      },
+      {
+        "width": 1900,
+        "height": 1248
+      },
+      {
+        "width": 2600,
+        "height": 1708
+      },
+      {
+        "width": 5000,
+        "height": 3284
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "ca93ed22f8d3190ae5e36ec2918a14e3f8911f5e05c1579ed304a8693af8db02"
+  },
+  "mckinstry-family/mckinstry-album/page-035.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-035-d135556503",
+    "width": 13943,
+    "height": 8879,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 217
+      },
+      {
+        "width": 436,
+        "height": 278
+      },
+      {
+        "width": 680,
+        "height": 433
+      },
+      {
+        "width": 800,
+        "height": 509
+      },
+      {
+        "width": 1200,
+        "height": 764
+      },
+      {
+        "width": 1900,
+        "height": 1210
+      },
+      {
+        "width": 2600,
+        "height": 1656
+      },
+      {
+        "width": 5000,
+        "height": 3184
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "d13555650301a91d115358e6292ad9974f9ff5f3175662cf5e652ba9bfb2e792"
+  },
+  "mckinstry-family/mckinstry-album/page-036.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-036-7faa7ec3d5",
+    "width": 13830,
+    "height": 9250,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 227
+      },
+      {
+        "width": 433,
+        "height": 290
+      },
+      {
+        "width": 680,
+        "height": 455
+      },
+      {
+        "width": 800,
+        "height": 535
+      },
+      {
+        "width": 1200,
+        "height": 803
+      },
+      {
+        "width": 1900,
+        "height": 1271
+      },
+      {
+        "width": 2600,
+        "height": 1739
+      },
+      {
+        "width": 5000,
+        "height": 3344
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "7faa7ec3d5f66ec02cc2c29a49e3d1250f663f2ba0e684fea4049cadbb86dd90"
+  },
+  "mckinstry-family/mckinstry-album/page-037.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-037-c3ce8271bf",
+    "width": 13800,
+    "height": 8989,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 221
+      },
+      {
+        "width": 432,
+        "height": 281
+      },
+      {
+        "width": 680,
+        "height": 443
+      },
+      {
+        "width": 800,
+        "height": 521
+      },
+      {
+        "width": 1200,
+        "height": 782
+      },
+      {
+        "width": 1900,
+        "height": 1238
+      },
+      {
+        "width": 2600,
+        "height": 1694
+      },
+      {
+        "width": 5000,
+        "height": 3257
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "c3ce8271bf7f0ad11dbf18908aaa3208f0066ab86b76c0606bdedc5c337a5a30"
+  },
+  "mckinstry-family/mckinstry-album/page-038.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-038-afd80390fd",
+    "width": 14250,
+    "height": 9038,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 216
+      },
+      {
+        "width": 446,
+        "height": 283
+      },
+      {
+        "width": 680,
+        "height": 431
+      },
+      {
+        "width": 800,
+        "height": 507
+      },
+      {
+        "width": 1200,
+        "height": 761
+      },
+      {
+        "width": 1900,
+        "height": 1205
+      },
+      {
+        "width": 2600,
+        "height": 1649
+      },
+      {
+        "width": 5000,
+        "height": 3171
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "afd80390fd05314198397795dc3cde2c28ea77d49fed66b5e4b1dec8b6d10a36"
+  },
+  "mckinstry-family/mckinstry-album/page-039.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-039-f7725345b5",
+    "width": 14304,
+    "height": 8991,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 214
+      },
+      {
+        "width": 447,
+        "height": 281
+      },
+      {
+        "width": 680,
+        "height": 427
+      },
+      {
+        "width": 800,
+        "height": 503
+      },
+      {
+        "width": 1200,
+        "height": 754
+      },
+      {
+        "width": 1900,
+        "height": 1194
+      },
+      {
+        "width": 2600,
+        "height": 1634
+      },
+      {
+        "width": 5000,
+        "height": 3143
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "f7725345b52220791dbe95e79798d0694e86451382d42de32cb68834ebda6034"
+  },
+  "mckinstry-family/mckinstry-album/page-040.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-040-98538d1851",
+    "width": 14080,
+    "height": 9150,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 221
+      },
+      {
+        "width": 440,
+        "height": 286
+      },
+      {
+        "width": 680,
+        "height": 442
+      },
+      {
+        "width": 800,
+        "height": 520
+      },
+      {
+        "width": 1200,
+        "height": 780
+      },
+      {
+        "width": 1900,
+        "height": 1235
+      },
+      {
+        "width": 2600,
+        "height": 1690
+      },
+      {
+        "width": 5000,
+        "height": 3249
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "98538d18517e6c4f894c978069f9f5f6f204d9d3ae48ed80be2ef10563792bf8"
+  },
+  "mckinstry-family/mckinstry-album/page-041.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-041-7f1f6b6382",
+    "width": 13930,
+    "height": 9100,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 222
+      },
+      {
+        "width": 436,
+        "height": 285
+      },
+      {
+        "width": 680,
+        "height": 444
+      },
+      {
+        "width": 800,
+        "height": 523
+      },
+      {
+        "width": 1200,
+        "height": 784
+      },
+      {
+        "width": 1900,
+        "height": 1241
+      },
+      {
+        "width": 2600,
+        "height": 1698
+      },
+      {
+        "width": 5000,
+        "height": 3266
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "7f1f6b6382211bc67b51b17dcacae61c5ff7b32131bfda1bc119428ad8b8e7fc"
+  },
+  "mckinstry-family/mckinstry-album/page-042.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-042-454e78f5c7",
+    "width": 14030,
+    "height": 9300,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 225
+      },
+      {
+        "width": 439,
+        "height": 291
+      },
+      {
+        "width": 680,
+        "height": 451
+      },
+      {
+        "width": 800,
+        "height": 530
+      },
+      {
+        "width": 1200,
+        "height": 795
+      },
+      {
+        "width": 1900,
+        "height": 1259
+      },
+      {
+        "width": 2600,
+        "height": 1723
+      },
+      {
+        "width": 5000,
+        "height": 3314
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "454e78f5c73182c86ca73a18507bccf8c6f3271400c583869f55b0d5e44dc965"
+  },
+  "mckinstry-family/mckinstry-album/page-043.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-043-ef6b2c0afc",
+    "width": 13980,
+    "height": 9150,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 223
+      },
+      {
+        "width": 437,
+        "height": 286
+      },
+      {
+        "width": 680,
+        "height": 445
+      },
+      {
+        "width": 800,
+        "height": 524
+      },
+      {
+        "width": 1200,
+        "height": 785
+      },
+      {
+        "width": 1900,
+        "height": 1244
+      },
+      {
+        "width": 2600,
+        "height": 1702
+      },
+      {
+        "width": 5000,
+        "height": 3273
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "ef6b2c0afc9cbd8f342a7230d5d18a19b637dd045f1b1b1fdb937268aacbb484"
+  },
+  "mckinstry-family/mckinstry-album/page-044.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-044-452a374d01",
+    "width": 14066,
+    "height": 9220,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 223
+      },
+      {
+        "width": 440,
+        "height": 289
+      },
+      {
+        "width": 680,
+        "height": 446
+      },
+      {
+        "width": 800,
+        "height": 524
+      },
+      {
+        "width": 1200,
+        "height": 787
+      },
+      {
+        "width": 1900,
+        "height": 1245
+      },
+      {
+        "width": 2600,
+        "height": 1704
+      },
+      {
+        "width": 5000,
+        "height": 3277
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "452a374d01d699ec8fc7dbde6ac286f5766f41fd18536ceb4936f2e2a0ade0e3"
+  },
+  "mckinstry-family/mckinstry-album/page-045.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-045-d5ce7b5ddb",
+    "width": 14400,
+    "height": 9188,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 217
+      },
+      {
+        "width": 450,
+        "height": 288
+      },
+      {
+        "width": 680,
+        "height": 434
+      },
+      {
+        "width": 800,
+        "height": 510
+      },
+      {
+        "width": 1200,
+        "height": 766
+      },
+      {
+        "width": 1900,
+        "height": 1212
+      },
+      {
+        "width": 2600,
+        "height": 1659
+      },
+      {
+        "width": 5000,
+        "height": 3190
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "d5ce7b5ddb17e64364d8b8bc8968b009fd258d727993200aee6d85381e91606e"
+  },
+  "mckinstry-family/mckinstry-album/page-046.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-046-8632ae39cb",
+    "width": 14067,
+    "height": 9097,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 220
+      },
+      {
+        "width": 440,
+        "height": 285
+      },
+      {
+        "width": 680,
+        "height": 440
+      },
+      {
+        "width": 800,
+        "height": 517
+      },
+      {
+        "width": 1200,
+        "height": 776
+      },
+      {
+        "width": 1900,
+        "height": 1229
+      },
+      {
+        "width": 2600,
+        "height": 1681
+      },
+      {
+        "width": 5000,
+        "height": 3233
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "8632ae39cb2810b7cc86fbcab2edfa096011bb8bcb1c4bf9f267fd78fde36a56"
   },
   "mckinstry-family/mckinstry-children-ruth-2-recto.jpg": {
     "v": 2,

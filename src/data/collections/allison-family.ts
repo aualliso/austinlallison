@@ -672,5 +672,35 @@ export const COLLECTION: Collection = {
         },
       ],
     },
+    {
+      slug: 'allison-oscar-ingle-1',
+      title: '[Oscar Allison sitting at a table]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'e.1.1',
+      date: {
+        display: '[1941-1943]',
+        basis: ['There is no date on this photograph, but an estimated date of 1941 to 1943 is likely. This is from before Oscar\'s deployment to Europe and subsequent time as a prisoner of war.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-oscar-ingle-1-recto.jpg',
+      },
+      description:
+        'This photograph depicts Oscar Ingle Allison sitting at a table. There is a map or advertisement on the wall in the background that is partially visible. This sheet has a business from Roswell, New Mexico on it. This photograph predates Oscar\'s deployment to Europe, and it is likely from 1941 through 1943.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 24.9, y: 23.1, w: 29.8, h: 30.5 },
+        },
+      ],
+    },
   ]
 }
