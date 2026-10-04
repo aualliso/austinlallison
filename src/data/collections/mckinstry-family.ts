@@ -7646,6 +7646,264 @@ export const COLLECTION: Collection = {
             title: '[Sammy McKinstry sitting on the porch with Austin Swann churning butter]',
             description: 'Caption: Helping granddaddy churn'
           },
+          { 
+            region: { face: 'p21', x: 39.6, y: 48.2, w: 47.8, h: 49.8 },
+            date: { display: '[1921-1922]', earliest: 1921, latest: 1922, basis: ['Sammy appears to be one or two here'], confidence: 'certain' }, 
+            title: '[Eva, Minnie, Loveta, and Sammy waiting for a train at the Hagerman train station]',
+            description: 'Caption: Waiting for the train'
+          },
+          { 
+            region: { face: 'p22', x: 35.9, y: 11, w: 30.5, h: 78 },
+            date: { display: '[1921-1922]', earliest: 1921, latest: 1922, basis: ['Sammy appears to be one or two here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry feeding a puppy]',
+            description: ''
+          },
+          { 
+            region: { face: 'p22', x: 66, y: 10.7, w: 29.9, h: 78.2 },
+            date: { display: '[1921-1922]', earliest: 1921, latest: 1922, basis: ['Sammy appears to be one or two here'], confidence: 'certain' }, 
+            title: '[Sam and Sammy McKinstry tending to a puppy]',
+            description: ''
+          },
+          { 
+            region: { face: 'p24', x: 16.9, y: 4, w: 36, h: 43.3 },
+            date: { display: '[1921-1922]', earliest: 1921, latest: 1922, basis: ['Sammy appears to be one or two here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry sitting on the ground with a puppy]',
+            description: ''
+          },
+          { 
+            region: { face: 'p24', x: 57, y: 5, w: 33.8, h: 39.9 },
+            date: { display: '[1921-1922]', earliest: 1921, latest: 1922, basis: ['Sammy appears to be one or two here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry petting a small puppy]',
+            description: ''
+          },
+          { 
+            region: { face: 'p24', x: 16.3, y: 49.4, w: 36.4, h: 42.5 },
+            date: { display: '[1921-1922]', earliest: 1921, latest: 1922, basis: ['Sammy appears to be one or two here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry sitting on the ground]',
+            description: ''
+          },
+          { 
+            region: { face: 'p24', x: 57.2, y: 48.9, w: 35.6, h: 42.8 },
+            date: { display: '[1921-1922]', earliest: 1921, latest: 1922, basis: ['Sammy appears to be one or two here'], confidence: 'certain' }, 
+            title: '[Sammy McKinstry petting a dog]',
+            description: ''
+          },
+          { 
+            region: { face: 'p25', x: 19.6, y: 21, w: 55.5, h: 61.4 },
+            date: { display: '[1931]', earliest: 1931, latest: 1931, basis: ['Austin Swann died in 1931'], confidence: 'certain' }, 
+            title: '[Papa\'s grave]',
+            description: ''
+          },
+          { 
+            region: { face: 'p26', x: 56.9, y: 6.7, w: 16.4, h: 47.5 },
+            date: { display: '[1928-1930]', earliest: 1928, latest: 1930, basis: ['Purely an estimate'], confidence: 'certain' }, 
+            title: 'Jimmie at school',
+            description: ''
+          },
+          { 
+            region: { face: 'p26', x: 71.5, y: 42.8, w: 23.4, h: 54.1 },
+            date: { display: '[1928-1929]', earliest: 1928, latest: 1929, basis: ['Peggy appears to be 2 or 3 here'], confidence: 'certain' }, 
+            title: '[Peggy standing in front of a car and windmill]',
+            description: 'Caption: Peggy'
+          },
+          { 
+            region: { face: 'p27', x: 34.7, y: 18.8, w: 13.7, h: 64.3 },
+            date: { display: '[1920-1922]', earliest: 1920, latest: 1922, basis: ['The McKinstrys took care of Eva Major for a period during these years'], confidence: 'probable' }, 
+            title: '[Eva Major]',
+            description: 'Caption: Evea'
+          },
+          { 
+            region: { face: 'p28', x: 14.4, y: 7.9, w: 35.2, h: 45.6 },
+            date: { display: '[1921-1922]', earliest: 1921, latest: 1922, basis: ['Sammy appears to be one or two here'], confidence: 'certain' }, 
+            title: '[Eva sitting on ground playing with a puppy]',
+            description: 'Caption: Playing house'
+          },
+          { 
+            region: { face: 'p28', x: 36.1, y: 53.1, w: 32.2, h: 41.2 },
+            date: { display: '[1924-1925]', earliest: 1924, latest: 1925, basis: ['Jean appears to be 3 or 4 here'], confidence: 'probable' }, 
+            title: '[Sam, Sammy, and Jean McKinstry leaning against a wall with a puppy]',
+            description: 'Caption: Easter'
+          },
+          { 
+            region: { face: 'p29', x: 7.6, y: 10, w: 32.8, h: 35.9 },
+            date: { display: '[1924-1925]', earliest: 1924, latest: 1925, basis: ['Jean appears to be 3 or 4 here'], confidence: 'probable' }, 
+            title: '[Sammy and Jean McKinstry sitting next to a fireplace and a Christmas tree]',
+            description: 'Caption: Christmas'
+          },
+          { 
+            region: { face: 'p29', x: 44.9, y: 8.5, w: 34.9, h: 39.6 },
+            date: { display: '[1924-1925]', earliest: 1924, latest: 1925, basis: ['Jean appears to be 3 or 4 here'], confidence: 'probable' }, 
+            title: '[Christmas scene at the McKinstry home]',
+            description: 'Caption: Christmas'
+          },
+          { 
+            region: { face: 'p29', x: 8.5, y: 52.9, w: 34.1, h: 36.9 },
+            date: { display: '[1924-1925]', earliest: 1924, latest: 1925, basis: ['Jean appears to be 3 or 4 here'], confidence: 'probable' }, 
+            title: '[Sammy and Jean McKinstry sitting next to a fireplace and a Christmas tree]',
+            description: 'Caption: Christmas'
+          },
+          { 
+            region: { face: 'p30', x: 21, y: 4.8, w: 32, h: 39.2 },
+            date: { display: '[1926-1927]', earliest: 1926, latest: 1927, basis: ['Sammy appears to be 8 or 9 here'], confidence: 'probable' }, 
+            title: '[Jim McKinstry driving a mule-driven farm implement with Sammy on the back]',
+            description: 'Caption: Taking a ride'
+          },
+          { 
+            region: { face: 'p30', x: 63.7, y: 6.4, w: 30.3, h: 38.7 },
+            date: { display: '[1928-1929]', earliest: 1928, latest: 1929, basis: ['Jean appears to be 6 or 7 here'], confidence: 'probable' }, 
+            title: '[Sammy and Jean McKinstry riding a horse]',
+            description: 'Caption: Riding Nellie'
+          },
+          { 
+            region: { face: 'p30', x: 61.7, y: 49.3, w: 32.5, h: 41.9 },
+            date: { display: '[1929-1930]', earliest: 1929, latest: 1930, basis: ['Jean appears to be 7 or 8 here'], confidence: 'probable' }, 
+            title: '[Sammy, Jean, and Mildred McKinstry feeding sheep]',
+            description: 'Caption: Feeding sheep'
+          },
+          { 
+            region: { face: 'p31', x: 8.3, y: 14.4, w: 32.8, h: 44.8 },
+            date: { display: '[1929-1930]', earliest: 1929, latest: 1930, basis: ['Jean appears to be 7 or 8 here'], confidence: 'probable' }, 
+            title: '[Sammy, Jean, Peggy, and Mildred McKinstry at the caprock]',
+            description: 'Caption: At the caprock'
+          },
+          { 
+            region: { face: 'p31', x: 48.7, y: 49.5, w: 34.3, h: 40.8 },
+            date: { display: '[1928-1929]', earliest: 1928, latest: 1929, basis: ['Jean appears to be 6 or 7 here'], confidence: 'probable' }, 
+            title: '[Sammy, Jean, Peggy, and Mildred McKinstry posing for a portait on the ground]',
+            description: 'Caption: On display'
+          },
+          { 
+            region: { face: 'p32', x: 14.7, y: 12.1, w: 37.1, h: 41.4 },
+            date: { display: '[1933-1934]', earliest: 1933, latest: 1934, basis: ['Sammy appears to be 13 or 14 here'], confidence: 'probable' }, 
+            title: '[Sammy McKinstry in an ornate dress and wig]',
+            description: ''
+          },
+          { 
+            region: { face: 'p32', x: 67.3, y: 24, w: 26.4, h: 57.1 },
+            date: { display: '[1933-1934]', earliest: 1933, latest: 1934, basis: ['Sammy appears to be 13 or 14 here'], confidence: 'probable' },  
+            title: '[Sammy McKinstry in an ornate dress and wig]',
+            description: ''
+          },
+          { 
+            region: { face: 'p33', x: 7.8, y: 7.4, w: 25.4, h: 49.6 },
+            date: { display: '[1936-1937]', earliest: 1936, latest: 1937, basis: ['Sammy appears to be 16 or 17 here'], confidence: 'probable' },  
+            title: '[Sammy McKinstry standing next to a house]',
+            description: ''
+          },
+          { 
+            region: { face: 'p33', x: 57.3, y: 4.8, w: 24.5, h: 52.2 },
+            date: { display: '[1936-1937]', earliest: 1936, latest: 1937, basis: ['Purely an estimate'], confidence: 'probable' },  
+            title: '[Unidentified classmates of Sammy McKinstry]',
+            description: ''
+          },
+          { 
+            region: { face: 'p35', x: 9.3, y: 13.4, w: 27.8, h: 66.1 },
+            date: { display: '[1936-1937]', earliest: 1936, latest: 1937, basis: ['Purely an estimate'], confidence: 'probable' },  
+            title: '[Unidentified classmates of Sammy McKinstry]',
+            description: ''
+          },
+          { 
+            region: { face: 'p36', x: 18.7, y: 19.5, w: 17.2, h: 34.7 },
+            date: { display: '[1936-1937]', earliest: 1936, latest: 1937, basis: ['Sammy appears to be 16 or 17 here'], confidence: 'probable' },  
+            title: '[Sammy McKinstyr standing next to a tree or bush]',
+            description: ''
+          },
+          { 
+            region: { face: 'p36', x: 46.2, y: 27, w: 14.1, h: 20.3 },
+            date: { display: '[1936-1937]', earliest: 1936, latest: 1937, basis: ['Sammy appears to be 16 or 17 here'], confidence: 'probable' },  
+            title: '[Portrait of Jean McKinstry]',
+            description: ''
+          },
+          { 
+            region: { face: 'p36', x: 71.2, y: 21.2, w: 16.5, h: 33.6 },
+            date: { display: '[1936-1937]', earliest: 1936, latest: 1937, basis: ['Sammy appears to be 16 or 17 here'], confidence: 'probable' },  
+            title: '[Informal photograph of Sammy, Mildred, and Peggy McKinstry]',
+            description: ''
+          },
+          { 
+            region: { face: 'p37', x: 7.8, y: 20.7, w: 17.7, h: 30.9 },
+            date: { display: '[1936-1937]', earliest: 1936, latest: 1937, basis: ['Sammy appears to be 16 or 17 here'], confidence: 'probable' },  
+            title: '[Photograph of Sammy, Jean, and Mildred McKinstry barrel riding]',
+            description: ''
+          },
+          { 
+            region: { face: 'p38', x: 70.8, y: 26.3, w: 25.1, h: 52.1 },
+            date: { display: '[1936-1937]', earliest: 1936, latest: 1937, basis: ['Sammy appears to be 16 or 17 here'], confidence: 'probable' },  
+            title: '[Photograph of Sammy McKinstry and Sara Beth West]',
+            description: ''
+          },
+          { 
+            region: { face: 'p39', x: 14.4, y: 15.8, w: 28.3, h: 66.2 },
+            date: { display: '[1937]', earliest: 1937, latest: 1937, basis: ['Dated around the time of Sammy\'s graduation in 1937'], confidence: 'probable' },  
+            title: '[Photograph of Hagerman High School teachers and administrators]',
+            description: ''
+          },
+          { 
+            region: { face: 'p40', x: 31.2, y: 28.1, w: 43.8, h: 44.9 },
+            date: { display: '[1937]', earliest: 1937, latest: 1937, basis: ['Dated around the time of Sammy\'s graduation in 1937'], confidence: 'probable' },  
+            title: '[Photograph of Sammy McKinstry and her classmates at Hagerman High School]',
+            description: ''
+          },
+          { 
+            region: { face: 'p41', x: 6.2, y: 19.4, w: 26.6, h: 53.6 },
+            date: { display: '[1937]', earliest: 1937, latest: 1937, basis: ['Dated around the time of Sammy\'s graduation in 1937'], confidence: 'probable' },  
+            title: '[Photograph of Sammy McKinstry in a dress round the time of her graduation in 1937]',
+            description: ''
+          },
+          { 
+            region: { face: 'p42', x: 61.6, y: 22.4, w: 27.2, h: 56 },
+            date: { display: '[1937]', earliest: 1937, latest: 1937, basis: ['Dated around the time of Sammy\'s graduation in 1937'], confidence: 'probable' },  
+            title: '[Photograph of Sammy McKinstry in a dress round the time of her graduation in 1937]',
+            description: ''
+          },
+          { 
+            region: { face: 'p43', x: 13.6, y: 19.6, w: 26.1, h: 51.2 },
+            date: { display: '[1924-1925]', earliest: 1924, latest: 1925, basis: ['Sammy appears to be 4 or 5 in this image'], confidence: 'probable' },  
+            title: '[Photograph of Sammy and Jean McKinstry near a pine tree]',
+            description: ''
+          },
+          { 
+            region: { face: 'p43', x: 64.1, y: 23.4, w: 29.3, h: 56.8 },
+            date: { display: '[1937]', earliest: 1937, latest: 1937, basis: ['Dated around the time of Sammy\'s graduation in 1937'], confidence: 'probable' },  
+            title: '[Photograph of Sammy McKinstry with other girls in swimmng attire]',
+            description: ''
+          },
+          { 
+            region: { face: 'p44', x: 19.3, y: 29.4, w: 32.9, h: 40.8 },
+            date: { display: '[1937]', earliest: 1937, latest: 1937, basis: ['Dated around the time of Sammy\'s graduation in 1937'], confidence: 'probable' },  
+            title: '[Photograph of Sammy McKinstry with other girls in in dresses]',
+            description: ''
+          },
+          { 
+            region: { face: 'p44', x: 63.7, y: 22.3, w: 26.7, h: 54.3 },
+            date: { display: '[1937]', earliest: 1937, latest: 1937, basis: ['Dated around the time of Sammy\'s graduation in 1937'], confidence: 'probable' },  
+            title: '[Photograph of Sammy McKinstry with other girls sitting on the back of a car]',
+            description: ''
+          },
+          { 
+            region: { face: 'p45', x: 47.3, y: 10.2, w: 36.1, h: 40.3 },
+            date: { display: '[1937]', earliest: 1937, latest: 1937, basis: ['Dated around the time of Sammy\'s graduation in 1937'], confidence: 'probable' },  
+            title: '[Photograph of Sammy and Jean McKinstry standing near a bridge]',
+            description: ''
+          },
+          { 
+            region: { face: 'p45', x: 9.5, y: 44.5, w: 35.4, h: 39.4 },
+            date: { display: '[1937]', earliest: 1937, latest: 1937, basis: ['Dated around the time of Sammy\'s graduation in 1937'], confidence: 'probable' },  
+            title: '[Photograph of Sammy McKinstry standing near a bridge]',
+            description: ''
+          },
+          { 
+            region: { face: 'p46', x: 32.2, y: 22.1, w: 38.2, h: 50.4 },
+            date: { display: '[1925-1930]', earliest: 1925, latest: 1930, basis: ['Purely an estimate'], confidence: 'probable' },  
+            title: '[Undated photograph of an unknown woman standing outside a church]',
+            description: ''
+          },
+          { 
+            region: { face: 'p48', x: 12.1, y: 12.8, w: 74.4, h: 68.2 },
+            date: { display: '[1929-1930]', earliest: 1929, latest: 1930, basis: ['Sammy would have been in 4th grade in 1929 and 1930'], confidence: 'probable' },  
+            title: '[4th grade class of Sammy McKinstry]',
+            description: 'Caption: 4th grade'
+          },
       ],
       depicts: [
         { 
@@ -7996,6 +8254,247 @@ export const COLLECTION: Collection = {
           person: 'swann-austin', confidence: 'certain',
           region: { face: 'p20', x: 70.2, y: 58.7, w: 2.9, h: 5 },
         },
+        { 
+          person: 'west-eva-swann-powell', confidence: 'certain',
+          region: { face: 'p21', x: 70.3, y: 65.5, w: 0.9, h: 1.7 },
+        },
+        { 
+          person: 'mckinstry-minnie-swann', confidence: 'certain',
+          region: { face: 'p21', x: 69, y: 64.4, w: 0.9, h: 1.8 },
+        },
+        { 
+          person: 'mckinstry-loveta-swann', confidence: 'certain',
+          region: { face: 'p21', x: 66.6, y: 64.7, w: 0.9, h: 1.9 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p21', x: 69, y: 69.9, w: 0.7, h: 1.5 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p22', x: 42.7, y: 30.3, w: 5.9, h: 10.6 },
+        },
+        { 
+          person: 'mckinstry-samuel-small', confidence: 'certain',
+          region: { face: 'p22', x: 82.3, y: 39.2, w: 6.2, h: 9.8 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p22', x: 76.1, y: 41.7, w: 4.1, h: 7.6 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p24', x: 30.5, y: 14.7, w: 4, h: 7.6 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p24', x: 71.8, y: 16.1, w: 3.2, h: 6.3 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p24', x: 30.3, y: 63, w: 4.2, h: 7.7 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p24', x: 74.3, y: 60.7, w: 3.3, h: 5.4 },
+        },
+        { 
+          person: 'smith-peggy-mckinstry', confidence: 'certain',
+          region: { face: 'p26', x: 80.4, y: 54.1, w: 4, h: 6.9 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p28', x: 26.3, y: 14.9, w: 4.5, h: 7 },
+        },
+        { 
+          person: 'mckinstry-samuel-small', confidence: 'certain',
+          region: { face: 'p28', x: 52.5, y: 57.7, w: 2.6, h: 4.3 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p28', x: 56.2, y: 65.5, w: 1.8, h: 3.9 },
+        },
+        { 
+          person: 'allison-veta-jean-mckinstry', confidence: 'certain',
+          region: { face: 'p28', x: 46.1, y: 68.1, w: 1.9, h: 4.2 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p29', x: 21.6, y: 25.3, w: 1.7, h: 3.3 },
+        },
+        { 
+          person: 'allison-veta-jean-mckinstry', confidence: 'certain',
+          region: { face: 'p29', x: 18.9, y: 25.8, w: 2.1, h: 3.8 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p29', x: 23.7, y: 66.6, w: 1.6, h: 3.3 },
+        },
+        { 
+          person: 'allison-veta-jean-mckinstry', confidence: 'certain',
+          region: { face: 'p29', x: 20.7, y: 66.9, w: 1.9, h: 3.3 },
+        },
+        { 
+          person: 'mckinstry-james-daubin', confidence: 'certain',
+          region: { face: 'p30', x: 28, y: 14.4, w: 1.5, h: 2.2 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p30', x: 27.1, y: 19.2, w: 0.8, h: 1.5 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p30', x: 77.9, y: 16.1, w: 1.5, h: 2.9 },
+        },
+        { 
+          person: 'allison-veta-jean-mckinstry', confidence: 'certain',
+          region: { face: 'p30', x: 79.4, y: 16.9, w: 1.3, h: 2.5 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p30', x: 73, y: 55.3, w: 2.4, h: 4.1 },
+        },
+        { 
+          person: 'allison-veta-jean-mckinstry', confidence: 'certain',
+          region: { face: 'p30', x: 72.5, y: 57.9, w: 2.4, h: 4.7 },
+        },
+        { 
+          person: 'osborn-mildred-adeline-mckinstry', confidence: 'certain',
+          region: { face: 'p30', x: 79.9, y: 65.4, w: 1.3, h: 2.8 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p31', x: 17.3, y: 19.8, w: 1.9, h: 3.2 },
+        },
+        { 
+          person: 'allison-veta-jean-mckinstry', confidence: 'certain',
+          region: { face: 'p31', x: 26.5, y: 19.4, w: 2.5, h: 4.6 },
+        },
+        { 
+          person: 'osborn-mildred-adeline-mckinstry', confidence: 'certain',
+          region: { face: 'p31', x: 24.1, y: 31.2, w: 2.8, h: 5.3 },
+        },
+        { 
+          person: 'smith-peggy-mckinstry', confidence: 'certain',
+          region: { face: 'p31', x: 31.8, y: 21.2, w: 2.7, h: 5 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p31', x: 60.6, y: 57.2, w: 2.4, h: 4.8 },
+        },
+        { 
+          person: 'allison-veta-jean-mckinstry', confidence: 'certain',
+          region: { face: 'p31', x: 69.7, y: 58.2, w: 2.2, h: 4.5 },
+        },
+        { 
+          person: 'osborn-mildred-adeline-mckinstry', confidence: 'certain',
+          region: { face: 'p31', x: 63.3, y: 61.4, w: 2.4, h: 4.3 },
+        },
+        { 
+          person: 'smith-peggy-mckinstry', confidence: 'certain',
+          region: { face: 'p31', x: 65.7, y: 60.1, w: 2.2, h: 4.2 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p32', x: 32.3, y: 19.2, w: 3.3, h: 5 },
+        },
+        { 
+          person: 'allison-veta-jean-mckinstry', confidence: 'certain',
+          region: { face: 'p32', x: 40.7, y: 30.4, w: 2.5, h: 5.5 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p32', x: 78.2, y: 40.2, w: 3.5, h: 6 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p33', x: 18.2, y: 28.7, w: 1.5, h: 2.8 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p36', x: 27, y: 31.3, w: 3.4, h: 6.5 },
+        },
+        { 
+          person: 'allison-veta-jean-mckinstry', confidence: 'certain',
+          region: { face: 'p36', x: 49.9, y: 29.3, w: 6.8, h: 13.2 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p36', x: 77.9, y: 28.7, w: 2.2, h: 4 },
+        },
+        { 
+          person: 'osborn-mildred-adeline-mckinstry', confidence: 'certain',
+          region: { face: 'p36', x: 75.8, y: 32.5, w: 2.2, h: 4.3 },
+        },
+        { 
+          person: 'smith-peggy-mckinstry', confidence: 'certain',
+          region: { face: 'p36', x: 79.5, y: 33.6, w: 2.1, h: 3.6 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p37', x: 14.4, y: 32.6, w: 1.5, h: 2.5 },
+        },
+        { 
+          person: 'allison-veta-jean-mckinstry', confidence: 'certain',
+          region: { face: 'p37', x: 16.2, y: 32.1, w: 1.3, h: 2.3 },
+        },
+        { 
+          person: 'osborn-mildred-adeline-mckinstry', confidence: 'certain',
+          region: { face: 'p37', x: 17, y: 34.4, w: 1.2, h: 2.4 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p38', x: 87.3, y: 43.2, w: 3.9, h: 7.5 },
+        },
+        { 
+          person: 'wakeman-sara-beth-west', confidence: 'certain',
+          region: { face: 'p38', x: 83.2, y: 42.8, w: 3.8, h: 6.7 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p40', x: 58.2, y: 52.7, w: 2.2, h: 4.3 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p41', x: 17.2, y: 26.7, w: 4.9, h: 7.8 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p42', x: 72, y: 30.7, w: 4.2, h: 6.8 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p43', x: 24.7, y: 39.6, w: 1.6, h: 3 },
+        },
+        { 
+          person: 'allison-veta-jean-mckinstry', confidence: 'certain',
+          region: { face: 'p43', x: 21.8, y: 42, w: 1.3, h: 2.5 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p43', x: 78, y: 43.4, w: 2, h: 4.1 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p44', x: 70.8, y: 42.9, w: 2.7, h: 4.8 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p45', x: 67.7, y: 24.9, w: 1.3, h: 2.3 },
+        },
+        { 
+          person: 'allison-veta-jean-mckinstry', confidence: 'certain',
+          region: { face: 'p45', x: 65.6, y: 24.6, w: 1.4, h: 2.5 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p45', x: 24.1, y: 60.1, w: 1.5, h: 2.3 },
+        },
+        { 
+          person: 'allison-sammy-nan-mckinstry', confidence: 'certain',
+          region: { face: 'p48', x: 46.8, y: 40.7, w: 4.2, h: 6.8 },
+        },
+
       ],
 
       description:

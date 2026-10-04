@@ -169,11 +169,63 @@ Signed W.M.
 ## 14  (page-014.jpg)
 
 ## 15  (page-015.jpg)
+Midway Grange No.1351
 
+Feb. 2nd, 1884
+
+Graange convened today with the W.O. acting
+W.M. Pro. Tem. S.F. Shipp appointed W.O. Pro. Tem.
+N.A. Swann appointed A.S. Pro. Tem. and Mrs. N.C.
+Swann L.A.S. Pro. Tem. All present found correct
+on examination and Grange pronounced open
+in ample order. On motion it was decided to
+make it a law of the grange rejecting a candidate
+if he failed, for two successive meetings after his ap-
+plication, to make his appearance for admission
+and his money refunded. Provided he can not give
+a legal excuse. Our W. Ch. appointed to inform
+Mr. Abbott of this decision. On
+motion our Worth Ch. was added to the 
+committee appointed to construct bylaws for
+the Grange. On motion it was decided to ac-
+cept a trunk bought for the use of the Grange.
+A balance of 80 cents due S.F. Shipp for trunk.
+Minutes of last meeting were called 
+for, read, and approved. No other business
+being on hand the meeting was duly closed.
+
+N.A. Swann
+Secr'try
+
+Signed W.M.
 ## 16  (page-016.jpg)
 
 ## 17  (page-017.jpg)
+Midway Grange No.1351
 
+March 1st, 1884
+
+Grange opened today in the usual
+form and all found in order. 
+
+On motion it was decided that a 
+clause in a former minute referring to
+the balloting for Mr. Abbott was null
+and void. Suggestions for the good of the
+order were given by our Worthy Chp. and by
+the Worthy M. and among other things said that
+the success of the members, at least, much
+more could be accomplished by all metting promp-
+tly and acting together than by some staying away
+and waiting for the rest to act. No one could ex-
+pect to profit much by the order without taking
+an interest in it. But few members present, and 
+but little business on hand, and the meeting 
+them closed in due form.
+
+N.A. Swann, Sec.
+
+Signed, W.M.
 ## 18  (page-018.jpg)
 
 ## 19  (page-019.jpg)

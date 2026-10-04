@@ -398,6 +398,74 @@
       }
     }
   },
+  "allison-family/allison-harold-ollie-mae-grizzle-mildred-mckinstry-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-ollie-mae-grizzle-mildred-mckinstry-recto-d2cf610cd9",
+    "width": 3926,
+    "height": 6155,
+    "sizes": [
+      {
+        "width": 246,
+        "height": 385
+      },
+      {
+        "width": 340,
+        "height": 533
+      },
+      {
+        "width": 680,
+        "height": 1066
+      },
+      {
+        "width": 800,
+        "height": 1254
+      },
+      {
+        "width": 1200,
+        "height": 1881
+      },
+      {
+        "width": 1658,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2979
+      },
+      {
+        "width": 3189,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1658,
+      "study": 3189
+    },
+    "hash": "d2cf610cd94de6f00d609c0acc2b7aa34e379bae01dda2acfd75356ddd303b80",
+    "download": {
+      "full": {
+        "file": "allison-harold-ollie-mae-grizzle-mildred-mckinstry-recto.jpg",
+        "width": 3926,
+        "height": 6155,
+        "bytes": 2111963
+      },
+      "share": {
+        "file": "allison-harold-ollie-mae-grizzle-mildred-mckinstry-recto-2600px.jpg",
+        "width": 1658,
+        "height": 2600,
+        "bytes": 489099
+      }
+    }
+  },
   "allison-family/allison-harold-oscar-kenneth-precure-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-oscar-kenneth-precure-recto-c8d0da4b80",
@@ -531,6 +599,74 @@
         "width": 2600,
         "height": 2100,
         "bytes": 396158
+      }
+    }
+  },
+  "allison-family/allison-harold-walking-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-walking-recto-5f59b3114f",
+    "width": 4330,
+    "height": 6751,
+    "sizes": [
+      {
+        "width": 271,
+        "height": 422
+      },
+      {
+        "width": 340,
+        "height": 530
+      },
+      {
+        "width": 680,
+        "height": 1060
+      },
+      {
+        "width": 800,
+        "height": 1247
+      },
+      {
+        "width": 1200,
+        "height": 1871
+      },
+      {
+        "width": 1668,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 2962
+      },
+      {
+        "width": 3207,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1668,
+      "study": 3207
+    },
+    "hash": "5f59b3114f665dbe14f9ffb96d89b0b28dfc56a07ce8236e073593fc86aa5022",
+    "download": {
+      "full": {
+        "file": "allison-harold-walking-recto.jpg",
+        "width": 4330,
+        "height": 6751,
+        "bytes": 3132122
+      },
+      "share": {
+        "file": "allison-harold-walking-recto-2600px.jpg",
+        "width": 1668,
+        "height": 2600,
+        "bytes": 554695
       }
     }
   },
@@ -726,6 +862,142 @@
         "width": 1930,
         "height": 2600,
         "bytes": 396400
+      }
+    }
+  },
+  "allison-family/allison-oscar-ingle-mary-grizzle-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-ingle-mary-grizzle-recto-2ca8477792",
+    "width": 4319,
+    "height": 5792,
+    "sizes": [
+      {
+        "width": 270,
+        "height": 362
+      },
+      {
+        "width": 340,
+        "height": 456
+      },
+      {
+        "width": 680,
+        "height": 912
+      },
+      {
+        "width": 800,
+        "height": 1073
+      },
+      {
+        "width": 1200,
+        "height": 1609
+      },
+      {
+        "width": 1900,
+        "height": 2548
+      },
+      {
+        "width": 1939,
+        "height": 2600
+      },
+      {
+        "width": 3728,
+        "height": 4999
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1939,
+      "study": 3728
+    },
+    "hash": "2ca847779201b7c80a71ab51c4cbeae5cd99a4215a75f94320dd1dc4a6d4c07e",
+    "download": {
+      "full": {
+        "file": "allison-oscar-ingle-mary-grizzle-recto.jpg",
+        "width": 4319,
+        "height": 5792,
+        "bytes": 2244317
+      },
+      "share": {
+        "file": "allison-oscar-ingle-mary-grizzle-recto-2600px.jpg",
+        "width": 1939,
+        "height": 2600,
+        "bytes": 574559
+      }
+    }
+  },
+  "allison-family/allison-oscar-ingle-ollie-grizzle-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-ingle-ollie-grizzle-recto-f7a614aad3",
+    "width": 3670,
+    "height": 4944,
+    "sizes": [
+      {
+        "width": 230,
+        "height": 309
+      },
+      {
+        "width": 340,
+        "height": 458
+      },
+      {
+        "width": 680,
+        "height": 916
+      },
+      {
+        "width": 800,
+        "height": 1078
+      },
+      {
+        "width": 1200,
+        "height": 1617
+      },
+      {
+        "width": 1900,
+        "height": 2560
+      },
+      {
+        "width": 1930,
+        "height": 2600
+      },
+      {
+        "width": 3670,
+        "height": 4944
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1930,
+      "study": 3670
+    },
+    "hash": "f7a614aad38777b5c84fd9eda5e6da34585d831361ee5ee8cafd86825a6352c9",
+    "download": {
+      "full": {
+        "file": "allison-oscar-ingle-ollie-grizzle-recto.jpg",
+        "width": 3670,
+        "height": 4944,
+        "bytes": 2224690
+      },
+      "share": {
+        "file": "allison-oscar-ingle-ollie-grizzle-recto-2600px.jpg",
+        "width": 1930,
+        "height": 2600,
+        "bytes": 769220
       }
     }
   },
@@ -980,6 +1252,74 @@
         "width": 2600,
         "height": 978,
         "bytes": 308556
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-car-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-car-recto-c1ddf27527",
+    "width": 5612,
+    "height": 3819,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 231
+      },
+      {
+        "width": 351,
+        "height": 239
+      },
+      {
+        "width": 680,
+        "height": 463
+      },
+      {
+        "width": 800,
+        "height": 544
+      },
+      {
+        "width": 1200,
+        "height": 817
+      },
+      {
+        "width": 1900,
+        "height": 1293
+      },
+      {
+        "width": 2600,
+        "height": 1769
+      },
+      {
+        "width": 5000,
+        "height": 3403
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "c1ddf275276b5ed5db84de50d0d4b2dc18e6e1460994d6b89ab5a63515e16d0b",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-car-recto.jpg",
+        "width": 5612,
+        "height": 3819,
+        "bytes": 2308648
+      },
+      "share": {
+        "file": "grizzle-wiley-car-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1769,
+        "bytes": 625771
       }
     }
   },
@@ -13308,7 +13648,7 @@
   },
   "mckinstry-family/mckinstry-album/page-025.jpg": {
     "v": 2,
-    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-025-ff0eeb77ea",
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-album/page-025-7629e16751",
     "width": 14014,
     "height": 8886,
     "sizes": [
@@ -13358,19 +13698,19 @@
       "detail": 2600,
       "study": 5000
     },
-    "hash": "ff0eeb77eaed42aa4d0f9718663fc3e64d29a08e9465b2a2bf521f290d71512c",
+    "hash": "7629e16751a196d0799889196439f777f4fd596700ea007ef298a3a984921e1f",
     "download": {
       "full": {
         "file": "page-025.jpg",
         "width": 14014,
         "height": 8886,
-        "bytes": 16354274
+        "bytes": 17196725
       },
       "share": {
         "file": "page-025-2600px.jpg",
         "width": 2600,
         "height": 1649,
-        "bytes": 532263
+        "bytes": 482516
       }
     }
   },

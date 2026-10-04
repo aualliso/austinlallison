@@ -702,5 +702,201 @@ export const COLLECTION: Collection = {
         },
       ],
     },
+    {
+      slug: 'allison-oscar-ingle-ollie-grizzle',
+      title: '[Oscar Allison hugging his mother, Ollie Grizzle]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'e.1.2',
+      date: {
+        display: '[1945-1946]',
+        earliest: 1945,
+        latest: 1946,
+        basis: ['Although not certain, this appears t be taken after Oscar returned from the prisoner of war camp.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-oscar-ingle-ollie-grizzle-recto.jpg',
+      },
+      description:
+        'This is a photograph of Oscar Ingle Allison hugging his mother, Ollie Grizzle. This may have been taken shortly after Oscar returned from being a prisoner of war in Europe during World War II.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 50.5, y: 29.4, w: 8, h: 7.9 },
+        },
+        {
+          person: 'grizzle-ollie-blanche-ingle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 42.1, y: 31.5, w: 7.9, h: 7.3 },
+        },
+      ],
+    },
+    {
+      slug: 'grizzle-wiley-car',
+      title: '[Wiley Grizzle working on a Buick car]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'e.1.3',
+      date: {
+        display: '[1943]',
+        earliest: 1943,
+        latest: 1943,
+        basis: ['This photograph appears to be from the same morning Oscar left for deployment in 1943'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-wiley-car-recto.jpg',
+      },
+      description:
+        'This photograph depicts Wiley Grizzle working on a Buick car.',
+      inscriptions: [
+        {
+          location: 'recto',
+          medium: 'ink',
+          text: 'Daddy working on the Buick. Kitty had been helping him. I\'ll send you a better one when I get some more made. I sent it to Jr.'
+        }
+      ],
+      depicts: [
+        {
+          person: 'grizzle-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 44.5, y: 7.8, w: 4.7, h: 7.9 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-oscar-ingle-mary-grizzle',
+      title: '[Oscar Ingle Allison and sister Mary Grizzle]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'e.1.4',
+      date: {
+        display: '[1943]',
+        earliest: 1943,
+        latest: 1943,
+        basis: ['This photograph appears to be from the same morning Oscar left for deployment in 1943'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-oscar-ingle-mary-grizzle-recto.jpg',
+      },
+      description:
+        'This photograph depicts Oscar Allison and Mary Grizzle standing next to a car.',
+      inscriptions: [
+        {
+          location: 'recto',
+          medium: 'ink',
+          text: 'The morning he left.'
+        }
+      ],
+      depicts: [
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 30.8, y: 20.7, w: 14.9, h: 15.3 },
+        },
+        {
+          person: 'andreas-mary-lorene-grizzle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 52.2, y: 27.3, w: 14.9, h: 12.7 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-ollie-mae-grizzle-mildred-mckinstry',
+      title: '[Harold Allison, Ollie Mae Grizzle, and Mildred McKinstry in San Antonio]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'San Antonio, Texas',
+      controlNumber: 'e.1.5',
+      date: {
+        display: '[1945]',
+        earliest: 1945,
+        latest: 1945,
+        basis: ['This photograph appears to be from the period when Harold was in San Antonio in 1945.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-ollie-mae-grizzle-mildred-mckinstry-recto.jpg',
+      },
+      description:
+        'This photograph depicts Harold Allison, Ollie Mae Grizzle, and Mildred McKinstry walking along a street in San Antonio.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 22.3, y: 47.5, w: 5.7, h: 4.3 },
+        },
+        {
+          person: 'didlake-ollie-mae-grizzle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 36.7, y: 46.4, w: 6.2, h: 4.3 },
+        },
+        {
+          person: 'osborn-mildred-adeline-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 49.7, y: 46.8, w: 6.1, h: 4.2 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-walking',
+      title: '[Harold Allison walking along a street]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'San Antonio, Texas',
+      controlNumber: 'e.1.6',
+      date: {
+        display: '[1945]',
+        earliest: 1945,
+        latest: 1945,
+        basis: ['This photograph appears to be from the period when Harold was in San Antonio in 1945. Similar to another photo in this series.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-walking-recto.jpg',
+      },
+      description:
+        'This photograph depicts Harold Allison walking along a street.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 52.2, y: 7.9, w: 17.8, h: 14.4 },
+        },
+      ],
+    },
   ]
 }

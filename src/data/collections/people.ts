@@ -2182,6 +2182,10 @@ export const PEOPLE: Person[] = [
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'grizzle-wiley-jr', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'didlake-ollie-mae-grizzle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'andreas-mary-lorene-grizzle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'grizzle-james', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -2292,6 +2296,10 @@ export const PEOPLE: Person[] = [
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'grizzle-wiley-jr', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'didlake-ollie-mae-grizzle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'andreas-mary-lorene-grizzle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'grizzle-james', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -2316,6 +2324,10 @@ export const PEOPLE: Person[] = [
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'grizzle-wiley-jr', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'didlake-ollie-mae-grizzle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'andreas-mary-lorene-grizzle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'grizzle-james', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -2340,6 +2352,81 @@ export const PEOPLE: Person[] = [
       { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'didlake-ollie-mae-grizzle',
+    authorized: 'Didlake, Ollie Mae Grizzle',
+    surname: 'Didlake',
+    given: 'Ollie Mae',
+    birth: '1926',
+    death: '2014',
+    variants: ['Grizzle, Ollie Mae', 'Ollie Mae Grizzle', 'Ollie Mae Didlake'],
+    status: 'established',
+    scopeNote:
+      '',
+    sources: [
+      'Family Search ID: LXFR-KX1.',
+    ],
+    relations: [
+      { type: 'parent', person: 'grizzle-wiley', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'grizzle-wiley-jr', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'andreas-mary-lorene-grizzle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'grizzle-james', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'andreas-mary-lorene-grizzle',
+    authorized: 'Andreas, Mary Lorene Grizzle',
+    surname: 'Andreas',
+    given: 'Mary Lorene Grizzle',
+    birth: '1928',
+    death: '2011',
+    variants: ['Grizzle, Mary', 'Mary Grizzle', 'Mary Andreas'],
+    status: 'established',
+    scopeNote:
+      '',
+    sources: [
+      'Family Search ID: L87Z-ZDR.',
+    ],
+    relations: [
+      { type: 'parent', person: 'grizzle-wiley', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'grizzle-wiley-jr', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'didlake-ollie-mae-grizzle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'grizzle-james', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'grizzle-james',
+    authorized: 'Grizzle, James',
+    surname: 'Grizzle',
+    given: 'James',
+    birth: '1929',
+    death: '2012',
+    variants: ['Grizzle, James', 'Jim Grizzle', 'James Grizzle'],
+    status: 'established',
+    scopeNote:
+      '',
+    sources: [
+      'Family Search ID: LJPD-MN5.',
+    ],
+    relations: [
+      { type: 'parent', person: 'grizzle-wiley', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'grizzle-wiley-jr', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'didlake-ollie-mae-grizzle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'andreas-mary-lorene-grizzle', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
 ];

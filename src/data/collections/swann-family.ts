@@ -2297,7 +2297,7 @@ export const COLLECTION: Collection = {
         },
         {
           person: 'mckinstry-james-daubin',  // an id in people.ts. Build throws if unknown.
-          confidence: 'certain',  // REQUIRED on every depiction
+          confidence: 'probable',  // REQUIRED on every depiction
           basis: 'Austin Swann is identified on the verso.',
           region: { face: 'recto', x: 18.5, y: 10, w: 24.1, h: 79.8 },
         },
