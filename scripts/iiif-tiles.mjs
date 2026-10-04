@@ -20,6 +20,15 @@
 //     These mirror the rules images.ts used to apply with getImage(): never
 //     upscale, and skip the study rung unless it is 1.3x the detail rung.
 //   - an info.json whose `sizes` lists every pre-made full image
+//   - DOWNLOADS, under download/: the whole scan as one JPEG, and a smaller
+//     sharing copy when the scan is big enough for the difference to matter.
+//     These are uploaded with Content-Disposition: attachment. The site and
+//     the image host are different origins, and a browser ignores a link's
+//     `download` attribute across origins - without that header the link
+//     would open the picture in a tab instead of saving it.
+//
+// A scan that was tiled before downloads existed is NOT re-tiled: the next
+// run cuts and uploads its downloads only, and adds them to its entry.
 //
 // The chosen rungs are written into iiif-images.json, so images.ts reads them
 // rather than recomputing them - one place decides, the other obeys.
@@ -32,7 +41,10 @@
 // also why uploads can be marked immutable.
 //
 // Output is sRGB JPEG with ALL metadata stripped (sharp's default), so GPS and
-// camera EXIF never reach the web.
+// camera EXIF never reach the web. The downloads are re-encoded for the same
+// reason - the scan's own bytes are never uploaded - and carry one line of
+// EXIF written here, DOWNLOAD_NOTE, so a copy that leaves the site still says
+// where it came from.
 
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
@@ -40,7 +52,7 @@ import {
   existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync,
 } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { dirname, extname, join, relative, sep } from 'node:path';
+import { basename, dirname, extname, join, relative, sep } from 'node:path';
 import sharp from 'sharp';
 import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 
@@ -58,6 +70,17 @@ const STUDY_MIN_GAIN = 1.3;
 // WebP quality per rung, as images.ts had it: the study rung holds at 80
 // because compression in a pencil stroke is exactly what it exists to avoid.
 const WEBP_QUALITY = { index: 82, view: 80, detail: 82, study: 80 };
+// Downloads. The full copy is the scan at its own size; the sharing copy is
+// DETAIL_LONG on its long edge, and is skipped unless the scan is at least
+// SHARE_MIN_GAIN times that - two files of nearly the same size are one file.
+const DOWNLOAD_DIR = 'download';
+const DOWNLOAD_QUALITY = 90;
+const SHARE_QUALITY = 88;
+const SHARE_LONG = DETAIL_LONG;
+const SHARE_MIN_GAIN = 1.3;
+// Written into each download's EXIF ImageDescription, followed by the scan's
+// path. Plain ASCII: EXIF text fields are not reliably anything else.
+const DOWNLOAD_NOTE = 'From the family collections at austinlallison.com/collections';
 const UPLOAD_CONCURRENCY = 16;
 const SOURCE_EXTS = new Set(['.jpg', '.jpeg', '.png', '.tif', '.tiff']);
 
@@ -123,10 +146,22 @@ function addressFor(rel, hash) {
   return {
     prefix: ['iiif', '3', ...parts.map(slugPart)].join('/'),
     name: `${stem}-${hash.slice(0, 10)}`,
+    stem,
   };
 }
 
+// The oriented, flattened, sRGB pipeline every output is cut from.
+// rotate() honours camera orientation; flatten() is a no-op without alpha.
+const pipelineFor = (src) =>
+  sharp(src, { limitInputPixels: false })
+    .rotate()
+    .flatten({ background: '#ffffff' })
+    .toColourspace('srgb');
+
 const CONTENT_TYPES = { '.jpg': 'image/jpeg', '.webp': 'image/webp', '.json': 'application/json' };
+
+// Anything under download/ is saved, not shown: see the header.
+const isDownload = (key) => key.split('/').at(-2) === DOWNLOAD_DIR;
 
 async function upload(key, file) {
   for (let attempt = 1; ; attempt++) {
@@ -137,6 +172,9 @@ async function upload(key, file) {
         Body: readFileSync(file),
         ContentType: CONTENT_TYPES[extname(file)] ?? 'application/octet-stream',
         CacheControl: 'public, max-age=31536000, immutable',
+        ...(isDownload(key)
+          ? { ContentDisposition: `attachment; filename="${basename(key)}"` }
+          : {}),
       }));
       return;
     } catch (err) {
@@ -162,20 +200,68 @@ function saveManifest(manifest) {
   writeFileSync(MANIFEST_PATH, JSON.stringify(sorted, null, 2) + '\n');
 }
 
+// ── Downloads ─────────────────────────────────────────────────────────────
+// Cuts the download files for one scan into <root>/download and returns what
+// goes in the manifest. File names are the scan's own name, so what lands in
+// someone's Downloads folder says what it is.
+async function cutDownloads(base, root, rel, stem, W, H) {
+  const dir = join(root, DOWNLOAD_DIR);
+  mkdirSync(dir, { recursive: true });
+
+  const stamp = (img) =>
+    typeof img.withExif === 'function'
+      ? img.withExif({ IFD0: { ImageDescription: `${DOWNLOAD_NOTE}. File: ${rel}` } })
+      : img; // an older sharp: the copy is simply unmarked
+
+  const write = async (img, file, quality, width, height) => {
+    const out = await stamp(img).jpeg({ quality }).toFile(join(dir, file));
+    return { file, width, height, bytes: out.size };
+  };
+
+  const full = await write(base.clone(), `${stem}.jpg`, DOWNLOAD_QUALITY, W, H);
+
+  const longEdge = Math.max(W, H);
+  let share = null;
+  if (longEdge >= SHARE_LONG * SHARE_MIN_GAIN) {
+    const w = Math.max(1, Math.round((W * SHARE_LONG) / longEdge));
+    const h = Math.max(1, Math.round((H * SHARE_LONG) / longEdge));
+    share = await write(
+      base.clone().resize(w, h, { fit: 'fill' }),
+      `${stem}-${SHARE_LONG}px.jpg`, SHARE_QUALITY, w, h,
+    );
+  }
+  return { full, share };
+}
+
+// A scan tiled before downloads existed: cut and upload those alone.
+async function addDownloads(src, rel, hash, entry) {
+  const { prefix, name, stem } = addressFor(rel, hash);
+  const work = join(tmpdir(), `iiif-${process.pid}-${hash.slice(0, 10)}-dl`);
+  rmSync(work, { recursive: true, force: true });
+  mkdirSync(work, { recursive: true });
+  try {
+    const download = await cutDownloads(pipelineFor(src), work, rel, stem, entry.width, entry.height);
+    const files = walk(work);
+    if (!DRY) {
+      await pool(files, UPLOAD_CONCURRENCY, (f) =>
+        upload(`${prefix}/${name}/${toPosix(relative(work, f))}`, f));
+    }
+    return download;
+  } finally {
+    rmSync(work, { recursive: true, force: true });
+  }
+}
+
 // ── One face ──────────────────────────────────────────────────────────────
 async function processImage(src, rel, hash) {
-  const { prefix, name } = addressFor(rel, hash);
+  const { prefix, name, stem } = addressFor(rel, hash);
   const serviceId = `${IIIF_BASE}/${prefix}/${name}`;
   const work = join(tmpdir(), `iiif-${process.pid}-${hash.slice(0, 10)}`);
   rmSync(work, { recursive: true, force: true });
   mkdirSync(work, { recursive: true });
 
   try {
-    // rotate() honours camera orientation; flatten() is a no-op without alpha.
-    const base = sharp(src, { limitInputPixels: false })
-      .rotate()
-      .flatten({ background: '#ffffff' })
-      .toColourspace('srgb');
+    const base = pipelineFor(src);
 
     // Tiles at every zoom level, up to full resolution.
     await base.clone()
@@ -242,6 +328,9 @@ async function processImage(src, rel, hash) {
     });
     writeFileSync(infoPath, JSON.stringify(info, null, 2));
 
+    // After `sizes` is read, so the downloads are not listed as IIIF sizes.
+    const download = await cutDownloads(base, root, rel, stem, W, H);
+
     const files = walk(root);
     if (!DRY) {
       await pool(files, UPLOAD_CONCURRENCY, (f) =>
@@ -249,7 +338,7 @@ async function processImage(src, rel, hash) {
     }
 
     return {
-      entry: { v: VERSION, id: serviceId, width: W, height: H, sizes, rungs, hash },
+      entry: { v: VERSION, id: serviceId, width: W, height: H, sizes, rungs, hash, download },
       files: files.length,
     };
   } finally {
@@ -267,7 +356,7 @@ const sources = all.filter((p) => !ONLY || toPosix(relative(SCANS_DIR, p)).inclu
 
 console.log(`${sources.length} scan(s) in ${SCANS_DIR}${DRY ? '  (dry run: nothing uploaded)' : ''}`);
 
-let done = 0, skipped = 0, failed = 0, tiles = 0;
+let done = 0, skipped = 0, failed = 0, tiles = 0, topped = 0;
 const started = Date.now();
 
 for (const src of sources) {
@@ -275,7 +364,26 @@ for (const src of sources) {
   const hash = createHash('sha256').update(readFileSync(src)).digest('hex');
 
   if (!FORCE && manifest[rel]?.hash === hash && manifest[rel]?.v === VERSION) {
-    skipped++;
+    if (manifest[rel].download) {
+      skipped++;
+      continue;
+    }
+    // Tiled already, but from before downloads: add those and nothing else.
+    const t0 = Date.now();
+    try {
+      const download = await addDownloads(src, rel, hash, manifest[rel]);
+      topped++;
+      if (!DRY) {
+        manifest[rel].download = download;
+        saveManifest(manifest);
+      }
+      const secs = ((Date.now() - t0) / 1000).toFixed(1);
+      const mb = (download.full.bytes / 1e6).toFixed(1);
+      console.log(`+ ${rel}  downloads added  ${mb} MB${download.share ? ' + sharing copy' : ''}  ${secs}s`);
+    } catch (err) {
+      failed++;
+      console.error(`✗ ${rel}: ${err.message}`);
+    }
     continue;
   }
 
@@ -308,7 +416,7 @@ if (!ONLY) {
 }
 
 const mins = ((Date.now() - started) / 60000).toFixed(1);
-console.log(`\n${done} processed, ${skipped} unchanged, ${failed} failed, ${tiles} files, ${mins} min`);
+console.log(`\n${done} processed, ${topped} given downloads, ${skipped} unchanged, ${failed} failed, ${tiles} files, ${mins} min`);
 
 // Face crops are cut from these same scans, so any face on a scan processed
 // above is now stale. Recut them while the scans are at hand. The child

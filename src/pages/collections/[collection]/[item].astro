@@ -61,6 +61,15 @@
 // In ?regions, Alt+drag (or Ctrl+drag) copies a box as a `prints` line, and
 // the lines for one page collect on the clipboard until the page is turned.
 //
+// DOWNLOADS (2026-10). Where the tiling script has made them, a view can be
+// saved: a sharing copy and the full scan, listed under "Download" in the
+// record and in Examine's More menu, both following the view that is showing.
+// The files are on the image host, a different origin, where a link's
+// `download` attribute is ignored - they save because the script uploads
+// them with Content-Disposition: attachment. Nothing is offered for a scan
+// the script has not yet given downloads, or for an item with
+// `download: false`.
+//
 // STANDING CONSTRAINTS
 //   - No filter, mix-blend-mode, mask-image, clip-path or 3D anywhere. The
 //     viewer moves on transform and commits to layout size when it settles;
@@ -89,6 +98,7 @@ import {
 import { naturalName, naturalNameWithDates, RIGHTS } from '../../../data/collections/types';
 import type { Region } from '../../../data/collections/types';
 import { plate } from '../../../data/collections/images';
+import iiifImages from '../../../data/collections/iiif-images.json';
 import { mountTokens, mountStyle } from '../../../data/collections/mount';
 
 export function getStaticPaths() {
@@ -111,6 +121,39 @@ const manifestUrl = `/iiif/${item.collection}/${item.slug}/manifest.json`;
 const miradorUrl = `https://projectmirador.org/embed/?iiif-content=${encodeURIComponent(abs(manifestUrl))}`;
 
 /* ------------------------------------------------------------------ *
+ * Downloads
+ * ------------------------------------------------------------------ */
+// Read straight from the tiling script's manifest and matched on the image
+// service's address, which a face already carries - so this depends on
+// nothing in images.ts. An entry has `download` only once the script has
+// uploaded the files, so a link can never point at something not there.
+type DownloadFile = { file: string; width: number; height: number; bytes: number };
+type IiifEntry = { id: string; download?: { full: DownloadFile; share: DownloadFile | null } };
+const bare = (url: string) => url.replace(/\/+$/, '');
+const downloadsById = new Map(
+  Object.values(iiifImages as unknown as Record<string, IiifEntry>).map((e) => [bare(e.id), e.download] as const)
+);
+// `download: false` on an item withholds the links for every view of it.
+const allowDownload = (item as unknown as { download?: boolean }).download !== false;
+const fileSize = (bytes: number) =>
+  bytes >= 1e7
+    ? `${Math.round(bytes / 1e6)} MB`
+    : bytes >= 1e6
+      ? `${(bytes / 1e6).toFixed(1)} MB`
+      : `${Math.max(1, Math.round(bytes / 1e3))} KB`;
+const downloadFor = (iiif?: string) => {
+  const d = allowDownload && iiif ? downloadsById.get(bare(iiif)) : undefined;
+  if (!d) return null;
+  const copy = (f: DownloadFile) => ({
+    url: `${bare(iiif!)}/download/${f.file}`,
+    w: f.width,
+    h: f.height,
+    size: fileSize(f.bytes),
+  });
+  return { full: copy(d.full), share: d.share ? copy(d.share) : null };
+};
+
+/* ------------------------------------------------------------------ *
  * Faces
  * ------------------------------------------------------------------ */
 const faces = await Promise.all(
@@ -120,6 +163,7 @@ const faces = await Promise.all(
       ...f,
       n,
       img,
+      dl: downloadFor(img.iiif),
       alt: f.page
         ? `${f.label} of ${item.title}${f.page === 1 && item.description ? `. ${item.description}` : ''}`
         : n === 0
@@ -497,6 +541,7 @@ const pageData = json({
     w: f.img.width,
     h: f.img.height,
     iiif: f.img.iiif,
+    dl: f.dl,
     page: f.page ?? 0,
   })),
   paged,
@@ -1306,6 +1351,34 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
             </p>
           </section>
 
+          {/* One block per view; the one for the view showing is the one
+              shown. Visibility rides on `hidden` alone - no class on the
+              section or the blocks sets display. */}
+          {faces.some((f) => f.dl) && (
+            <section class="mb-7" aria-labelledby="download-h" data-dl hidden={!faces[0].dl} data-pagefind-ignore>
+              <h2 id="download-h" class={H2}>Download</h2>
+              {faces.map(
+                (f) =>
+                  f.dl && (
+                    <div data-dl-face={f.key} hidden={f.n !== 0}>
+                      {faces.length > 1 && <p class={`${MONO} m-0 mb-1`}>{f.label}</p>}
+                      {f.dl.share && (
+                        <p class="m-0">
+                          <a href={f.dl.share.url} class={LINK} download>Sharing copy</a>
+                          <span class="text-sm opacity-75"> {f.dl.share.w} &times; {f.dl.share.h} px, {f.dl.share.size}</span>
+                        </p>
+                      )}
+                      <p class="m-0">
+                        <a href={f.dl.full.url} class={LINK} download>Full scan</a>
+                        <span class="text-sm opacity-75"> {f.dl.full.w} &times; {f.dl.full.h} px, {f.dl.full.size}</span>
+                      </p>
+                    </div>
+                  )
+              )}
+              <p class="m-0 mt-1 text-sm opacity-75">For personal and research use. Please cite it as below.</p>
+            </section>
+          )}
+
           <section class="mb-7" aria-labelledby="cite-h" data-pagefind-ignore>
             <h2 id="cite-h" class={H2}>Cite this photograph</h2>
             <p class="cite" data-cite>
@@ -1438,6 +1511,12 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     <div id="ex-menu" class="ex-menu" popover data-ex-menu>
       <button type="button" data-ex="info" aria-expanded="false" aria-controls="ex-note">Note</button>
       <button type="button" data-ex="link">Copy link to this view</button>
+      {faces.some((f) => f.dl) && (
+        <>
+          <button type="button" data-ex="save-share" hidden>Download sharing copy</button>
+          <button type="button" data-ex="save-full" hidden>Download full scan</button>
+        </>
+      )}
       <button type="button" class="only-narrow" data-ex="rotate">Rotate a quarter turn</button>
       <button type="button" data-ex="full" aria-pressed="false" hidden>Full screen</button>
       <button type="button" class="only-keys" data-ex="keys" aria-expanded="false" aria-controls="ex-keys">Keyboard shortcuts</button>
@@ -2677,6 +2756,13 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     inset: 0;
     overflow: hidden;
     pointer-events: none;
+    /* The tiles order themselves by z-index (finer above coarser, up to
+       1000). Without a stacking context of its own, this layer let those
+       numbers out into the frame, where they beat the regions - z-index
+       auto - and every face box vanished the moment tiles arrived, i.e. as
+       soon as the zoom passed the detail file. isolate keeps the tiles'
+       order among the tiles. */
+    isolation: isolate;
   }
   .ex-tiles :global(img) {
     position: absolute;
@@ -2689,6 +2775,9 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     position: absolute;
     inset: 0;
     pointer-events: none;
+    /* Above the photograph and its tiles, stated rather than left to
+       source order. */
+    z-index: 1;
   }
   .ex-region {
     visibility: hidden;
@@ -2696,6 +2785,12 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
        would thicken the outline and blow up the label. --tag-scale undoes
        that, so both stay the same size on screen at any zoom. */
     border-width: calc(2px * var(--tag-scale, 1));
+    /* The dark lines either side of it are shadows, and they were not
+       being undone: on a phone at full zoom the outer one grew into a
+       heavy band round the face. */
+    box-shadow:
+      0 0 0 calc(1.5px * var(--tag-scale, 1)) rgb(23 21 15 / 0.85),
+      inset 0 0 0 calc(1px * var(--tag-scale, 1)) rgb(23 21 15 / 0.6);
   }
   .ex-region .region-tag {
     font-size: 0.66rem;
@@ -3133,6 +3228,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     .examine-btn,
     .plate-tools,
     .cite-tools,
+    [data-dl],
     .pager,
     .page-strip,
     .record-json,
@@ -3409,6 +3505,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     soon();
   }
 
+  /** A file to save: its address on the image host, pixel size, and size on disk. */
+  type Copy = { url: string; w: number; h: number; size: string };
   type FaceData = {
     key: string;
     label: string;
@@ -3425,6 +3523,8 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     h: number;
     /** IIIF image service for this face: full resolution, as tiles. */
     iiif?: string;
+    /** What can be saved of this view, or null if nothing is offered. */
+    dl: { full: Copy; share: Copy | null } | null;
     /** Position among the pages, from 1; 0 for a view that is not a page. */
     page: number;
   };
@@ -3561,11 +3661,27 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       }
     };
 
+    // The record's Download section follows the view showing, and steps
+    // aside altogether for a view that has nothing to save.
+    const dlSection = $('[data-dl]', root);
+    const dlBlocks = $$('[data-dl-face]', root);
+    const syncDownloads = (key: string) => {
+      if (!dlSection) return;
+      let any = false;
+      dlBlocks.forEach((b) => {
+        const on = b.dataset.dlFace === key;
+        b.hidden = !on;
+        if (on) any = true;
+      });
+      dlSection.hidden = !any;
+    };
+
     const showFace = (key: string) => {
       if (!faceData.has(key)) return;
       plateFace = key;
       plateFaces.forEach((f) => f.classList.toggle('is-on', f.dataset.face === key));
       faceBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.faceBtn === key)));
+      syncDownloads(key);
       syncPages(key);
       writePageHash();
       layoutPlateTags();
@@ -3856,6 +3972,31 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     const menu = $<HTMLElement>('[data-ex-menu]', dialog);
     const keysPanel = $('#ex-keys', dialog);
     const keysBtn = $<HTMLButtonElement>('[data-ex="keys"]', dialog);
+    // Downloads, in More. Each button says what it will fetch and how big
+    // that is, and is absent for a view with nothing to save.
+    const saveShareBtn = $<HTMLButtonElement>('[data-ex="save-share"]', dialog);
+    const saveFullBtn = $<HTMLButtonElement>('[data-ex="save-full"]', dialog);
+    const syncSave = (f: FaceData) => {
+      const set = (b: HTMLButtonElement | null, copy: Copy | null | undefined, text: string) => {
+        if (!b) return;
+        b.hidden = !copy;
+        if (copy) b.textContent = `${text} (${copy.size})`;
+      };
+      set(saveShareBtn, f.dl?.share, 'Download sharing copy');
+      set(saveFullBtn, f.dl?.full, 'Download full scan');
+    };
+    // The file is served as an attachment, so going to its address saves it
+    // and leaves this page where it is. The link goes inside the dialog:
+    // while a modal is open the rest of the document is inert.
+    const save = (url: string) => {
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = '';
+      a.hidden = true;
+      dialog.appendChild(a);
+      a.click();
+      a.remove();
+    };
     // The bar sits at the bottom on a phone; the same query as the CSS.
     const barAtFoot = window.matchMedia('(max-width: 640px)');
     const exFaceBtns = $$<HTMLButtonElement>('[data-ex-face]', dialog);
@@ -4482,6 +4623,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
       sharpen(f.big, 1);
       titleEl.textContent = f.title;
       exFaceBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.exFace === face)));
+      syncSave(f);
       if (data.paged) {
         const at = data.faces.findIndex((x) => x.key === face);
         const exPage = $('#ex-page', dialog);
@@ -4724,6 +4866,11 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
         if (action === 'link') {
           syncHash();
           if (await copyText(location.href)) toast('Link to this view copied');
+        }
+        if (action === 'save-share' || action === 'save-full') {
+          const dl = faceData.get(face)?.dl;
+          const copy = action === 'save-full' ? dl?.full : dl?.share;
+          if (copy) save(copy.url);
         }
         if (action === 'compare') {
           compare = !compare;
