@@ -27,12 +27,6 @@
 // turned as the print is turned. Both are the same room: drawRoom is the
 // desk with a single unturned print on it, and draws exactly as it did.
 //
-// AND WITHOUT A CANVAS. washFor and castFor give the same light as plain
-// CSS - a gradient for a surface, a box-shadow for a print lying on it - for
-// places that are lit but do not earn a canvas of their own (the guide's
-// holdings, four strips of desk). Same bearing, colour and strength; no
-// window panes and no shadow cut from the beam, which need the canvas.
-//
 // The sun and moon are computed here, low-precision (well inside a degree,
 // far finer than a shaft of light can show). The sun matches solar.ts; this
 // module keeps its own copy so the page script carries no build-time data.
@@ -104,11 +98,6 @@ export function moonAt(ms: number, sun: Body): Body & { lit: number } {
 const SUN_ALPHA = 0.42;
 const MOON_ALPHA = 0.2;
 const LAMP_ALPHA = 0.42;
-
-// The beam's strength where it is laid as a CSS wash, as a share of what it
-// is on the canvas: a wash has no falling-off along its length, so at full
-// strength it would lift a whole strip of desk rather than cross it.
-const WASH = 0.85;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const SUN_COLOUR: [number, RGB][] = [
@@ -225,12 +214,8 @@ const layer = (ox: number, oy: number, blur: number, alpha: number, rot = 0) => 
   }
   return `, ${ox.toFixed(1)}px ${oy.toFixed(1)}px ${blur.toFixed(1)}px rgb(0 0 0 / ${alpha.toFixed(2)})`;
 };
-// How much further a lifted print throws its shadow than one lying flat -
-// though never further than LIFT_MAX of its own height, or a low sun would
-// send a lifted print's shadow clean off the desk.
+// How much further a lifted print throws its shadow than one lying flat.
 const LIFT = 2.4;
-const LIFT_MAX = 0.4;
-const lifted = (len: number, h: number) => Math.max(len, Math.min(len * LIFT, h * LIFT_MAX));
 
 /**
  * The room itself. `A` is what the light is laid out around - the window's
@@ -303,8 +288,7 @@ function render(
       const len = b.h * 0.045 * L.lamp;
       const a = 0.55 * L.lamp;
       out[i].rest += layer((dx / dl) * len, (dy / dl) * len, len * 1.6 + 6, a, b.rot);
-      const up = lifted(len, b.h);
-      out[i].lift += layer((dx / dl) * up, (dy / dl) * up, up * 1.4 + 10, a * 0.85);
+      out[i].lift += layer((dx / dl) * len * LIFT, (dy / dl) * len * LIFT, len * 3.4 + 10, a * 0.85);
     });
   }
 
@@ -367,8 +351,7 @@ function render(
       if (throws) {
         const a = Math.min(0.6, 0.25 + s.strength * 1.1);
         out[i].rest += layer(u.x * sl, u.y * sl, 5 + sl * 0.6, a, b.rot);
-        const up = lifted(sl, b.h);
-        out[i].lift += layer(u.x * up, u.y * up, 9 + up * 0.55, a * 0.85);
+        out[i].lift += layer(u.x * sl * LIFT, u.y * sl * LIFT, 9 + sl * 1.3, a * 0.85);
       }
     });
     wctx.globalCompositeOperation = 'source-over';
@@ -439,82 +422,4 @@ export function drawDesk(
   work?: HTMLCanvasElement
 ): Cast[] {
   return render(canvas, area, prints, tint, L, work, true) ?? [];
-}
-
-/* ------------------------------------------------------------------ *
- * The same light, without a canvas
- * ------------------------------------------------------------------ */
-/**
- * The light on a surface, as a CSS `background-image`: the window's shaft
- * lying across it along the light's real bearing, the lamp from the upper
- * left after dark, the room's ambient lift. Lay it OVER the surface's own
- * ground colour and UNDER whatever lies on it.
- * @param tint  the desk colour where light falls ('#rrggbb'; the mount tint)
- */
-export function washFor(L: Light, tint: string): string {
-  const desk = parseHex(tint, [245, 243, 237]).map((v) => (v / 255) * 0.86) as RGB;
-  const on = (c: RGB) => c.map((v, k) => Math.round(v * desk[k])).join(',');
-  const layers: string[] = [];
-  for (const s of L.shafts) {
-    // A CSS gradient angle is a compass bearing on the screen (0 up, 90
-    // right), which is how the light's own bearing is reckoned here. The
-    // gradient runs ACROSS the light, so what it draws is a shaft lying
-    // along the bearing: dark, the soft edge of the window, two lights with
-    // the mullion's shadow between them, the other edge, dark.
-    const across = (((s.az + 270) % 360) + 360) % 360;
-    const a = Math.min(1, s.strength) * WASH;
-    const c = on(s.colour);
-    const stop = (k: number, at: number) => `rgba(${c},${(a * k).toFixed(3)}) ${at}%`;
-    layers.push(
-      `linear-gradient(${across.toFixed(1)}deg, ${[
-        stop(0, 12),
-        stop(1, 30),
-        stop(1, 47.2),
-        stop(0.3, 49),
-        stop(0.3, 51),
-        stop(1, 52.8),
-        stop(1, 70),
-        stop(0, 88),
-      ].join(', ')})`
-    );
-  }
-  if (L.lamp > 0) {
-    const c = on([255, 172, 96]);
-    layers.push(
-      `radial-gradient(farthest-corner at -4% -12%, rgba(${c},${(LAMP_ALPHA * L.lamp).toFixed(3)}) 0%, rgba(${c},${(0.12 * L.lamp).toFixed(3)}) 32%, rgba(${c},0) 70%)`
-    );
-  }
-  if (L.ambientLift > 0) {
-    const c = L.ambient.join(',');
-    layers.push(`radial-gradient(farthest-corner at 50% 50%, rgba(${c},${(L.ambientLift * 0.16).toFixed(3)}) 0%, rgba(${c},0) 100%)`);
-  }
-  return layers.length ? layers.join(', ') : 'none';
-}
-
-/**
- * The box-shadows an unturned print of height `h` (CSS px) carries in this
- * light: the same lengths, softness and strength the room gives a print on
- * the canvas, with the lamp taken as coming from the upper left.
- */
-export function castFor(L: Light, h: number): Cast {
-  const out: Cast = { rest: BASE_SHADOW, lift: BASE_SHADOW };
-  if (L.lamp > 0) {
-    const len = h * 0.045 * L.lamp;
-    const a = 0.55 * L.lamp;
-    out.rest += layer(0.8 * len, 0.6 * len, len * 1.6 + 6, a);
-    const up = lifted(len, h);
-    out.lift += layer(0.8 * up, 0.6 * up, up * 1.4 + 10, a * 0.85);
-  }
-  for (const s of L.shafts) {
-    if (!(s.kind === 'sun' || L.shafts.length === 1)) continue;
-    const th = (s.az + 180) * RAD;
-    const ux = Math.sin(th);
-    const uy = -Math.cos(th);
-    const sl = Math.min(h * 0.28, (h * 0.035) / Math.tan(s.alt * RAD));
-    const a = Math.min(0.6, 0.25 + s.strength * 1.1);
-    out.rest += layer(ux * sl, uy * sl, 5 + sl * 0.6, a);
-    const up = lifted(sl, h);
-    out.lift += layer(ux * up, uy * up, 9 + up * 0.55, a * 0.85);
-  }
-  return out;
 }

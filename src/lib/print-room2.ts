@@ -21,18 +21,6 @@
 // and adds light only, feathered to nothing at its left and right edges:
 // wherever the canvas ends, the ground beneath is the same flat colour.
 //
-// TWO WAYS IN. drawRoom lights the band round ONE print (a collection's
-// frontispiece, an item's plate). drawDesk lights a desk of SEVERAL - the
-// guide's table - where every print cuts its own shadow from the one beam,
-// turned as the print is turned. Both are the same room: drawRoom is the
-// desk with a single unturned print on it, and draws exactly as it did.
-//
-// AND WITHOUT A CANVAS. washFor and castFor give the same light as plain
-// CSS - a gradient for a surface, a box-shadow for a print lying on it - for
-// places that are lit but do not earn a canvas of their own (the guide's
-// holdings, four strips of desk). Same bearing, colour and strength; no
-// window panes and no shadow cut from the beam, which need the canvas.
-//
 // The sun and moon are computed here, low-precision (well inside a degree,
 // far finer than a shaft of light can show). The sun matches solar.ts; this
 // module keeps its own copy so the page script carries no build-time data.
@@ -104,11 +92,6 @@ export function moonAt(ms: number, sun: Body): Body & { lit: number } {
 const SUN_ALPHA = 0.42;
 const MOON_ALPHA = 0.2;
 const LAMP_ALPHA = 0.42;
-
-// The beam's strength where it is laid as a CSS wash, as a share of what it
-// is on the canvas: a wash has no falling-off along its length, so at full
-// strength it would lift a whole strip of desk rather than cross it.
-const WASH = 0.85;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 const SUN_COLOUR: [number, RGB][] = [
@@ -205,55 +188,22 @@ const parseHex = (v: string, fallback: RGB): RGB => {
   return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
 };
 
-/* ------------------------------------------------------------------ *
- * What stands on the desk. A box is in CSS px from the canvas's top left,
- * at its own UNTURNED size; `rot` turns it about its centre, in degrees
- * (clockwise, as CSS rotate does).
- * ------------------------------------------------------------------ */
-export type Box = { x: number; y: number; w: number; h: number; rot?: number };
-/** The box-shadows one object carries for a light: lying, and lifted. */
-export type Cast = { rest: string; lift: string };
-
-// A box-shadow is drawn in its element's own frame and turns with it, so
-// an offset meant for the SCREEN is counter-turned for a turned print.
-const BASE_SHADOW = '0 1px 2px rgb(0 0 0 / 0.5)';
-const layer = (ox: number, oy: number, blur: number, alpha: number, rot = 0) => {
-  if (rot) {
-    const c = Math.cos(rot * RAD);
-    const s = Math.sin(rot * RAD);
-    [ox, oy] = [ox * c + oy * s, -ox * s + oy * c];
-  }
-  return `, ${ox.toFixed(1)}px ${oy.toFixed(1)}px ${blur.toFixed(1)}px rgb(0 0 0 / ${alpha.toFixed(2)})`;
-};
-// How much further a lifted print throws its shadow than one lying flat -
-// though never further than LIFT_MAX of its own height, or a low sun would
-// send a lifted print's shadow clean off the desk.
-const LIFT = 2.4;
-const LIFT_MAX = 0.4;
-const lifted = (len: number, h: number) => Math.max(len, Math.min(len * LIFT, h * LIFT_MAX));
-
 /**
- * The room itself. `A` is what the light is laid out around - the window's
- * beam is sized and placed from it - and `casts` are the objects standing
- * in that light, each cutting its own shadow from the beam.
+ * Draw the room's light for a moment.
+ * @param canvas  the transparent canvas behind the band's content
+ * @param print   the frontispiece <img>; its shadow is cut from the beam
+ * @param tint    the desk colour where light falls ('#rrggbb'; the mount tint)
+ * @returns the box-shadow the print should carry for this light
  */
-function render(
-  canvas: HTMLCanvasElement,
-  A: Box,
-  casts: Box[],
-  tint: string,
-  L: Light,
-  work?: HTMLCanvasElement,
-  wide = false
-): Cast[] | null {
+export function drawRoom(canvas: HTMLCanvasElement, print: HTMLElement, tint: string, L: Light, work?: HTMLCanvasElement): string {
   const ctx = canvas.getContext('2d');
-  if (!ctx) return null;
+  if (!ctx) return '';
   // The light is soft: a modest pixel density is indistinguishable and
   // keeps the two canvases small on a phone.
   const dpr = Math.min(1.25, window.devicePixelRatio || 1);
   const W = canvas.clientWidth;
   const H = canvas.clientHeight;
-  if (!W || !H) return null;
+  if (!W || !H) return '';
   const cw = Math.round(W * dpr);
   const ch = Math.round(H * dpr);
   const w2 = work ?? document.createElement('canvas');
@@ -264,12 +214,14 @@ function render(
     }
   }
   const wctx = w2.getContext('2d');
-  if (!wctx) return null;
+  if (!wctx) return '';
 
-  const P = A;
+  const cr = canvas.getBoundingClientRect();
+  const pr = print.getBoundingClientRect();
+  const P = { x: pr.left - cr.left, y: pr.top - cr.top, w: pr.width, h: pr.height };
   const pc = { x: P.x + P.w / 2, y: P.y + P.h / 2 };
   const desk = parseHex(tint, [245, 243, 237]).map((v) => (v / 255) * 0.86) as RGB;
-  const out: Cast[] = casts.map(() => ({ rest: BASE_SHADOW, lift: BASE_SHADOW }));
+  let shadow = '0 1px 2px rgb(0 0 0 / 0.5)';
 
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.globalCompositeOperation = 'source-over';
@@ -296,16 +248,11 @@ function render(
     rg.addColorStop(1, 'rgba(0,0,0,0)');
     ctx.fillStyle = rg;
     ctx.fillRect(0, 0, cw, ch);
-    casts.forEach((b, i) => {
-      const dx = b.x + b.w / 2 - lx;
-      const dy = b.y + b.h / 2 - ly;
-      const dl = Math.hypot(dx, dy) || 1;
-      const len = b.h * 0.045 * L.lamp;
-      const a = 0.55 * L.lamp;
-      out[i].rest += layer((dx / dl) * len, (dy / dl) * len, len * 1.6 + 6, a, b.rot);
-      const up = lifted(len, b.h);
-      out[i].lift += layer((dx / dl) * up, (dy / dl) * up, up * 1.4 + 10, a * 0.85);
-    });
+    const dx = pc.x - lx;
+    const dy = pc.y - ly;
+    const dl = Math.hypot(dx, dy) || 1;
+    const len = P.h * 0.045 * L.lamp;
+    shadow += `, ${((dx / dl) * len).toFixed(1)}px ${((dy / dl) * len).toFixed(1)}px ${(len * 1.6 + 6).toFixed(1)}px rgb(0 0 0 / ${(0.55 * L.lamp).toFixed(2)})`;
   }
 
   // The shafts: a window's light laid on the desk.
@@ -348,173 +295,35 @@ function render(
     wctx.fillStyle = fall;
     wctx.fillRect(0, 0, cw, ch);
 
-    // Each object stands in the beam: its shadow is light that never arrives.
-    const throws = s.kind === 'sun' || L.shafts.length === 1;
+    // The print stands in the beam: its shadow is light that never arrives.
+    const lift = P.h * 0.035;
+    const sl = Math.min(P.h * 0.28, lift / tanAlt);
     wctx.globalCompositeOperation = 'destination-out';
-    casts.forEach((b, i) => {
-      const lift = b.h * 0.035;
-      const sl = Math.min(b.h * 0.28, lift / tanAlt);
-      const soft = (4 + sl * 0.5) * dpr;
-      if (b.rot) {
-        const c = Math.cos(b.rot * RAD) * dpr;
-        const sn = Math.sin(b.rot * RAD) * dpr;
-        const cx = (b.x + b.w / 2 + u.x * sl) * dpr;
-        const cy = (b.y + b.h / 2 + u.y * sl) * dpr;
-        softRects(wctx, [[-b.w / 2, -b.h / 2, b.w, b.h]], 'rgba(0,0,0,0.92)', soft, [c, sn, -sn, c, cx, cy]);
-      } else {
-        softRects(wctx, [[b.x + u.x * sl, b.y + u.y * sl, b.w, b.h]], 'rgba(0,0,0,0.92)', soft, [dpr, 0, 0, dpr, 0, 0]);
-      }
-      if (throws) {
-        const a = Math.min(0.6, 0.25 + s.strength * 1.1);
-        out[i].rest += layer(u.x * sl, u.y * sl, 5 + sl * 0.6, a, b.rot);
-        const up = lifted(sl, b.h);
-        out[i].lift += layer(u.x * up, u.y * up, 9 + up * 0.55, a * 0.85);
-      }
-    });
+    softRects(wctx, [[P.x + u.x * sl, P.y + u.y * sl, P.w, P.h]], 'rgba(0,0,0,0.92)', (4 + sl * 0.5) * dpr, [dpr, 0, 0, dpr, 0, 0]);
     wctx.globalCompositeOperation = 'source-over';
 
     ctx.globalAlpha = Math.min(1, s.strength);
     ctx.drawImage(w2, 0, 0);
     ctx.globalAlpha = 1;
+
+    if (s.kind === 'sun' || L.shafts.length === 1) {
+      const a = Math.min(0.6, 0.25 + s.strength * 1.1);
+      shadow += `, ${(u.x * sl).toFixed(1)}px ${(u.y * sl).toFixed(1)}px ${(5 + sl * 0.6).toFixed(1)}px rgb(0 0 0 / ${a.toFixed(2)})`;
+    }
   }
 
   // Feather the light to nothing at the canvas's left and right edges, so it
   // meets the flat ground of the band's outset without a seam.
   ctx.globalCompositeOperation = 'destination-in';
+  const edge = Math.min(0.08, 96 / W);
   const fe = ctx.createLinearGradient(0, 0, cw, 0);
-  if (wide) {
-    // A desk of prints reaches nearly to the band's edge, so its light is
-    // let go over a longer run and eased at both ends: a straight ramp
-    // this close to a print reads as a stripe.
-    const edge = Math.min(0.2, 240 / W);
-    const ease = [0, 0.1, 0.35, 0.65, 0.9, 1];
-    ease.forEach((a, k) => {
-      const t = (k / (ease.length - 1)) * edge;
-      fe.addColorStop(t, `rgba(0,0,0,${a})`);
-      fe.addColorStop(1 - t, `rgba(0,0,0,${a})`);
-    });
-  } else {
-    const edge = Math.min(0.08, 96 / W);
-    fe.addColorStop(0, 'rgba(0,0,0,0)');
-    fe.addColorStop(edge, 'rgba(0,0,0,1)');
-    fe.addColorStop(1 - edge, 'rgba(0,0,0,1)');
-    fe.addColorStop(1, 'rgba(0,0,0,0)');
-  }
+  fe.addColorStop(0, 'rgba(0,0,0,0)');
+  fe.addColorStop(edge, 'rgba(0,0,0,1)');
+  fe.addColorStop(1 - edge, 'rgba(0,0,0,1)');
+  fe.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = fe;
   ctx.fillRect(0, 0, cw, ch);
   ctx.globalCompositeOperation = 'source-over';
 
-  return out;
-}
-
-/**
- * Draw the room's light for a moment, round ONE print (a collection's
- * frontispiece, an item's plate).
- * @param canvas  the transparent canvas behind the band's content
- * @param print   the frontispiece <img>; its shadow is cut from the beam
- * @param tint    the desk colour where light falls ('#rrggbb'; the mount tint)
- * @returns the box-shadow the print should carry for this light
- */
-export function drawRoom(canvas: HTMLCanvasElement, print: HTMLElement, tint: string, L: Light, work?: HTMLCanvasElement): string {
-  const cr = canvas.getBoundingClientRect();
-  const pr = print.getBoundingClientRect();
-  const P: Box = { x: pr.left - cr.left, y: pr.top - cr.top, w: pr.width, h: pr.height };
-  return render(canvas, P, [P], tint, L, work)?.[0].rest ?? '';
-}
-
-/**
- * Draw the room's light over a DESK OF SEVERAL PRINTS (the guide's table).
- * The beam is laid out round `area` - the table as a whole - and every box
- * in `prints` cuts its own shadow from it, turned as the print is turned.
- * The caller measures: a print in the middle of a transition or an
- * animation must be given where it RESTS, which only the page knows.
- * @returns one pair of box-shadows per print, in order; [] if nothing drew
- */
-export function drawDesk(
-  canvas: HTMLCanvasElement,
-  area: Box,
-  prints: Box[],
-  tint: string,
-  L: Light,
-  work?: HTMLCanvasElement
-): Cast[] {
-  return render(canvas, area, prints, tint, L, work, true) ?? [];
-}
-
-/* ------------------------------------------------------------------ *
- * The same light, without a canvas
- * ------------------------------------------------------------------ */
-/**
- * The light on a surface, as a CSS `background-image`: the window's shaft
- * lying across it along the light's real bearing, the lamp from the upper
- * left after dark, the room's ambient lift. Lay it OVER the surface's own
- * ground colour and UNDER whatever lies on it.
- * @param tint  the desk colour where light falls ('#rrggbb'; the mount tint)
- */
-export function washFor(L: Light, tint: string): string {
-  const desk = parseHex(tint, [245, 243, 237]).map((v) => (v / 255) * 0.86) as RGB;
-  const on = (c: RGB) => c.map((v, k) => Math.round(v * desk[k])).join(',');
-  const layers: string[] = [];
-  for (const s of L.shafts) {
-    // A CSS gradient angle is a compass bearing on the screen (0 up, 90
-    // right), which is how the light's own bearing is reckoned here. The
-    // gradient runs ACROSS the light, so what it draws is a shaft lying
-    // along the bearing: dark, the soft edge of the window, two lights with
-    // the mullion's shadow between them, the other edge, dark.
-    const across = (((s.az + 270) % 360) + 360) % 360;
-    const a = Math.min(1, s.strength) * WASH;
-    const c = on(s.colour);
-    const stop = (k: number, at: number) => `rgba(${c},${(a * k).toFixed(3)}) ${at}%`;
-    layers.push(
-      `linear-gradient(${across.toFixed(1)}deg, ${[
-        stop(0, 12),
-        stop(1, 30),
-        stop(1, 47.2),
-        stop(0.3, 49),
-        stop(0.3, 51),
-        stop(1, 52.8),
-        stop(1, 70),
-        stop(0, 88),
-      ].join(', ')})`
-    );
-  }
-  if (L.lamp > 0) {
-    const c = on([255, 172, 96]);
-    layers.push(
-      `radial-gradient(farthest-corner at -4% -12%, rgba(${c},${(LAMP_ALPHA * L.lamp).toFixed(3)}) 0%, rgba(${c},${(0.12 * L.lamp).toFixed(3)}) 32%, rgba(${c},0) 70%)`
-    );
-  }
-  if (L.ambientLift > 0) {
-    const c = L.ambient.join(',');
-    layers.push(`radial-gradient(farthest-corner at 50% 50%, rgba(${c},${(L.ambientLift * 0.16).toFixed(3)}) 0%, rgba(${c},0) 100%)`);
-  }
-  return layers.length ? layers.join(', ') : 'none';
-}
-
-/**
- * The box-shadows an unturned print of height `h` (CSS px) carries in this
- * light: the same lengths, softness and strength the room gives a print on
- * the canvas, with the lamp taken as coming from the upper left.
- */
-export function castFor(L: Light, h: number): Cast {
-  const out: Cast = { rest: BASE_SHADOW, lift: BASE_SHADOW };
-  if (L.lamp > 0) {
-    const len = h * 0.045 * L.lamp;
-    const a = 0.55 * L.lamp;
-    out.rest += layer(0.8 * len, 0.6 * len, len * 1.6 + 6, a);
-    const up = lifted(len, h);
-    out.lift += layer(0.8 * up, 0.6 * up, up * 1.4 + 10, a * 0.85);
-  }
-  for (const s of L.shafts) {
-    if (!(s.kind === 'sun' || L.shafts.length === 1)) continue;
-    const th = (s.az + 180) * RAD;
-    const ux = Math.sin(th);
-    const uy = -Math.cos(th);
-    const sl = Math.min(h * 0.28, (h * 0.035) / Math.tan(s.alt * RAD));
-    const a = Math.min(0.6, 0.25 + s.strength * 1.1);
-    out.rest += layer(ux * sl, uy * sl, 5 + sl * 0.6, a);
-    const up = lifted(sl, h);
-    out.lift += layer(ux * up, uy * up, 9 + up * 0.55, a * 0.85);
-  }
-  return out;
+  return shadow;
 }

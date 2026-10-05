@@ -1595,6 +1595,278 @@
       }
     }
   },
+  "ingle-family/ingle-minnie-ollie-portrait-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/ingle-family/ingle-minnie-ollie-portrait-recto-0ad7228bba",
+    "width": 4786,
+    "height": 6817,
+    "sizes": [
+      {
+        "width": 300,
+        "height": 427
+      },
+      {
+        "width": 340,
+        "height": 484
+      },
+      {
+        "width": 680,
+        "height": 969
+      },
+      {
+        "width": 800,
+        "height": 1139
+      },
+      {
+        "width": 1200,
+        "height": 1709
+      },
+      {
+        "width": 1825,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2706
+      },
+      {
+        "width": 3510,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1825,
+      "study": 3510
+    },
+    "hash": "0ad7228bba75e9ba41874bb7f485f70aa249f496fb89dbca719fc3e3d2cb475b",
+    "download": {
+      "full": {
+        "file": "ingle-minnie-ollie-portrait-recto.jpg",
+        "width": 4786,
+        "height": 6817,
+        "bytes": 7471026
+      },
+      "share": {
+        "file": "ingle-minnie-ollie-portrait-recto-2600px.jpg",
+        "width": 1825,
+        "height": 2600,
+        "bytes": 946476
+      }
+    }
+  },
+  "ingle-family/ingle-minnie-ollie-portrait-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/ingle-family/ingle-minnie-ollie-portrait-verso-abb309ae48",
+    "width": 5184,
+    "height": 7268,
+    "sizes": [
+      {
+        "width": 324,
+        "height": 455
+      },
+      {
+        "width": 340,
+        "height": 477
+      },
+      {
+        "width": 680,
+        "height": 953
+      },
+      {
+        "width": 800,
+        "height": 1122
+      },
+      {
+        "width": 1200,
+        "height": 1682
+      },
+      {
+        "width": 1854,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2664
+      },
+      {
+        "width": 3566,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1854,
+      "study": 3566
+    },
+    "hash": "abb309ae4870c483b3c6ad091050176002a90e8b217bb3549ac386539c29f3bb",
+    "download": {
+      "full": {
+        "file": "ingle-minnie-ollie-portrait-verso.jpg",
+        "width": 5184,
+        "height": 7268,
+        "bytes": 11291276
+      },
+      "share": {
+        "file": "ingle-minnie-ollie-portrait-verso-2600px.jpg",
+        "width": 1854,
+        "height": 2600,
+        "bytes": 1478608
+      }
+    }
+  },
+  "ingle-family/ingle-ollie-gladys-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/ingle-family/ingle-ollie-gladys-recto-bb551cf6f6",
+    "width": 4716,
+    "height": 6803,
+    "sizes": [
+      {
+        "width": 295,
+        "height": 426
+      },
+      {
+        "width": 340,
+        "height": 490
+      },
+      {
+        "width": 680,
+        "height": 981
+      },
+      {
+        "width": 800,
+        "height": 1154
+      },
+      {
+        "width": 1200,
+        "height": 1731
+      },
+      {
+        "width": 1802,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2741
+      },
+      {
+        "width": 3466,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1802,
+      "study": 3466
+    },
+    "hash": "bb551cf6f6370174ec977bdb88b19841de1e70f3969489e476b80934e0c6fc2a",
+    "download": {
+      "full": {
+        "file": "ingle-ollie-gladys-recto.jpg",
+        "width": 4716,
+        "height": 6803,
+        "bytes": 5349361
+      },
+      "share": {
+        "file": "ingle-ollie-gladys-recto-2600px.jpg",
+        "width": 1802,
+        "height": 2600,
+        "bytes": 633315
+      }
+    }
+  },
+  "ingle-family/ingle-ollie-gladys-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/ingle-family/ingle-ollie-gladys-verso-572fd7eae5",
+    "width": 5147,
+    "height": 7344,
+    "sizes": [
+      {
+        "width": 322,
+        "height": 459
+      },
+      {
+        "width": 340,
+        "height": 485
+      },
+      {
+        "width": 680,
+        "height": 970
+      },
+      {
+        "width": 800,
+        "height": 1141
+      },
+      {
+        "width": 1200,
+        "height": 1712
+      },
+      {
+        "width": 1822,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2711
+      },
+      {
+        "width": 3504,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1822,
+      "study": 3504
+    },
+    "hash": "572fd7eae5cac27224476b10d1be47e7409d41c490736b6c33719edf308d01a0",
+    "download": {
+      "full": {
+        "file": "ingle-ollie-gladys-verso.jpg",
+        "width": 5147,
+        "height": 7344,
+        "bytes": 12220166
+      },
+      "share": {
+        "file": "ingle-ollie-gladys-verso-2600px.jpg",
+        "width": 1822,
+        "height": 2600,
+        "bytes": 1581253
+      }
+    }
+  },
   "mckinstry-family/cattle-branding-recto-enhanced.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/cattle-branding-recto-enhanced-813501dacc",
