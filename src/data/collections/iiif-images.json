@@ -797,6 +797,414 @@
       "share": null
     }
   },
+  "allison-family/allison-joseph-carroll-ned-hogan-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-joseph-carroll-ned-hogan-1-recto-fb36aa049c",
+    "width": 4586,
+    "height": 6980,
+    "sizes": [
+      {
+        "width": 287,
+        "height": 437
+      },
+      {
+        "width": 340,
+        "height": 517
+      },
+      {
+        "width": 680,
+        "height": 1035
+      },
+      {
+        "width": 800,
+        "height": 1218
+      },
+      {
+        "width": 1200,
+        "height": 1826
+      },
+      {
+        "width": 1708,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2892
+      },
+      {
+        "width": 3285,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1708,
+      "study": 3285
+    },
+    "hash": "fb36aa049ca28579eba0e84afe39f5d0a4a14898ded4d143685560d425abab94",
+    "download": {
+      "full": {
+        "file": "allison-joseph-carroll-ned-hogan-1-recto.jpg",
+        "width": 4586,
+        "height": 6980,
+        "bytes": 3969860
+      },
+      "share": {
+        "file": "allison-joseph-carroll-ned-hogan-1-recto-2600px.jpg",
+        "width": 1708,
+        "height": 2600,
+        "bytes": 636991
+      }
+    }
+  },
+  "allison-family/allison-joseph-carroll-ned-hogan-1-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-joseph-carroll-ned-hogan-1-verso-d5a97d3b89",
+    "width": 4613,
+    "height": 6821,
+    "sizes": [
+      {
+        "width": 289,
+        "height": 427
+      },
+      {
+        "width": 340,
+        "height": 503
+      },
+      {
+        "width": 680,
+        "height": 1005
+      },
+      {
+        "width": 800,
+        "height": 1183
+      },
+      {
+        "width": 1200,
+        "height": 1774
+      },
+      {
+        "width": 1758,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2809
+      },
+      {
+        "width": 3381,
+        "height": 4999
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1758,
+      "study": 3381
+    },
+    "hash": "d5a97d3b8947519897120ddb86a6a17c330c8e05f1cd9766956953c36655a84a",
+    "download": {
+      "full": {
+        "file": "allison-joseph-carroll-ned-hogan-1-verso.jpg",
+        "width": 4613,
+        "height": 6821,
+        "bytes": 4046128
+      },
+      "share": {
+        "file": "allison-joseph-carroll-ned-hogan-1-verso-2600px.jpg",
+        "width": 1758,
+        "height": 2600,
+        "bytes": 633543
+      }
+    }
+  },
+  "allison-family/allison-joseph-carroll-ned-hogan-2-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-joseph-carroll-ned-hogan-2-recto-67f59c4199",
+    "width": 5452,
+    "height": 8675,
+    "sizes": [
+      {
+        "width": 171,
+        "height": 272
+      },
+      {
+        "width": 340,
+        "height": 541
+      },
+      {
+        "width": 680,
+        "height": 1082
+      },
+      {
+        "width": 800,
+        "height": 1273
+      },
+      {
+        "width": 1200,
+        "height": 1909
+      },
+      {
+        "width": 1634,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 3023
+      },
+      {
+        "width": 3142,
+        "height": 4999
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1634,
+      "study": 3142
+    },
+    "hash": "67f59c41990020adc2f39e52941924579429d9b2ac5bfc4a7dfe4ef93301cb08",
+    "download": {
+      "full": {
+        "file": "allison-joseph-carroll-ned-hogan-2-recto.jpg",
+        "width": 5452,
+        "height": 8675,
+        "bytes": 6129743
+      },
+      "share": {
+        "file": "allison-joseph-carroll-ned-hogan-2-recto-2600px.jpg",
+        "width": 1634,
+        "height": 2600,
+        "bytes": 600067
+      }
+    }
+  },
+  "allison-family/allison-joseph-carroll-ned-hogan-2-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-joseph-carroll-ned-hogan-2-verso-8840a11fd3",
+    "width": 5522,
+    "height": 8801,
+    "sizes": [
+      {
+        "width": 173,
+        "height": 276
+      },
+      {
+        "width": 340,
+        "height": 542
+      },
+      {
+        "width": 680,
+        "height": 1084
+      },
+      {
+        "width": 800,
+        "height": 1275
+      },
+      {
+        "width": 1200,
+        "height": 1913
+      },
+      {
+        "width": 1631,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 3028
+      },
+      {
+        "width": 3137,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1631,
+      "study": 3137
+    },
+    "hash": "8840a11fd388731af2dec68bf651d8b5f63bcdd61a08fe4806bfd8146fd0e757",
+    "download": {
+      "full": {
+        "file": "allison-joseph-carroll-ned-hogan-2-verso.jpg",
+        "width": 5522,
+        "height": 8801,
+        "bytes": 6573245
+      },
+      "share": {
+        "file": "allison-joseph-carroll-ned-hogan-2-verso-2600px.jpg",
+        "width": 1631,
+        "height": 2600,
+        "bytes": 572256
+      }
+    }
+  },
+  "allison-family/allison-joseph-carroll-ned-hogan-3-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-joseph-carroll-ned-hogan-3-recto-24f060e71d",
+    "width": 5464,
+    "height": 8635,
+    "sizes": [
+      {
+        "width": 171,
+        "height": 270
+      },
+      {
+        "width": 340,
+        "height": 537
+      },
+      {
+        "width": 680,
+        "height": 1075
+      },
+      {
+        "width": 800,
+        "height": 1264
+      },
+      {
+        "width": 1200,
+        "height": 1896
+      },
+      {
+        "width": 1645,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 3003
+      },
+      {
+        "width": 3164,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1645,
+      "study": 3164
+    },
+    "hash": "24f060e71d2bb8b4faec5147d3cb94e43839952f4c93db22f74aafb8778e197b",
+    "download": {
+      "full": {
+        "file": "allison-joseph-carroll-ned-hogan-3-recto.jpg",
+        "width": 5464,
+        "height": 8635,
+        "bytes": 5924534
+      },
+      "share": {
+        "file": "allison-joseph-carroll-ned-hogan-3-recto-2600px.jpg",
+        "width": 1645,
+        "height": 2600,
+        "bytes": 594533
+      }
+    }
+  },
+  "allison-family/allison-joseph-carroll-ned-hogan-3-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-joseph-carroll-ned-hogan-3-verso-031ad3e17d",
+    "width": 5455,
+    "height": 8625,
+    "sizes": [
+      {
+        "width": 171,
+        "height": 270
+      },
+      {
+        "width": 340,
+        "height": 538
+      },
+      {
+        "width": 680,
+        "height": 1075
+      },
+      {
+        "width": 800,
+        "height": 1265
+      },
+      {
+        "width": 1200,
+        "height": 1897
+      },
+      {
+        "width": 1644,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 3004
+      },
+      {
+        "width": 3162,
+        "height": 4999
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1644,
+      "study": 3162
+    },
+    "hash": "031ad3e17da54350a622026e2167fc6a918bcf4c059bc22333998ae50d7f6a8e",
+    "download": {
+      "full": {
+        "file": "allison-joseph-carroll-ned-hogan-3-verso.jpg",
+        "width": 5455,
+        "height": 8625,
+        "bytes": 7134502
+      },
+      "share": {
+        "file": "allison-joseph-carroll-ned-hogan-3-verso-2600px.jpg",
+        "width": 1644,
+        "height": 2600,
+        "bytes": 615660
+      }
+    }
+  },
   "allison-family/allison-oscar-ingle-1-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-ingle-1-recto-864ff48008",
@@ -998,6 +1406,138 @@
         "width": 1930,
         "height": 2600,
         "bytes": 769220
+      }
+    }
+  },
+  "allison-family/allison-oscar-simmon-portrait-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-simmon-portrait-recto-6aeb029d29",
+    "width": 6639,
+    "height": 8953,
+    "sizes": [
+      {
+        "width": 208,
+        "height": 280
+      },
+      {
+        "width": 340,
+        "height": 459
+      },
+      {
+        "width": 680,
+        "height": 917
+      },
+      {
+        "width": 800,
+        "height": 1079
+      },
+      {
+        "width": 1200,
+        "height": 1618
+      },
+      {
+        "width": 1900,
+        "height": 2562
+      },
+      {
+        "width": 1928,
+        "height": 2600
+      },
+      {
+        "width": 3708,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1928,
+      "study": 3708
+    },
+    "hash": "6aeb029d2989c3672045adb9b75b2c5be45140cf79dcb451f06efd8d2eab0c9c",
+    "download": {
+      "full": {
+        "file": "allison-oscar-simmon-portrait-recto.jpg",
+        "width": 6639,
+        "height": 8953,
+        "bytes": 4647574
+      },
+      "share": {
+        "file": "allison-oscar-simmon-portrait-recto-2600px.jpg",
+        "width": 1928,
+        "height": 2600,
+        "bytes": 391519
+      }
+    }
+  },
+  "allison-family/allison-oscar-simmon-portrait-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-simmon-portrait-verso-e18dd78d77",
+    "width": 6313,
+    "height": 8638,
+    "sizes": [
+      {
+        "width": 198,
+        "height": 270
+      },
+      {
+        "width": 340,
+        "height": 465
+      },
+      {
+        "width": 680,
+        "height": 930
+      },
+      {
+        "width": 800,
+        "height": 1095
+      },
+      {
+        "width": 1200,
+        "height": 1642
+      },
+      {
+        "width": 1900,
+        "height": 2600
+      },
+      {
+        "width": 3654,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1900,
+      "study": 3654
+    },
+    "hash": "e18dd78d777e8b53109dcf10a272523d7ec4f318e1e54c99a302a2d7ff6cc33d",
+    "download": {
+      "full": {
+        "file": "allison-oscar-simmon-portrait-verso.jpg",
+        "width": 6313,
+        "height": 8638,
+        "bytes": 6147925
+      },
+      "share": {
+        "file": "allison-oscar-simmon-portrait-verso-2600px.jpg",
+        "width": 1900,
+        "height": 2600,
+        "bytes": 407873
       }
     }
   },

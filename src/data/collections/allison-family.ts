@@ -813,5 +813,216 @@ export const COLLECTION: Collection = {
         },
       ],
     },
+    {
+      slug: 'allison-oscar-simmon-portrait',
+      title: '[Portrait of Oscar Simmon Allison]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'f.1.15',
+      date: {
+        display: '[1902-1908]',
+        earliest: 1902,
+        latest: 1908,
+        basis: ['This photograph is undated. It was likely taken after Oscar entered school to become a teacher. His age is estimated to be between 18 and 26.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-oscar-simmon-portrait-recto.jpg',
+      },
+      verso: {
+        file: 'allison-oscar-simmon-portrait-verso.jpg',
+      },
+      description:
+        'This is a formal portrait of Oscar Simmon Allison. This was likely taken during Oscar\'s time in school to become a teacher. It appears to be produced in a typical yearbook style.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'allison-oscar-simmon',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 25.5, y: 15, w: 54.3, h: 48.5 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-joseph-carroll-ned-hogan-1',
+      title: '[Formal portrait of Joseph Carroll and Sarah Edna Allison with Ned and Mary Melvin Hogan]',
+      titleSource: 'supplied',
+      format: 'real photo postcard',
+      place: 'Dickens County, Texas',
+      controlNumber: 'f.1.16',
+      date: {
+        display: '[1911-1912]',
+        earliest: 1911,
+        latest: 1912,
+        basis: ['This photograph depicts Joseph Carroll Allison likely during his time in Dickens County. Ned Hogan was a lifelong resident of the county. Ned married his wife, Mary, in 1911.' ],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-joseph-carroll-ned-hogan-1-recto.jpg',
+      },
+      verso: {
+        file: 'allison-joseph-carroll-ned-hogan-1-verso.jpg',
+      },
+      description:
+        'This is a formal portrait of Joseph Carroll Allison and his wife Sarah. They are joined by friend Ned Hogan and his wife Mary Melvin Pattonn Hogan. The photographs from this set are misidentified on the versos. They were sent to Harold Allison represented as photos of his father, Oscar, but it was determined this was not the case. They were then reidentified as Oscar\'s brother William Irvin Allison, but that was also found to be incorrect. After searching newspapers associated with Joseph Carroll\'s time in Dickens County as a teacher, Ned Hogan was identified as a friend he traveled with. His findagrave.com entry displays a picture of him that matches the likeness in these photographs. Despite Ned\'s appearance as an Allison, he is not, which provided quite the journey in identifying this photograph!',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Carrol + wife \n Irvin (Oscar crossed out) + wife (Ollie crossed out) \n Allison '
+        }
+      ],
+      depicts: [
+        {
+          person: 'allison-joseph-carroll',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 41, y: 6.9, w: 14.3, h: 11.2 },
+        },
+        {
+          person: 'allison-sarah-edna-adkins',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 20.2, y: 12.5, w: 17.4, h: 14.2 },
+        },
+        {
+          as: 'Ned Hogan',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 43.7, y: 21.9, w: 15.7, h: 13.5 },
+        },
+        {
+          as: 'Mary Melvin Patton Hogan',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 63.8, y: 12.9, w: 16.9, h: 14.8 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-joseph-carroll-ned-hogan-2',
+      title: '[Formal portrait of Joseph Carroll and Sarah Edna Allison with Ned and Mary Melvin Hogan]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Dickens County, Texas',
+      controlNumber: 'f.1.17',
+      date: {
+        display: '[1911-1912]',
+        earliest: 1911,
+        latest: 1912,
+        basis: ['This photograph depicts Joseph Carroll Allison likely during his time in Dickens County. Ned Hogan was a lifelong resident of the county. Ned married his wife, Mary, in 1911.' ],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-joseph-carroll-ned-hogan-2-recto.jpg',
+      },
+      verso: {
+        file: 'allison-joseph-carroll-ned-hogan-2-verso.jpg',
+      },
+      description:
+        'This is a formal portrait of Joseph Carroll Allison and his wife Sarah. They are joined by friend Ned Hogan and his wife Mary Melvin Pattonn Hogan. The photographs from this set are misidentified on the versos. They were sent to Harold Allison represented as photos of his father, Oscar, but it was determined this was not the case. They were then reidentified as Oscar\'s brother William Irvin Allison, but that was also found to be incorrect. After searching newspapers associated with Joseph Carroll\'s time in Dickens County as a teacher, Ned Hogan was identified as a friend he traveled with. His findagrave.com entry displays a picture of him that matches the likeness in these photographs. Despite Ned\'s appearance as an Allison, he is not, which provided quite the journey in identifying this photograph!',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Carrol + wife \n Irvin (Oscar crossed out) + wife (Ollie crossed out) \n Allison '
+        }
+      ],
+      depicts: [
+        {
+          person: 'allison-joseph-carroll',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 54, y: 24.9, w: 14.2, h: 10.2 },
+        },
+        {
+          person: 'allison-sarah-edna-adkins',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 34.9, y: 22.7, w: 14.8, h: 10 },
+        },
+        {
+          as: 'Ned Hogan',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 24.9, y: 38.2, w: 16.5, h: 12.9 },
+        },
+        {
+          as: 'Mary Melvin Patton Hogan',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 55.1, y: 40.4, w: 15.5, h: 12.7 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-joseph-carroll-ned-hogan-3',
+      title: '[Formal portrait of Joseph Carroll and Sarah Edna Allison with Ned and Mary Melvin Hogan]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Dickens County, Texas',
+      controlNumber: 'f.1.18',
+      date: {
+        display: '[1911-1912]',
+        earliest: 1911,
+        latest: 1912,
+        basis: ['This photograph depicts Joseph Carroll Allison likely during his time in Dickens County. Ned Hogan was a lifelong resident of the county. Ned married his wife, Mary, in 1911.' ],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-joseph-carroll-ned-hogan-3-recto.jpg',
+      },
+      verso: {
+        file: 'allison-joseph-carroll-ned-hogan-3-verso.jpg',
+      },
+      description:
+        'This is a formal portrait of Joseph Carroll Allison and his wife Sarah. They are joined by friend Ned Hogan and his wife Mary Melvin Pattonn Hogan. The photographs from this set are misidentified on the versos. They were sent to Harold Allison represented as photos of his father, Oscar, but it was determined this was not the case. They were then reidentified as Oscar\'s brother William Irvin Allison, but that was also found to be incorrect. After searching newspapers associated with Joseph Carroll\'s time in Dickens County as a teacher, Ned Hogan was identified as a friend he traveled with. His findagrave.com entry displays a picture of him that matches the likeness in these photographs. Despite Ned\'s appearance as an Allison, he is not, which provided quite the journey in identifying this photograph!',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'allison-joseph-carroll',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 35.4, y: 19.8, w: 14.2, h: 10.1 },
+        },
+        {
+          person: 'allison-sarah-edna-adkins',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 40.8, y: 36.6, w: 13.7, h: 10.3 },
+        },
+        {
+          as: 'Ned Hogan',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 61.2, y: 19.2, w: 14.9, h: 10.4 },
+        },
+        {
+          as: 'Mary Melvin Patton Hogan',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 57, y: 32.5, w: 15.1, h: 12.6 },
+        },
+      ],
+    },
   ]
 }

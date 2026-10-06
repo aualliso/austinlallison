@@ -113,6 +113,11 @@
 //     cutting, a line above reads "Swipe  1-3 of 16", and the row slides a
 //     little and back once when it first comes into view. See .wall-swipe.
 //
+// 2026-10, THE FINDER reads as a field: a faint panel in a hairline, its
+// glass in the band's rule colour, a ring when it has the keyboard, and a
+// small "/" (which now focuses it from anywhere on the page) where there is
+// a keyboard. It was a rule under italic text and was being read past.
+//
 // 2026-10, SECOND PASS.
 //   - THE CUE. The band's last line names what is below and links to it
 //     ("The holdings  278 items in 4 collections"), the same device as a
@@ -156,8 +161,6 @@ const years = (a: number, b: number) => (a === b ? `${a}` : `${a}${EN}${b}`);
 const plural = (n: number, one: string, many = `${one}s`) =>
   `${n.toLocaleString('en-US')} ${n === 1 ? one : many}`;
 
-const H2 =
-  'sec-h border-b border-haze pb-1.5 mb-4';
 
 /* ---------------------------------------------------------------- *
  * Vocabulary. While everything described is a photograph the page says
@@ -682,6 +685,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   <div class="guide max-w-4xl mx-auto py-6 text-iron font-serif" data-guide data-noun={NOUN}>
     <!-- 0. The front: the desk - title and finder beside the table -->
     <header class="front" data-room>
+      <div class="grain" aria-hidden="true"></div>
       <canvas class="room" aria-hidden="true" data-room-canvas></canvas>
       <div class="shade" aria-hidden="true"></div>
       <div class="front-top">
@@ -707,8 +711,10 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
                 autocomplete="off"
                 spellcheck="false"
                 placeholder={placeholder}
+                aria-keyshortcuts="/"
                 data-finder-input
               />
+              <kbd class="finder-key" aria-hidden="true">/</kbd>
             </div>
             <ul id="finder-list" class="finder-list" role="listbox" aria-label="Matches" hidden data-finder-list></ul>
             <p class="sr-only" aria-live="polite" data-finder-status></p>
@@ -771,12 +777,17 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
 
     <!-- The people: a roll of portraits, in order of birth, under the desk -->
     {wallCells.length > 0 && (
-      <section aria-labelledby="people-h" class="people" data-people>
-        <h2 id="people-h" class={H2}>The people</h2>
+      <section aria-labelledby="people-h" class="people wide" data-people>
+        <div class="opener">
+          <h2 id="people-h" class="opener-h">The people</h2>
+          <p class="opener-fig">
+            {wall.length} of {PEOPLE_WITH_ITEMS.length.toLocaleString('en-US')}
+          </p>
+        </div>
         <p class="note">
           {wall.length < PEOPLE_WITH_ITEMS.length
             ? `${wall.length} of the ${PEOPLE_WITH_ITEMS.length.toLocaleString('en-US')} people named in the collections`
-            : 'The people named in the collections'}, in order of birth.
+            : 'The people named in the collections'}, in order of birth.{' '}
           {lifeAxis && (
             <>
               The line under each is a life, all on one scale from {lifeAxis.lo} to {lifeAxis.hi}; the heavier part
@@ -850,7 +861,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     )}
 
     <!-- 1. Descriptive summary -->
-    <dl class="ledger">
+    <dl class="ledger wide">
       <div>
         <dt>{ONLY_PHOTOS ? 'Photographs' : 'Items'}</dt>
         <dd class="fig">{ALL_ITEMS.length.toLocaleString('en-US')}</dd>
@@ -884,8 +895,11 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     </dl>
 
     <!-- 3. Holdings -->
-    <section id="holdings" aria-labelledby="holdings-h" class="mt-12 cue-target">
-      <h2 id="holdings-h" class={H2}>Holdings</h2>
+    <section id="holdings" aria-labelledby="holdings-h" class="sect wide cue-target">
+      <div class="opener">
+        <h2 id="holdings-h" class="opener-h">Holdings</h2>
+        <p class="opener-fig">{plural(COLLECTIONS.length, 'collection')}</p>
+      </div>
       <p class="note">
         Each collection is a group of {NOUNS} that came to me together,
         so a collection is not the same thing as a family: one box can hold
@@ -971,8 +985,12 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
 
     <!-- 5. Surnames -->
     {surnames.length > 0 && COLLECTIONS.length > 0 && (
-      <section aria-labelledby="surnames-h" class="mt-14">
-        <h2 id="surnames-h" class={H2}>Surnames across the collections</h2>
+      <section aria-labelledby="surnames-h" class="sect wide">
+        <div class="opener">
+          <h2 id="surnames-h" class="opener-h">Surnames across the collections</h2>
+          <p class="opener-fig">{plural(surnames.length, 'surname')}</p>
+        </div>
+        <div class="xw-grid">
         <p class="note">
           Collections follow where the {NOUNS} came from, so families run
           across them. Figures are {NOUNS}; the surnames that turn up most
@@ -1022,12 +1040,16 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
             Show all {xwRows.length.toLocaleString('en-US')} surnames
           </button>
         )}
+        </div>
       </section>
     )}
     <!-- 4. Chronology -->
     {axis && spreads.length > 0 && (
-      <section aria-labelledby="chron-h" class="bleed chron-band" data-chron>
-        <h2 id="chron-h" class={H2}>Chronology</h2>
+      <section aria-labelledby="chron-h" class="bleed chron-band wide" data-chron>
+        <div class="opener">
+          <h2 id="chron-h" class="opener-h">Chronology</h2>
+          {extent && <p class="opener-fig">{years(extent.from, extent.to)}</p>}
+        </div>
         <p class="note">
           How many {NOUNS} were made in each year, as far as the dates
           allow. One dated only to a span of years is spread evenly across
@@ -1137,7 +1159,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
 
 
     <!-- Colophon -->
-    <div class="colophon">
+    <div class="colophon wide">
       <p>
         Every {NOUN} here is published as IIIF, so its images open at full
         resolution in any IIIF viewer, such as Mirador or the Universal Viewer.
@@ -1165,6 +1187,63 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   .guide {
     --c-mount: var(--color-caliche, #e8e1d1);
     --c-desk: var(--color-desk, #f5f3ed);
+    /* THE PAGE'S ONE MEASURE: up to 76rem, never past the window less
+       2.5rem (so no sideways scroll). */
+    --fw: min(76rem, 100vw - 2.5rem);
+  }
+  /* Every part of the guide is set to that measure, whatever the column the
+     layout gives the page: the box is given the width outright and centred
+     by equal (usually negative) side margins - the device of a collection's
+     spread. Running text inside keeps a reading measure of its own. */
+  .wide {
+    width: var(--fw);
+    margin-left: calc((100% - var(--fw)) / 2);
+    margin-right: calc((100% - var(--fw)) / 2);
+  }
+  .sect {
+    margin-top: clamp(3.5rem, 6.5vw, 5.75rem);
+  }
+  /* SECTION OPENERS. The heading at display size - the face is at its best
+     large, and the title was the page's only large type - on a hairline that
+     begins with a short heavy stroke of caprock, with one fact about the
+     section in mono at the far end of the line, as a ledger's running head
+     carries its folio. */
+  .opener {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.3rem 1.5rem;
+    margin: 0 0 1.15rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid var(--c-haze);
+  }
+  .opener::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    width: 2.75rem;
+    height: 2px;
+    background: var(--c-caprock);
+  }
+  .opener-h {
+    margin: 0;
+    font-size: clamp(2rem, 1.3rem + 2.6vw, 3.3rem);
+    font-weight: 500;
+    line-height: 1.02;
+    letter-spacing: -0.018em;
+    text-wrap: balance;
+  }
+  .opener-fig {
+    margin: 0;
+    color: var(--c-iron);
+    font: 0.72rem/1.4 var(--mono);
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    opacity: 0.74;
   }
   /* FULL-WIDTH BANDS without a 100vw element: painted by border-image
      outset, which is ink overflow - it reaches the window edges and never
@@ -1181,6 +1260,9 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     --c-ink: #efe8da;
     --c-quiet: #b3ab9c;
     --c-rule: #b8957c;
+    /* The grain: light and dark specks at four strengths on a clear
+       ground, tiled. Used by the band (.grain) and by each holdings strip. */
+    --grain: url('data:image/png;base64,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');
   }
   /* Wider than the reading column (up to 76rem, never past the window less
      2.5rem, so no sideways scroll) and carried to the window edges by the
@@ -1188,13 +1270,26 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
      the page's py-6, so the ground meets the header. No filter, blend, mask
      or 3D: the light is a canvas, the shade a gradient. */
   .front {
-    --fw: min(76rem, 100vw - 2.5rem);
     position: relative;
     width: var(--fw);
     margin: -1.5rem calc((100% - var(--fw)) / 2) 0;
     padding: clamp(2rem, 4.5vw, 3.5rem) 0 0;
     border-image: conic-gradient(var(--c-ground) 0 0) fill 0 / / 0 100vmax;
     color: var(--c-ink);
+  }
+  /* THE DESK'S SURFACE. A fine grain under the light, so the beam falls on
+     a material and not on a flat colour. It is one small tiled image (96px,
+     4.6kB, in --grain below) - NOT a filter - and --grain-strength is its
+     dial (0 is the flat ground again). The band's ground runs on to the
+     window edges as flat colour, so here the grain is let go before the
+     box's own edges: a wash of the ground colour is laid over it there. */
+  .grain {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    opacity: var(--grain-strength, 1);
+    background-image:
+      linear-gradient(to right, var(--c-ground), transparent 9%, transparent 91%, var(--c-ground)), var(--grain);
   }
   /* The print room's light: a transparent canvas filling the band's box,
      under everything in it. It fades in once drawn, so a slow script never
@@ -1227,7 +1322,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     opacity: var(--shade);
     background: linear-gradient(to bottom, var(--c-ground) 0, var(--c-ground) 30%, transparent 62%);
   }
-  .front > :not(.room):not(.shade) {
+  .front > :not(.room):not(.shade):not(.grain) {
     position: relative;
   }
   .front-eyebrow {
@@ -1268,25 +1363,57 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       background: linear-gradient(to right, var(--c-ground) 0, var(--c-ground) 22%, transparent 52%);
     }
   }
-  /* The finder, on the dark ground. Its list of matches keeps the page's
-     own paper and ink (it must name its colour: it would inherit the
-     band's). */
+  /* THE FINDER, on the dark ground. It used to be a rule under a line of
+     italic - correct, and easy to read past. Now it is A FIELD: a faint
+     lighter panel inside a hairline, so it has the outline of something to
+     type in, with its glass in the band's warm rule colour. It answers the
+     pointer (the hairline firms) and takes a ring of the rule colour when
+     it has the keyboard. On a machine with a keyboard a small "/" at its
+     right says the field can be reached by that key. Nothing moves and
+     nothing is brighter than the title.
+     Its list of matches keeps the page's own paper and ink (it must name
+     its colour: it would inherit the band's). */
   .front .finder {
     margin-top: 1.9rem;
   }
-  .front .finder-label,
+  .front .finder-label {
+    color: var(--c-ink);
+    opacity: 0.8;
+  }
+  .front .finder-field {
+    margin-top: 0.55rem;
+    border: 1px solid rgb(239 232 218 / 0.3);
+    background: rgb(239 232 218 / 0.07);
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+  .front .finder-field:hover {
+    border-color: rgb(239 232 218 / 0.5);
+  }
+  .front .finder-field:focus-within {
+    border-color: var(--c-rule);
+    background: rgb(239 232 218 / 0.1);
+    box-shadow: 0 0 0 1px var(--c-rule);
+  }
   .front .finder-icon {
-    color: var(--c-quiet);
+    left: 0.85rem;
+    width: 1.2rem;
+    height: 1.2rem;
+    color: var(--c-rule);
   }
   .front .finder input {
-    border-bottom-color: rgb(239 232 218 / 0.6);
+    padding: 0.7rem 2.9rem 0.65rem 2.65rem;
+    border-bottom: 0;
   }
   .front .finder input::placeholder {
-    color: var(--c-quiet);
+    color: var(--c-ink);
+    opacity: 0.6;
   }
   .front .finder input:focus {
-    border-bottom-color: var(--c-rule);
-    box-shadow: 0 1.5px 0 0 var(--c-rule);
+    border-bottom: 0;
+    box-shadow: none;
   }
   .front .finder-list {
     z-index: 40;
@@ -1432,9 +1559,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
      swipe through the generations rather than five rows to scroll past -
      with the next portrait showing at the edge to say there is more. */
   .people {
-    --fw: min(76rem, 100vw - 2.5rem);
-    width: var(--fw);
-    margin: 2.75rem calc((100% - var(--fw)) / 2) 0;
+    margin-top: clamp(3rem, 5.5vw, 4.5rem);
   }
   /* THAT THE ROW SCROLLS is said four ways, none of them a bouncing chevron:
      the next portrait is cut by the edge; the edge is a FADE, so the cut
@@ -1713,7 +1838,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
 
   /* The colophon that closes the page. */
   .colophon {
-    margin-top: 3rem;
+    margin-top: clamp(3rem, 5vw, 4.5rem);
     padding-top: 1rem;
     border-top: 1px solid var(--c-haze);
   }
@@ -1729,8 +1854,8 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
 
   /* The chronology's band. */
   .chron-band {
-    margin-top: 3.5rem;
-    padding: 2.5rem 0 2.75rem;
+    margin-top: clamp(3.5rem, 6.5vw, 5.75rem);
+    padding: clamp(2.5rem, 4.5vw, 3.75rem) 0 clamp(2.75rem, 4.5vw, 3.75rem);
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -1740,6 +1865,10 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     .spread-print {
       transition: none;
       animation: none;
+    }
+    .front .finder-field,
+    .finder-key {
+      transition: none;
     }
     .people.is-seen .wall-cell {
       animation: none;
@@ -1772,7 +1901,8 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       color: var(--c-iron);
     }
     .room,
-    .shade {
+    .shade,
+    .grain {
       display: none;
     }
     .front .front-eyebrow,
@@ -1809,6 +1939,11 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
       background: none;
       color: inherit;
     }
+    .wide {
+      width: auto;
+      margin-left: 0;
+      margin-right: 0;
+    }
   }
 
   .lede,
@@ -1822,22 +1957,27 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   }
 
   /* 1. Summary ---------------------------------------------------- */
+  /* Four figures at display size: the whole of the holdings in one line of
+     the page, ruled like a ledger's totals. */
   .ledger {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    margin: 2.25rem 0 0;
+    margin-top: clamp(2.5rem, 4.5vw, 3.75rem);
     border-bottom: 1px solid var(--c-haze);
   }
   .ledger > div {
-    padding: 0.85rem 0.75rem 0.95rem 0;
+    padding: 1rem 0.75rem 1.1rem 0;
     border-top: 1px solid var(--c-haze);
   }
   @media (min-width: 48rem) {
     .ledger {
       grid-template-columns: repeat(4, minmax(0, 1fr));
     }
+    .ledger > div {
+      padding: 1.25rem 1rem 1.4rem 0;
+    }
     .ledger > div + div {
-      padding-left: 1rem;
+      padding-left: 1.5rem;
       border-left: 1px solid var(--c-haze);
     }
   }
@@ -1846,19 +1986,21 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     font-size: 0.7rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--c-sage);
+    color: var(--c-iron);
+    opacity: 0.7;
   }
   .ledger .fig {
-    margin: 0.3rem 0 0;
-    font-size: clamp(1.75rem, 1.2rem + 2vw, 2.4rem);
+    margin: 0.45rem 0 0;
+    font-size: clamp(2rem, 1.15rem + 3.3vw, 4.1rem);
     font-weight: 500;
-    line-height: 1;
+    line-height: 0.95;
+    letter-spacing: -0.02em;
     font-variant-numeric: oldstyle-nums proportional-nums;
     white-space: nowrap;
   }
   .ledger .sub {
-    margin: 0.35rem 0 0;
-    font-size: 0.92rem;
+    margin: 0.55rem 0 0;
+    font-size: 0.95rem;
     font-style: italic;
     opacity: 0.75;
   }
@@ -1918,6 +2060,35 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     border-bottom-color: var(--c-caprock);
     box-shadow: 0 1.5px 0 0 var(--c-caprock);
   }
+  /* The "/" that says the field has a key. Only where there is a keyboard
+     and a pointer to go with it; gone while the field is in use or holds
+     text, so it never sits over what is typed. */
+  .finder-key {
+    display: none;
+    position: absolute;
+    right: 0.75rem;
+    top: 50%;
+    min-width: 1.45rem;
+    padding: 0.1rem 0.3rem;
+    border: 1px solid currentColor;
+    border-radius: 3px;
+    color: inherit;
+    font: 0.7rem/1.3 var(--mono);
+    text-align: center;
+    opacity: 0.5;
+    transform: translateY(-50%);
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .finder-key {
+      display: block;
+    }
+  }
+  .finder-field:focus-within .finder-key,
+  .finder input:not(:placeholder-shown) ~ .finder-key {
+    opacity: 0;
+  }
   .finder-list {
     position: absolute;
     z-index: 30;
@@ -1975,6 +2146,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
 
   /* 3. Holdings --------------------------------------------------- */
   .entries {
+    margin-top: 1.6rem;
     border-top: 1px solid var(--c-haze);
   }
   /* A folder number in the gutter, the record and the shelf indented from
@@ -2074,10 +2246,15 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     color: var(--c-iron);
     text-decoration: none;
   }
+  /* The whole entry is the link: this lies over all of it. It needs a
+     z-index of its own - the prints (which carry a view-transition name) and
+     the faded scope note each make a stacking context, and without one they
+     sat ON TOP of it, so a click on a photograph went nowhere. */
   .entry-link::after {
     content: '';
     position: absolute;
     inset: 0;
+    z-index: 1;
   }
   .entry-link:focus {
     outline: none;
@@ -2168,7 +2345,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     margin: 1.75rem -1.25rem 0;
     padding: 1.5rem 1.25rem 1.6rem;
     background-color: var(--m-ground, var(--c-ground));
-    background-image: var(--wash, none);
+    background-image: var(--wash, none), var(--grain);
     color: var(--m-quiet, var(--c-quiet));
     overflow-x: auto;
     scrollbar-width: none;
@@ -2260,6 +2437,67 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
     opacity: 0.9;
   }
 
+  /* ON A WIDE SCREEN EACH ENTRY IS A SPREAD, the composition of the desk at
+     the head of the page: the record at the left on the pale band, and its
+     strip of desk at the right, running the full height of the entry and
+     out to its edge. Number | record | strip.
+     THE ARITHMETIC THAT KEEPS THE PRINTS ON THE STRIP. --strip is the room
+     inside the strip: the page's measure, less the record's column, less
+     everything fixed beside it (12.5rem: the entry's left padding, the
+     number's column, two gaps, the strip's own padding). The key print may
+     take 38% of it, each of three others 16.5%, each of three gaps 3% -
+     96.5% in all, at any width; the rest is slack for the prints' mats. A
+     print wider than its share stands shorter. */
+  @media (min-width: 64rem) {
+    .entry {
+      --text: clamp(16rem, 27vw, 20rem);
+      --strip: calc(var(--fw) - var(--text) - 12.5rem);
+      grid-template-columns: 4.25rem var(--text) minmax(0, 1fr);
+      grid-template-rows: 1fr auto;
+      padding: 0 0 0 1.75rem;
+    }
+    .entry-mark {
+      padding-top: 2.6rem;
+    }
+    .entry > .entry-head {
+      grid-column: 2;
+      grid-row: 1;
+      grid-template-columns: minmax(0, 1fr);
+      align-content: start;
+      align-items: start;
+      gap: 1.4rem;
+      padding-top: 2.5rem;
+    }
+    .entry > .entry-foot {
+      grid-column: 2;
+      grid-row: 2;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 1.4rem;
+      padding-bottom: 2.1rem;
+    }
+    .entry > .shelf {
+      grid-column: 3;
+      grid-row: 1 / -1;
+      align-self: stretch;
+      gap: calc(var(--strip) * 0.03);
+      margin: 0;
+      padding: 2.25rem 1.75rem;
+    }
+    .entry-title {
+      font-size: clamp(1.9rem, 1.1rem + 1.3vw, 2.35rem);
+    }
+    .entry-figures {
+      text-align: left;
+    }
+    .plate--key {
+      height: min(23rem, calc(var(--strip) * 0.38 / var(--ar, 1)));
+    }
+    .plate--small {
+      height: min(11.5rem, calc(var(--strip) * 0.165 / var(--ar, 1)));
+    }
+  }
+
   .entry-foot {
     display: flex;
     flex-wrap: wrap;
@@ -2348,7 +2586,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   /* The histogram. Everything here is a positioned box or an SVG path. */
   .hist-plot {
     position: relative;
-    height: 11rem;
+    height: clamp(11rem, 19vw, 17rem);
     padding-bottom: 1.5rem;
     cursor: crosshair;
     touch-action: pan-y;
@@ -2682,6 +2920,30 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   .xw-toggle:focus-visible {
     outline: 2px solid var(--c-caprock);
     outline-offset: 2px;
+  }
+  /* On a wide screen: the note (and the button that opens the rest) at the
+     left, the table at the right - the same record-and-object split as the
+     holdings above it. */
+  @media (min-width: 64rem) {
+    .xw-grid {
+      display: grid;
+      grid-template-columns: clamp(16rem, 27vw, 20rem) minmax(0, 1fr);
+      gap: 0 clamp(2.5rem, 5vw, 4.5rem);
+      align-items: start;
+    }
+    .xw-grid > .note {
+      grid-column: 1;
+    }
+    .xw-grid > .xwalk-wrap {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+      margin-top: 0;
+    }
+    .xw-grid > .xw-toggle {
+      grid-column: 1;
+      justify-self: start;
+      margin-top: 1.25rem;
+    }
   }
   .xwalk-wrap {
     position: relative;
@@ -3278,6 +3540,25 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
         else input.value = '';
       }
     });
+
+    // "/" from anywhere on the page puts the cursor in the finder - unless
+    // the visitor is already typing somewhere, or holding a modifier. The
+    // listener is on the document, so it is taken off when the page is
+    // swapped out.
+    const keys = new AbortController();
+    document.addEventListener(
+      'keydown',
+      (e) => {
+        if (e.key !== '/' || e.ctrlKey || e.metaKey || e.altKey || e.defaultPrevented) return;
+        const t = e.target as HTMLElement | null;
+        if (t && (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName))) return;
+        e.preventDefault();
+        input.focus();
+        input.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      },
+      { signal: keys.signal }
+    );
+    document.addEventListener('astro:before-swap', () => keys.abort(), { once: true });
   }
 
   /* ---------------------------------------------------------------- *
