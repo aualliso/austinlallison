@@ -845,8 +845,21 @@ export const relationsOf = (personId: string): Kin[] => {
     for (const r of other.relations ?? []) {
       if (r.person !== personId) continue;
       const key = `${INVERSE[r.type]}|${other.id}`;
-      if (!out.has(key)) {
-        out.set(key, { type: INVERSE[r.type], person: other.id, basis: r.basis, confidence: r.confidence, stated: false });
+      const mine = out.get(key);
+      if (!mine) {
+        out.set(key, {
+          type: INVERSE[r.type],
+          person: other.id,
+          basis: r.basis,
+          confidence: r.confidence,
+          ...(r.type === 'sibling' && r.half ? { half: true } : {}),
+          stated: false,
+        });
+      } else if (r.type === 'sibling' && r.half && !mine.half) {
+        // HALF-SIBLINGS: a mark on EITHER record holds for both. Leaving it
+        // off claims nothing, so the other record's mark is not contradicted
+        // by this one's silence - and the two pages must not disagree.
+        out.set(key, { ...mine, half: true });
       }
     }
   }
@@ -1049,6 +1062,56 @@ export const keyItemsOf = (slug: string, n = 3): ResolvedItem[] => {
 export { PEOPLE, personById, NAME_INDEX };
 export { heading, headingDates, naturalName, naturalNameWithDates, KIND_NOUN } from './types';
 export type { Collection, Item, Person, ResolvedItem, ResolvedPrint };
+
+/* ------------------------------------------------------------------ *
+ * Warnings, not errors: brothers and sisters whose recorded PARENTS do not
+ * fit what the records say of them (see `half` on Relation, types.ts).
+ *
+ * Nothing here decides who is a half-sibling - that is stated on a record
+ * or it is not said. This only points at places where two statements pull
+ * against each other, so one of them can be looked at again:
+ *   - `half: true` on something that is not a sibling relation;
+ *   - marked half-siblings who share BOTH their recorded parents, or none;
+ *   - siblings NOT marked half who share only one parent, where each has
+ *     two parents recorded (so it is not just an unfinished record) - the
+ *     likeliest case of a half-sibling waiting for its mark;
+ *   - siblings who have no recorded parent in common at all.
+ * Each pair is reported once. A pair where either person has no parent
+ * recorded is left alone: there is nothing to compare.
+ * ------------------------------------------------------------------ */
+{
+  for (const p of PEOPLE) {
+    for (const r of p.relations ?? []) {
+      if (r.half && r.type !== 'sibling') {
+        console.warn(`[people] ${p.id}: \`half\` is set on a ${r.type} relation (to ${r.person}); it only means something on a sibling.`);
+      }
+    }
+  }
+  const parentsOf = new Map<string, Set<string>>(
+    PEOPLE.map((p) => [p.id, new Set(relationsOf(p.id).filter((k) => k.type === 'parent').map((k) => k.person))])
+  );
+  for (const p of PEOPLE) {
+    for (const k of relationsOf(p.id)) {
+      if (k.type !== 'sibling' || !(p.id < k.person)) continue;
+      const a = parentsOf.get(p.id)!;
+      const b = parentsOf.get(k.person)!;
+      if (a.size === 0 || b.size === 0) continue;
+      const shared = [...a].filter((x) => b.has(x)).length;
+      const pair = `${p.id} and ${k.person}`;
+      if (k.half) {
+        if (shared === 0) {
+          console.warn(`[people] ${pair}: marked half-siblings, but no recorded parent is common to both.`);
+        } else if (shared >= 2) {
+          console.warn(`[people] ${pair}: marked half-siblings, but they share ${shared} recorded parents.`);
+        }
+      } else if (shared === 0) {
+        console.warn(`[people] ${pair}: recorded as siblings, but no recorded parent is common to both.`);
+      } else if (shared === 1 && a.size >= 2 && b.size >= 2) {
+        console.warn(`[people] ${pair}: siblings with only one recorded parent in common. If they are half-siblings, add half: true to the relation.`);
+      }
+    }
+  }
+}
 
 /* ------------------------------------------------------------------ *
  * A warning, not an error: a photograph dated wholly outside a person's

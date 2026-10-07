@@ -2,8 +2,8 @@
 // src/pages/collections/names/[person].astro
 //
 // ONE AUTHORITY RECORD, read two ways. As a cataloguer's record: the
-// established heading, its status, see-from forms, sources, identifiers, and
-// the whole thing as MARC 21. As a person: their face in every photograph
+// established heading, its status, see-from forms, sources, and links to the
+// same person on other sites. As a person: their face in every photograph
 // where it is placed, in date order, with their age at the time; a line of
 // their life with the photographs set along it; a view that puts faces side
 // by side so an identification can be weighed; and their family.
@@ -38,8 +38,12 @@
 //   THE SHELF and THE LIST are one list: each photograph's row carries its
 //   print at true proportions beside its title, date, age and grounds.
 //   THE RECORD replaces the typed catalogue card: a plain two-column list
-//   (heading, status, also found as, sources, elsewhere, permalink) with
-//   the MARC view opening from its foot.
+//   (heading, status, also found as, sources, permalink), with THIS PERSON
+//   ELSEWHERE at its foot (2026-10): a link to their Find a Grave memorial
+//   and their FamilySearch tree entry, made from `identifiers` on the record
+//   in people.ts. It took the place of the MARC 21 view, which is gone.
+//   The same links also stand in the header, under the tally, as two words
+//   each - the foot of a long page is no place to find the way out.
 //   VOCABULARY follows the collections guide: an item's optional `kind`
 //   (default photograph) decides whether this person is "in 3 photographs"
 //   or "in 2 photographs and 1 journal".
@@ -53,6 +57,21 @@
 //   Each print counts as a photograph in the tally. And where a face is so
 //   small in its scan that the plate cannot fill the cabinet card's window,
 //   the window takes the face crop instead, which is cut from the full scan.
+//
+// 2026-10 FAMILY FIRST. Who a person belongs to is part of who they are,
+//   and kin are the links from one person's page to the next, so:
+//   THE KINSHIP LINE stands in the header under the dates - whose child,
+//   whom they married, whose parent, each name a link ("Child of", "Parent
+//   of": the records do not say son or daughter, and it is not guessed).
+//   FAMILY is the second thing on the page, above the life chart.
+//   THE TREE is the direct line only - parents, the person and spouse,
+//   children - as mounted portraits like the guide's roll, joined by drawn
+//   lines (see the stylesheet for how, without script). Brothers and
+//   sisters stand in a smaller row under it. "How each relationship is
+//   known" is folded behind a toggle, so the section can sit this high.
+//   HALF-SIBLINGS: a sibling relation marked `half: true` in people.ts (on
+//   either record) reads "Half-sibling" in that row and in the list of
+//   grounds. It is stated, never worked out from the parents.
 //
 // STANDING CONSTRAINTS
 //   No filter, blend, mask, clip-path or 3D. Motion is opacity and
@@ -505,73 +524,72 @@ const spouses = kinOf('spouse');
 const siblings = kinOf('sibling');
 const children = kinOf('child');
 const KIN_LABEL: Record<string, string> = { parent: 'Parent', child: 'Child', spouse: 'Spouse', sibling: 'Sibling' };
+// A sibling relation marked `half` on either record (types.ts) is named as
+// one; an unmarked one is a "sibling", which claims neither half nor full.
+const kinLabel = (k: (typeof kin)[number]) => (k.type === 'sibling' && k.half ? 'Half-sibling' : KIN_LABEL[k.type]);
+// THE KINSHIP LINE under the name: whose child, whom they married, whose
+// parent - each name a link. The words are neutral ("Child of", "Parent
+// of") because the records do not say son or daughter and it is not guessed
+// from a name. A relationship that is not certain says so in brackets. Six
+// names at most in a group; the rest are counted and linked to the tree.
+const KIN_SAY_MAX = 6;
+const kinSay = [
+  { lead: 'Child of', list: parents },
+  { lead: 'Married', list: spouses },
+  { lead: 'Parent of', list: children },
+]
+  .filter((g) => g.list.length > 0)
+  .map((g) => ({ lead: g.lead, shown: g.list.slice(0, KIN_SAY_MAX), more: Math.max(0, g.list.length - KIN_SAY_MAX) }));
 
 /* ------------------------------------------------------------------ *
- * Identifiers, links out
+ * This person elsewhere: links out, made from `identifiers` in people.ts
  * ------------------------------------------------------------------ */
+// A record carries the bare identifier - a Find a Grave memorial number, a
+// FamilySearch person ID - and the address is made here, so the site keeps
+// its links if either service changes its URLs: one line below changes, not
+// every record. A whole address (https://...) is also accepted and used as
+// it stands. `shape` is what a well-formed identifier looks like: one that
+// does not match still gets its link, with a warning in the build log naming
+// the person, since a mistyped identifier makes a dead link and nothing else
+// would say so.
 const ids = p.identifiers ?? {};
-const link = (v: string, make: (x: string) => string) => (/^https?:\/\//.test(v) ? v : make(v.trim()));
+const isUrl = (v: string) => /^https?:\/\//.test(v);
+type Elsewhere = { label: string; what: string; value: string; href: string };
+const elsewhereOf = (
+  raw: string | undefined,
+  label: string,
+  what: string,
+  shape: RegExp,
+  make: (x: string) => string,
+  tidy: (x: string) => string = (x) => x
+): Elsewhere | null => {
+  if (!raw || !String(raw).trim()) return null;
+  const typed = String(raw).trim();
+  const v = isUrl(typed) ? typed : tidy(typed);
+  if (isUrl(v)) {
+    // Show the identifier at the end of the address, if there is one.
+    const tail = v.replace(/[/?#]+$/, '').split('/').filter((x) => shape.test(x)).pop();
+    return { label, what: tail ? what : '', value: tail ?? '', href: v };
+  }
+  if (!shape.test(v)) {
+    console.warn(`[people] ${p.id}: ${label} identifier '${v}' does not look like ${what ? `a ${what} identifier` : 'one'}; check the link.`);
+  }
+  return { label, what, value: v, href: make(v) };
+};
 const identifiers = [
-  ids.viaf && { label: 'VIAF', value: ids.viaf, href: link(ids.viaf, (x) => `https://viaf.org/viaf/${x}`) },
-  ids.lccn && {
-    label: 'Library of Congress',
-    value: ids.lccn,
-    href: link(ids.lccn, (x) => `https://id.loc.gov/authorities/names/${x.replace(/\s+/g, '')}.html`),
-  },
-  ids.findagrave && {
-    label: 'Find a Grave',
-    value: ids.findagrave,
-    href: link(ids.findagrave, (x) => `https://www.findagrave.com/memorial/${x}`),
-  },
-  ids.familysearch && {
-    label: 'FamilySearch',
-    value: ids.familysearch,
-    href: link(ids.familysearch, (x) => `https://www.familysearch.org/tree/person/details/${x}`),
-  },
-].filter(Boolean) as { label: string; value: string; href: string }[];
-
-/* ------------------------------------------------------------------ *
- * The record as MARC 21 authority fields. Leader and 008 are omitted: this
- * is for reading and for copying into a record, not for loading as-is.
- * ------------------------------------------------------------------ */
-type Sub = [string, string];
-const marc: { tag: string; ind: string; subs: Sub[] }[] = [];
-if (ids.lccn) marc.push({ tag: '010', ind: '  ', subs: [['a', ids.lccn]] });
-if (ids.viaf) marc.push({ tag: '024', ind: '7 ', subs: [['a', ids.viaf], ['2', 'viaf']] });
-for (const x of identifiers.filter((i) => i.label === 'Find a Grave' || i.label === 'FamilySearch')) {
-  marc.push({ tag: '024', ind: '7 ', subs: [['a', x.href], ['2', 'uri']] });
-}
-if ((born !== undefined || died !== undefined) && dateKind !== 'active') {
-  const edtf = (y: number) => `${y}${dateKind === 'approximate' ? '~' : ''}`;
-  const subs: Sub[] = [];
-  if (born !== undefined) subs.push(['f', edtf(born)]);
-  if (died !== undefined) subs.push(['g', edtf(died)]);
-  subs.push(['2', 'edtf']);
-  marc.push({ tag: '046', ind: '  ', subs });
-}
-{
-  const subs: Sub[] = [['a', `${p.authorized},`]];
-  const d = headingDates(p);
-  if (d) subs.push(['d', d]);
-  else if (p.qualifier) subs.push(['c', `(${p.qualifier})`]);
-  else subs[0][1] = p.authorized;
-  marc.push({ tag: '100', ind: '1 ', subs });
-}
-for (const v of p.variants ?? []) marc.push({ tag: '400', ind: '1 ', subs: [['a', v]] });
-for (const k of kin) {
-  const d = headingDates(k.other);
-  marc.push({
-    tag: '500',
-    ind: '1 ',
-    subs: [['w', 'r'], ['i', `${KIN_LABEL[k.type]}:`], ['a', d ? `${k.other.authorized},` : k.other.authorized], ...(d ? ([['d', d]] as Sub[]) : [])],
-  });
-}
-if (status === 'provisional') {
-  marc.push({ tag: '667', ind: '  ', subs: [['a', 'Provisional heading, resting on the collection\u2019s own objects.']] });
-}
-for (const s of p.sources ?? []) marc.push({ tag: '670', ind: '  ', subs: [['a', s]] });
-if (p.scopeNote) marc.push({ tag: '678', ind: '0 ', subs: [['a', p.scopeNote]] });
-marc.sort((a, b) => a.tag.localeCompare(b.tag));
+  elsewhereOf(ids.findagrave, 'Find a Grave', 'memorial', /^\d+$/, (x) => `https://www.findagrave.com/memorial/${x}`),
+  elsewhereOf(
+    ids.familysearch,
+    'FamilySearch',
+    'Family Tree',
+    /^[A-Z0-9]{4}-[A-Z0-9]{3,4}$/,
+    (x) => `https://www.familysearch.org/tree/person/details/${x}`,
+    // FamilySearch IDs are capitals; one typed in lower case is the same ID.
+    (x) => x.toUpperCase()
+  ),
+  elsewhereOf(ids.lccn, 'Library of Congress', 'name authority', /^[a-z]{1,3}\s?\d{8,10}$/, (x) => `https://id.loc.gov/authorities/names/${x.replace(/\s+/g, '')}.html`),
+  elsewhereOf(ids.viaf, 'VIAF', '', /^\d+$/, (x) => `https://viaf.org/viaf/${x}`),
+].filter((x): x is Elsewhere => !!x);
 
 /* ------------------------------------------------------------------ *
  * Neighbours, share image, structured data
@@ -723,15 +741,181 @@ const LINK = 'text-caprock hover:underline';
             ))}
           </p>
         )}
+        {kinSay.length > 0 && (
+          <p class="kinline">
+            {kinSay.map((g, gi) => (
+              <>
+                {gi > 0 && ' '}
+                <span class="kin-say">
+                  {g.lead}{' '}
+                  {g.shown.map((k, n) => (
+                    <>
+                      {n > 0 && (n === g.shown.length - 1 && g.more === 0 ? ' and ' : ', ')}
+                      <a href={personHref(k.person)} class={LINK}>{naturalName(k.other)}</a>
+                      {label(k.confidence) && ` (${label(k.confidence).toLowerCase()})`}
+                    </>
+                  ))}
+                  {g.more > 0 && (
+                    <>
+                      {' '}and <a href="#family-h" class={LINK}>{g.more} more</a>
+                    </>
+                  )}
+                  .
+                </span>
+              </>
+            ))}
+          </p>
+        )}
         <p class="tally">
           {objectCount === 0 ? `No ${NOUN} known yet` : `In ${inWhatLine}`}
           {collectionsHere.size > 1 && <> &middot; {collectionsHere.size} collections</>}
           {faces.length > 0 && <> &middot; face marked in {faces.length}</>}
         </p>
+        {/* THE WAY OUT, where it is seen: the same links as "This person
+            elsewhere" at the foot of the record, as two words each. The
+            identifier itself stays down there, with the record. */}
+        {identifiers.length > 0 && (
+          <ul class="hero-links" aria-label="This person on other sites">
+            {identifiers.map((i) => (
+              <li>
+                <a href={i.href} class="hero-link" rel="external noopener">
+                  {i.label}
+                  <span class="hero-link-arrow" aria-hidden="true">&nearr;</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </header>
 
     {p.scopeNote && <p class="lede">{p.scopeNote}</p>}
+
+    <!-- FAMILY -->
+    {/* Second on the page: who this person belongs to is part of who they
+        are, and these are the links between one person's page and the next.
+        THE TREE is the direct line only - parents above, the person (and
+        whom they married) in the middle, children below - so it can be
+        drawn with true connecting lines whatever the size of the family.
+        Brothers and sisters stand in a row of their own under it. */}
+    {kin.length > 0 && (
+      <section class="section family" aria-labelledby="family-h">
+        <h2 id="family-h" class={H2}>Family</h2>
+        <div
+          class:list={['tree', { 'has-parents': parents.length > 0, 'has-children': children.length > 0 }]}
+          style={`--face-ar:${(FACE_H / FACE_W).toFixed(4)}`}
+        >
+          {parents.length > 0 && (
+            <div class="gen gen--parents" role="list" aria-label="Parents">
+              {parents.map((k) => (
+                <a href={personHref(k.person)} class="kin" role="listitem">
+                  <span class="kin-frame">
+                  {k.face ? (
+                    <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" transition:name={`person-${k.person}`} />
+                  ) : (
+                    <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
+                  )}
+                  </span>
+                  <span class="kin-role">Parent{label(k.confidence) && <> &middot; {label(k.confidence)}</>}</span>
+                  <span class="kin-name">{naturalName(k.other)}</span>
+                  {k.dates && <span class="kin-dates">{k.dates}</span>}
+                </a>
+              ))}
+            </div>
+          )}
+          <div class="gen gen--self">
+            <div class="kin kin--self" aria-current="page">
+              <span class="kin-frame">
+                {portrait ? (
+                  <img src={faceHref(portrait.f.id)} srcset={`${faceHref(portrait.f.id)} 1x, ${faceHref(portrait.f.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" />
+                ) : (
+                  <span class="kin-face kin-face--none" aria-hidden="true">{p.surname.charAt(0)}</span>
+                )}
+              </span>
+              <span class="kin-name">{name}</span>
+              {dates && <span class="kin-dates">{dates}</span>}
+            </div>
+            {spouses.length > 0 && (
+              <div class="side side--spouses" role="list" aria-label="Spouses">
+                {spouses.map((k) => (
+                  <a href={personHref(k.person)} class="kin" role="listitem">
+                  <span class="kin-frame">
+                  {k.face ? (
+                    <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" transition:name={`person-${k.person}`} />
+                  ) : (
+                    <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
+                  )}
+                  </span>
+                  <span class="kin-role">Spouse{label(k.confidence) && <> &middot; {label(k.confidence)}</>}</span>
+                  <span class="kin-name">{naturalName(k.other)}</span>
+                  {k.dates && <span class="kin-dates">{k.dates}</span>}
+                </a>
+                ))}
+              </div>
+            )}
+          </div>
+          {children.length > 0 && (
+            <div class="gen gen--children" role="list" aria-label="Children">
+              {children.map((k) => (
+                <a href={personHref(k.person)} class="kin" role="listitem">
+                  <span class="kin-frame">
+                  {k.face ? (
+                    <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" transition:name={`person-${k.person}`} />
+                  ) : (
+                    <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
+                  )}
+                  </span>
+                  <span class="kin-role">Child{label(k.confidence) && <> &middot; {label(k.confidence)}</>}</span>
+                  <span class="kin-name">{naturalName(k.other)}</span>
+                  {k.dates && <span class="kin-dates">{k.dates}</span>}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {siblings.length > 0 && (
+          <div class="sibs">
+            <h3 class={MONO}>{siblings.length === 1 ? 'Brother or sister' : 'Brothers and sisters'}</h3>
+            <div class="sib-row" role="list" aria-label="Siblings">
+              {siblings.map((k) => (
+                <a href={personHref(k.person)} class="kin kin--small" role="listitem">
+                  <span class="kin-frame">
+                  {k.face ? (
+                    <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" transition:name={`person-${k.person}`} />
+                  ) : (
+                    <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
+                  )}
+                  </span>
+                  <span class="kin-role">{kinLabel(k)}{label(k.confidence) && <> &middot; {label(k.confidence)}</>}</span>
+                  <span class="kin-name">{naturalName(k.other)}</span>
+                  {k.dates && <span class="kin-dates">{k.dates}</span>}
+                </a>
+              ))}
+            </div>
+          </div>
+        )}
+
+        <details class="grounds-fold">
+          <summary>
+            <span class={MONO}>How each relationship is known</span>
+          </summary>
+          <ul class="grounds">
+            {kin.map((k) => (
+              <li>
+                <span class="grounds-who">{kinLabel(k)}: <a href={personHref(k.person)} class={LINK}>{naturalName(k.other)}</a></span>
+                <span class="grounds-why">
+                  {label(k.confidence) && <span class={QUAL}>{label(k.confidence)}</span>}
+                  {label(k.confidence) && <> &mdash; </>}
+                  {k.basis}
+                  {!k.stated && <span class="opacity-60"> (recorded under {naturalName(k.other)})</span>}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </details>
+      </section>
+    )}
 
     <div class="bleed bleed--life">
     <!-- A LIFE IN PHOTOGRAPHS -->
@@ -911,115 +1095,6 @@ const LINK = 'text-caprock hover:underline';
 
     </div>
 
-    <!-- FAMILY -->
-    {kin.length > 0 && (
-      <section class="section" aria-labelledby="family-h">
-        <h2 id="family-h" class={H2}>Family</h2>
-        <div class="tree">
-          {parents.length > 0 && (
-            <div class="gen gen--parents" role="list" aria-label="Parents">
-              {parents.map((k) => (
-                <a href={personHref(k.person)} class="kin" role="listitem">
-                  {k.face ? (
-                    <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" transition:name={`person-${k.person}`} />
-                  ) : (
-                    <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
-                  )}
-                  <span class="kin-text">
-                    <span class="kin-role">Parent{label(k.confidence) && <> &middot; {label(k.confidence)}</>}</span>
-                    <span class="kin-name">{naturalName(k.other)}</span>
-                    {k.dates && <span class="kin-dates">{k.dates}</span>}
-                  </span>
-                </a>
-              ))}
-            </div>
-          )}
-          <div class="gen gen--self">
-            {siblings.length > 0 && (
-              <div class="side side--siblings" role="list" aria-label="Siblings">
-                {siblings.map((k) => (
-                  <a href={personHref(k.person)} class="kin kin--quiet" role="listitem">
-                    {k.face ? (
-                      <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" transition:name={`person-${k.person}`} />
-                    ) : (
-                      <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
-                    )}
-                    <span class="kin-text">
-                      <span class="kin-role">Sibling{label(k.confidence) && <> &middot; {label(k.confidence)}</>}</span>
-                      <span class="kin-name">{naturalName(k.other)}</span>
-                      {k.dates && <span class="kin-dates">{k.dates}</span>}
-                    </span>
-                  </a>
-                ))}
-              </div>
-            )}
-            <div class="kin kin--self" aria-current="page">
-              {portrait ? (
-                <img src={faceHref(portrait.f.id)} srcset={`${faceHref(portrait.f.id)} 1x, ${faceHref(portrait.f.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" />
-              ) : (
-                <span class="kin-face kin-face--none" aria-hidden="true">{p.surname.charAt(0)}</span>
-              )}
-              <span class="kin-text">
-                <span class="kin-name">{name}</span>
-                {dates && <span class="kin-dates">{dates}</span>}
-              </span>
-            </div>
-            {spouses.length > 0 && (
-              <div class="side side--spouses" role="list" aria-label="Spouses">
-                {spouses.map((k) => (
-                  <a href={personHref(k.person)} class="kin" role="listitem">
-                    {k.face ? (
-                      <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" transition:name={`person-${k.person}`} />
-                    ) : (
-                      <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
-                    )}
-                    <span class="kin-text">
-                      <span class="kin-role">Spouse{label(k.confidence) && <> &middot; {label(k.confidence)}</>}</span>
-                      <span class="kin-name">{naturalName(k.other)}</span>
-                      {k.dates && <span class="kin-dates">{k.dates}</span>}
-                    </span>
-                  </a>
-                ))}
-              </div>
-            )}
-          </div>
-          {children.length > 0 && (
-            <div class="gen gen--children" role="list" aria-label="Children">
-              {children.map((k) => (
-                <a href={personHref(k.person)} class="kin" role="listitem">
-                  {k.face ? (
-                    <img src={faceHref(k.face.id)} srcset={`${faceHref(k.face.id)} 1x, ${faceHref(k.face.id, 2)} 2x`} width={FACE_W} height={FACE_H} alt="" loading="lazy" decoding="async" class="kin-face" transition:name={`person-${k.person}`} />
-                  ) : (
-                    <span class="kin-face kin-face--none" aria-hidden="true">{k.other.surname.charAt(0)}</span>
-                  )}
-                  <span class="kin-text">
-                    <span class="kin-role">Child{label(k.confidence) && <> &middot; {label(k.confidence)}</>}</span>
-                    <span class="kin-name">{naturalName(k.other)}</span>
-                    {k.dates && <span class="kin-dates">{k.dates}</span>}
-                  </span>
-                </a>
-              ))}
-            </div>
-          )}
-        </div>
-
-        <h3 class={`${MONO} mt-6 mb-2`}>How each relationship is known</h3>
-        <ul class="grounds">
-          {kin.map((k) => (
-            <li>
-              <span class="grounds-who">{KIN_LABEL[k.type]}: <a href={personHref(k.person)} class={LINK}>{naturalName(k.other)}</a></span>
-              <span class="grounds-why">
-                {label(k.confidence) && <span class={QUAL}>{label(k.confidence)}</span>}
-                {label(k.confidence) && <> &mdash; </>}
-                {k.basis}
-                {!k.stated && <span class="opacity-60"> (recorded under {naturalName(k.other)})</span>}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
-    )}
-
     <!-- PHOTOGRAPHS -->
     {/* One row per object: the print at its true proportions, then what it
         is, when, where it is kept, the person's age, and the grounds. */}
@@ -1101,7 +1176,8 @@ const LINK = 'text-caprock hover:underline';
 
     <!-- THE RECORD -->
     {/* The authority record, set plainly: what a cataloguer would check,
-        in the order they would check it. MARC opens from its foot. */}
+        in the order they would check it. Links to the same person on other
+        sites stand at its foot. */}
     <section class="section record" aria-labelledby="record-h">
       <h2 id="record-h" class={H2}>The record</h2>
       <dl class="rec">
@@ -1138,20 +1214,6 @@ const LINK = 'text-caprock hover:underline';
             )}
           </dd>
         </div>
-        {identifiers.length > 0 && (
-          <div class="rec-row">
-            <dt>Elsewhere</dt>
-            <dd>
-              <ul class="rec-list">
-                {identifiers.map((i) => (
-                  <li>
-                    {i.label} <a href={i.href} class={LINK} rel="external noopener">{i.value}</a>
-                  </li>
-                ))}
-              </ul>
-            </dd>
-          </div>
-        )}
         <div class="rec-row">
           <dt>Permalink</dt>
           <dd class="rec-link">
@@ -1161,15 +1223,29 @@ const LINK = 'text-caprock hover:underline';
         </div>
       </dl>
 
-      <details class="marc">
-        <summary>
-          <span class={MONO}>View as a MARC 21 authority record</span>
-        </summary>
-        <pre class="marc-pre">{marc.map((f) => (
-          <span class="marc-line"><span class="marc-tag">{f.tag}</span> <span class="marc-ind">{f.ind.replace(/ /g, '\u2002')}</span> {f.subs.map(([code, value], n) => <>{n > 0 && ' '}<span class="marc-code">${code}</span> {value}</>)}</span>
-        ))}</pre>
-        <p class={`${MONO} mt-2`}>Leader and fixed fields omitted.</p>
-      </details>
+      {/* THIS PERSON ELSEWHERE. Where the same person is recorded on other
+          sites: each link is made from an identifier on the record. Shown
+          only when the record carries one. */}
+      {identifiers.length > 0 && (
+        <div class="elsewhere">
+          <h3 class={MONO}>This person elsewhere</h3>
+          <ul class="else-list">
+            {identifiers.map((i) => (
+              <li>
+                <a href={i.href} class="else-link" rel="external noopener">
+                  <span class="else-site">{i.label}</span>
+                  {(i.what || i.value) && (
+                    <span class="else-id">
+                      {i.what} {i.value}
+                    </span>
+                  )}
+                  <span class="else-arrow" aria-hidden="true">&nearr;</span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
       <p class="sr-only" aria-live="polite" data-copy-status></p>
     </section>
   </div>
@@ -1357,12 +1433,56 @@ const LINK = 'text-caprock hover:underline';
     margin: 1rem 0 0;
     font-size: 1.08rem;
   }
+  .kinline {
+    max-width: 34rem;
+    margin: 0.9rem 0 0;
+    font-size: 1.08rem;
+    line-height: 1.45;
+  }
   .tally {
     margin: 1.1rem 0 0;
     color: var(--c-sage);
     font: 0.7rem/1.5 ui-monospace, monospace;
     letter-spacing: 0.12em;
     text-transform: uppercase;
+  }
+  /* Links out, under the tally: small ruled buttons in the page's mono. */
+  .hero-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin: 1.05rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+  .hero-link {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.55rem;
+    padding: 0.42rem 0.7rem 0.44rem;
+    border: 1px solid rgb(59 56 51 / 0.3);
+    color: var(--c-iron);
+    font: 0.7rem/1.3 ui-monospace, monospace;
+    letter-spacing: 0.12em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition:
+      border-color 0.2s ease,
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+  .hero-link-arrow {
+    color: var(--c-caprock);
+  }
+  .hero-link:hover,
+  .hero-link:focus-visible {
+    border-color: var(--c-caprock);
+    background: rgb(247 244 236 / 0.7);
+    color: var(--c-caprock);
+  }
+  .hero-link:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
   }
   .lede {
     max-width: 40rem;
@@ -1890,109 +2010,294 @@ const LINK = 'text-caprock hover:underline';
   }
 
   /* Family --------------------------------------------------------- */
-  /* Generations as rows, joined by a hair line down the middle. The person
-     sits in the middle row with siblings to one side and spouses to the
-     other. Rows wrap on a phone; the line still reads as descent. */
+  /* THE TREE is the direct line: parents, the person and whom they
+     married, children. Everyone is a mounted portrait with the name under
+     it, as on the guide's roll; the person is larger and ruled in iron.
+     HOW THE LINES ARE DRAWN, with no script and no measuring. Every row
+     takes the tree's full width and centres its people, and the person's
+     row is a three-column grid with the person alone in the middle column,
+     so the centre of every row is the same line down the page:
+       - each parent drops a stem, the stems are joined by a rail, and the
+         rail drops one stem at the centre, onto the person;
+       - the person's card runs a line from under its text to its foot (a
+         flex filler, so it is as long as the row needs), and the children's
+         row carries it on to their rail;
+       - each child hangs from that rail by a stem of its own.
+     A rail is drawn piece by piece: each card owns the piece above (or
+     below) itself and half the gap either side, and the first and last
+     cards own only the inner half. If a row wraps, each line keeps a rail
+     of its own. --stem is one stem's length; a join is two. */
   .tree {
+    --stem: 1.4rem;
+    --gap: 1.1rem;
+    --line: rgb(59 56 51 / 0.4);
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    margin-top: 0.75rem;
+  }
+  .gen {
+    position: relative;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: calc(var(--stem) + 1rem) var(--gap);
+  }
+  .gen + .gen {
+    margin-top: calc(var(--stem) * 2);
+  }
+  /* The person's row: [ room | the person | spouses ]. */
+  .gen--self {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    column-gap: var(--gap);
+    align-items: stretch;
+  }
+  .kin--self {
+    grid-column: 2;
+  }
+  .side--spouses {
+    grid-column: 3;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    gap: 1rem var(--gap);
+  }
+
+  /* One relative: a mounted face, then role, name and dates. */
+  .kin {
+    --kin-w: 6.5rem;
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
-  }
-  .gen {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.75rem;
-  }
-  .gen + .gen {
-    position: relative;
-    margin-top: 1.5rem;
-  }
-  .gen + .gen::before {
-    content: '';
-    position: absolute;
-    left: 50%;
-    top: -1.5rem;
-    height: 1.5rem;
-    border-left: 1px solid var(--c-haze);
-  }
-  .gen--self {
-    align-items: center;
-    gap: 1.25rem;
-  }
-  .side {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.75rem;
-  }
-  .kin {
-    display: flex;
-    align-items: center;
-    gap: 0.65rem;
-    width: 14.5rem;
-    max-width: 100%;
-    padding: 0.45rem 0.7rem 0.45rem 0.45rem;
-    border: 1px solid var(--c-haze);
-    background: rgb(218 211 196 / 0.12);
+    width: var(--kin-w);
     color: inherit;
+    text-align: center;
     text-decoration: none;
-    transition:
-      border-color 0.2s ease,
-      background-color 0.2s ease;
-  }
-  a.kin:hover,
-  a.kin:focus-visible {
-    border-color: var(--c-caprock);
-    background: rgb(218 211 196 / 0.3);
-    outline: none;
-  }
-  .kin--quiet {
-    opacity: 0.88;
   }
   .kin--self {
-    border: 1px solid var(--c-iron);
-    background: var(--c-canvas);
-    box-shadow: 0 0 0 3px rgb(218 211 196 / 0.6);
+    --kin-w: 8.25rem;
+  }
+  .kin--small {
+    --kin-w: 5.25rem;
+  }
+  /* A phone: everyone a little smaller, so three children stand abreast
+     and a spouse fits beside the person. */
+  @media (max-width: 30rem) {
+    .tree {
+      --gap: 0.7rem;
+    }
+    .kin {
+      --kin-w: 5.3rem;
+    }
+    .kin--self {
+      --kin-w: 6.4rem;
+    }
+    .kin--small {
+      --kin-w: 4.6rem;
+    }
+  }
+  .kin-frame {
+    display: block;
+    width: 100%;
+    padding: 3px;
+    background: var(--c-mount);
+    border: 1px solid var(--c-haze);
+    box-shadow: 0 8px 14px -12px rgb(26 25 25 / 0.6);
+    transition:
+      transform 0.2s ease,
+      border-color 0.2s ease;
+  }
+  .kin--self .kin-frame {
+    border-color: var(--c-iron);
+    box-shadow:
+      0 0 0 3px rgb(218 211 196 / 0.6),
+      0 10px 16px -12px rgb(26 25 25 / 0.6);
   }
   .kin-face {
-    flex-shrink: 0;
-    width: 2.8rem;
-    height: 3.5rem;
-    object-fit: cover;
-    background: var(--c-mount);
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
   }
+  /* No face marked yet: the mount stands empty, with an initial. */
   .kin-face--none {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--c-haze);
+    aspect-ratio: 1 / var(--face-ar, 1.2);
+    background: rgb(218 211 196 / 0.35);
     color: var(--c-sage);
-    font-size: 1.4rem;
+    font-size: 1.5rem;
   }
-  .kin-text {
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
+  .kin--small .kin-face--none {
+    font-size: 1.2rem;
+  }
+  a.kin:hover .kin-frame,
+  a.kin:focus-visible .kin-frame {
+    border-color: var(--c-caprock);
+    transform: translateY(-2px);
+  }
+  a.kin:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 3px;
   }
   .kin-role {
-    font: 0.66rem/1.3 ui-monospace, monospace;
+    margin-top: 0.55rem;
+    font: 0.62rem/1.3 ui-monospace, monospace;
     letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--c-sage);
+    color: var(--c-iron);
+    opacity: 0.7;
   }
   .kin-name {
-    font-size: 1.02rem;
-    line-height: 1.2;
+    margin-top: 0.15rem;
+    font-size: 1rem;
+    line-height: 1.18;
     color: var(--c-caprock);
+    text-wrap: balance;
   }
   .kin--self .kin-name {
+    margin-top: 0.6rem;
+    font-size: 1.12rem;
+    font-weight: 600;
     color: var(--c-iron);
   }
+  .kin--small .kin-name {
+    font-size: 0.92rem;
+  }
+  /* Closer set, so "Half-sibling" stays on one line in the smaller card. */
+  .kin--small .kin-role {
+    letter-spacing: 0.05em;
+  }
   .kin-dates {
+    margin-top: 0.1rem;
     font-size: 0.85rem;
     font-variant-numeric: oldstyle-nums;
     opacity: 0.7;
+  }
+
+  /* THE LINES. Parents: a stem down from each, a rail, one stem on. */
+  .gen--parents .kin::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    height: var(--stem);
+    border-left: 1px solid var(--line);
+  }
+  .gen--parents .kin::before {
+    content: '';
+    position: absolute;
+    top: calc(100% + var(--stem));
+    left: calc(var(--gap) / -2);
+    right: calc(var(--gap) / -2);
+    border-top: 1px solid var(--line);
+  }
+  .gen--parents .kin:first-child::before {
+    left: 50%;
+  }
+  .gen--parents .kin:last-child::before {
+    right: 50%;
+  }
+  .gen--parents .kin:only-child::before {
+    display: none;
+  }
+  .gen--parents::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: calc(100% + var(--stem));
+    height: var(--stem);
+    border-left: 1px solid var(--line);
+  }
+  /* The person to their children: the line from under the name to the foot
+     of the card, as long as the row makes it. */
+  .has-children .kin--self::after {
+    content: '';
+    flex: 1 0 0.6rem;
+    width: 0;
+    margin-top: 0.5rem;
+    border-left: 1px solid var(--line);
+  }
+  /* Children: the stem on from the person, the rail, a stem to each. */
+  .gen--children::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: calc(var(--stem) * -2);
+    height: var(--stem);
+    border-left: 1px solid var(--line);
+  }
+  .gen--children .kin::before {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: calc(var(--stem) * -1);
+    height: var(--stem);
+    border-left: 1px solid var(--line);
+  }
+  .gen--children .kin::after {
+    content: '';
+    position: absolute;
+    top: calc(var(--stem) * -1);
+    left: calc(var(--gap) / -2);
+    right: calc(var(--gap) / -2);
+    border-top: 1px solid var(--line);
+  }
+  .gen--children .kin:first-child::after {
+    left: 50%;
+  }
+  .gen--children .kin:last-child::after {
+    right: 50%;
+  }
+  .gen--children .kin:only-child::after {
+    display: none;
+  }
+  /* Married: a short double rule from the person to the first spouse, at
+     the middle of the spouse's portrait. */
+  .side--spouses .kin:first-child .kin-frame {
+    position: relative;
+  }
+  .side--spouses .kin:first-child .kin-frame::before {
+    content: '';
+    position: absolute;
+    right: 100%;
+    top: 50%;
+    width: var(--gap);
+    height: 4px;
+    margin-top: -2px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+
+  /* Brothers and sisters: a row of their own, smaller, in order of birth. */
+  .sibs {
+    margin-top: 2.25rem;
+    padding-top: 1.1rem;
+    border-top: 1px solid var(--c-haze);
+  }
+  .sib-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.25rem 1rem;
+    margin-top: 0.8rem;
+  }
+
+  /* How each relationship is known: folded, and one click away. */
+  .grounds-fold {
+    margin-top: 1.75rem;
+  }
+  .grounds-fold summary {
+    cursor: pointer;
+  }
+  .grounds-fold summary:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
+  }
+  .grounds-fold .grounds {
+    margin-top: 0.75rem;
   }
   .grounds {
     margin: 0;
@@ -2236,54 +2541,100 @@ const LINK = 'text-caprock hover:underline';
     outline-offset: 2px;
   }
 
-  .marc {
-    margin-top: 1rem;
+  /* THIS PERSON ELSEWHERE. Each link is one plain ruled box: the site's
+     name in the serif, what the identifier is and the identifier itself in
+     mono beneath it, and an arrow that says the link leaves the site. The
+     boxes sit side by side and wrap; the hairline firms and the name turns
+     caprock under the pointer. */
+  .elsewhere {
+    margin-top: 1.6rem;
   }
-  .marc summary {
-    cursor: pointer;
+  .else-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 0.6rem 0 0;
+    padding: 0;
+    list-style: none;
   }
-  .marc summary:focus-visible {
-    outline: 2px solid var(--c-caprock);
-    outline-offset: 2px;
+  .else-link {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 1.25rem;
+    align-items: start;
+    min-width: 13.5rem;
+    padding: 0.7rem 0.9rem 0.75rem;
+    border: 1px solid var(--c-haze);
+    color: inherit;
+    text-decoration: none;
+    transition:
+      border-color 0.2s ease,
+      background-color 0.2s ease;
   }
-  .marc-pre {
-    margin: 0.75rem 0 0;
-    padding: 0.9rem 1rem;
-    overflow-x: auto;
-    background: #17150f;
-    color: #e8e2d6;
-    font: 0.78rem/1.7 ui-monospace, monospace;
-    white-space: pre-wrap;
+  .else-site {
+    grid-column: 1;
+    font-size: 1.12rem;
+    font-weight: 600;
+    line-height: 1.25;
+    transition: color 0.2s ease;
+  }
+  .else-id {
+    grid-column: 1;
+    margin-top: 0.15rem;
+    font: 0.7rem/1.5 ui-monospace, monospace;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.74;
     overflow-wrap: anywhere;
   }
-  .marc-line {
-    display: block;
-    padding-left: 5.5ch;
-    text-indent: -5.5ch;
+  .else-arrow {
+    grid-column: 2;
+    grid-row: 1;
+    color: var(--c-caprock);
+    font: 0.95rem/1.4 ui-monospace, monospace;
+    transition: transform 0.2s ease;
   }
-  .marc-tag {
-    color: #e2a15c;
+  .else-link:hover,
+  .else-link:focus-visible {
+    border-color: var(--c-caprock);
+    background: rgb(218 211 196 / 0.2);
   }
-  .marc-ind {
-    color: #8f877a;
+  .else-link:hover .else-site,
+  .else-link:focus-visible .else-site {
+    color: var(--c-caprock);
   }
-  .marc-code {
-    color: #c4785a;
+  .else-link:hover .else-arrow,
+  .else-link:focus-visible .else-arrow {
+    transform: translate(2px, -2px);
+  }
+  .else-link:focus-visible {
+    outline: 2px solid var(--c-caprock);
+    outline-offset: 2px;
   }
 
   @media (prefers-reduced-motion: reduce) {
     .bar,
     .fc-face,
-    .kin,
+    .kin-frame,
     .photo,
     .photo-print img,
     .photo-crop,
     .cabinet,
-    .rail-face {
+    .rail-face,
+    .else-link,
+    .else-site,
+    .else-arrow,
+    .hero-link {
       transition: none;
+    }
+    .else-link:hover .else-arrow,
+    .else-link:focus-visible .else-arrow {
+      transform: none;
     }
     .cabinet:hover,
     .cabinet:focus-visible,
+    a.kin:hover .kin-frame,
+    a.kin:focus-visible .kin-frame,
     .photo:hover .photo-crop,
     .photo.is-lit .photo-crop,
     .photo:hover .photo-print img,
@@ -2324,10 +2675,19 @@ const LINK = 'text-caprock hover:underline';
     .rec-row {
       break-inside: avoid;
     }
-    .marc[open] .marc-pre,
-    .marc .marc-pre {
-      background: none;
-      color: inherit;
+    .elsewhere {
+      break-inside: avoid;
+    }
+    /* On paper a link is its address. */
+    .else-link::after {
+      content: attr(href);
+      grid-column: 1 / -1;
+      margin-top: 0.2rem;
+      font: 0.7rem/1.4 ui-monospace, monospace;
+      overflow-wrap: anywhere;
+    }
+    .else-arrow {
+      display: none;
     }
   }
 </style>

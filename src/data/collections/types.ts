@@ -529,6 +529,25 @@ export interface Relation {
   /** Same rule as everywhere else: on what grounds do we say this? */
   basis: string;
   confidence: Confidence;
+  /**
+   * HALF-SIBLINGS. On a `sibling` relation only: `half: true` says the two
+   * share ONE parent, not both.
+   *
+   *   { type: 'sibling', person: 'allison-mary-alice', half: true,
+   *     basis: 'Daughter of his father\'s second marriage', confidence: 'certain' }
+   *
+   * It is a statement, so it is made, not worked out: nothing infers "half"
+   * from the parents that happen to be recorded, because a record with one
+   * parent entered is unfinished, not evidence. Leave it off and the two are
+   * simply "siblings" - which claims nothing about half or full.
+   *
+   * ENTER IT ONCE, on either record. Like every relation it is carried to
+   * the other person's page; and since leaving it off says nothing, a mark
+   * on one record is not contradicted by its absence on the other - both
+   * pages then read "Half-sibling". The build warns (it does not stop) when
+   * the mark and the recorded parents disagree: see the check in index.ts.
+   */
+  half?: boolean;
 }
 
 /**

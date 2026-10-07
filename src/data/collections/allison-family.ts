@@ -1024,5 +1024,76 @@ export const COLLECTION: Collection = {
         },
       ],
     },
+    {
+      slug: 'allison-oscar-standing-on-plane',
+      title: '[Oscar Allison standing on the wing of an AT-6 Texan]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'tbd',
+      controlNumber: 'e.1.7',
+      date: {
+        display: '[1943]',
+        earliest: 1943,
+        latest: 1943,
+        basis: ['This photograph appears to be from before Oscar was captured and his time as a prisoner of war'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-oscar-standing-on-plane-recto.jpg',
+      },
+      description:
+        'This photograph depicts Oscar Allison standing on the wing of an AT-6 Texan aircraft during World War II.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 56.8, y: 28.3, w: 3.4, h: 6 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-oscar-and-ollie-grizzle',
+      title: '[Oscar Allison standing next to a car with his mother, Ollie Grizzle]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'tbd',
+      controlNumber: 'e.1.8',
+      date: {
+        display: '[1943]',
+        earliest: 1943,
+        latest: 1943,
+        basis: ['This photograph appears to be from before Oscar was captured and his time as a prisoner of war'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-oscar-and-ollie-grizzle-recto.jpg',
+      },
+      description:
+        'This photograph depicts Oscar Allison standing with his mother, Ollie, next to a car. This photograph appears to be from before Oscar\'s time as a prisoner of war. A distorted reflection of the photographer can be seen on the car.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 35, y: 19, w: 11.1, h: 17.5 },
+        },
+        {
+          person: 'grizzle-ollie-blanche-ingle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 52.6, y: 20.1, w: 10.6, h: 17.5 },
+        },
+      ],
+    },
   ]
 }

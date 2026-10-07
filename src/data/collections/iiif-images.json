@@ -1205,6 +1205,74 @@
       }
     }
   },
+  "allison-family/allison-oscar-and-ollie-grizzle-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-and-ollie-grizzle-recto-5290f38fd0",
+    "width": 5456,
+    "height": 3840,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 239
+      },
+      {
+        "width": 341,
+        "height": 240
+      },
+      {
+        "width": 680,
+        "height": 479
+      },
+      {
+        "width": 800,
+        "height": 563
+      },
+      {
+        "width": 1200,
+        "height": 845
+      },
+      {
+        "width": 1900,
+        "height": 1337
+      },
+      {
+        "width": 2600,
+        "height": 1830
+      },
+      {
+        "width": 5000,
+        "height": 3519
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "5290f38fd01c7e2044fa0e11923e05828bfbf5535f6e2365741f99b8cff8b11d",
+    "download": {
+      "full": {
+        "file": "allison-oscar-and-ollie-grizzle-recto.jpg",
+        "width": 5456,
+        "height": 3840,
+        "bytes": 1732960
+      },
+      "share": {
+        "file": "allison-oscar-and-ollie-grizzle-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1830,
+        "bytes": 443010
+      }
+    }
+  },
   "allison-family/allison-oscar-ingle-1-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-ingle-1-recto-864ff48008",
@@ -1538,6 +1606,142 @@
         "width": 1900,
         "height": 2600,
         "bytes": 407873
+      }
+    }
+  },
+  "allison-family/allison-oscar-standing-on-plain-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-standing-on-plain-recto-b4741f8a9a",
+    "width": 5646,
+    "height": 3792,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 228
+      },
+      {
+        "width": 353,
+        "height": 237
+      },
+      {
+        "width": 680,
+        "height": 457
+      },
+      {
+        "width": 800,
+        "height": 537
+      },
+      {
+        "width": 1200,
+        "height": 806
+      },
+      {
+        "width": 1900,
+        "height": 1276
+      },
+      {
+        "width": 2600,
+        "height": 1746
+      },
+      {
+        "width": 5000,
+        "height": 3358
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "b4741f8a9a4eb97ebdbbc61a7d521cc345fcefd4588b8d3e6d08068950458bf8",
+    "download": {
+      "full": {
+        "file": "allison-oscar-standing-on-plain-recto.jpg",
+        "width": 5646,
+        "height": 3792,
+        "bytes": 1878737
+      },
+      "share": {
+        "file": "allison-oscar-standing-on-plain-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1746,
+        "bytes": 454219
+      }
+    }
+  },
+  "allison-family/allison-oscar-standing-on-plane-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-standing-on-plane-recto-b4741f8a9a",
+    "width": 5646,
+    "height": 3792,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 228
+      },
+      {
+        "width": 353,
+        "height": 237
+      },
+      {
+        "width": 680,
+        "height": 457
+      },
+      {
+        "width": 800,
+        "height": 537
+      },
+      {
+        "width": 1200,
+        "height": 806
+      },
+      {
+        "width": 1900,
+        "height": 1276
+      },
+      {
+        "width": 2600,
+        "height": 1746
+      },
+      {
+        "width": 5000,
+        "height": 3358
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "b4741f8a9a4eb97ebdbbc61a7d521cc345fcefd4588b8d3e6d08068950458bf8",
+    "download": {
+      "full": {
+        "file": "allison-oscar-standing-on-plane-recto.jpg",
+        "width": 5646,
+        "height": 3792,
+        "bytes": 1878737
+      },
+      "share": {
+        "file": "allison-oscar-standing-on-plane-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1746,
+        "bytes": 454219
       }
     }
   },

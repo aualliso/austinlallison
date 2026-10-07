@@ -38,6 +38,30 @@ export { heading, headingDates } from './types';
 //
 // And add the citation to `sources`: a date is a claim like any other, and a
 // headstone photograph, a census line or an obituary is what makes it one.
+//
+// LINKS TO THE SAME PERSON ELSEWHERE (added 2026-10). A record may carry
+//
+//   identifiers: { findagrave: '8153610' },
+//   identifiers: { familysearch: 'LXW9-M47' },
+//   identifiers: { findagrave: '8153610', familysearch: 'LXW9-M47' },
+//
+// and the person's page then shows "This person elsewhere" with a link for
+// each. Give the IDENTIFIER, in quotes, not the address:
+//   findagrave    the memorial number - the digits after /memorial/ in the
+//                 memorial's address (findagrave.com/memorial/8153610/...).
+//   familysearch  the person ID from the Family Tree - letters and digits
+//                 with a hyphen, e.g. LXW9-M47 (shown under the name on the
+//                 person's FamilySearch page, and in its address).
+// The page makes the address, so if either site changes its URLs one line in
+// [person].astro changes and no record does. A whole address (https://...)
+// also works where an identifier will not do. A value that does not look
+// like an identifier still links, with a warning in the build log.
+//
+// THE IDENTIFIER IS A LINK; THE SOURCE LINE IS A CITATION. Keep both. "Find a
+// Grave memorial 8153610, read in full ..." in `sources` says what the dates
+// rest on and when it was read; `identifiers` only says where the page is.
+// The identifiers below were filled in from the numbers already written in
+// each record's own `sources`; nothing was looked up.
 
 
 
@@ -51,6 +75,7 @@ export const PEOPLE: Person[] = [
     birth: '1883',
     death: '1959',
     status: 'established',
+    identifiers: { findagrave: '16507579' },
     sources: ['Found references to D.A. Paddock in Roswell, New Mexico newspapers from the 1900s and early 1910s. He was a teacher in Hagerman',
       'findagrave.com index number: 16507579',
       'Paddock may have been the superintendent of schools at Hagerman'
@@ -65,6 +90,7 @@ export const PEOPLE: Person[] = [
     birth: '1879',
     death: '1962',
     status: 'established',
+    identifiers: { findagrave: '6308153' },
     sources: ['Found references to F.A. Adair in Roswell, New Mexico newspapers from the 1900s and early 1910s. He was a teacher in Hagerman',
       'findagrave.com index number: 6308153.',
       'Adair may have been the principal at the Hagerman schools.'
@@ -79,6 +105,7 @@ export const PEOPLE: Person[] = [
     birth: '1827',
     death: '1909',
     status: 'established',
+    identifiers: { findagrave: '82115849' },
     sources: [
       'Supplied with the portrait as "Thomas, Benjamin B."',
       'Find a Grave memorial 82115849, read in full: "B B Thomas", 14 Nov 1827 - 5 Oct 1909, Hermleigh Cemetery, Hermleigh, Scurry County, Tex.; accessed 10 Sep 2026',
@@ -128,6 +155,7 @@ export const PEOPLE: Person[] = [
     birth: '1858',
     death: '1946',
     status: 'established',
+    identifiers: { findagrave: '83870981' },
     sources: [
       'Find a Grave memorial 83870981, as linked from B B Thomas\'s memorial (82115849): "Rocket Ann Thomas Patterson 1858-1946"; the memorial page itself not yet read',
     ],
@@ -153,6 +181,7 @@ export const PEOPLE: Person[] = [
     birth: '1864',
     death: '1896',
     status: 'established',
+    identifiers: { findagrave: '7284581' },
     sources: [
       'Find a Grave memorial 7284581, as linked from Austin Swann\'s memorial (7284582): "Nannie G. Thomas Swann 1864-1896"; the memorial page itself not yet read',
       'Hunt County, Texas, Marriages 1846-1911, p. 471: married Austin Swann 16 Apr 1885; died 17 Apr 1896 per his obituary (both transcribed on memorial 7284582)',
@@ -260,6 +289,7 @@ export const PEOPLE: Person[] = [
     death: '1947',
     variants: ['Thomas, Maud', 'Maud Thomas', 'Hendrix, Maud', 'Hendrix, Maud White'],
     status: 'established',
+    identifiers: { familysearch: 'LXW9-M47' },
     sources: [
       'Familysearch ID: LXW9-M47',
     ],
@@ -278,6 +308,7 @@ export const PEOPLE: Person[] = [
     death: '1978',
     variants: ['Thomas, Len Holly', 'Len Thomas', 'Thomas, Len'],
     status: 'established',
+    identifiers: { familysearch: 'GCH1-DR2' },
     sources: [
       'Familysearch ID: GCH1-DR2',
     ],
@@ -362,6 +393,7 @@ export const PEOPLE: Person[] = [
     birth: '1855',
     death: '1904',
     status: 'established',
+    identifiers: { findagrave: '159906154' },
     sources: [
       'Find a Grave memorial 159906154',
     ],
@@ -379,6 +411,7 @@ export const PEOPLE: Person[] = [
     birth: '1828',
     death: '1910',
     status: 'established',
+    identifiers: { findagrave: '8153610' },
     sources: [
       'Verso of the gin photograph, in ink, as "Malcom Swann"',
       'Supplied with the Oklahoma camp photograph as "Malcom Swann"',
@@ -413,6 +446,7 @@ export const PEOPLE: Person[] = [
     death: '1899',
     status: 'established',
     scopeNote: 'The Swann family Bible lists her name reliably as "Nancy California Atkinsson Swann." She was born in 1836 in Mississippi. She married Malcom Swann on March 30, 1858 in Mississippi.',
+    identifiers: { findagrave: '8153613' },
     sources: [
       'Find a Grave memorial 8153613, as linked from Malcom Swann\'s memorial (8153610) as his spouse: "Nancy C Atkinson Swann 1836-1899."',
     ],
@@ -458,6 +492,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Born near Macon, Mississippi; came to Hunt County, Texas as a child around 1870; removed to Hagerman, New Mexico in 1908 and died there. He married Nannie Thomas in 1885. She died in 1896 in Texas from tuberculosis.',
+    identifiers: { findagrave: '7284582' },
     sources: [
       'Find a Grave memorial 7284582, read in full: "Austin Swann", 30 Dec 1860 (Mississippi) - 30 May 1931 (Hagerman, Chaves County, N.M.), buried Concord Cemetery, Jacobia, Hunt County, Tex.; accessed 10 Sep 2026',
       'Hunt County, Texas, Marriages 1846-1911, p. 471, vol. E p. 12: Austin Swann and Nannie G. Thomas, married 16 Apr 1885 (transcribed on the memorial above)',
@@ -490,6 +525,7 @@ export const PEOPLE: Person[] = [
     birth: '1864',
     death: '1956',
     status: 'established',
+    identifiers: { findagrave: '8155600' },
     sources: [
       'Find a Grave memorial 8155600',
     ],
@@ -538,6 +574,7 @@ export const PEOPLE: Person[] = [
     birth: '1875',
     death: '1974',
     status: 'established',
+    identifiers: { findagrave: '8153617' },
     sources: [
       'Findagrave record number 8153617',
     ],
@@ -556,6 +593,7 @@ export const PEOPLE: Person[] = [
     birth: '1895',
     death: '1983',
     status: 'established',
+    identifiers: { findagrave: '8137055' },
     sources: [
       'Findagrave record number 8137055',
     ],
@@ -574,6 +612,7 @@ export const PEOPLE: Person[] = [
     birth: '1896',
     death: '1979',
     status: 'established',
+    identifiers: { findagrave: '8153619' },
     sources: [
       'Findagrave record number 8153619',
     ],
@@ -594,6 +633,7 @@ export const PEOPLE: Person[] = [
     birth: '1897',
     death: '1978',
     status: 'established',
+    identifiers: { familysearch: 'GMC4-K52' },
     sources: [
       'FamilySearch ID: GMC4-K52',
     ],
@@ -610,6 +650,7 @@ export const PEOPLE: Person[] = [
     birth: '1921',
     death: '1955',
     status: 'established',
+    identifiers: { findagrave: '159966415' },
     sources: [
       'Findagrave record number 159966415',
     ],
@@ -626,6 +667,7 @@ export const PEOPLE: Person[] = [
     birth: '1901',
     death: '1961',
     status: 'established',
+    identifiers: { findagrave: '8153632' },
     sources: [
       'Findagrave record number 8153632',
     ],
@@ -644,6 +686,7 @@ export const PEOPLE: Person[] = [
     birth: '1891',
     death: '1951',
     status: 'established',
+    identifiers: { findagrave: '8137049' },
     sources: [
       'Findagrave record number 8137049',
     ],
@@ -786,6 +829,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Eldest daughter of Austin Swann and Nannie Thomas Swann. Of Hagerman, New Mexico; the "Mrs. B.J. West" of her father\'s obituary.',
+    identifiers: { findagrave: '52583012' },
     sources: [
       'Find a Grave memorial 52583012, as linked from Austin Swann\'s memorial (7284582) as his child: "Eva Powell Swann West 1886-1979"; the memorial page itself not yet read',
       'Named as a surviving daughter in Austin Swann\'s obituary, Greenville (Tex.) Evening Banner, 1 and 3 Jun 1931',
@@ -809,6 +853,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'The second husband of Eva Swann. They married in 1922',
+    identifiers: { findagrave: '52583010' },
     sources: [
       'Find a Grave memorial 52583010,'
     ],
@@ -827,6 +872,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Daughter of Austin Swann and Nan Thomas Swann. One of the two "Mrs. McKinstry" daughters of Hagerman, New Mexico named in her father\'s obituary.',
+    identifiers: { findagrave: '52582949' },
     sources: [
       'Find a Grave memorial 52582949, as linked from Austin Swann\'s memorial (7284582) as his child: "Minnie Swann McKinstry 1890-1964"; the memorial page itself not yet read',
     ],
@@ -850,6 +896,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Daughter of James Daubin McKinstry and Minnie Swann McKinstry',
+    identifiers: { findagrave: '52582986' },
     sources: [
       'Find a Grave memorial 52582986.',
     ],
@@ -869,6 +916,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Youngest surviving daughter of Austin Swann and Nannie Thomas Swann. Her memorial is headed "McKinstry-Cumpsten", showing her second marriage to Robert (Bob) Cumpsten; the heading here takes the form under which she appears in the family record.',
+    identifiers: { findagrave: '52656923' },
     sources: [
       'Find a Grave memorial 52656923, as linked from Austin Swann\'s memorial (7284582) as his child: "Loveta Swann McKinstry-Cumpsten 1893-1988"; the memorial page itself not yet read',
     ],
@@ -896,6 +944,7 @@ export const PEOPLE: Person[] = [
       'The "Mrs. Sam McKinstry" of Austin Swann\'s obituary is one of his daughters, so this is very likely her husband - but nothing consulted states it, and the relation is not entered.',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '52656978' },
     sources: [
       'Find a Grave memorial 52656978, supplied by you; not yet read',
     ],
@@ -930,6 +979,7 @@ export const PEOPLE: Person[] = [
       'Sammy Nan McKinstry Allison was born on February 20, 1920 in Hagerman, New Mexico. She died on December 22, 2009 in Amarillo, Texas. She is buried in Muleshoe.',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '45723671' },
     sources: [
       'Find a Grave memorial 45723671',
     ],
@@ -953,6 +1003,7 @@ export const PEOPLE: Person[] = [
       'Veta Jean McKinstry Allison was born on November 8, 1922 in Hagerman, New Mexico. She died on June 20, 2020 in San Antonio, Texas. She is buried in Muleshoe.',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '211790000' },
     sources: [
       'Find a Grave memorial 211790000',
     ],
@@ -977,6 +1028,7 @@ export const PEOPLE: Person[] = [
       'Mildred Adeline McKinstry Osborn was born on December 17, 1927 in Hagerman, New Mexico. She died on September 2, 2012 in Lubbock, Texas. She is buried in Lovington, New Mexico.',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '96413628' },
     sources: [
       'Find a Grave memorial 96413628',
     ],
@@ -996,6 +1048,7 @@ export const PEOPLE: Person[] = [
     death: '1912',
     variants: ['McKinstry, James', 'James McKinstry, Sr.'],
     status: 'established',
+    identifiers: { findagrave: '52215508' },
     sources: [
       'Find a Grave memorial 52215508.',
     ],
@@ -1022,6 +1075,7 @@ export const PEOPLE: Person[] = [
     death: '1917',
     variants: ['McKinstry, Sarah', 'Sarah Boyd McKinstry'],
     status: 'established',
+    identifiers: { findagrave: '80117545' },
     sources: [
       'Find a Grave memorial 80117545.',
     ],
@@ -1047,6 +1101,7 @@ export const PEOPLE: Person[] = [
     death: '1940',
     variants: ['McKinstry, Thomas', 'Thomas McKinstry'],
     status: 'established',
+    identifiers: { findagrave: '80117546' },
     sources: [
       'Find a Grave memorial 80117546.',
     ],
@@ -1073,6 +1128,7 @@ export const PEOPLE: Person[] = [
     death: '1949',
     variants: ['McKinstry, Elizabeth', 'Elizabeth McKinstry', 'Elizabeth McKinstry Cole'],
     status: 'established',
+    identifiers: { findagrave: '80118562' },
     sources: [
       'Find a Grave memorial 80118562.',
     ],
@@ -1099,6 +1155,7 @@ export const PEOPLE: Person[] = [
     death: '1954',
     variants: ['McKinstry, William', 'William Boyd McKinstry'],
     status: 'established',
+    identifiers: { findagrave: '263770694' },
     sources: [
       'Find a Grave memorial 263770694.',
     ],
@@ -1125,6 +1182,7 @@ export const PEOPLE: Person[] = [
     death: '1918',
     variants: ['McKinstry, John', 'John Henry McKinstry'],
     status: 'established',
+    identifiers: { findagrave: '45983008' },
     sources: [
       'Find a Grave memorial 45983008.',
     ],
@@ -1151,6 +1209,7 @@ export const PEOPLE: Person[] = [
     death: '1963',
     variants: ['McKinstry, James', 'James Daubin McKinstry', 'Jim McKinstry'],
     status: 'established',
+    identifiers: { findagrave: '52582948' },
     sources: [
       'Find a Grave memorial 52582948.',
     ],
@@ -1179,6 +1238,7 @@ export const PEOPLE: Person[] = [
     death: '1967',
     variants: ['McKinstry, Harrison', 'Harrison Lee McKinstry', 'Harrison McKinstry'],
     status: 'established',
+    identifiers: { findagrave: '84127068' },
     sources: [
       'Find a Grave memorial 84127068.',
     ],
@@ -1205,6 +1265,7 @@ export const PEOPLE: Person[] = [
     death: '1908',
     variants: ['McKinstry, Adeline', 'Adeline McKinstry'],
     status: 'established',
+    identifiers: { findagrave: '80117541' },
     sources: [
       'Find a Grave memorial 80117541.',
     ],
@@ -1231,6 +1292,7 @@ export const PEOPLE: Person[] = [
     death: '1961',
     variants: ['McKinstry, Robert Frederick', 'Robert Frederick McKinstry', 'Fred McKinstry'],
     status: 'established',
+    identifiers: { findagrave: '3660425' },
     sources: [
       'Find a Grave memorial 3660425.',
     ],
@@ -1257,6 +1319,7 @@ export const PEOPLE: Person[] = [
     death: '1973',
     variants: ['McKinstry, Edith Mary', 'Edith McKinstry', 'Edith West', 'West, Edith'],
     status: 'established',
+    identifiers: { findagrave: '46419250' },
     sources: [
       'Find a Grave memorial 46419250.',
     ],
@@ -1286,6 +1349,7 @@ export const PEOPLE: Person[] = [
     death: '1952',
     variants: ['West, John', 'Tollie West', 'West, Tollie'],
     status: 'established',
+    identifiers: { findagrave: '46419199' },
     sources: [
       'Find a Grave memorial 46419199.',
     ],
@@ -1304,6 +1368,7 @@ export const PEOPLE: Person[] = [
     death: '1987',
     variants: ['Hearn, Loveta West', 'Loveta West', 'West, Loveta', 'Loveta West Hearn'],
     status: 'established',
+    identifiers: { findagrave: '232035054' },
     sources: [
       'Find a Grave memorial 232035054.',
     ],
@@ -1322,6 +1387,7 @@ export const PEOPLE: Person[] = [
     death: '1990',
     variants: ['West, Sara Beth', 'Sara Beth West', 'West, Sara', 'Sara Beth Wakeman'],
     status: 'established',
+    identifiers: { findagrave: '46419277' },
     sources: [
       'Find a Grave memorial 46419277.',
     ],
@@ -1348,6 +1414,7 @@ export const PEOPLE: Person[] = [
       death: '1925',
       variants: ['Naylor, Charlie', 'Charley Naylor', 'Naylor, Charley'],
       status: 'established',
+      identifiers: { findagrave: '53923212' },
       sources: ['Supplied with the musicians cabinet card; Findagrave record number: 53923212'],
     },
     {
@@ -1359,6 +1426,7 @@ export const PEOPLE: Person[] = [
       death: '2011',
       variants: ['Kenneth Precure'],
       status: 'established',
+      identifiers: { findagrave: '68028497' },
       sources: ['Findagrave record number: 68028497'],
     },
     {
@@ -1369,6 +1437,7 @@ export const PEOPLE: Person[] = [
     birth: '1890',
     death: '1964',
     status: 'established',
+    identifiers: { findagrave: '21144508' },
     sources: [
       'Findagrave record number 21144508',
     ],
@@ -1386,6 +1455,10 @@ export const PEOPLE: Person[] = [
       'Redmon Allison lived from 1848 to 1937',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
+    // TODO: Find a Grave memorial 48431435 is also cited on 'allison-william-irvin'. One of
+    // the two is a slip, so no link is made here until it is settled: open
+    // findagrave.com/memorial/48431435, see whose it is, and add
+    // identifiers: { findagrave: '...' } to each record with its own number.
     sources: [
       'Find a Grave memorial 48431435.',
     ],
@@ -1405,6 +1478,7 @@ export const PEOPLE: Person[] = [
       'Redmon Allison lived from 1854 to 1943',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '48431529' },
     sources: [
       'Find a Grave memorial 48431529.',
     ],
@@ -1422,6 +1496,10 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'William Irvin Allison lived from 1875 to 1948',
+    // TODO: Find a Grave memorial 48431435 is also cited on 'allison-redmon'. One of
+    // the two is a slip, so no link is made here until it is settled: open
+    // findagrave.com/memorial/48431435, see whose it is, and add
+    // identifiers: { findagrave: '...' } to each record with its own number.
     sources: [
       'Find a Grave memorial 48431435.',
     ],
@@ -1451,6 +1529,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Sophronia Emma Baker Allison lived from 1881 to 1912',
+    identifiers: { findagrave: '39499033' },
     sources: [
       'Find a Grave memorial 39499033.',
     ],
@@ -1470,6 +1549,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Amanda Wardlow Allison lived from 1872 to 1972. She was the second wife of William Irvin Allison',
+    identifiers: { findagrave: '14518916' },
     sources: [
       'Find a Grave memorial 14518916.',
     ],
@@ -1488,6 +1568,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Mary Alice Allison Swan lived from 1909 to 1987',
+    identifiers: { findagrave: '35356222' },
     sources: [
       'Find a Grave memorial 35356222.',
     ],
@@ -1507,6 +1588,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Sarah Estella Allison Dingler lived from 1877 to 1954',
+    identifiers: { findagrave: '28197445' },
     sources: [
       'Find a Grave memorial 28197445.',
     ],
@@ -1540,6 +1622,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Willie Oliver "Bud" Dingler lived from 1876 to 1919',
+    identifiers: { findagrave: '28197405' },
     sources: [
       'Find a Grave memorial 28197405.',
     ],
@@ -1564,6 +1647,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Willie Elgin Dingler lived from 1904 to 1983',
+    identifiers: { findagrave: '71493554' },
     sources: [
       'Find a Grave memorial 71493554.',
     ],
@@ -1588,6 +1672,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Marlin Oliver Dingler lived from 1906 to 1975',
+    identifiers: { findagrave: '66565579' },
     sources: [
       'Find a Grave memorial 66565579.',
     ],
@@ -1612,6 +1697,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Betty Amanda Dingler Locke lived from 1910 to 1947',
+    identifiers: { findagrave: '49045290' },
     sources: [
       'Find a Grave memorial 49045290.',
     ],
@@ -1636,6 +1722,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Ovel Estell Dingler lived from 1911 to 1987',
+    identifiers: { findagrave: '44260554' },
     sources: [
       'Find a Grave memorial 44260554.',
     ],
@@ -1660,6 +1747,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Rossa Novella Dingler Lawless lived from 1914 to 2002',
+    identifiers: { findagrave: '76422110' },
     sources: [
       'Find a Grave memorial 76422110.',
     ],
@@ -1684,6 +1772,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Isaac Allison lived from 1916 to 1994',
+    identifiers: { findagrave: '125462846' },
     sources: [
       'Find a Grave memorial 125462846.',
     ],
@@ -1708,6 +1797,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Ella Georgia Allison Gilbert lived from 1879 to 1942',
+    identifiers: { findagrave: '52160574' },
     sources: [
       'Find a Grave memorial 52160574.',
     ],
@@ -1739,6 +1829,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Hilliard Reason Gilbert lived from 1875 to 1963',
+    identifiers: { findagrave: '52160403' },
     sources: [
       'Find a Grave memorial 52160403.',
     ],
@@ -1761,6 +1852,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Ella Georgia Allison Gilbert lived from 1904 to 1980',
+    identifiers: { findagrave: '140308904' },
     sources: [
       'Find a Grave memorial 140308904.',
     ],
@@ -1783,6 +1875,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Velma Mary Gilbert Trimble lived from 1906 to 1967',
+    identifiers: { findagrave: '40443365' },
     sources: [
       'Find a Grave memorial 40443365.',
     ],
@@ -1805,6 +1898,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Verda Lilla Gilbert Gooch lived from 1908 to 2000',
+    identifiers: { findagrave: '44876803' },
     sources: [
       'Find a Grave memorial 44876803.',
     ],
@@ -1827,6 +1921,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Jack Clifford Gilbert lived from 1917 to 1961',
+    identifiers: { findagrave: '3348236' },
     sources: [
       'Find a Grave memorial 3348236.',
     ],
@@ -1849,6 +1944,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Parker Stirman Allison lived from 1881 to 1904',
+    identifiers: { findagrave: '48431604' },
     sources: [
       'Find a Grave memorial 48431604.',
     ],
@@ -1875,6 +1971,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Joseph Carroll Allison lived from 1882 to 1979',
+    identifiers: { findagrave: '49866819' },
     sources: [
       'Find a Grave memorial 49866819.',
     ],
@@ -1904,6 +2001,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Sarah Edna Adkins Allison lived from 1888 to 1920',
+    identifiers: { findagrave: '49866557' },
     sources: [
       'Find a Grave memorial 49866557.',
     ],
@@ -1924,6 +2022,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Carroll Redman Allison lived from 1914 to 1963',
+    identifiers: { findagrave: '102002752' },
     sources: [
       'Find a Grave memorial 102002752.',
     ],
@@ -1944,6 +2043,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Joe Winston Allison lived from 1916 to 1966',
+    identifiers: { findagrave: '52910917' },
     sources: [
       'Find a Grave memorial 52910917.',
     ],
@@ -1964,6 +2064,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Annie Wheeler Allison lived from 1887 to 1975',
+    identifiers: { findagrave: '48431741' },
     sources: [
       'Find a Grave memorial 48431741.',
     ],
@@ -1990,6 +2091,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'David Edwin Allison lived from 1889 to 1973',
+    identifiers: { findagrave: '48431799' },
     sources: [
       'Find a Grave memorial 48431799.',
     ],
@@ -2018,6 +2120,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Precilla Isabell Barton Allison lived from 1896 to 1940',
+    identifiers: { findagrave: '48510505' },
     sources: [
       'Find a Grave memorial 48510505.',
     ],
@@ -2037,6 +2140,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Euell Edwin Allison lived from 1920 to 2007',
+    identifiers: { findagrave: '20653554' },
     sources: [
       'Find a Grave memorial 20653554.',
     ],
@@ -2056,6 +2160,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Oscar Simmon Allison lived from 1884 to 1920',
+    identifiers: { findagrave: '28322691' },
     sources: [
       'Find a Grave memorial 28322691.',
     ],
@@ -2088,6 +2193,7 @@ export const PEOPLE: Person[] = [
       'Ollie Blanche Ingle Allison Grizzle lived from 1892 to 1976. She married Oscar Simmon Allison in 1911. He died in 1920 and she remarried Wiley Grizzle in 1923.',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '132669875' },
     sources: [
       'Find a Grave memorial 132669875.',
     ],
@@ -2109,6 +2215,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Minnie Joan Coleman Ingle lived from 1875 to 1918.',
+    identifiers: { findagrave: '206297882' },
     sources: [
       'Find a Grave memorial 206297882.',
     ],
@@ -2128,6 +2235,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'James Ingle lived from 1860 to 1938.',
+    identifiers: { findagrave: '29757328' },
     sources: [
       'Find a Grave memorial 29757328.',
     ],
@@ -2149,6 +2257,10 @@ export const PEOPLE: Person[] = [
       'Wiley Grizzle married Ollie Blanche Ingle Allison in 1923.',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
+    // TODO: Find a Grave memorial 132669877 is also cited on 'grizzle-wiley-jr'. One of
+    // the two is a slip, so no link is made here until it is settled: open
+    // findagrave.com/memorial/132669877, see whose it is, and add
+    // identifiers: { findagrave: '...' } to each record with its own number.
     sources: [
       'Find a Grave memorial 132669877.',
     ],
@@ -2170,6 +2282,7 @@ export const PEOPLE: Person[] = [
       'Gerald Allison lived from 1913 to 1982',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '13773914' },
     sources: [
       'Find a Grave memorial 13773914.',
     ],
@@ -2201,6 +2314,7 @@ export const PEOPLE: Person[] = [
       'Ethel Allison lived from 1917 to 2008',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '26227837' },
     sources: [
       'Find a Grave memorial 26227837.',
     ],
@@ -2243,6 +2357,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Winston Irvin Allison lived from 1938 to 2016',
+    identifiers: { findagrave: '169503745' },
     sources: [
       'Find a Grave memorial 169503745.',
     ],
@@ -2264,6 +2379,7 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       'Sherry Lynn Allison Bainbridge lived from 1939 to 2014',
+    identifiers: { findagrave: '126992596' },
     sources: [
       'Find a Grave memorial 126992596.',
     ],
@@ -2287,6 +2403,7 @@ export const PEOPLE: Person[] = [
       'Allison died at 12:04 a.m. Tuesday in the Methodist Hospital in Lubbock. Born Feb. 26, 1917 in Roswell, N .M ., Allison had been a resident of Earth since 1948, moving there from Roswell. He married Veta Jean McKinstry on March 26, 1944, in Hagerman, N.M.',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '53568158' },
     sources: [
       'Find a Grave memorial 53568158.',
     ],
@@ -2315,6 +2432,7 @@ export const PEOPLE: Person[] = [
       '',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '51564541' },
     sources: [
       'Find a Grave memorial 51564541.',
     ],
@@ -2343,15 +2461,19 @@ export const PEOPLE: Person[] = [
       '',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
+    // TODO: Find a Grave memorial 132669877 is also cited on 'grizzle-wiley'. One of
+    // the two is a slip, so no link is made here until it is settled: open
+    // findagrave.com/memorial/132669877, see whose it is, and add
+    // identifiers: { findagrave: '...' } to each record with its own number.
     sources: [
       'Find a Grave memorial 132669877.',
     ],
     relations: [
       { type: 'parent', person: 'grizzle-wiley', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
-      { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
-      { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
-      { type: 'sibling', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -2365,15 +2487,16 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       '',
+    identifiers: { familysearch: 'LXFR-KX1' },
     sources: [
       'Family Search ID: LXFR-KX1.',
     ],
     relations: [
       { type: 'parent', person: 'grizzle-wiley', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
-      { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
-      { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
-      { type: 'sibling', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'grizzle-wiley-jr', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'andreas-mary-lorene-grizzle', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'grizzle-james', basis: 'Established relationship', confidence: 'certain' },
@@ -2390,15 +2513,16 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       '',
+    identifiers: { familysearch: 'L87Z-ZDR' },
     sources: [
       'Family Search ID: L87Z-ZDR.',
     ],
     relations: [
       { type: 'parent', person: 'grizzle-wiley', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
-      { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
-      { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
-      { type: 'sibling', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'grizzle-wiley-jr', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'didlake-ollie-mae-grizzle', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'grizzle-james', basis: 'Established relationship', confidence: 'certain' },
@@ -2415,15 +2539,16 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       '',
+    identifiers: { familysearch: 'LJPD-MN5' },
     sources: [
       'Family Search ID: LJPD-MN5.',
     ],
     relations: [
       { type: 'parent', person: 'grizzle-wiley', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
-      { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
-      { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
-      { type: 'sibling', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'grizzle-wiley-jr', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'didlake-ollie-mae-grizzle', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'andreas-mary-lorene-grizzle', basis: 'Established relationship', confidence: 'certain' },
