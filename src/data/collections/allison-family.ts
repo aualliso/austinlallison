@@ -1026,23 +1026,23 @@ export const COLLECTION: Collection = {
     },
     {
       slug: 'allison-oscar-standing-on-plane',
-      title: '[Oscar Allison standing on the wing of an AT-6 Texan]',
+      title: '[Oscar Allison standing on the wing of a BT-13A Valiant at Shaw Army Air Field]',
       titleSource: 'supplied',
       format: 'snapshot',
-      place: 'tbd',
+      place: 'Shaw Army Air Field',
       controlNumber: 'e.1.7',
       date: {
-        display: '[1943]',
-        earliest: 1943,
+        display: '[1942-1943]',
+        earliest: 1942,
         latest: 1943,
-        basis: ['This photograph appears to be from before Oscar was captured and his time as a prisoner of war'],
+        basis: ['This photograph was taken between January 1942 and April 1943. Oscar was stationed at Shaw Army Air Field between those dates.'],
         confidence: 'probable',
       },
       recto: {
         file: 'allison-oscar-standing-on-plane-recto.jpg',
       },
       description:
-        'This photograph depicts Oscar Allison standing on the wing of an AT-6 Texan aircraft during World War II.',
+        'This photograph depicts Oscar Allison standing on the wing of an BT-13A Valiant aircraft during World War II. Oscar worked as a mechanic at Shaw Army Air Field between January 1942 and April 1943.',
       inscriptions: [
         
       ],
