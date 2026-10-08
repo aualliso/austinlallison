@@ -466,6 +466,65 @@
       }
     }
   },
+  "allison-family/allison-harold-jean-snapshot-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-snapshot-recto-6b6bfec09b",
+    "width": 1909,
+    "height": 2420,
+    "sizes": [
+      {
+        "width": 239,
+        "height": 303
+      },
+      {
+        "width": 340,
+        "height": 431
+      },
+      {
+        "width": 680,
+        "height": 862
+      },
+      {
+        "width": 800,
+        "height": 1014
+      },
+      {
+        "width": 1200,
+        "height": 1521
+      },
+      {
+        "width": 1900,
+        "height": 2409
+      },
+      {
+        "width": 1909,
+        "height": 2420
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1909,
+      "study": null
+    },
+    "hash": "6b6bfec09b3d8be2df901a116610a9057fc7c9b2fa74c3cdf84e47169dd34a91",
+    "download": {
+      "full": {
+        "file": "allison-harold-jean-snapshot-recto.jpg",
+        "width": 1909,
+        "height": 2420,
+        "bytes": 494735
+      },
+      "share": null
+    }
+  },
   "allison-family/allison-harold-ollie-mae-grizzle-mildred-mckinstry-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-ollie-mae-grizzle-mildred-mckinstry-recto-d2cf610cd9",
@@ -670,6 +729,74 @@
       }
     }
   },
+  "allison-family/allison-harold-san-antonio-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-san-antonio-1-recto-cdb93e6bdf",
+    "width": 3936,
+    "height": 6133,
+    "sizes": [
+      {
+        "width": 246,
+        "height": 384
+      },
+      {
+        "width": 340,
+        "height": 530
+      },
+      {
+        "width": 680,
+        "height": 1060
+      },
+      {
+        "width": 800,
+        "height": 1247
+      },
+      {
+        "width": 1200,
+        "height": 1870
+      },
+      {
+        "width": 1669,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 2961
+      },
+      {
+        "width": 3209,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1669,
+      "study": 3209
+    },
+    "hash": "cdb93e6bdf22e274e9583ce26ec26800607d8d819f46f6947a7adb823fb48c1c",
+    "download": {
+      "full": {
+        "file": "allison-harold-san-antonio-1-recto.jpg",
+        "width": 3936,
+        "height": 6133,
+        "bytes": 2093303
+      },
+      "share": {
+        "file": "allison-harold-san-antonio-1-recto-2600px.jpg",
+        "width": 1669,
+        "height": 2600,
+        "bytes": 453225
+      }
+    }
+  },
   "allison-family/allison-harold-walking-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-walking-recto-5f59b3114f",
@@ -863,6 +990,74 @@
         "bytes": 738466
       },
       "share": null
+    }
+  },
+  "allison-family/allison-jean-mary-andreas-mrs-redfield-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jean-mary-andreas-mrs-redfield-recto-d54997aa9a",
+    "width": 7392,
+    "height": 4415,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 203
+      },
+      {
+        "width": 462,
+        "height": 276
+      },
+      {
+        "width": 680,
+        "height": 406
+      },
+      {
+        "width": 800,
+        "height": 478
+      },
+      {
+        "width": 1200,
+        "height": 717
+      },
+      {
+        "width": 1900,
+        "height": 1135
+      },
+      {
+        "width": 2600,
+        "height": 1553
+      },
+      {
+        "width": 5000,
+        "height": 2986
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "d54997aa9a405c13e05fc2defe8f5fac5802027e0f9698dc77caeeb58b6070fb",
+    "download": {
+      "full": {
+        "file": "allison-jean-mary-andreas-mrs-redfield-recto.jpg",
+        "width": 7392,
+        "height": 4415,
+        "bytes": 3552965
+      },
+      "share": {
+        "file": "allison-jean-mary-andreas-mrs-redfield-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1553,
+        "bytes": 494426
+      }
     }
   },
   "allison-family/allison-joseph-carroll-ned-hogan-1-recto.jpg": {
@@ -1929,6 +2124,74 @@
         "bytes": 932069
       },
       "share": null
+    }
+  },
+  "allison-family/allison-oscar-wrestling-calf-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-wrestling-calf-recto-f601e5371b",
+    "width": 4381,
+    "height": 5629,
+    "sizes": [
+      {
+        "width": 274,
+        "height": 352
+      },
+      {
+        "width": 340,
+        "height": 437
+      },
+      {
+        "width": 680,
+        "height": 874
+      },
+      {
+        "width": 800,
+        "height": 1028
+      },
+      {
+        "width": 1200,
+        "height": 1542
+      },
+      {
+        "width": 1900,
+        "height": 2441
+      },
+      {
+        "width": 2024,
+        "height": 2601
+      },
+      {
+        "width": 3891,
+        "height": 4999
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2024,
+      "study": 3891
+    },
+    "hash": "f601e5371b1aba1c1bde5786dc47c11b971fb9e7fc2123f52f457f0cd4e07689",
+    "download": {
+      "full": {
+        "file": "allison-oscar-wrestling-calf-recto.jpg",
+        "width": 4381,
+        "height": 5629,
+        "bytes": 2518285
+      },
+      "share": {
+        "file": "allison-oscar-wrestling-calf-recto-2600px.jpg",
+        "width": 2024,
+        "height": 2600,
+        "bytes": 688304
+      }
     }
   },
   "allison-family/allison-redmon-family-recto.jpg": {
@@ -21516,6 +21779,74 @@
         "bytes": 514874
       },
       "share": null
+    }
+  },
+  "mckinstry-family/mckinstry-sam-mack-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sam-mack-recto-c17b98ebdc",
+    "width": 3126,
+    "height": 4452,
+    "sizes": [
+      {
+        "width": 196,
+        "height": 279
+      },
+      {
+        "width": 340,
+        "height": 484
+      },
+      {
+        "width": 680,
+        "height": 968
+      },
+      {
+        "width": 800,
+        "height": 1139
+      },
+      {
+        "width": 1200,
+        "height": 1709
+      },
+      {
+        "width": 1826,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 2706
+      },
+      {
+        "width": 3126,
+        "height": 4452
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1826,
+      "study": 3126
+    },
+    "hash": "c17b98ebdc79186ba1ae344c1dbce454bb141274ad10745a7237294ee126d00c",
+    "download": {
+      "full": {
+        "file": "mckinstry-sam-mack-recto.jpg",
+        "width": 3126,
+        "height": 4452,
+        "bytes": 1655783
+      },
+      "share": {
+        "file": "mckinstry-sam-mack-recto-2600px.jpg",
+        "width": 1826,
+        "height": 2600,
+        "bytes": 616144
+      }
     }
   },
   "mckinstry-family/mckinstry-sam-palomina-recto.jpg": {

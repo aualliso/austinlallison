@@ -7231,6 +7231,44 @@ export const COLLECTION: Collection = {
         note: 'Photographer unidentified; unpublished.',
       },
     },
+    {
+      slug: 'mckinstry-sam-mack',
+      title: '[Sam McKinstry holding his grandson, Mack]',
+      controlNumber: 'e.1.18',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '1945',
+        basis: [
+          'A 1945 date is presumed based on the age of Mack.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-sam-mack-recto.jpg' },
+      description: 'This photograph depicts Sam McKinstry holding his grandson, Mack. They are next to a car.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-samuel-small',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 33.8, y: 23.7, w: 13.7, h: 12.3 },
+        },
+        {
+          as: 'Mack Allison',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 42.8, y: 30.3, w: 11.5, h: 9.3 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
 
 
     {

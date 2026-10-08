@@ -24,8 +24,15 @@
 //     the mark reads as vanishing rather than shaded. #6a5f42 is the
 //     moodier option; judge it on leather, not on white.
 //
-// THE BEVEL is not here. It is the CSS filter on .cover-signature, in
-// real pixels, so it stays one physical width at every size.
+// THE GLINT is a second, bright copy of the signature laid over the
+// first. Its fill is a narrow band of light (transparent, bright,
+// transparent) that sits off to the left of the artwork until
+// initGlint() in src/pages/index.astro slides it across, once, by
+// rewriting the gradient's gradientTransform. Only where the
+// band crosses a stroke does anything show, so the highlight is
+// confined to the gold. The paths are defined once, with no fill of
+// their own, and drawn twice with <use>, so the second copy costs
+// nothing in the page.
 
 const SIGNATURE_PATHS = `
             <g fill="currentColor">
@@ -43,6 +50,9 @@ const SIGNATURE_PATHS = `
             </g>
           `;
 
+// the artwork with no fill of its own, so each <use> can supply one
+const SIGNATURE_SHAPE = SIGNATURE_PATHS.replace(/ fill="currentColor"/g, '');
+
 export const COVER_SIGNATURE_SVG = `
   <defs>
     <linearGradient id="cover-signature-pewter" gradientUnits="userSpaceOnUse"
@@ -52,6 +62,15 @@ export const COVER_SIGNATURE_SVG = `
       <stop offset="65%"  stop-color="#a8996c" />
       <stop offset="100%" stop-color="#877a56" />
     </linearGradient>
+    <linearGradient id="cover-signature-glint" gradientUnits="userSpaceOnUse"
+                    x1="-300" y1="0" x2="300" y2="0"
+                    gradientTransform="translate(-1600 0) rotate(14)">
+      <stop offset="0"   stop-color="#fff8dc" stop-opacity="0" />
+      <stop offset="0.5" stop-color="#fff8dc" stop-opacity="0.95" />
+      <stop offset="1"   stop-color="#fff8dc" stop-opacity="0" />
+    </linearGradient>
+    <g id="cover-signature-shape">${SIGNATURE_SHAPE}</g>
   </defs>
-  ${SIGNATURE_PATHS.replace(/currentColor/g, 'url(#cover-signature-pewter)')}
+  <use href="#cover-signature-shape" fill="url(#cover-signature-pewter)" />
+  <use href="#cover-signature-shape" fill="url(#cover-signature-glint)" />
 `;

@@ -693,8 +693,8 @@ export const COLLECTION: Collection = {
       ],
     },
     {
-      slug: 'allison-oscar-ingle-mary-grizzle',
-      title: '[Oscar Ingle Allison and sister Mary Grizzle]',
+      slug: 'allison-oscar-ingle-unknown-girl',
+      title: '[Oscar Ingle Allison and unknown girl]',
       titleSource: 'supplied',
       format: 'snapshot',
       place: 'New Mexico',
@@ -710,7 +710,7 @@ export const COLLECTION: Collection = {
         file: 'allison-oscar-ingle-mary-grizzle-recto.jpg',
       },
       description:
-        'This photograph depicts Oscar Allison and Mary Grizzle standing next to a car.',
+        'This photograph depicts Oscar Allison and an unknown girl standing next to a car.',
       inscriptions: [
         {
           location: 'recto',
@@ -726,13 +726,7 @@ export const COLLECTION: Collection = {
             'Known identity',
           region: { face: 'recto', x: 30.8, y: 20.7, w: 14.9, h: 15.3 },
         },
-        {
-          person: 'andreas-mary-lorene-grizzle',
-          confidence: 'certain',
-          basis:
-            'Known identity',
-          region: { face: 'recto', x: 52.2, y: 27.3, w: 14.9, h: 12.7 },
-        },
+        
       ],
     },
     {
@@ -1131,6 +1125,157 @@ export const COLLECTION: Collection = {
           basis:
             'Known identity',
           region: { face: 'recto', x: 32.4, y: 26, w: 15.6, h: 15.3 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-jean-snapshot',
+      title: '[Harold and Jean Allison informal portrait]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'e.1.10',
+      date: {
+        display: '[1944]',
+        earliest: 1944,
+        latest: 1944,
+        basis: ['This photograph is likely just after Harold and Jean got married in 1944.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-jean-snapshot-recto.jpg',
+      },
+      description:
+        'This photograph depicts Harold and Jean Allison in an informal portrait. Jean and Harold are each identified. This photograph was likely produced around the time they were married in 1944.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 49.4, y: 21.6, w: 36.9, h: 31.3 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 23.4, y: 36.8, w: 33.8, h: 33.2 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-san-antonio-1',
+      title: '[Harold Allison standing next to a swimming pool]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'San Antonio, Teas',
+      controlNumber: 'e.1.11',
+      date: {
+        display: '[1945]',
+        earliest: 1945,
+        latest: 1945,
+        basis: ['This photograph was likely taken during the time Harold and Jean spent in San Antonio.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-san-antonio-1-recto.jpg',
+      },
+      description:
+        'This photograph depicts Harold Allison standing next to a swimming pool. This photograph matches others labeled as being taken in San Antonio.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 44.4, y: 37.1, w: 8.6, h: 6.6 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'allison-oscar-wrestling-calf',
+      title: '[Oscar Allison wrestling a Hereford calf]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'e.1.12',
+      date: {
+        display: '[1940-1942]',
+        earliest: 1941,
+        latest: 1942,
+        basis: ['This photograph was likely taken prior to Oscar\'s time in the military or before he was deployed.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-oscar-wrestling-calf-recto.jpg',
+      },
+      description:
+        'This photograph depicts Oscar Allison wrestling a Hereford calf in a fenced enclosure.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 27.5, y: 53.6, w: 9.7, h: 9.3 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'allison-jean-mary-andreas-mrs-redfield',
+      title: '[Mrs. Redfield, Jean Allison, and Mary Andreas sitting in the Allison home]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'e.1.13',
+      date: {
+        display: '[1953-1954]',
+        earliest: 1953,
+        latest: 1954,
+        basis: ['This photograph was likely taken between 1953 and 1954 based on the ages of those known in the photograph.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jean-mary-andreas-mrs-redfield-recto.jpg',
+      },
+      description:
+        'This photograph depicts Mrs. Redfield, Jean Allison, and Mary Andreas. The identity of Mrs. Redfield is assumed based on an 8mm film that is in the collection. The box identifies a pair in the film as "Sidney & Mrs. Redfield." It is presumed that this woman is Mrs. Redfield. Sidney Redfield was a well-known artist, and this woman could be his mother Georgia Redfield. She is buried in Roswell.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 41.9, y: 17.3, w: 7.4, h: 14.5 },
+        },
+        {
+          person: 'andreas-mary-lorene-grizzle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 63.6, y: 16.8, w: 6.5, h: 13.1 },
+        },
+        {
+          as: 'Mrs. Redfield',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 16.6, y: 24.7, w: 8.5, h: 15.8 },
         },
       ],
     },

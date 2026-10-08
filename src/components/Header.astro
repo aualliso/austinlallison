@@ -1492,6 +1492,19 @@ const isDev = import.meta.env.DEV;
     return Number.isFinite(v) ? v : null;
   }
 
+  /* Dev-only cloud override: ?debugCloud=<percent of sky, 0-100>, same gate
+     and same idiom as ?debugWind above. Applied after the cache and the
+     fetch and never written back. Nothing in this header draws cloud; the
+     reading is published for the home page's desk (see --cloud below), and
+     this is how to see an overcast desk on a clear day. */
+  function debugCloudPct(): number | null {
+    if (!debugEnabled) return null;
+    const raw = new URLSearchParams(location.search).get('debugCloud');
+    if (raw == null) return null;
+    const v = parseFloat(raw);
+    return Number.isFinite(v) ? v : null;
+  }
+
   function getNow(): Date {
     if (debugEnabled) {
       const override = new URLSearchParams(location.search).get('debugTime');
@@ -2800,6 +2813,10 @@ const isDev = import.meta.env.DEV;
      orientation rather than snapping it somewhere arbitrary. */
   let windFromDeg: number | null = null;
   let windMph: number | null = null;
+  /* Percent of the sky that is cloud, from the same reading as the wind.
+     null until a reading arrives (and whenever ?debugWind short-circuits
+     the fetch), which --cloud's readers treat as a clear sky. */
+  let cloudCover: number | null = null;
 
   /* ---- wheel geometry (2026-08-19) ---------------------------------------
      Three numbers describing the wheel as a solid rather than a disc. All in
@@ -2841,11 +2858,12 @@ const isDev = import.meta.env.DEV;
       if (isFresh) {
         mph = cached.mph;
         if (typeof cached.dir === 'number') windFromDeg = cached.dir;
+        if (typeof cached.cloud === 'number') cloudCover = cached.cloud;
       } else {
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 4000);
         const res = await fetch(
-          `https://api.open-meteo.com/v1/forecast?latitude=${SITE_LAT}&longitude=${SITE_LON}&current=wind_speed_10m,wind_direction_10m&wind_speed_unit=mph`,
+          `https://api.open-meteo.com/v1/forecast?latitude=${SITE_LAT}&longitude=${SITE_LON}&current=wind_speed_10m,wind_direction_10m,cloud_cover&wind_speed_unit=mph`,
           { signal: controller.signal }
         );
         clearTimeout(timeout);
@@ -2855,10 +2873,12 @@ const isDev = import.meta.env.DEV;
           const dir = data?.current?.wind_direction_10m;
           if (typeof v === 'number') mph = v;
           if (typeof dir === 'number') windFromDeg = dir;
+          const cloud = data?.current?.cloud_cover;
+          if (typeof cloud === 'number') cloudCover = cloud;
           if (mph != null) {
             sessionStorage.setItem(
               'horizon-weather',
-              JSON.stringify({ mph, dir: windFromDeg, ts: Date.now() })
+              JSON.stringify({ mph, dir: windFromDeg, cloud: cloudCover, ts: Date.now() })
             );
           }
         }
@@ -2874,6 +2894,19 @@ const isDev = import.meta.env.DEV;
     if (dbgDir != null) windFromDeg = dbgDir;
 
     windMph = clamped;
+
+    /* How much of the sky is cloud, 0 to 1, published for anything outside
+       the header that is lit by this sky (the home page's desk softens its
+       light and shadows by it: see syncDeskLight() in src/pages/index.astro).
+       Nothing in this file uses it. Removed when there is no reading, so a
+       failed fetch reads as clear, not as whatever the last value was. */
+    const dbgCloud = debugCloudPct();
+    const cloudPct = dbgCloud != null ? dbgCloud : cloudCover;
+    if (cloudPct != null) {
+      header?.style.setProperty('--cloud', (Math.min(100, Math.max(0, cloudPct)) / 100).toFixed(2));
+    } else {
+      header?.style.removeProperty('--cloud');
+    }
 
     if (svg) {
       const duration = Math.min(32, Math.max(13, 26 - clamped * 0.35));

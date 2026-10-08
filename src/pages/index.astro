@@ -33,9 +33,19 @@
 // the footer cuts through it; this is the same country from above. It
 // is lit by the header's own sun: syncDeskLight() reads what the header
 // publishes and turns it into the light across the sheet and the shadow
-// the book casts. After dark a lamp takes over. The book itself has
+// the book casts. After dark a lamp takes over, and on an overcast day
+// (the header's cloud reading) the light flattens and the shadows
+// soften. The book itself has
 // thickness (its boards and page edges show along the foot and the
-// fore-edge) and its cover takes the same light as the desk.
+// fore-edge), and its cover, its spine, its open pages and the inside
+// of its opened cover all take the same light as the desk.
+//
+// THE RIBBON. A silk marker hangs from the foot of the book. It keeps
+// the last page the visitor was on (in localStorage) and opens the
+// book there. See initRibbon().
+//
+// THE GLINT. A highlight crosses the gold of the signature and the
+// label's fillet once, shortly after the page loads. See initGlint().
 //
 // RULED PAPER. The text sits on the ruling. --rule-pitch drives both
 // the rules and every line-height, so they cannot drift apart. See the
@@ -50,8 +60,9 @@
 // signature in gold, with a smaller piece of the same leather below it
 // as the cue to open the book.
 // Two images in public/images/cover/ supply the materials:
-// marbled-boards.webp for both boards and leather-aged.webp, a seamless
-// tile, for every piece of leather. The wear that depends on WHERE it
+// marbled-boards.webp for both boards (marbled-boards-phone.webp is its
+// middle half, for phones) and leather-aged.webp, a seamless tile, for
+// every piece of leather. The wear that depends on WHERE it
 // is (rubbed edges, bumped corners) is drawn over the tile in CSS. The
 // spine has five raised bands, also CSS: see RAISED BANDS.
 //
@@ -250,11 +261,36 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       <div class="desk-shadow" id="desk-shadow" aria-hidden="true"></div>
 
       <!-- the book's thickness, drawn as its own outline repeated
-           down and to the right; the inner piece is the leather at
-           the tail of the spine -->
+           down and to the right. The box itself carries the thin edge
+           of the OPEN book (the back board); .book-stack is the full
+           edge of the CLOSED book laid over it, with the leather at
+           the tail of the spine, and it withdraws as the cover opens -->
       <div class="book-depth" id="book-depth" aria-hidden="true">
-        <div class="book-tail"></div>
+        <div class="book-stack">
+          <div class="book-tail"></div>
+        </div>
       </div>
+
+      <!-- THE RIBBON: a marker hanging from the foot of the book. It
+           remembers the last page read and opens the book there. Ahead
+           of the book in the markup so the book lies over its top end.
+           The three paths are its shadow on the desk, the silk, and
+           the dark that comes over it at night. -->
+      <button type="button" class="ribbon" id="ribbon" aria-label="Open the ledger at the ribbon">
+        <svg viewBox="0 0 30 110" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="ribbon-silk" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#4f100e" />
+              <stop offset="0.3" stop-color="#8d2a22" />
+              <stop offset="0.55" stop-color="#a23a2e" />
+              <stop offset="1" stop-color="#5a1411" />
+            </linearGradient>
+          </defs>
+          <path class="ribbon-shadow" d="M9 0 C8 30 12 55 10 102 L17 92 L24 106 C27 60 22 30 25 0 Z" />
+          <path fill="url(#ribbon-silk)" d="M6 0 C5 30 9 55 7 100 L14 90 L21 104 C24 60 19 30 22 0 Z" />
+          <path class="ribbon-night" d="M6 0 C5 30 9 55 7 100 L14 90 L21 104 C24 60 19 30 22 0 Z" />
+        </svg>
+      </button>
 
       <!-- syncDeskLight() writes the light's values onto .spine itself,
            so the strip, its ridges and their ends all read the same -->
@@ -274,7 +310,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
             <!-- the light on the cover; see syncDeskLight() -->
             <div class="cover-light" id="cover-light"></div>
             <div class="cover-title-block">
-              <div class="cover-label">
+              <div class="cover-label" id="cover-label">
                 <svg class="cover-signature" viewBox="-20 -20 2650 900" set:html={COVER_SIGNATURE_SVG}></svg>
                 <svg class="cover-rule" viewBox="0 0 200 12">
                   <g fill="none" stroke="currentColor" stroke-width="0.9" stroke-linecap="round">
@@ -296,8 +332,10 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
 
           <!-- back face (the verso): the pastedown. Shows once the cover
                has swung past 90deg, by backface-visibility alone -->
-          <div class="cover-face cover-face--back" aria-hidden="true">
+          <div class="cover-face cover-face--back" id="cover-verso" aria-hidden="true">
             <div class="cover-pastedown"></div>
+            <!-- the light on the inside of the opened cover -->
+            <div class="verso-light"></div>
           </div>
         </button>
 
@@ -526,6 +564,9 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
             <span class="catchword-arrow">&rarr;</span>
           </button>
 
+          <!-- the light on the open pages; see syncDeskLight() -->
+          <div class="page-light" id="page-light" aria-hidden="true"></div>
+
           <!-- scratch space for snapToRules(); never seen -->
           <div class="rule-probe" id="rule-probe" aria-hidden="true"></div>
 
@@ -577,7 +618,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       // follows from syncDeskLight() once the module runs.
       var night = document.getElementById('horizon-header')?.style.getPropertyValue('--night');
       if (night) {
-        ['desk-light', 'desk-shadow', 'book-depth', 'block-depth', 'cover-light', 'cover-spine', 'spine', 'reg-tablist'].forEach(function (id) {
+        ['desk-light', 'desk-shadow', 'book-depth', 'block-depth', 'cover-light', 'cover-spine', 'cover-verso', 'page-light', 'ribbon', 'spine', 'reg-tablist'].forEach(function (id) {
           document.getElementById(id)?.style.setProperty('--desk-night', night);
         });
       }
@@ -603,7 +644,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
         padding-left: 0 !important;
         border-radius: 0 !important;
       }
-      .desk-shadow, .book-depth { display: none; }
+      .desk-shadow, .book-depth, .ribbon { display: none; }
       .book-stage {
         margin-left: 0 !important;
         background: none !important;
@@ -684,12 +725,16 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
      2. LOW SUN. The sun's own colour (the header's --grazing-color)
         laid across the sheet from the side it stands on.
      3. DAY. Brighter toward the sun, a little shaded away from it.
-        --light-angle points the way the light travels.
+        --light-angle points the way the light travels. --sun is how
+        strong the direct sun is: 1 under a clear sky, less under
+        cloud, nothing at night. Until the script supplies it, it is
+        simply "not night", which is all the page knows before then.
 
      Last, two fixed edges: the header's shadow along the top, and the
      sheet darkening where it ends. */
   .desk-light {
     --desk-night: 0;
+    --sun: calc(1 - var(--desk-night));
     --light-angle: 150deg;
     --light-warm: 0;
     --light-color: rgb(232, 168, 92);
@@ -705,9 +750,9 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
         color-mix(in srgb, var(--light-color) calc(var(--light-warm) * 36%), transparent) 0%,
         transparent 72%),
       linear-gradient(var(--light-angle),
-        rgba(255, 250, 236, calc((1 - var(--desk-night)) * 0.26)) 0%,
+        rgba(255, 250, 236, calc(var(--sun) * 0.26)) 0%,
         transparent 50%,
-        rgba(46, 34, 20, calc((1 - var(--desk-night)) * 0.16)) 100%),
+        rgba(46, 34, 20, calc(var(--sun) * 0.16)) 100%),
       linear-gradient(to bottom,
         rgba(40, 26, 10, 0.3) 0,
         transparent 1.5rem,
@@ -874,6 +919,15 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
        spine. --back-w is the width of the spine strip. */
     --depth-y: 17px;
     --depth-x: calc(var(--depth-y) * 0.5833);
+    /* the same two for the OPEN book, whose edge is only the back
+       board's: see .book-stack */
+    --open-y: 4px;
+    --open-x: calc(var(--open-y) * 0.5833);
+    --open-stack:
+      0.58px 1px 0 #5a4234,
+      1.17px 2px 0 #24160f,
+      1.75px 3px 0 #20140d,
+      2.33px 4px 0 #33211a;
     --back-w: 1.35rem;
     /* the whole book's width, spine and boards: .leaves' own width less
        its side padding, both restated from the rule above */
@@ -951,12 +1005,16 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     --shadow-blur: 30px;
     --shadow-a: 0.46;
     transform: translate(var(--depth-x), var(--depth-y));
-    transition: transform 0.7s ease;
+    transition: transform 0.6s cubic-bezier(0.3, 0, 0.2, 1);
     border-radius: 2px 8px 8px 2px;
     box-shadow:
       var(--shadow-x) var(--shadow-y) var(--shadow-blur) -5px
         rgba(28, 30, 54, calc(var(--shadow-a) * (1 - var(--desk-night)))),
       0 16px 34px -8px rgba(10, 6, 2, calc(var(--desk-night) * 0.66));
+  }
+
+  .leaves.is-settled .desk-shadow {
+    transform: translate(var(--open-x), var(--open-y));
   }
 
   /* THE BOOK'S THICKNESS. The view is from above and a little below
@@ -994,31 +1052,72 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
      smaller than it. So this drops to the back board's own thickness,
      and the page edges are drawn where they now are, inside the
      board's overhang: see .block-depth. Drawing them out here with the
-     cover open would put the back board above its own pages. */
-  .leaves:has(.cover[inert]) {
-    --depth-y: 4px;
-    --depth-stack:
-      0.58px 1px 0 #5a4234,
-      1.17px 2px 0 #24160f,
-      1.75px 3px 0 #20140d,
-      2.33px 4px 0 #33211a;
-  }
+     cover open would put the back board above its own pages.
+
+     HOW IT CHANGES. Both edges are always drawn. The open book's thin
+     one is .book-depth's own; the closed book's full one, .book-stack,
+     lies over it. When the cover is clicked the script adds .is-settled
+     and the full stack slides up and to the left, under the book, by
+     exactly the difference between the two depths, fading as it goes.
+     What is left showing at each moment is its lower layers, so the
+     edge thins smoothly from the cover down to the back board, and it
+     ends where the open edge already is. Sliding and fading a finished
+     picture costs the browser nothing per frame; the earlier version
+     redrew all seventeen layers on every frame of the swing. The
+     desk's shadow moves up the same distance in the same time. */
   .book-depth {
     --desk-night: 0;
     --fore-shade: 0.4;
     border-radius: 3px 9px 9px 3px;
-    box-shadow: var(--depth-stack);
-    /* the stack settles as the cover opens */
-    transition: box-shadow 0.7s ease;
+    box-shadow: var(--open-stack);
   }
   .book-depth::before,
   .book-depth::after {
     content: '';
     position: absolute;
-    inset: var(--depth-y) calc(-1 * var(--depth-x)) calc(-1 * var(--depth-y)) var(--depth-x);
+    inset: var(--open-y) calc(-1 * var(--open-x)) calc(-1 * var(--open-y)) var(--open-x);
     border-radius: inherit;
   }
   .book-depth::before {
+    background:
+      /* day: the foot always a little shaded, the fore-edge by where the sun is */
+      linear-gradient(to bottom,
+        transparent calc(100% - var(--open-y)),
+        rgba(74, 50, 24, calc(0.2 * (1 - var(--desk-night)))) calc(100% - var(--open-y))),
+      linear-gradient(to right,
+        transparent calc(100% - var(--open-x)),
+        rgba(74, 50, 24, calc(var(--fore-shade) * 0.4)) calc(100% - var(--open-x))),
+      /* night: both go dark with the room */
+      linear-gradient(to bottom,
+        transparent calc(100% - var(--open-y)),
+        rgba(8, 6, 10, calc(var(--desk-night) * 0.5)) calc(100% - var(--open-y))),
+      linear-gradient(to right,
+        transparent calc(100% - var(--open-x)),
+        rgba(8, 6, 10, calc(var(--desk-night) * 0.45)) calc(100% - var(--open-x)));
+  }
+  .book-depth::after {
+    z-index: -1;
+    box-shadow: 0 1px 2px rgba(14, 8, 2, 0.5), 0 0 7px rgba(14, 8, 2, 0.24);
+  }
+  .book-stack {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: var(--depth-stack);
+    transition: transform 0.6s cubic-bezier(0.3, 0, 0.2, 1), opacity 0.6s ease-in;
+  }
+  .leaves.is-settled .book-stack {
+    transform: translate(calc(var(--open-x) - var(--depth-x)), calc(var(--open-y) - var(--depth-y)));
+    opacity: 0;
+  }
+  .book-stack::before,
+  .book-stack::after {
+    content: '';
+    position: absolute;
+    inset: var(--depth-y) calc(-1 * var(--depth-x)) calc(-1 * var(--depth-y)) var(--depth-x);
+    border-radius: inherit;
+  }
+  .book-stack::before {
     background:
       /* day: the foot always a little shaded, the fore-edge by where the sun is */
       linear-gradient(to bottom,
@@ -1035,7 +1134,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
         transparent calc(100% - var(--depth-x)),
         rgba(8, 6, 10, calc(var(--desk-night) * 0.45)) calc(100% - var(--depth-x)));
   }
-  .book-depth::after {
+  .book-stack::after {
     z-index: -1;
     box-shadow: 0 1px 2px rgba(14, 8, 2, 0.5), 0 0 7px rgba(14, 8, 2, 0.24);
   }
@@ -1047,9 +1146,6 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     height: 2rem;
     border-radius: 0 0 0 3px;
     box-shadow: var(--tail-stack);
-  }
-  .leaves:has(.cover[inert]) .book-tail {
-    display: none;
   }
 
   /* .book-stage is the BACK BOARD: leather, a little larger than the
@@ -1117,6 +1213,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
      on .book-depth. */
   .block-depth {
     --desk-night: 0;
+    --sun: calc(1 - var(--desk-night));
     --fore-shade: 0.4;
     --cast-x: 1px;
     --cast-y: 3px;
@@ -1197,7 +1294,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     z-index: -1;
     box-shadow:
       0 0 1.5px rgba(14, 8, 2, 0.55),
-      var(--cast-x) var(--cast-y) 4px rgba(30, 24, 40, calc(0.42 * (1 - var(--desk-night)))),
+      var(--cast-x) var(--cast-y) 4px rgba(30, 24, 40, calc(0.42 * var(--sun))),
       0 3px 6px rgba(10, 6, 2, calc(var(--desk-night) * 0.5));
   }
 
@@ -1231,15 +1328,16 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       99.72% 82%, 99.5% 84%, 99.82% 86%, 99.58% 88%, 99.46% 90%, 99.88% 92%,
       99.68% 94%, 99.52% 96%, 99.78% 98%, 100% 100%, 0 100%
     );
-    /* drop-shadow, unlike box-shadow, follows the clipped silhouette.
-       Two tight halos in the paper's own colour fake the fibrous bleed
-       of a real deckle (a clip-path alone is a hard vector line), then
-       one directional shadow for lift. Filters apply in order, so the
-       halos sit nearest the edge. */
-    filter:
-      drop-shadow(0 0 0.6px var(--color-caliche, #E8E1D1))
-      drop-shadow(0 0 0.25px var(--color-caliche, #E8E1D1))
-      drop-shadow(1px 1px 2px rgba(20, 14, 8, 0.2));
+    /* NO FILTER HERE, on purpose. This block used to carry three
+       drop-shadows (two paper-coloured halos to soften the deckle and
+       one for lift). A filter on the page block makes the browser
+       rebuild the whole block, every leaf in it, on every frame of a
+       page turn or of the cover opening, and it was the largest single
+       cost on the page: without it both run about three times as
+       smoothly. Its work is done elsewhere now. The lift is
+       .block-depth's shadow on the board, and the sheets showing
+       through the deckle are .block-depth's own background; side by
+       side the edge looks the same with and without it. */
   }
 
   .book[data-active-leaf="1"] {
@@ -1301,22 +1399,28 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     inset: 0;
     z-index: 1;
     pointer-events: none;
-    opacity: 0.06;
-    mix-blend-mode: multiply;
+    /* a plain overlay at half the strength, not a multiply at 0.06:
+       on paper the two come out the same, and a blend mode over the
+       leaves has to be worked out again on every frame they move */
+    opacity: 0.032;
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
   /* ambient vignette over the whole page block. The foxing itself is
-     per leaf: see .leaf-face--front::after. */
+     per leaf: see .leaf-face--front::after.
+
+     A plain overlay, not a multiply, for the reason given on the grain
+     above. The colour is the old one already multiplied into the
+     paper (rgb 90 62 40 over the caliche sheet), so on paper the
+     result is identical. */
   .book::after {
     content: '';
     position: absolute;
     inset: 0;
     z-index: 2;
     pointer-events: none;
-    mix-blend-mode: multiply;
     background-image:
-      radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(90, 62, 40, 0.12) 100%);
+      radial-gradient(120% 90% at 50% 45%, transparent 55%, rgba(82, 55, 33, 0.12) 100%);
   }
 
   /* THE RUNNING HEAD is printed on the sheet, so it lives inside each
@@ -1404,7 +1508,6 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     border-radius: 2px 8px 8px 2px;
     overflow: hidden;
     backface-visibility: hidden;
-    box-shadow: -14px 10px 32px -10px rgba(10, 6, 3, 0.5);
   }
 
   /* THE FRONT BOARD: marbled paper, toned down a quarter so the label
@@ -1566,7 +1669,29 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   /* THE VERSO: the inside of the front board. Leather turn-ins round
      the edge, and a plain pastedown, shaded toward the hinge (which is
      this face's right-hand edge). */
+  /* THE OPENED COVER is the one face that carries the cover's own
+     shadow and thickness. (Closed, the cover is part of the book, whose
+     shadow is .desk-shadow's; this face is turned away then, and
+     everything on it with it.) Three hard steps are the board's edge,
+     the way .book-depth draws the book's; after them the sun's shadow,
+     from the same values as the desk's and fading out as the lamp's
+     comes in. The shadow is drawn in the cover's own tilted plane,
+     which is near enough flat for it to fall the right way. */
   .cover-face--back {
+    --desk-night: 0;
+    --sun: calc(1 - var(--desk-night));
+    --light-angle: 150deg;
+    --shadow-x: 9px;
+    --shadow-y: 20px;
+    --shadow-blur: 30px;
+    --shadow-a: 0.46;
+    box-shadow:
+      0.58px 1px 0 #4a3528,
+      1.17px 2px 0 #24160f,
+      1.75px 3px 0 #1a100b,
+      var(--shadow-x) var(--shadow-y) var(--shadow-blur) -6px
+        rgba(28, 30, 54, calc(var(--shadow-a) * (1 - var(--desk-night)))),
+      0 14px 30px -8px rgba(10, 6, 2, calc(var(--desk-night) * 0.6));
     transform: rotateY(180deg);
     background:
       linear-gradient(200deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.42)),
@@ -1601,6 +1726,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
      to catch anything. */
   .cover-light {
     --desk-night: 0;
+    --sun: calc(1 - var(--desk-night));
     --light-angle: 150deg;
     --lx: 0.4;
     --ly: 0.9;
@@ -1610,16 +1736,33 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     pointer-events: none;
     background:
       linear-gradient(var(--light-angle),
-        rgba(255, 244, 220, calc(0.16 * (1 - var(--desk-night)))) 0%,
+        rgba(255, 244, 220, calc(0.16 * var(--sun))) 0%,
         transparent 44%,
-        rgba(0, 0, 0, calc(0.24 * (1 - var(--desk-night)))) 100%),
+        rgba(0, 0, 0, calc(0.24 * var(--sun))) 100%),
       radial-gradient(95% 105% at 50% 44%,
         rgba(255, 216, 156, calc(0.08 * var(--desk-night))) 0%,
         transparent 48%,
         rgba(0, 0, 0, calc(0.5 * var(--desk-night))) 100%);
     box-shadow:
-      inset calc(var(--lx) * 1.6px) calc(var(--ly) * 1.6px) 0.6px rgba(255, 240, 210, calc(0.34 * (1 - var(--desk-night)))),
+      inset calc(var(--lx) * 1.6px) calc(var(--ly) * 1.6px) 0.6px rgba(255, 240, 210, calc(0.34 * var(--sun))),
       inset calc(var(--lx) * -2.2px) calc(var(--ly) * -2.2px) 1.2px rgba(0, 0, 0, 0.42);
+  }
+
+  /* the light on the inside of the opened cover: the cover's own two
+     gradients, read from the values on .cover-face--back */
+  .verso-light {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background:
+      linear-gradient(var(--light-angle),
+        rgba(255, 244, 220, calc(0.16 * var(--sun))) 0%,
+        transparent 44%,
+        rgba(0, 0, 0, calc(0.24 * var(--sun))) 100%),
+      radial-gradient(120% 110% at 100% 44%,
+        rgba(255, 216, 156, calc(0.06 * var(--desk-night))) 0%,
+        rgba(0, 0, 0, calc(0.22 * var(--desk-night))) 45%,
+        rgba(0, 0, 0, calc(0.6 * var(--desk-night))) 100%);
   }
 
   .cover-title-block {
@@ -1668,11 +1811,23 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     position: relative;
     z-index: 1;
   }
+  /* THE GLINT. --glint is where the highlight is across the label, as a
+     percentage (initGlint() moves it across once; left alone it sits
+     off to the left, out of sight). The fillet's border is painted with a gradient
+     so that one stretch of it, around that point, runs up to bright
+     gold. The signature does the same inside its own SVG. */
+  .cover-label {
+    --glint: -60%;
+  }
   .cover-label::before {
     content: '';
     position: absolute;
     inset: 7px;
     border: 1.5px solid var(--gilt);
+    border-image: linear-gradient(105deg,
+      var(--gilt) calc(var(--glint) - 16%),
+      rgba(255, 247, 216, 0.96) var(--glint),
+      var(--gilt) calc(var(--glint) + 16%)) 1;
     box-shadow: inset 0 0 0 3px transparent, inset 0 0 0 3.8px var(--gilt-faint);
   }
   .cover-label::after {
@@ -1712,6 +1867,18 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
      without ever going translucent: the leather stays solid and a
      faint wash of light over it (::after) fades in and out, which is
      an opacity animation and so costs no repainting. */
+  /* A PHONE'S COVER is upright, so `cover` only ever shows it the middle
+     of the marbled sheet, at the sheet's full height. This file is that
+     middle (the central 1000 of 2000 pixels, same height), so the
+     boards look exactly as they did while the phone downloads and holds
+     in memory half as much. 440px takes in the widest phones; above it
+     the cover is broad enough to need more of the sheet than this. */
+  @media (max-width: 440px) {
+    .leaves {
+      --marble: url('/images/cover/marbled-boards-phone.webp');
+    }
+  }
+
   .cover-open-cue {
     position: absolute;
     left: calc(var(--spine) + (100% - var(--spine)) / 2);
@@ -1727,7 +1894,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     letter-spacing: 0.24em;
     text-indent: 0.24em;
     text-transform: uppercase;
-    color: #e6dab4;
+    color: var(--gilt-type);   /* the gold of the label's lettering */
     background:
       linear-gradient(to right, rgba(var(--rub), 0.4), transparent 3px),
       linear-gradient(to left, rgba(var(--rub), 0.4), transparent 3px),
@@ -1759,9 +1926,10 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     0%, 100% { opacity: 0; }
     50% { opacity: 1; }
   }
+  /* under the pointer the gold comes up to full strength, no whiter */
   .cover:hover .cover-open-cue,
   .cover:focus-visible .cover-open-cue {
-    color: #f6efdc;
+    color: #d9c89b;
   }
   .cover:hover .cover-open-cue::after,
   .cover:focus-visible .cover-open-cue::after {
@@ -1873,6 +2041,36 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   }
 
 
+  /* THE LIGHT ON THE OPEN PAGES, over the leaves and under the
+     catchwords. It does not turn with a page: the light stays where it
+     is and the paper moves through it. The same three layers as the
+     desk's, held well back, because this is where the reading happens:
+     at its darkest corner at night the paper keeps about half its
+     brightness, and the type on it stays above 8:1. */
+  .page-light {
+    --desk-night: 0;
+    --sun: calc(1 - var(--desk-night));
+    --light-angle: 150deg;
+    --light-warm: 0;
+    --light-color: rgb(232, 168, 92);
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    background:
+      radial-gradient(85% 95% at 50% 46%,
+        rgba(255, 214, 150, calc(var(--desk-night) * 0.1)) 0%,
+        rgba(20, 16, 22, calc(var(--desk-night) * 0.14)) 55%,
+        rgba(8, 8, 16, calc(var(--desk-night) * 0.46)) 100%),
+      linear-gradient(var(--light-angle),
+        color-mix(in srgb, var(--light-color) calc(var(--light-warm) * 24%), transparent) 0%,
+        transparent 70%),
+      linear-gradient(var(--light-angle),
+        rgba(255, 250, 236, calc(var(--sun) * 0.14)) 0%,
+        transparent 46%,
+        rgba(46, 34, 20, calc(var(--sun) * 0.1)) 100%);
+  }
+
   /* scratch space for snapToRules(), never seen. Its width resolves
      --rule-pitch to pixels, and the script sets one line of type in it
      per distinct type style to find where that style's baseline
@@ -1904,6 +2102,44 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     );
   }
   /* the closed book's spine: the same leather, rubbed at head and tail */
+  /* THE RIBBON hangs from the foot of the book near the fore-edge,
+     where it clears the tab slip on a desktop; on a phone it is cut
+     short so that it ends above the slip. Its top is tucked a few
+     pixels under the book. The drawing stretches to whatever length
+     this box is (preserveAspectRatio="none"), so the length is set
+     here and nowhere else. */
+  .ribbon {
+    --desk-night: 0;
+    position: absolute;
+    top: calc(100% - clamp(0.75rem, 2vw, 1.25rem) - 4px);
+    right: calc(clamp(1.25rem, 4vw, 3.5rem) + 7%);
+    width: 16px;
+    height: 3.6rem;
+    z-index: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    transform-origin: 50% 0;
+    transition: transform 0.35s cubic-bezier(.2,.7,.2,1);
+  }
+  .ribbon svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .ribbon-shadow { fill: rgba(20, 10, 4, 0.3); }
+  .ribbon-night { fill: rgba(8, 6, 10, calc(var(--desk-night) * 0.55)); }
+  .ribbon:hover,
+  .ribbon:focus-visible {
+    transform: rotate(-3deg) scaleY(1.04);
+  }
+  .ribbon:focus-visible {
+    outline: 2px solid var(--color-caprock, #B85A38);
+    outline-offset: 3px;
+  }
+
   /* ONE SKIN WITH THE COVER. The spine and the leather on the front
      board are one piece of hide, so where the two strips meet nothing
      may change: the same wear at head and tail, shading that ends on
@@ -1912,6 +2148,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
      cover's, which hangs from its left. */
   .leaves:has(.cover:not([inert])) .spine {
     --desk-night: 0;
+    --sun: calc(1 - var(--desk-night));
     --light-angle: 150deg;
     --spine-lit: 0;
     --spine-shade: 0;
@@ -1964,9 +2201,9 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     display: block;
     background:
       linear-gradient(var(--light-angle),
-        rgba(255, 244, 220, calc(0.16 * (1 - var(--desk-night)))) 0%,
+        rgba(255, 244, 220, calc(0.16 * var(--sun))) 0%,
         transparent 44%,
-        rgba(0, 0, 0, calc(0.24 * (1 - var(--desk-night)))) 100%)
+        rgba(0, 0, 0, calc(0.24 * var(--sun))) 100%)
         0 0 / var(--book-w) 100% no-repeat,
       radial-gradient(95% 105% at 50% 44%,
         rgba(255, 216, 156, calc(0.08 * var(--desk-night))) 0%,
@@ -2036,12 +2273,29 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   }
 
   /* A page lifting off the stack casts a shadow as it rises. Added
-     as a one-shot class from goTo(). */
+     as a one-shot class from goTo().
+
+     The shadow is a soft band hung just outside the leaf's fore-edge,
+     which swings in over the page beneath as the leaf lifts, and it
+     fades in and out. (Lying flat, the band is past the edge of .pages
+     and clipped away.) It used to be a drop-shadow filter animated on
+     the leaf itself, which redrew the leaf and its shadow on every
+     frame of every turn; fading a ready-made gradient costs nothing. */
   @keyframes leaf-shadow-pulse {
-    0%, 100% { filter: drop-shadow(0 0 0 rgba(20, 14, 8, 0)); }
-    45% { filter: drop-shadow(14px 8px 18px rgba(20, 14, 8, 0.4)); }
+    0%, 100% { opacity: 0; }
+    45% { opacity: 1; }
   }
-  .leaf.is-turning {
+  .leaf.is-turning::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: calc(100% - 12px);
+    width: 52px;
+    pointer-events: none;
+    backface-visibility: hidden;
+    background: linear-gradient(to right, rgba(20, 14, 8, 0.3), rgba(20, 14, 8, 0.12) 45%, transparent);
+    opacity: 0;
     animation: leaf-shadow-pulse 0.6s cubic-bezier(0.3, 0.1, 0.3, 1);
   }
 
@@ -2774,6 +3028,9 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   .book-depth {
     bottom: 0.5rem; /* keep in sync with .leaves padding-bottom above */
   }
+  .ribbon {
+    top: calc(100% - 0.5rem - 4px); /* the same offset, from the top */
+  }
 
   .spine {
     bottom: 0.5rem; /* keep in sync too, so the spine still lines up with the book's bottom edge */
@@ -2786,6 +3043,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
 
   @media (max-width: 680px) {
     .book-stage { margin-left: 1.05rem; }
+    .ribbon { width: 13px; height: 1.9rem; }
     .leaves {
       --depth-y: 11px;
       --back-w: 1.05rem;
@@ -2865,7 +3123,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     /* hidden, not display: none, so an inert leaf still has a layout
        for measureLeavesHeight() and snapToRules() to read */
     .leaf[inert] { transform: none; visibility: hidden; transition: none; }
-    .leaf.is-turning { animation: none; }
+    .leaf.is-turning::after { animation: none; }
     .cover { transition: none; }
     .cover[inert] { transform: none; width: auto; display: none; }
     .register-controls { transition: none; }
@@ -2877,20 +3135,21 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     .catchword-arrow,
     .catchword-label::after { transition: none; }
     .print { transition: none; }
-    .book-depth, .desk-shadow { transition: none; }
+    .ribbon, .book-stack, .desk-shadow { transition: none; }
   }
 </style>
 
 <script>
   /* THE DESK'S LIGHT comes from the header. The Horizon header works out
      the sun for Lubbock once a minute and publishes it as custom
-     properties on #horizon-header; this reads five of them and never
+     properties on #horizon-header; this reads six of them and never
      does any astronomy of its own, so the desk cannot disagree with
      the sky above it (and follows the header's ?debugTime in dev).
 
        --sun-azimuth-deg   the sun's true bearing, 0 north, 90 east
        --sun-altitude-deg  its height above the horizon
        --night             0 by day, 1 in full dark
+       --cloud             how much of the sky is cloud, 0 to 1
        --grazing-light     1 with the sun on the horizon, 0 once it is up
        --grazing-color     the sun's colour when it is low
 
@@ -2917,6 +3176,13 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
      the cover's own light, carried across; its ridges and their ends
      stand out most in the morning, when the sun is on that side.
 
+     CLOUD takes the edge off all of it. Direct sun is what throws a
+     hard shadow and puts one side of a thing in light and the other in
+     shade, so under cloud the shadows weaken and spread, and every
+     "toward the sun / away from it" difference shrinks (--sun, which
+     is 1 under a clear sky and 0 at night). The lamp does not care
+     what the sky is doing.
+
      The values are written onto a few elements that have no children
      to speak of, not onto .register: a custom property set there would
      be inherited by the whole book and restyle it every minute.
@@ -2934,6 +3200,9 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     const cover = document.getElementById('cover-light');
     const spine = document.getElementById('spine');
     const coverSpine = document.getElementById('cover-spine');
+    const verso = document.getElementById('cover-verso');
+    const page = document.getElementById('page-light');
+    const ribbon = document.getElementById('ribbon');
     const slip = document.getElementById('reg-tablist');
     if (!header || !light || !shadow) return;
 
@@ -2974,36 +3243,65 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       const rad = (bearing * Math.PI) / 180;
       // the fore-edge faces west: in full shade with the sun in the
       // east, lightly shaded at noon, in none with the sun in the west
-      const foreShade = (clamp(0.42 - 0.58 * (bearing / 82), 0, 1) * (1 - night)).toFixed(3);
+      const cloud = clamp(read('--cloud', 0), 0, 1);
+      const foreShade = (clamp(0.42 - 0.58 * (bearing / 82), 0, 1) * (1 - night) * (1 - 0.5 * cloud)).toFixed(3);
       const cast = clamp(length * 0.3, 2, 6);
+      // direct sun: all of it under a clear sky, about a third under
+      // full cloud, none at night
+      const sun = ((1 - night) * (1 - 0.65 * cloud)).toFixed(3);
+      const angle = `${(180 + bearing).toFixed(1)}deg`;
+      const warm = (grazing * (1 - night) * (1 - 0.6 * cloud)).toFixed(3);
+      // a shadow under cloud is fainter and wider
+      const shadowX = `${(-Math.sin(rad) * length).toFixed(1)}px`;
+      const shadowY = `${(Math.cos(rad) * length).toFixed(1)}px`;
+      const shadowBlur = `${(14 + length * 0.75 + 26 * cloud).toFixed(1)}px`;
+      const shadowA = ((0.5 - 0.2 * grazing) * (1 - 0.7 * cloud)).toFixed(3);
 
       const values: [HTMLElement | null, string, string][] = [
         [light, '--desk-night', night.toFixed(3)],
-        [light, '--light-angle', `${(180 + bearing).toFixed(1)}deg`],
-        [light, '--light-warm', (grazing * (1 - night)).toFixed(3)],
+        [light, '--sun', sun],
+        [light, '--light-angle', angle],
+        [light, '--light-warm', warm],
         [light, '--light-color', colour],
         [shadow, '--desk-night', night.toFixed(3)],
-        [shadow, '--shadow-x', `${(-Math.sin(rad) * length).toFixed(1)}px`],
-        [shadow, '--shadow-y', `${(Math.cos(rad) * length).toFixed(1)}px`],
-        [shadow, '--shadow-blur', `${(14 + length * 0.75).toFixed(1)}px`],
-        [shadow, '--shadow-a', (0.5 - 0.2 * grazing).toFixed(3)],
+        [shadow, '--shadow-x', shadowX],
+        [shadow, '--shadow-y', shadowY],
+        [shadow, '--shadow-blur', shadowBlur],
+        [shadow, '--shadow-a', shadowA],
         [depth, '--desk-night', night.toFixed(3)],
         [depth, '--fore-shade', foreShade],
         [block, '--desk-night', night.toFixed(3)],
+        [block, '--sun', sun],
         [block, '--fore-shade', foreShade],
         // the page block is lower than the whole book, so its shadow on
         // the board is the desk's at about a third of the length
         [block, '--cast-x', `${(-Math.sin(rad) * cast).toFixed(1)}px`],
         [block, '--cast-y', `${(Math.cos(rad) * cast).toFixed(1)}px`],
+        // the open pages and the inside of the opened cover
+        [page, '--desk-night', night.toFixed(3)],
+        [page, '--sun', sun],
+        [page, '--light-angle', angle],
+        [page, '--light-warm', warm],
+        [page, '--light-color', colour],
+        [verso, '--desk-night', night.toFixed(3)],
+        [verso, '--sun', sun],
+        [verso, '--light-angle', angle],
+        [verso, '--shadow-x', shadowX],
+        [verso, '--shadow-y', shadowY],
+        [verso, '--shadow-blur', shadowBlur],
+        [verso, '--shadow-a', shadowA],
+        [ribbon, '--desk-night', night.toFixed(3)],
         [cover, '--desk-night', night.toFixed(3)],
-        [cover, '--light-angle', `${(180 + bearing).toFixed(1)}deg`],
+        [cover, '--sun', sun],
+        [cover, '--light-angle', angle],
         [cover, '--lx', (-Math.sin(rad)).toFixed(3)],
         [cover, '--ly', Math.cos(rad).toFixed(3)],
         // the spine faces east: lit with the sun there, shaded with it west
         [spine, '--desk-night', night.toFixed(3)],
+        [spine, '--sun', sun],
         [spine, '--spine-lit', (clamp(-bearing / 82, 0, 1) * (1 - night)).toFixed(3)],
         [spine, '--spine-shade', (clamp(bearing / 82, 0, 1) * (1 - night)).toFixed(3)],
-        [spine, '--light-angle', `${(180 + bearing).toFixed(1)}deg`],
+        [spine, '--light-angle', angle],
         [coverSpine, '--desk-night', night.toFixed(3)],
         [coverSpine, '--spine-shade', (clamp(bearing / 82, 0, 1) * (1 - night)).toFixed(3)],
         [slip, '--desk-night', night.toFixed(3)],
@@ -3401,6 +3699,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       }
 
       current = index;
+      placeRibbon(index);
     }
 
     prevBtn.addEventListener('click', () => { goTo(current - 1); });
@@ -3453,11 +3752,95 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       });
     }
 
+    /* THE RIBBON. It marks the last leaf the visitor turned to, kept in
+       localStorage so it is still there on their next visit, and
+       clicking it opens the book at that leaf. With the cover closed
+       the leaf is put in place first, under the cover, and then the
+       cover is opened, so the book opens AT the page rather than
+       opening and then turning to it. A visitor who has never turned a
+       page gets the first leaf, which is the same as opening the book.
+       Storage that is blocked or full only means the ribbon forgets. */
+    const RIBBON_KEY = 'register:ribbon';
+    const ribbonEl = document.getElementById('ribbon');
+    function ribbonLeaf(): number {
+      try {
+        const v = parseInt(localStorage.getItem(RIBBON_KEY) ?? '', 10);
+        return Number.isFinite(v) ? Math.max(0, Math.min(v, leafEls.length - 1)) : 0;
+      } catch {
+        return 0;
+      }
+    }
+    function labelRibbon(index: number) {
+      const name = tabs[index]?.textContent?.replace(/\s+/g, ' ').trim();
+      const text = index > 0 && name ? `Open the ledger at ${name}` : 'Open the ledger at the ribbon';
+      ribbonEl?.setAttribute('aria-label', text);
+      ribbonEl?.setAttribute('title', text);
+    }
+    function placeRibbon(index: number) {
+      try { localStorage.setItem(RIBBON_KEY, String(index)); } catch { /* the ribbon forgets */ }
+      labelRibbon(index);
+    }
+    function initRibbon() {
+      if (!ribbonEl) return;
+      labelRibbon(ribbonLeaf());
+      ribbonEl.addEventListener('click', () => {
+        const target = ribbonLeaf();
+        if (cover && !cover.hasAttribute('inert')) {
+          goTo(target);
+          cover.click();
+        } else {
+          goTo(target, true);
+        }
+      });
+    }
+
+    /* THE GLINT. Shortly after the page loads, with the cover still
+       closed, a highlight crosses the gold once, left to right: the
+       label's fillet takes it from --glint on .cover-label, and the
+       signature from a second, bright copy of itself whose gradient is
+       slid along by gradientTransform (the gradient lives in
+       src/data/cover-signature.ts). It is not tied to the pointer; that
+       was tried and was a distraction. Under reduced motion it does not
+       run at all, and the gold simply rests. */
+    function initGlint() {
+      const label = document.getElementById('cover-label');
+      const band = document.getElementById('cover-signature-glint');
+      if (!cover || !label) return;
+      const OFF = -0.6;
+      let at = OFF;
+      const show = (f: number) => {
+        at = f;
+        label.style.setProperty('--glint', `${(f * 100).toFixed(1)}%`);
+        // the signature's own units: its artwork is 2609 wide
+        band?.setAttribute('gradientTransform', `translate(${(f * 2609).toFixed(0)} 0) rotate(14)`);
+      };
+      const sweep = (to: number, ms: number) => {
+        const from = at;
+        const t0 = performance.now();
+        const step = (now: number) => {
+          const t = Math.min(1, (now - t0) / ms);
+          show(from + (to - from) * (t * t * (3 - 2 * t)));
+          if (t < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      };
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        window.setTimeout(() => {
+          if (!cover.isConnected || cover.hasAttribute('inert')) return;
+          show(OFF);
+          sweep(1.7, 1700);
+        }, 1400);
+      }
+    }
+
     function initCover() {
       if (!cover) return;
       cover.addEventListener('click', () => {
         if (cover.hasAttribute('inert')) return;
         cover.setAttribute('inert', '');
+        // the book's edges settle to the open stack as the cover
+        // swings (see .book-stack)
+        leavesWrap?.classList.add('is-settled');
         controls?.removeAttribute('inert');
         pages?.removeAttribute('inert');
         preloadPhoto(photoNext);
@@ -3501,6 +3884,8 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     }
     initRake();
     initCover();
+    initRibbon();
+    initGlint();
     initDeskLight(register);
   }
 
