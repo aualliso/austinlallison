@@ -256,7 +256,11 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
         <div class="book-tail"></div>
       </div>
 
-      <div class="spine" aria-hidden="true"></div>
+      <!-- syncDeskLight() writes the light's values onto .spine itself,
+           so the strip, its ridges and their ends all read the same -->
+      <div class="spine" id="spine" aria-hidden="true">
+        <div class="spine-light"></div>
+      </div>
 
       <div class="book-stage" id="book-stage">
 
@@ -264,7 +268,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
 
           <!-- front face: the closed cover -->
           <div class="cover-face cover-face--front" aria-hidden="true">
-            <div class="cover-spine"></div>
+            <div class="cover-spine" id="cover-spine"></div>
             <div class="cover-corner cover-corner--tr"></div>
             <div class="cover-corner cover-corner--br"></div>
             <!-- the light on the cover; see syncDeskLight() -->
@@ -573,7 +577,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       // follows from syncDeskLight() once the module runs.
       var night = document.getElementById('horizon-header')?.style.getPropertyValue('--night');
       if (night) {
-        ['desk-light', 'desk-shadow', 'book-depth', 'block-depth', 'cover-light', 'reg-tablist'].forEach(function (id) {
+        ['desk-light', 'desk-shadow', 'book-depth', 'block-depth', 'cover-light', 'cover-spine', 'spine', 'reg-tablist'].forEach(function (id) {
           document.getElementById(id)?.style.setProperty('--desk-night', night);
         });
       }
@@ -871,6 +875,9 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     --depth-y: 17px;
     --depth-x: calc(var(--depth-y) * 0.5833);
     --back-w: 1.35rem;
+    /* the whole book's width, spine and boards: .leaves' own width less
+       its side padding, both restated from the rule above */
+    --book-w: calc(min(100vw, 78rem) - 2 * clamp(1.25rem, 4vw, 3.5rem));
     --depth-stack:
       0.58px 1px 0 #8a6a52,
       1.17px 2px 0 #2a1a12,
@@ -971,10 +978,12 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
 
      ::before is the shade on those sides, the same outline moved to
      the foot of the stack with only its lower and right margins
-     filled. The foot faces the reader, away from a sun that is always
-     in the south, so it is always a little shaded. The fore-edge faces
-     west: --fore-lit (from syncDeskLight) lifts its shade when the sun
-     is there. Both darken with the room at night.
+     filled. The shade is a warm brown, not a grey: shaded paper is
+     still paper. The foot faces the reader, away from a sun that is
+     always in the south, so it is always a little shaded. The
+     fore-edge faces west, and --fore-shade (from syncDeskLight) follows
+     the sun round: deepest with the sun in the east, light at noon,
+     none with it in the west. Both go dark with the room at night.
 
      ::after is the line of shadow where the book meets the paper.
      .book-tail is the leather at the tail of the spine, the same stack
@@ -996,7 +1005,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   }
   .book-depth {
     --desk-night: 0;
-    --fore-lit: 0;
+    --fore-shade: 0.4;
     border-radius: 3px 9px 9px 3px;
     box-shadow: var(--depth-stack);
     /* the stack settles as the cover opens */
@@ -1011,12 +1020,20 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   }
   .book-depth::before {
     background:
+      /* day: the foot always a little shaded, the fore-edge by where the sun is */
       linear-gradient(to bottom,
         transparent calc(100% - var(--depth-y)),
-        rgba(6, 4, 2, calc(0.13 + var(--desk-night) * 0.5)) calc(100% - var(--depth-y))),
+        rgba(74, 50, 24, calc(0.2 * (1 - var(--desk-night)))) calc(100% - var(--depth-y))),
       linear-gradient(to right,
         transparent calc(100% - var(--depth-x)),
-        rgba(6, 4, 2, calc(0.3 - var(--fore-lit) * 0.27 + var(--desk-night) * 0.42)) calc(100% - var(--depth-x)));
+        rgba(74, 50, 24, calc(var(--fore-shade) * 0.4)) calc(100% - var(--depth-x))),
+      /* night: both go dark with the room */
+      linear-gradient(to bottom,
+        transparent calc(100% - var(--depth-y)),
+        rgba(8, 6, 10, calc(var(--desk-night) * 0.5)) calc(100% - var(--depth-y))),
+      linear-gradient(to right,
+        transparent calc(100% - var(--depth-x)),
+        rgba(8, 6, 10, calc(var(--desk-night) * 0.45)) calc(100% - var(--depth-x)));
   }
   .book-depth::after {
     z-index: -1;
@@ -1100,7 +1117,9 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
      on .book-depth. */
   .block-depth {
     --desk-night: 0;
-    --fore-lit: 0;
+    --fore-shade: 0.4;
+    --cast-x: 1px;
+    --cast-y: 3px;
     --block-y: 11px;
     --block-x: calc(var(--block-y) * 0.5833);
     position: absolute;
@@ -1148,16 +1167,38 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   }
   .block-depth::before {
     background:
+      /* the fore-edge is leaves seen edge-on: fine upright lines, paler
+         toward the top sheet and deeper toward the board */
+      repeating-linear-gradient(to right, rgba(96, 74, 44, 0.3) 0 0.7px, transparent 0.7px 2px)
+        right top / var(--block-x) 100% no-repeat,
+      linear-gradient(to right, rgba(255, 250, 236, 0.24), transparent 45%, rgba(46, 30, 12, 0.22))
+        right top / var(--block-x) 100% no-repeat,
+      /* day: the foot always a little shaded, the fore-edge by where the sun is */
       linear-gradient(to bottom,
         transparent calc(100% - var(--block-y)),
-        rgba(6, 4, 2, calc(0.14 + var(--desk-night) * 0.5)) calc(100% - var(--block-y))),
+        rgba(74, 50, 24, calc(0.2 * (1 - var(--desk-night)))) calc(100% - var(--block-y))),
       linear-gradient(to right,
         transparent calc(100% - var(--block-x)),
-        rgba(6, 4, 2, calc(0.3 - var(--fore-lit) * 0.27 + var(--desk-night) * 0.42)) calc(100% - var(--block-x)));
+        rgba(74, 50, 24, calc(var(--fore-shade) * 0.4)) calc(100% - var(--block-x))),
+      /* night: both go dark with the room */
+      linear-gradient(to bottom,
+        transparent calc(100% - var(--block-y)),
+        rgba(8, 6, 10, calc(var(--desk-night) * 0.5)) calc(100% - var(--block-y))),
+      linear-gradient(to right,
+        transparent calc(100% - var(--block-x)),
+        rgba(8, 6, 10, calc(var(--desk-night) * 0.45)) calc(100% - var(--block-x)));
   }
+  /* the block's shadow on the board: a hairline of contact all round,
+     then the sun's, which falls the same way as the book's own on the
+     desk (short and straight down the page at noon, to the right in
+     the morning, back under the pages in the evening), then the
+     lamp's at night */
   .block-depth::after {
     z-index: -1;
-    box-shadow: 0 1px 2px rgba(14, 8, 2, 0.6), 1px 2px 6px rgba(14, 8, 2, 0.4);
+    box-shadow:
+      0 0 1.5px rgba(14, 8, 2, 0.55),
+      var(--cast-x) var(--cast-y) 4px rgba(30, 24, 40, calc(0.42 * (1 - var(--desk-night)))),
+      0 3px 6px rgba(10, 6, 2, calc(var(--desk-night) * 0.5));
   }
 
   .book {
@@ -1395,9 +1436,11 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
      on each piece so the same scratch never turns up twice.
 
      The strip that wraps round onto the front board: rubbed pale at the
-     head and the tail, where a book is pulled from a shelf, and along
-     its outer edge; a groove at the joint (a dark line with a lit edge
-     beside it); then plain shading. */
+     head and the tail, where a book is pulled from a shelf; a groove at
+     the joint (a dark line with a lit edge beside it); then plain
+     shading. Its left side is not an edge: the leather carries straight
+     on round the spine, so nothing is drawn there and the shading
+     starts on the tone the spine strip ends with (see ONE SKIN). */
   .cover-spine {
     position: absolute;
     top: 0;
@@ -1407,22 +1450,29 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     background:
       linear-gradient(to bottom, rgba(var(--rub), 0.8) 0, rgba(var(--rub), 0.3) 0.45rem, transparent 1.7rem),
       linear-gradient(to top, rgba(var(--rub), 0.85) 0, rgba(var(--rub), 0.32) 0.55rem, transparent 2rem),
-      linear-gradient(to right, rgba(var(--rub), 0.75) 0, rgba(var(--rub), 0.22) 5px, transparent 13px),
       linear-gradient(to right, transparent 20%, rgba(0, 0, 0, 0.5) 23%, rgba(255, 228, 188, 0.1) 27%, transparent 31%),
-      linear-gradient(90deg, rgba(0, 0, 0, 0.38) 0%, transparent 42%, rgba(0, 0, 0, 0.14) 100%),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.2) 0%, transparent 42%, rgba(0, 0, 0, 0.14) 100%),
       var(--hide) 0 0 / 512px;
     background-color: var(--hide-ground);
     box-shadow: 2px 0 5px rgba(30, 15, 5, 0.45);
   }
-  /* the bands' shoulders: each band carries on from the spine across
-     the first fifth of this strip and stops at the joint groove, at
-     about half strength, the way leather pulled over a cord relaxes
-     before the board begins */
+  /* the bands' shoulders: each band carries on from the spine at full
+     strength and fades out by the joint groove, the way leather pulled
+     over a cord relaxes before the board begins. The mask is that
+     fade. Its strength follows the ridges' own on the spine, from the
+     same two values, so a band never changes weight as it crosses
+     from one strip to the other. */
+  .cover-spine {
+    --desk-night: 0;
+    --spine-shade: 0;
+  }
   .cover-spine::before {
     content: '';
     position: absolute;
     inset: 0;
-    opacity: 0.55;
+    opacity: calc(1 - var(--spine-shade) * 0.3 - var(--desk-night) * 0.45);
+    -webkit-mask-image: linear-gradient(to right, #000 0, transparent 21%);
+    mask-image: linear-gradient(to right, #000 0, transparent 21%);
     background-image: var(--band), var(--band), var(--band), var(--band), var(--band);
     background-position: var(--bands);
     background-size: 21% 2rem;
@@ -1541,14 +1591,21 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
      lamp at the middle and the dark gathering toward the edges, so the
      book dims with the room instead of standing in daylight on a dark
      desk. The two inset shadows are the board's edges: the one toward
-     the light catches it, the one away from it does not. */
+     the light catches it, the one away from it does not.
+
+     The box starts one spine's width to the left of the cover, where
+     the cover clips it off. That makes its gradients span the whole
+     book, spine included, which is what lets .spine-light paint the
+     very same light over the spine; and it puts the left-hand inset
+     shadow out of sight, since that side is the hinge and has no edge
+     to catch anything. */
   .cover-light {
     --desk-night: 0;
     --light-angle: 150deg;
     --lx: 0.4;
     --ly: 0.9;
     position: absolute;
-    inset: 0;
+    inset: 0 0 0 calc(-1 * var(--back-w));
     border-radius: inherit;
     pointer-events: none;
     background:
@@ -1835,7 +1892,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     top: 0;
     bottom: clamp(0.75rem, 2vw, 1.25rem);
     left: clamp(1.25rem, 4vw, 3.5rem);
-    width: 1.35rem;
+    width: calc(var(--back-w) + 1px);   /* a pixel over the cover's edge: see .spine-light */
     z-index: 3;
     border-radius: 3px 0 0 3px;
     pointer-events: none;
@@ -1847,14 +1904,77 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     );
   }
   /* the closed book's spine: the same leather, rubbed at head and tail */
+  /* ONE SKIN WITH THE COVER. The spine and the leather on the front
+     board are one piece of hide, so where the two strips meet nothing
+     may change: the same wear at head and tail, shading that ends on
+     the tone the cover's begins with, and the tile hung from this
+     strip's RIGHT edge, so its pattern runs straight on into the
+     cover's, which hangs from its left. */
   .leaves:has(.cover:not([inert])) .spine {
+    --desk-night: 0;
+    --light-angle: 150deg;
+    --spine-lit: 0;
+    --spine-shade: 0;
     background:
-      linear-gradient(to bottom, rgba(var(--rub), 0.5) 0, transparent 1.3rem),
-      linear-gradient(to top, rgba(var(--rub), 0.5) 0, transparent 1.5rem),
-      linear-gradient(to right, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.05) 70%, rgba(var(--rub), 0.25) 100%),
-      var(--hide) 200px 0 / 512px;
+      linear-gradient(to bottom, rgba(var(--rub), 0.8) 0, rgba(var(--rub), 0.3) 0.45rem, transparent 1.7rem),
+      linear-gradient(to top, rgba(var(--rub), 0.85) 0, rgba(var(--rub), 0.32) 0.55rem, transparent 2rem),
+      linear-gradient(to right, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.14) 60%, rgba(0, 0, 0, 0.2) 100%),
+      var(--hide) 100% 0 / 512px;
     background-color: var(--hide-ground);
+    /* the ends of the ridges, lit and dimmed: the outline of
+       --band-edge as a wash of light and a wash of dark */
+    --band-edge-lit: linear-gradient(to bottom,
+      transparent calc(50% - 0.46rem - 1px),
+      rgba(255, 244, 220, calc(var(--spine-lit) * 0.2)) calc(50% - 0.46rem),
+      rgba(255, 244, 220, calc(var(--spine-lit) * 0.1)) calc(50% + 0.46rem),
+      transparent calc(50% + 0.46rem + 1px));
+    --band-edge-dim: linear-gradient(to bottom,
+      transparent calc(50% - 0.46rem - 1px),
+      rgba(0, 0, 0, calc(var(--spine-shade) * 0.34 + var(--desk-night) * 0.42)) calc(50% - 0.46rem),
+      rgba(0, 0, 0, calc(var(--spine-shade) * 0.34 + var(--desk-night) * 0.42)) calc(50% + 0.46rem),
+      transparent calc(50% + 0.46rem + 1px));
   }
+  /* THE LIGHT ON THE SPINE, only while the book is closed (the same
+     condition as the leather itself). The spine is a strip of its own
+     outside the cover, so the cover's light does not reach it.
+
+     Rather than give it a light of its own, which could never quite
+     match, this is the cover's light itself: the same two gradients,
+     from the same two values, drawn at the size of the whole book
+     (--book-w, the box .cover-light's gradients span) and hung from
+     the book's left edge, which is this strip's. Only the first
+     --back-w of them falls inside the strip, so whatever the cover is
+     doing at its left side, the spine is doing the same thing a pixel
+     further left, at every hour.
+
+     It lies over the raised bands, as the cover's light lies over
+     their shoulders.
+
+     The strip is a pixel wider than the gap it fills, so it laps over
+     the cover's edge. The spine's width is not a whole number of
+     pixels, and two soft edges that merely touch leave a hairline of
+     whatever is behind them. */
+  .spine-light {
+    display: none;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+  }
+  .leaves:has(.cover:not([inert])) .spine-light {
+    display: block;
+    background:
+      linear-gradient(var(--light-angle),
+        rgba(255, 244, 220, calc(0.16 * (1 - var(--desk-night)))) 0%,
+        transparent 44%,
+        rgba(0, 0, 0, calc(0.24 * (1 - var(--desk-night)))) 100%)
+        0 0 / var(--book-w) 100% no-repeat,
+      radial-gradient(95% 105% at 50% 44%,
+        rgba(255, 216, 156, calc(0.08 * var(--desk-night))) 0%,
+        transparent 48%,
+        rgba(0, 0, 0, calc(0.5 * var(--desk-night))) 100%)
+        0 0 / var(--book-w) 100% no-repeat;
+  }
+
   /* RAISED BANDS, only while the book is closed (once it opens, this
      strip is the gutter's shadow, not leather). ::before lays the five
      bands across the spine; ::after is their ends, standing 3.5px
@@ -1873,11 +1993,21 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     left: 0;
     right: 0;
     background-image: var(--band), var(--band), var(--band), var(--band), var(--band);
+    /* a ridge stands out less when the light is off it; the cover's
+       shoulders (.cover-spine::before) ease by the same amount */
+    opacity: calc(1 - var(--spine-shade) * 0.3 - var(--desk-night) * 0.45);
   }
+  /* The ridges' ends stand outside the strip, where the spine's light
+     does not reach, so they carry it themselves. Fifteen layers: a wash
+     of light, a wash of dark, then the ends, five of each; the five
+     positions in --bands repeat. */
   .leaves:has(.cover:not([inert])) .spine::after {
     left: -3.5px;
     width: 5px;
-    background-image: var(--band-edge), var(--band-edge), var(--band-edge), var(--band-edge), var(--band-edge);
+    background-image:
+      var(--band-edge-lit), var(--band-edge-lit), var(--band-edge-lit), var(--band-edge-lit), var(--band-edge-lit),
+      var(--band-edge-dim), var(--band-edge-dim), var(--band-edge-dim), var(--band-edge-dim), var(--band-edge-dim),
+      var(--band-edge), var(--band-edge), var(--band-edge), var(--band-edge), var(--band-edge);
   }
 
   .leaf {
@@ -2655,7 +2785,6 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
 }
 
   @media (max-width: 680px) {
-    .spine { width: 1.05rem; }
     .book-stage { margin-left: 1.05rem; }
     .leaves {
       --depth-y: 11px;
@@ -2783,7 +2912,10 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
      and falls off away from it, the board edge facing the sun catches
      a highlight (--lx and --ly are the unit direction the light
      travels), and its fore-edge, which faces west, is bright with the
-     sun in the west and shaded with it in the east.
+     sun in the west, lightly shaded at noon and in full shade with the
+     sun in the east. The spine takes
+     the cover's own light, carried across; its ridges and their ends
+     stand out most in the morning, when the sun is on that side.
 
      The values are written onto a few elements that have no children
      to speak of, not onto .register: a custom property set there would
@@ -2800,6 +2932,8 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     const depth = document.getElementById('book-depth');
     const block = document.getElementById('block-depth');
     const cover = document.getElementById('cover-light');
+    const spine = document.getElementById('spine');
+    const coverSpine = document.getElementById('cover-spine');
     const slip = document.getElementById('reg-tablist');
     if (!header || !light || !shadow) return;
 
@@ -2838,6 +2972,10 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
         length = 10 + 54 * grazing + 16 * (1 - white) * (1 - grazing);
       }
       const rad = (bearing * Math.PI) / 180;
+      // the fore-edge faces west: in full shade with the sun in the
+      // east, lightly shaded at noon, in none with the sun in the west
+      const foreShade = (clamp(0.42 - 0.58 * (bearing / 82), 0, 1) * (1 - night)).toFixed(3);
+      const cast = clamp(length * 0.3, 2, 6);
 
       const values: [HTMLElement | null, string, string][] = [
         [light, '--desk-night', night.toFixed(3)],
@@ -2850,14 +2988,24 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
         [shadow, '--shadow-blur', `${(14 + length * 0.75).toFixed(1)}px`],
         [shadow, '--shadow-a', (0.5 - 0.2 * grazing).toFixed(3)],
         [depth, '--desk-night', night.toFixed(3)],
-        // the fore-edge faces west: fully lit with the sun 70deg round
-        [depth, '--fore-lit', (clamp(bearing / 70, 0, 1) * (1 - night)).toFixed(3)],
+        [depth, '--fore-shade', foreShade],
         [block, '--desk-night', night.toFixed(3)],
-        [block, '--fore-lit', (clamp(bearing / 70, 0, 1) * (1 - night)).toFixed(3)],
+        [block, '--fore-shade', foreShade],
+        // the page block is lower than the whole book, so its shadow on
+        // the board is the desk's at about a third of the length
+        [block, '--cast-x', `${(-Math.sin(rad) * cast).toFixed(1)}px`],
+        [block, '--cast-y', `${(Math.cos(rad) * cast).toFixed(1)}px`],
         [cover, '--desk-night', night.toFixed(3)],
         [cover, '--light-angle', `${(180 + bearing).toFixed(1)}deg`],
         [cover, '--lx', (-Math.sin(rad)).toFixed(3)],
         [cover, '--ly', Math.cos(rad).toFixed(3)],
+        // the spine faces east: lit with the sun there, shaded with it west
+        [spine, '--desk-night', night.toFixed(3)],
+        [spine, '--spine-lit', (clamp(-bearing / 82, 0, 1) * (1 - night)).toFixed(3)],
+        [spine, '--spine-shade', (clamp(bearing / 82, 0, 1) * (1 - night)).toFixed(3)],
+        [spine, '--light-angle', `${(180 + bearing).toFixed(1)}deg`],
+        [coverSpine, '--desk-night', night.toFixed(3)],
+        [coverSpine, '--spine-shade', (clamp(bearing / 82, 0, 1) * (1 - night)).toFixed(3)],
         [slip, '--desk-night', night.toFixed(3)],
       ];
       // the header writes its properties one at a time; only repaint
