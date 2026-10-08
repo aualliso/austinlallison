@@ -33,7 +33,9 @@
 // the footer cuts through it; this is the same country from above. It
 // is lit by the header's own sun: syncDeskLight() reads what the header
 // publishes and turns it into the light across the sheet and the shadow
-// the book casts. After dark a lamp takes over.
+// the book casts. After dark a lamp takes over. The book itself has
+// thickness (its boards and page edges show along the foot and the
+// fore-edge) and its cover takes the same light as the desk.
 //
 // RULED PAPER. The text sits on the ruling. --rule-pitch drives both
 // the rules and every line-height, so they cannot drift apart. See the
@@ -247,6 +249,13 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
            the book itself -->
       <div class="desk-shadow" id="desk-shadow" aria-hidden="true"></div>
 
+      <!-- the book's thickness, drawn as its own outline repeated
+           down and to the right; the inner piece is the leather at
+           the tail of the spine -->
+      <div class="book-depth" id="book-depth" aria-hidden="true">
+        <div class="book-tail"></div>
+      </div>
+
       <div class="spine" aria-hidden="true"></div>
 
       <div class="book-stage" id="book-stage">
@@ -258,6 +267,8 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
             <div class="cover-spine"></div>
             <div class="cover-corner cover-corner--tr"></div>
             <div class="cover-corner cover-corner--br"></div>
+            <!-- the light on the cover; see syncDeskLight() -->
+            <div class="cover-light" id="cover-light"></div>
             <div class="cover-title-block">
               <div class="cover-label">
                 <svg class="cover-signature" viewBox="-20 -20 2650 900" set:html={COVER_SIGNATURE_SVG}></svg>
@@ -294,6 +305,10 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
                triangle, leaving the sliver in the overhang -->
           <div class="back-cover-corner back-cover-corner--tr" aria-hidden="true"></div>
           <div class="back-cover-corner back-cover-corner--br" aria-hidden="true"></div>
+
+          <!-- the page block's own thickness, standing on the back
+               board: what shows once the cover has swung away -->
+          <div class="block-depth" id="block-depth" aria-hidden="true"></div>
 
           <div class="book" id="book" data-active-leaf="0">
 
@@ -558,7 +573,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       // follows from syncDeskLight() once the module runs.
       var night = document.getElementById('horizon-header')?.style.getPropertyValue('--night');
       if (night) {
-        ['desk-light', 'desk-shadow', 'reg-tablist'].forEach(function (id) {
+        ['desk-light', 'desk-shadow', 'book-depth', 'block-depth', 'cover-light', 'reg-tablist'].forEach(function (id) {
           document.getElementById(id)?.style.setProperty('--desk-night', night);
         });
       }
@@ -584,7 +599,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
         padding-left: 0 !important;
         border-radius: 0 !important;
       }
-      .desk-shadow { display: none; }
+      .desk-shadow, .book-depth { display: none; }
       .book-stage {
         margin-left: 0 !important;
         background: none !important;
@@ -845,6 +860,53 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       #140c08 calc(50% + 0.46rem),
       transparent calc(50% + 0.46rem + 1px));
     --bands: 0 12%, 0 31%, 0 50%, 0 69%, 0 88%;
+
+    /* THE BOOK'S DEPTH: how far its foot shows below the cover, and
+       (at a fixed ratio, 0.5833) how far its fore-edge shows to the
+       right. --depth-stack draws it, one line per pixel of --depth-y,
+       so the two change together: a deeper book needs more lines, each
+       a pixel further down and 0.5833 of a pixel further right than
+       the last. --tail-stack is the same depth in leather, for the
+       spine. --back-w is the width of the spine strip. */
+    --depth-y: 17px;
+    --depth-x: calc(var(--depth-y) * 0.5833);
+    --back-w: 1.35rem;
+    --depth-stack:
+      0.58px 1px 0 #8a6a52,
+      1.17px 2px 0 #2a1a12,
+      1.75px 3px 0 #24160f,
+      2.33px 4px 0 #9c8f72,
+      2.92px 5px 0 #beb192,
+      3.50px 6px 0 #e6dcc2,
+      4.08px 7px 0 #d6caab,
+      4.67px 8px 0 #e6dcc2,
+      5.25px 9px 0 #d6caab,
+      5.83px 10px 0 #e6dcc2,
+      6.42px 11px 0 #d6caab,
+      7.00px 12px 0 #e6dcc2,
+      7.58px 13px 0 #d6caab,
+      8.17px 14px 0 #e6dcc2,
+      8.75px 15px 0 #20140d,
+      9.33px 16px 0 #2a1b13,
+      9.92px 17px 0 #33211a;
+    --tail-stack:
+      0.58px 1px 0 #3a2418,
+      1.17px 2px 0 #3a2418,
+      1.75px 3px 0 #3a2418,
+      2.33px 4px 0 #33201a,
+      2.92px 5px 0 #33201a,
+      3.50px 6px 0 #33201a,
+      4.08px 7px 0 #2c1b13,
+      4.67px 8px 0 #2c1b13,
+      5.25px 9px 0 #2c1b13,
+      5.83px 10px 0 #26170f,
+      6.42px 11px 0 #26170f,
+      7.00px 12px 0 #26170f,
+      7.58px 13px 0 #20140d,
+      8.17px 14px 0 #20140d,
+      8.75px 15px 0 #20140d,
+      9.33px 16px 0 #1c110b,
+      9.92px 17px 0 #1c110b;
     /* the lettering pieces are the same hide, dyed: a red laid over
        the tile, strong enough to colour it and thin enough that the
        wear still shows through */
@@ -853,9 +915,23 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     --gilt-type: rgba(205, 188, 144, 0.84);
   }
 
-  /* THE BOOK'S SHADOW. A box exactly under .book-stage (the same four
-     offsets, restated wherever those change below) that casts two
-     shadows and shows nothing of itself.
+  /* THE BOOK'S FOOTPRINT. Two boxes exactly under the whole book, spine
+     included (the same four offsets, restated wherever those change
+     below): one casts its shadow, the other carries its thickness. */
+  .desk-shadow,
+  .book-depth {
+    position: absolute;
+    top: 0;
+    right: clamp(1.25rem, 4vw, 3.5rem);
+    left: clamp(1.25rem, 4vw, 3.5rem);
+    bottom: clamp(0.75rem, 2vw, 1.25rem);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* THE BOOK'S SHADOW. It casts two and shows nothing of itself. It is
+     shifted to where the back board meets the desk, since that is what
+     the shadow falls from.
 
      The first is the sun's: its direction, length and softness are set
      by syncDeskLight(), and it is tinted blue, because a shadow on a
@@ -867,18 +943,96 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     --shadow-y: 20px;
     --shadow-blur: 30px;
     --shadow-a: 0.46;
-    position: absolute;
-    top: 0;
-    right: clamp(1.25rem, 4vw, 3.5rem);
-    left: calc(clamp(1.25rem, 4vw, 3.5rem) + 1.35rem);
-    bottom: clamp(0.75rem, 2vw, 1.25rem);
+    transform: translate(var(--depth-x), var(--depth-y));
+    transition: transform 0.7s ease;
     border-radius: 2px 8px 8px 2px;
-    z-index: -1;
-    pointer-events: none;
     box-shadow:
       var(--shadow-x) var(--shadow-y) var(--shadow-blur) -5px
         rgba(28, 30, 54, calc(var(--shadow-a) * (1 - var(--desk-night)))),
       0 16px 34px -8px rgba(10, 6, 2, calc(var(--desk-night) * 0.66));
+  }
+
+  /* THE BOOK'S THICKNESS. The view is from above and a little below
+     and to the right, so two sides show: the foot and the fore-edge.
+
+     It is drawn as the book's own outline repeated: .book-depth is a
+     box the shape of the book, rounded corners and all, and its
+     box-shadow is a stack of hard-edged copies of that shape, each a
+     step further down and to the right (--depth-stack). Because every
+     copy is the book's outline, the sides turn the corners exactly as
+     the cover does. Each step is one layer of the book, read from the
+     cover down:
+
+       front board   a line of the marbled paper turned over its edge,
+                     then the board
+       the pages     alternating pale lines, darker at first where they
+                     sit back under the board's overhang
+       back board
+
+     ::before is the shade on those sides, the same outline moved to
+     the foot of the stack with only its lower and right margins
+     filled. The foot faces the reader, away from a sun that is always
+     in the south, so it is always a little shaded. The fore-edge faces
+     west: --fore-lit (from syncDeskLight) lifts its shade when the sun
+     is there. Both darken with the room at night.
+
+     ::after is the line of shadow where the book meets the paper.
+     .book-tail is the leather at the tail of the spine, the same stack
+     in leather over the first inch of the foot.
+
+     OPEN, the stack is a different one. The front board has swung
+     away, and the pages are a block standing ON the back board and
+     smaller than it. So this drops to the back board's own thickness,
+     and the page edges are drawn where they now are, inside the
+     board's overhang: see .block-depth. Drawing them out here with the
+     cover open would put the back board above its own pages. */
+  .leaves:has(.cover[inert]) {
+    --depth-y: 4px;
+    --depth-stack:
+      0.58px 1px 0 #5a4234,
+      1.17px 2px 0 #24160f,
+      1.75px 3px 0 #20140d,
+      2.33px 4px 0 #33211a;
+  }
+  .book-depth {
+    --desk-night: 0;
+    --fore-lit: 0;
+    border-radius: 3px 9px 9px 3px;
+    box-shadow: var(--depth-stack);
+    /* the stack settles as the cover opens */
+    transition: box-shadow 0.7s ease;
+  }
+  .book-depth::before,
+  .book-depth::after {
+    content: '';
+    position: absolute;
+    inset: var(--depth-y) calc(-1 * var(--depth-x)) calc(-1 * var(--depth-y)) var(--depth-x);
+    border-radius: inherit;
+  }
+  .book-depth::before {
+    background:
+      linear-gradient(to bottom,
+        transparent calc(100% - var(--depth-y)),
+        rgba(6, 4, 2, calc(0.13 + var(--desk-night) * 0.5)) calc(100% - var(--depth-y))),
+      linear-gradient(to right,
+        transparent calc(100% - var(--depth-x)),
+        rgba(6, 4, 2, calc(0.3 - var(--fore-lit) * 0.27 + var(--desk-night) * 0.42)) calc(100% - var(--depth-x)));
+  }
+  .book-depth::after {
+    z-index: -1;
+    box-shadow: 0 1px 2px rgba(14, 8, 2, 0.5), 0 0 7px rgba(14, 8, 2, 0.24);
+  }
+  .book-tail {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: calc(var(--back-w) + 3px);
+    height: 2rem;
+    border-radius: 0 0 0 3px;
+    box-shadow: var(--tail-stack);
+  }
+  .leaves:has(.cover[inert]) .book-tail {
+    display: none;
   }
 
   /* .book-stage is the BACK BOARD: leather, a little larger than the
@@ -927,6 +1081,83 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     border-radius: 2px 10px 10px 2px;
     padding: clamp(0.5rem, 1.4vw, 0.85rem) clamp(0.5rem, 1.4vw, 0.85rem)
               clamp(0.65rem, 1.7vw, 1rem) 0;
+  }
+
+  /* THE PAGE BLOCK'S THICKNESS, on the back board. The same device as
+     .book-depth, one size down, on the page block instead of the whole
+     book: the box is .book's own (.book-shell's padding, restated), it
+     sits under .book, and the cover hides all of it until the book is
+     opened. Reading outward from the page, an open book is then page,
+     page edges, a strip of the back board, the board's own edge, desk.
+
+     --block-y and its stack are kept under the board's overhang at
+     every width, so the edges never reach past the board they stand
+     on.
+
+     The box's own background is the sheets below the top one, where
+     the deckle lets them show through. ::before is the shade on the
+     two sides and ::after the shadow the block lays on the board, as
+     on .book-depth. */
+  .block-depth {
+    --desk-night: 0;
+    --fore-lit: 0;
+    --block-y: 11px;
+    --block-x: calc(var(--block-y) * 0.5833);
+    position: absolute;
+    top: clamp(0.5rem, 1.4vw, 0.85rem);
+    right: clamp(0.5rem, 1.4vw, 0.85rem);
+    bottom: clamp(0.65rem, 1.7vw, 1rem);
+    left: 0;
+    pointer-events: none;
+    border-radius: 0 1px 2px 0;
+    background:
+      repeating-linear-gradient(to right, rgba(96, 74, 44, 0.22) 0 0.6px, transparent 0.6px 1.6px),
+      #d9cdb0;
+    box-shadow:
+      0.58px 1px 0 #f1e8d2,
+      1.17px 2px 0 #e6dcc2,
+      1.75px 3px 0 #d6caab,
+      2.33px 4px 0 #e6dcc2,
+      2.92px 5px 0 #d6caab,
+      3.50px 6px 0 #e6dcc2,
+      4.08px 7px 0 #d6caab,
+      4.67px 8px 0 #e6dcc2,
+      5.25px 9px 0 #d6caab,
+      5.83px 10px 0 #e6dcc2,
+      6.42px 11px 0 #b3a688;
+  }
+  @media (max-width: 999px) {
+    .block-depth {
+      --block-y: 7px;
+      box-shadow:
+        0.58px 1px 0 #f1e8d2,
+        1.17px 2px 0 #e6dcc2,
+        1.75px 3px 0 #d6caab,
+        2.33px 4px 0 #e6dcc2,
+        2.92px 5px 0 #d6caab,
+        3.50px 6px 0 #e6dcc2,
+        4.08px 7px 0 #b3a688;
+    }
+  }
+  .block-depth::before,
+  .block-depth::after {
+    content: '';
+    position: absolute;
+    inset: var(--block-y) calc(-1 * var(--block-x)) calc(-1 * var(--block-y)) var(--block-x);
+    border-radius: inherit;
+  }
+  .block-depth::before {
+    background:
+      linear-gradient(to bottom,
+        transparent calc(100% - var(--block-y)),
+        rgba(6, 4, 2, calc(0.14 + var(--desk-night) * 0.5)) calc(100% - var(--block-y))),
+      linear-gradient(to right,
+        transparent calc(100% - var(--block-x)),
+        rgba(6, 4, 2, calc(0.3 - var(--fore-lit) * 0.27 + var(--desk-night) * 0.42)) calc(100% - var(--block-x)));
+  }
+  .block-depth::after {
+    z-index: -1;
+    box-shadow: 0 1px 2px rgba(14, 8, 2, 0.6), 1px 2px 6px rgba(14, 8, 2, 0.4);
   }
 
   .book {
@@ -1299,6 +1530,39 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     pointer-events: none;
     background: linear-gradient(to right, #d8ccb0 0%, #cdbf9f 70%, #b3a585 100%);
     box-shadow: inset 0 0 0 1px rgba(60, 40, 20, 0.18);
+  }
+
+  /* THE LIGHT ON THE COVER, over the boards and the leather and under
+     the label. The same sun as the desk's, written here by
+     syncDeskLight().
+
+     The first gradient brightens the cover toward the sun and lets it
+     fall off away from it. The second is the night: a little of the
+     lamp at the middle and the dark gathering toward the edges, so the
+     book dims with the room instead of standing in daylight on a dark
+     desk. The two inset shadows are the board's edges: the one toward
+     the light catches it, the one away from it does not. */
+  .cover-light {
+    --desk-night: 0;
+    --light-angle: 150deg;
+    --lx: 0.4;
+    --ly: 0.9;
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background:
+      linear-gradient(var(--light-angle),
+        rgba(255, 244, 220, calc(0.16 * (1 - var(--desk-night)))) 0%,
+        transparent 44%,
+        rgba(0, 0, 0, calc(0.24 * (1 - var(--desk-night)))) 100%),
+      radial-gradient(95% 105% at 50% 44%,
+        rgba(255, 216, 156, calc(0.08 * var(--desk-night))) 0%,
+        transparent 48%,
+        rgba(0, 0, 0, calc(0.5 * var(--desk-night))) 100%);
+    box-shadow:
+      inset calc(var(--lx) * 1.6px) calc(var(--ly) * 1.6px) 0.6px rgba(255, 240, 210, calc(0.34 * (1 - var(--desk-night)))),
+      inset calc(var(--lx) * -2.2px) calc(var(--ly) * -2.2px) 1.2px rgba(0, 0, 0, 0.42);
   }
 
   .cover-title-block {
@@ -2376,7 +2640,8 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     padding-bottom: 0.5rem;
   }
 
-  .desk-shadow {
+  .desk-shadow,
+  .book-depth {
     bottom: 0.5rem; /* keep in sync with .leaves padding-bottom above */
   }
 
@@ -2392,7 +2657,34 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   @media (max-width: 680px) {
     .spine { width: 1.05rem; }
     .book-stage { margin-left: 1.05rem; }
-    .desk-shadow { left: calc(clamp(1.25rem, 4vw, 3.5rem) + 1.05rem); }
+    .leaves {
+      --depth-y: 11px;
+      --back-w: 1.05rem;
+      --depth-stack:
+        0.58px 1px 0 #8a6a52,
+        1.17px 2px 0 #2a1a12,
+        1.75px 3px 0 #9c8f72,
+        2.33px 4px 0 #beb192,
+        2.92px 5px 0 #e6dcc2,
+        3.50px 6px 0 #d6caab,
+        4.08px 7px 0 #e6dcc2,
+        4.67px 8px 0 #d6caab,
+        5.25px 9px 0 #e6dcc2,
+        5.83px 10px 0 #20140d,
+        6.42px 11px 0 #33211a;
+      --tail-stack:
+        0.58px 1px 0 #3a2418,
+        1.17px 2px 0 #3a2418,
+        1.75px 3px 0 #33201a,
+        2.33px 4px 0 #33201a,
+        2.92px 5px 0 #2c1b13,
+        3.50px 6px 0 #2c1b13,
+        4.08px 7px 0 #26170f,
+        4.67px 8px 0 #26170f,
+        5.25px 9px 0 #20140d,
+        5.83px 10px 0 #20140d,
+        6.42px 11px 0 #1c110b;
+    }
     .register-controls { flex-wrap: wrap; }
     .reg-tabs { order: 3; width: 100%; justify-content: center; }
     .leaf-header-title {
@@ -2456,6 +2748,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     .catchword-arrow,
     .catchword-label::after { transition: none; }
     .print { transition: none; }
+    .book-depth, .desk-shadow { transition: none; }
   }
 </style>
 
@@ -2486,7 +2779,13 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
      of the sun's height, so it is long at sunrise and sunset, and it
      is soft and weak then too, because a low sun is a dim one.
 
-     The values are written onto three elements that have no children
+     THE BOOK takes the same light. Its cover brightens toward the sun
+     and falls off away from it, the board edge facing the sun catches
+     a highlight (--lx and --ly are the unit direction the light
+     travels), and its fore-edge, which faces west, is bright with the
+     sun in the west and shaded with it in the east.
+
+     The values are written onto a few elements that have no children
      to speak of, not onto .register: a custom property set there would
      be inherited by the whole book and restyle it every minute.
 
@@ -2498,6 +2797,9 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     const header = document.getElementById('horizon-header');
     const light = document.getElementById('desk-light');
     const shadow = document.getElementById('desk-shadow');
+    const depth = document.getElementById('book-depth');
+    const block = document.getElementById('block-depth');
+    const cover = document.getElementById('cover-light');
     const slip = document.getElementById('reg-tablist');
     if (!header || !light || !shadow) return;
 
@@ -2547,6 +2849,15 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
         [shadow, '--shadow-y', `${(Math.cos(rad) * length).toFixed(1)}px`],
         [shadow, '--shadow-blur', `${(14 + length * 0.75).toFixed(1)}px`],
         [shadow, '--shadow-a', (0.5 - 0.2 * grazing).toFixed(3)],
+        [depth, '--desk-night', night.toFixed(3)],
+        // the fore-edge faces west: fully lit with the sun 70deg round
+        [depth, '--fore-lit', (clamp(bearing / 70, 0, 1) * (1 - night)).toFixed(3)],
+        [block, '--desk-night', night.toFixed(3)],
+        [block, '--fore-lit', (clamp(bearing / 70, 0, 1) * (1 - night)).toFixed(3)],
+        [cover, '--desk-night', night.toFixed(3)],
+        [cover, '--light-angle', `${(180 + bearing).toFixed(1)}deg`],
+        [cover, '--lx', (-Math.sin(rad)).toFixed(3)],
+        [cover, '--ly', Math.cos(rad).toFixed(3)],
         [slip, '--desk-night', night.toFixed(3)],
       ];
       // the header writes its properties one at a time; only repaint
