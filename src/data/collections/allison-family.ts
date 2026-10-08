@@ -1061,7 +1061,7 @@ export const COLLECTION: Collection = {
       title: '[Oscar Allison standing next to a car with his mother, Ollie Grizzle]',
       titleSource: 'supplied',
       format: 'snapshot',
-      place: 'tbd',
+      place: 'New Mexico',
       controlNumber: 'e.1.8',
       date: {
         display: '[1943]',
@@ -1092,6 +1092,45 @@ export const COLLECTION: Collection = {
           basis:
             'Known identity',
           region: { face: 'recto', x: 52.6, y: 20.1, w: 10.6, h: 17.5 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-jean-car',
+      title: '[Harold and Jean Allison standing next to a car]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'e.1.9',
+      date: {
+        display: '[1944]',
+        earliest: 1944,
+        latest: 1944,
+        basis: ['This photograph is likely just after Harold and Jean got married in 1944.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-jean-car-recto.jpg',
+      },
+      description:
+        'This photograph depicts Harold and Jean Allison standing next to a car likely at the home of Wiley and Ollie Grizzle. It appears that this photograph was taken shortly after Jean and Harold got married and left New Mexico for a period while Harold was on active duty.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 50, y: 22.9, w: 19.4, h: 14.9 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 32.4, y: 26, w: 15.6, h: 15.3 },
         },
       ],
     },

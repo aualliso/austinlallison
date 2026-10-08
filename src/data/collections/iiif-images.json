@@ -262,6 +262,74 @@
       "share": null
     }
   },
+  "allison-family/allison-harold-jean-car-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-car-recto-8c6860ccb9",
+    "width": 4200,
+    "height": 5857,
+    "sizes": [
+      {
+        "width": 263,
+        "height": 367
+      },
+      {
+        "width": 340,
+        "height": 474
+      },
+      {
+        "width": 680,
+        "height": 948
+      },
+      {
+        "width": 800,
+        "height": 1116
+      },
+      {
+        "width": 1200,
+        "height": 1673
+      },
+      {
+        "width": 1864,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2650
+      },
+      {
+        "width": 3585,
+        "height": 4999
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1864,
+      "study": 3585
+    },
+    "hash": "8c6860ccb948bc1687972fc2ebeeb012192f333b4f2d221035494b605689a98f",
+    "download": {
+      "full": {
+        "file": "allison-harold-jean-car-recto.jpg",
+        "width": 4200,
+        "height": 5857,
+        "bytes": 1895293
+      },
+      "share": {
+        "file": "allison-harold-jean-car-recto-2600px.jpg",
+        "width": 1864,
+        "height": 2600,
+        "bytes": 438074
+      }
+    }
+  },
   "allison-family/allison-harold-jean-loveta-mckinstry-camellia-room-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-loveta-mckinstry-camellia-room-recto-664dc4f417",

@@ -2176,6 +2176,15 @@ const isDev = import.meta.env.DEV;
     const azPct = azimuthToPercent(azimuthDeg);
     header.style.setProperty('--sun-az', `${azPct.toFixed(2)}%`);
 
+    /* The sun's TRUE bearing and height, in degrees, published for anything
+       outside the header that wants to be lit by this same sun (the home
+       page's desk reads them: see syncDeskLight() in src/pages/index.astro).
+       Nothing in this file uses them. They exist because the two values
+       above cannot be turned back into angles from outside: --sun-az is
+       squeezed into the measured sky window and --sun-elev is curved. */
+    header.style.setProperty('--sun-azimuth-deg', azimuthDeg.toFixed(2));
+    header.style.setProperty('--sun-altitude-deg', altitudeDeg.toFixed(2));
+
     // ...and how high the land stands at that x, so 0deg altitude means the
     // skyline the sun is actually in front of, not the flat baseline.
     header.style.setProperty('--horizon-lift', `${horizonLiftPx(azPct).toFixed(2)}px`);
@@ -4893,18 +4902,26 @@ const isDev = import.meta.env.DEV;
     font-size: 8.5px;
     letter-spacing: 0.14em;
     line-height: 1;
-    color: color-mix(in oklab, var(--color-iron, #1A1919) 62%, var(--color-canvas, #FBFBF9));
+    /* THE PAGE MAY SAY OTHERWISE. The fixed ink above assumes the strip
+       under the header is near-white page, which is true everywhere but
+       where a page runs something else up under the seam: the home page's
+       desk does, and it darkens after sunset. Such a page sets these three
+       on #horizon-sticky (the home page's rule is beside .desk-light in
+       src/pages/index.astro) and the word follows; with none of them set,
+       nothing here changes. */
+    color: var(--menu-word-ink, color-mix(in oklab, var(--color-iron, #1A1919) 62%, var(--color-canvas, #FBFBF9)));
+    text-shadow: var(--menu-word-halo, none);
     transition: color 0.25s linear;
   }
   #horizon-menu-btn:hover .menu-word,
   #horizon-menu-btn:focus-visible .menu-word {
-    color: var(--color-iron, #1A1919);
+    color: var(--menu-word-ink-strong, var(--color-iron, #1A1919));
   }
   /* OPEN: the word is no longer on the page, it is on the panel's surface —
      which is dark after nightfall, where a fixed page ink would vanish. So
      it hands over to the sky-derived ink, the same one the panel's own
      stations use. Declared after the hover rule so it wins when both apply. */
-  #horizon-menu-btn[aria-expanded="true"] .menu-word { color: var(--ink, #1A1919); }
+  #horizon-menu-btn[aria-expanded="true"] .menu-word { color: var(--ink, #1A1919); text-shadow: none; }
 
   /* ---- WHAT ACTUALLY SAYS "BUTTON" -----------------------------------------
      Read this before adding motion here. MOTION IN THIS HEADER SIGNALS

@@ -27,6 +27,14 @@
 // handful of the prints themselves laid loose on the page. Leaf 03
 // gives its plate most of the page.
 //
+// THE DESK. The ledger lies on a survey plat: one drawn sheet,
+// public/images/home/survey-plat.webp, running edge to edge between the
+// header and the footer. The header draws the country from the side and
+// the footer cuts through it; this is the same country from above. It
+// is lit by the header's own sun: syncDeskLight() reads what the header
+// publishes and turns it into the light across the sheet and the shadow
+// the book casts. After dark a lamp takes over.
+//
 // RULED PAPER. The text sits on the ruling. --rule-pitch drives both
 // the rules and every line-height, so they cannot drift apart. See the
 // BASELINE GRID block in the stylesheet.
@@ -35,10 +43,15 @@
 // foxingTexture() below.
 //
 // THE BINDING is a half-binding: boards covered in combed marbled paper,
-// a dark leather spine and corners with a gilt fillet where leather
-// meets paper, and a paper label carrying the signature in ink. The
-// marbling is one image, public/images/cover/marbled-boards.webp, used
-// on both boards.
+// an aged leather spine and corners with a worn gilt fillet where
+// leather meets paper, and a red leather lettering piece carrying the
+// signature in gold, with a smaller piece of the same leather below it
+// as the cue to open the book.
+// Two images in public/images/cover/ supply the materials:
+// marbled-boards.webp for both boards and leather-aged.webp, a seamless
+// tile, for every piece of leather. The wear that depends on WHERE it
+// is (rubbed edges, bumped corners) is drawn over the tile in CSS. The
+// spine has five raised bands, also CSS: see RAISED BANDS.
 //
 // The cover signature's path data lives in src/data/cover-signature.ts.
 // Change history lives in git.
@@ -224,7 +237,15 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
 <RootLayout title="Home | Austin Allison">
   <section class="register not-prose" id="register" aria-roledescription="paged sections">
 
+    <!-- the light on the desk; see syncDeskLight() -->
+    <div class="desk-light" id="desk-light" aria-hidden="true"></div>
+
     <div class="leaves" id="leaves">
+
+      <!-- the shadow the book casts on the desk: an empty box the size
+           of the book, so the sun can move its shadow without touching
+           the book itself -->
+      <div class="desk-shadow" id="desk-shadow" aria-hidden="true"></div>
 
       <div class="spine" aria-hidden="true"></div>
 
@@ -531,6 +552,16 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     // needed: this runs once per document PARSE, and Astro's
     // client-side navigation swaps the DOM without parsing.
     (function () {
+      // Night, before first paint: the header's own pre-paint script
+      // has already worked out how dark it is, so a visitor after dark
+      // never sees the desk in daylight first. The rest of the light
+      // follows from syncDeskLight() once the module runs.
+      var night = document.getElementById('horizon-header')?.style.getPropertyValue('--night');
+      if (night) {
+        ['desk-light', 'desk-shadow', 'reg-tablist'].forEach(function (id) {
+          document.getElementById(id)?.style.setProperty('--desk-night', night);
+        });
+      }
       document.getElementById('pages')?.setAttribute('inert', '');
       document.getElementById('register-controls')?.setAttribute('inert', '');
       // every leaf but the first
@@ -553,7 +584,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
         padding-left: 0 !important;
         border-radius: 0 !important;
       }
-      .leaves::before, .leaves::after { display: none; }
+      .desk-shadow { display: none; }
       .book-stage {
         margin-left: 0 !important;
         background: none !important;
@@ -600,26 +631,104 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     width: 100vw;
     margin-left: calc(50% - 50vw);
     position: relative;
-    background: var(--color-canvas, #FBFBF9);
     color: var(--color-iron, #1A1919);
-    padding: clamp(1rem, 2vw, 1.75rem) 0 clamp(2.5rem, 5vw, 4rem);
+
+    /* THE DESK: a survey plat, one drawn sheet and nothing tiled. It is
+       wider than it is tall, so `cover` fills a desktop with the whole
+       sheet and gives a phone the middle of it. The colour under it is
+       the paper's own, for the moment before the image arrives.
+
+       --desk-pull takes the sheet up under the site header: across the
+       top padding RootLayout gives <main> (py-12, 3rem) and a rem more,
+       which carries it behind the transparent seam the header hangs its
+       menu control from on a phone. The header itself is opaque and
+       sits above, so pulling too far only hides more paper; pulling too
+       little leaves a strip of bare page. */
+    --desk-pull: 4rem;
+    margin-top: calc(-1 * var(--desk-pull));
+    padding: calc(var(--desk-pull) + clamp(1rem, 2vw, 1.75rem)) 0 clamp(2.5rem, 5vw, 4rem);
+    background: url('/images/home/survey-plat.webp') center top / cover no-repeat;
+    background-color: #d9cba8;
+    /* the sheet's lower edge, lying on the page */
+    box-shadow: 0 10px 18px -10px rgba(30, 18, 6, 0.5);
     /* the open cover swings to about 158deg and can reach the viewport
        edge on narrow screens; crop it there rather than scroll */
     overflow-x: hidden;
   }
-  .register::before {
-    content: '';
+  /* THE LIGHT ON THE DESK, three layers over the plat and under the
+     book. Its four inputs are written onto this element by
+     syncDeskLight(); the values here are a plain mid-afternoon, which
+     is what a visitor without script sees.
+
+     1. NIGHT. The room goes dark from the edges in, and what is left
+        is a lamp's pool over the book.
+     2. LOW SUN. The sun's own colour (the header's --grazing-color)
+        laid across the sheet from the side it stands on.
+     3. DAY. Brighter toward the sun, a little shaded away from it.
+        --light-angle points the way the light travels.
+
+     Last, two fixed edges: the header's shadow along the top, and the
+     sheet darkening where it ends. */
+  .desk-light {
+    --desk-night: 0;
+    --light-angle: 150deg;
+    --light-warm: 0;
+    --light-color: rgb(232, 168, 92);
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(
-      to bottom,
-      rgba(26, 25, 25, 0.028) 0px,
-      rgba(26, 25, 25, 0.028) 1px,
-      transparent 1px,
-      transparent 9px
-    );
-    mix-blend-mode: multiply;
     pointer-events: none;
+    background:
+      radial-gradient(75% 85% at 50% 44%,
+        rgba(255, 206, 140, calc(var(--desk-night) * 0.1)) 0%,
+        rgba(16, 14, 24, calc(var(--desk-night) * 0.44)) 58%,
+        rgba(8, 8, 16, calc(var(--desk-night) * 0.84)) 100%),
+      linear-gradient(var(--light-angle),
+        color-mix(in srgb, var(--light-color) calc(var(--light-warm) * 36%), transparent) 0%,
+        transparent 72%),
+      linear-gradient(var(--light-angle),
+        rgba(255, 250, 236, calc((1 - var(--desk-night)) * 0.26)) 0%,
+        transparent 50%,
+        rgba(46, 34, 20, calc((1 - var(--desk-night)) * 0.16)) 100%),
+      linear-gradient(to bottom,
+        rgba(40, 26, 10, 0.3) 0,
+        transparent 1.5rem,
+        transparent calc(100% - 1.4rem),
+        rgba(70, 46, 18, 0.3) 100%);
+  }
+
+  /* THE HEADER'S MENU WORD. On a phone the header hangs its menu control
+     from a transparent strip just under itself, with the word "menu"
+     lettered on whatever lies beneath. Everywhere else that is pale
+     page; here it is the plat, which is darker than page by day and
+     goes dark at night, and the word's fixed grey would sink into both.
+
+     So this page hands the header three values it knows to look for
+     (see .menu-word in Header.astro). The ink is near-black by day and
+     pale by night, and it changes over in one step, because a grey
+     halfway between would read against neither. --menu-word-flip is
+     that step: 0 until the header's --night passes 0.36, then 1. (The
+     header mirrors --night onto #horizon-sticky, so nothing is worked
+     out twice.) 0.36 is measured, not chosen: it is about where the
+     plat under the word, darkening with the desk, gives dark ink and
+     pale ink the same contrast, which is the worst the word ever gets
+     (near 4:1, for a few minutes at dawn and dusk; 5:1 or better by
+     day and 7:1 or better at night). The header turns its own type
+     later, at 0.625, because the sky darkens more slowly than this
+     corner of the desk does.
+
+     The halo is the opposite tone, so that through those few minutes
+     of twilight the letters still have an edge.
+
+     :has() scopes it to the page that has the desk, and undoes itself
+     when client-side navigation swaps this page out from under the
+     persisted header. */
+  :global(html:has(#desk-light) #horizon-sticky) {
+    --menu-word-flip: clamp(0, calc((var(--night, 0) - 0.36) * 1000), 1);
+    --menu-word-ink: color-mix(in srgb, #fffbf2 calc(var(--menu-word-flip) * 100%), #120c07);
+    --menu-word-ink-strong: color-mix(in srgb, #ffffff calc(var(--menu-word-flip) * 100%), #000000);
+    --menu-word-halo:
+      0 0 2px color-mix(in srgb, rgba(12, 10, 16, 0.95) calc(var(--menu-word-flip) * 100%), rgba(238, 228, 204, 0.95)),
+      0 0 4px color-mix(in srgb, rgba(12, 10, 16, 0.8) calc(var(--menu-word-flip) * 100%), rgba(238, 228, 204, 0.8));
   }
 
   .register-controls {
@@ -628,7 +737,6 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     max-width: 78rem;
     margin: clamp(1.5rem, 3vw, 2.25rem) auto 0;
     padding: clamp(1rem, 2.5vw, 1.5rem) clamp(1.25rem, 4vw, 3.5rem) 0;
-    border-top: 1px solid rgba(26, 25, 25, 0.09);
     display: flex;
     align-items: center;
     gap: clamp(0.75rem, 2vw, 1.5rem);
@@ -640,11 +748,19 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   }
 
 
+  /* the tabs are lettered on a slip of paper laid on the plat, so they
+     read the same whatever is drawn under them and whatever the hour:
+     the slip only dims with the room, to about two-thirds, where dark
+     type on it still clears 7:1 */
   .reg-tabs {
-    flex: 1;
+    --desk-night: 0;
+    flex: 0 1 auto;
     display: flex;
     flex-wrap: wrap;
     gap: clamp(0.5rem, 2vw, 1.5rem);
+    padding: 0.3rem 1rem;
+    background: color-mix(in srgb, #ece2c9, #8d846f calc(var(--desk-night) * 58%));
+    box-shadow: 0 1px 2px rgba(30, 18, 6, 0.4), 0 6px 10px -6px rgba(30, 18, 6, 0.45);
   }
   .reg-tab {
     font-family: theme('fontFamily.mono', ui-monospace, Menlo, monospace);
@@ -682,22 +798,88 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     max-width: 78rem;
     margin: 0 auto;
     padding: 0 clamp(1.25rem, 4vw, 3.5rem) clamp(0.75rem, 2vw, 1.25rem);
+
+    /* THE BINDING'S MATERIALS, declared once, here, because the spine,
+       both boards and the cover all draw on them.
+
+       --marble is the combed sheet; --marble-ground is its average
+       colour, so the boards read as paper before the image arrives.
+
+       --hide is the leather: a seamless 1024px tile of aged calf, drawn
+       at 512px so it stays sharp on dense screens, over --hide-ground.
+       The tile carries the wear that could be anywhere (mottling,
+       scratches, fine cracks). --rub is the paler leather that shows
+       where handling has worn the surface back, as an R, G, B triple
+       so each use can set its own strength.
+
+       The gilt comes in two strengths because a worn fillet thins
+       before it disappears. */
+    --marble: url('/images/cover/marbled-boards.webp');
+    --marble-ground: #7f5f4b;
+    --hide: url('/images/cover/leather-aged.webp');
+    --hide-ground: #2c1c13;
+    --rub: 132, 92, 58;
+    --gilt: rgba(196, 176, 126, 0.6);
+    --gilt-faint: rgba(196, 176, 126, 0.22);
+
+    /* RAISED BANDS. One band's profile as a 2rem-tall strip, read top
+       to bottom: the leather lit where it climbs over the cord, the
+       crest, the dark far slope, then the shadow the band casts on the
+       spine below it. --band-edge is the same band seen end-on, for
+       the bump it makes in the book's outline. --bands sets where the
+       five sit; every piece that shows them uses these same three, so
+       they line up across the spine and the board. */
+    --band: linear-gradient(to bottom,
+      transparent calc(50% - 0.5rem - 2px),
+      rgba(var(--rub), 0.3) calc(50% - 0.5rem),
+      rgba(var(--rub), 0.85) calc(50% - 0.25rem),
+      rgba(var(--rub), 0.38) 50%,
+      rgba(0, 0, 0, 0.5) calc(50% + 0.3rem),
+      rgba(0, 0, 0, 0.72) calc(50% + 0.5rem),
+      rgba(0, 0, 0, 0.34) calc(50% + 0.5rem + 3px),
+      transparent calc(50% + 0.5rem + 8px));
+    --band-edge: linear-gradient(to bottom,
+      transparent calc(50% - 0.46rem - 1px),
+      #4a2f1f calc(50% - 0.46rem),
+      #2a1a11 50%,
+      #140c08 calc(50% + 0.46rem),
+      transparent calc(50% + 0.46rem + 1px));
+    --bands: 0 12%, 0 31%, 0 50%, 0 69%, 0 88%;
+    /* the lettering pieces are the same hide, dyed: a red laid over
+       the tile, strong enough to colour it and thin enough that the
+       wear still shows through */
+    --morocco: linear-gradient(170deg, rgba(128, 30, 24, 0.66), rgba(92, 20, 18, 0.72));
+    --morocco-ground: #5c1c18;
+    --gilt-type: rgba(205, 188, 144, 0.84);
   }
 
-  .leaves::before,
-  .leaves::after {
-    content: '';
+  /* THE BOOK'S SHADOW. A box exactly under .book-stage (the same four
+     offsets, restated wherever those change below) that casts two
+     shadows and shows nothing of itself.
+
+     The first is the sun's: its direction, length and softness are set
+     by syncDeskLight(), and it is tinted blue, because a shadow on a
+     sunlit surface is lit by the sky. The second is a lamp's, straight
+     down and soft. --desk-night fades one out as the other comes in. */
+  .desk-shadow {
+    --desk-night: 0;
+    --shadow-x: 9px;
+    --shadow-y: 20px;
+    --shadow-blur: 30px;
+    --shadow-a: 0.46;
     position: absolute;
     top: 0;
     right: clamp(1.25rem, 4vw, 3.5rem);
     left: calc(clamp(1.25rem, 4vw, 3.5rem) + 1.35rem);
     bottom: clamp(0.75rem, 2vw, 1.25rem);
-    background: var(--color-caliche, #E8E1D1);
     border-radius: 2px 8px 8px 2px;
     z-index: -1;
+    pointer-events: none;
+    box-shadow:
+      var(--shadow-x) var(--shadow-y) var(--shadow-blur) -5px
+        rgba(28, 30, 54, calc(var(--shadow-a) * (1 - var(--desk-night)))),
+      0 16px 34px -8px rgba(10, 6, 2, calc(var(--desk-night) * 0.66));
   }
-  .leaves::before { transform: translate(5px, 6px); opacity: 0.75; }
-  .leaves::after  { transform: translate(10px, 12px); opacity: 0.45; }
 
   /* .book-stage is the BACK BOARD: leather, a little larger than the
      page block, flush only at the spine. It holds .cover and
@@ -710,17 +892,6 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     margin-left: 1.35rem;
     perspective: 2200px;
 
-    /* THE BINDING'S MATERIALS, declared once for both boards.
-       --marble is the combed sheet; the flat colour under it is the
-       sheet's own average, so the boards read as paper before the
-       image has arrived. The leather is the site's basement brown. */
-    --marble: url('/images/cover/marbled-boards.webp');
-    --marble-ground: #7f5f4b;
-    --leather: linear-gradient(135deg, #2c1b13, #1a100b);
-    --gilt: rgba(205, 188, 144, 0.78);
-    --label: #eadfc6;
-    --ink: #33241a;
-
     /* the back board: the same paper, a little darker for being
        underneath */
     background:
@@ -728,9 +899,11 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       var(--marble) center / cover,
       var(--marble-ground);
     border-radius: 2px 10px 10px 2px;
+    /* only the contact shadow, tight under the boards; the cast
+       shadow is .desk-shadow's */
     box-shadow:
-      0 1px 2px rgba(26, 25, 25, 0.1),
-      0 22px 46px -16px rgba(26, 25, 25, 0.42);
+      0 1px 2px rgba(18, 10, 4, 0.45),
+      0 5px 9px -4px rgba(18, 10, 4, 0.4);
   }
 
   .book-stage::before {
@@ -986,30 +1159,64 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* the leather that wraps round from the spine, with a gilt fillet
-     just inside its edge */
+  /* THE LEATHER. Every piece is the --hide tile with its own wear laid
+     over it as gradients, topmost first. The tile is offset differently
+     on each piece so the same scratch never turns up twice.
+
+     The strip that wraps round onto the front board: rubbed pale at the
+     head and the tail, where a book is pulled from a shelf, and along
+     its outer edge; a groove at the joint (a dark line with a lit edge
+     beside it); then plain shading. */
   .cover-spine {
     position: absolute;
     top: 0;
     bottom: 0;
     left: 0;
     width: var(--spine);
-    background: linear-gradient(90deg, #150d09 0%, #2c1b13 40%, #231712 100%);
+    background:
+      linear-gradient(to bottom, rgba(var(--rub), 0.8) 0, rgba(var(--rub), 0.3) 0.45rem, transparent 1.7rem),
+      linear-gradient(to top, rgba(var(--rub), 0.85) 0, rgba(var(--rub), 0.32) 0.55rem, transparent 2rem),
+      linear-gradient(to right, rgba(var(--rub), 0.75) 0, rgba(var(--rub), 0.22) 5px, transparent 13px),
+      linear-gradient(to right, transparent 20%, rgba(0, 0, 0, 0.5) 23%, rgba(255, 228, 188, 0.1) 27%, transparent 31%),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.38) 0%, transparent 42%, rgba(0, 0, 0, 0.14) 100%),
+      var(--hide) 0 0 / 512px;
+    background-color: var(--hide-ground);
     box-shadow: 2px 0 5px rgba(30, 15, 5, 0.45);
   }
+  /* the bands' shoulders: each band carries on from the spine across
+     the first fifth of this strip and stops at the joint groove, at
+     about half strength, the way leather pulled over a cord relaxes
+     before the board begins */
+  .cover-spine::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    opacity: 0.55;
+    background-image: var(--band), var(--band), var(--band), var(--band), var(--band);
+    background-position: var(--bands);
+    background-size: 21% 2rem;
+    background-repeat: no-repeat;
+  }
+
+  /* its gilt fillet, a hairline just inside the leather's edge. The
+     gradient runs ALONG the line, so the gold thins and breaks at
+     uneven intervals instead of ending in clean dashes. */
   .cover-spine::after {
     content: '';
     position: absolute;
     top: 0;
     bottom: 0;
     right: 7px;
-    border-right: 1.5px solid var(--gilt);
+    width: 1.5px;
+    background: linear-gradient(to bottom,
+      var(--gilt-faint) 0%, var(--gilt) 5%, var(--gilt) 22%, var(--gilt-faint) 28%, transparent 31%,
+      var(--gilt-faint) 35%, var(--gilt) 41%, var(--gilt) 55%, var(--gilt-faint) 60%, var(--gilt) 66%,
+      var(--gilt) 80%, transparent 86%, var(--gilt-faint) 91%, var(--gilt) 95%, var(--gilt-faint) 100%);
   }
 
   /* THE CORNERS: leather triangles on the fore-edge corners of both
-     boards. The first gradient is the gilt fillet, a hard line a few
-     pixels inside the diagonal edge: in a square box a gradient running
-     to a corner has its 50% line exactly on the other diagonal. */
+     boards. Each is bumped pale at its tip (the radial gradient), rubbed
+     along its two outer edges, and shaded toward the paper. */
   .cover-corner,
   .back-cover-corner {
     position: absolute;
@@ -1017,22 +1224,62 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     width: clamp(3.8rem, 14vw, 8rem);
     height: clamp(3.8rem, 14vw, 8rem);
     pointer-events: none;
+    background-color: var(--hide-ground);
   }
   .cover-corner--tr,
   .back-cover-corner--tr {
     top: 0;
     clip-path: polygon(100% 0, 100% 100%, 0 0);
-    background:
-      linear-gradient(to top right, transparent 50%, var(--gilt) calc(50% + 6px), transparent calc(50% + 7.5px)),
-      var(--leather);
+    background-image:
+      radial-gradient(circle at 100% 0, rgba(var(--rub), 0.92) 0, rgba(var(--rub), 0.5) 9%, rgba(var(--rub), 0.16) 26%, transparent 46%),
+      linear-gradient(to left, rgba(var(--rub), 0.5) 0, transparent 7px),
+      linear-gradient(to bottom, rgba(var(--rub), 0.5) 0, transparent 7px),
+      linear-gradient(225deg, transparent 30%, rgba(0, 0, 0, 0.28) 100%),
+      var(--hide);
+    background-position: 0 0, 0 0, 0 0, 0 0, 40px 10px;
+    background-size: auto, auto, auto, auto, 512px;
   }
   .cover-corner--br,
   .back-cover-corner--br {
     bottom: 0;
     clip-path: polygon(100% 0, 100% 100%, 0 100%);
-    background:
-      linear-gradient(to bottom right, transparent 50%, var(--gilt) calc(50% + 6px), transparent calc(50% + 7.5px)),
-      var(--leather);
+    background-image:
+      radial-gradient(circle at 100% 100%, rgba(var(--rub), 0.95) 0, rgba(var(--rub), 0.5) 11%, rgba(var(--rub), 0.18) 30%, transparent 50%),
+      linear-gradient(to left, rgba(var(--rub), 0.5) 0, transparent 7px),
+      linear-gradient(to top, rgba(var(--rub), 0.5) 0, transparent 8px),
+      linear-gradient(315deg, transparent 30%, rgba(0, 0, 0, 0.28) 100%),
+      var(--hide);
+    background-position: 0 0, 0 0, 0 0, 0 0, 120px 90px;
+    background-size: auto, auto, auto, auto, 512px;
+  }
+  /* The corners' gilt fillets: a hairline as long as the triangle's
+     diagonal, hung from one end of it, turned to lie along it and
+     shifted about 7px into the leather. A separate element (rather
+     than one more background layer) because its gradient has to run
+     along the line for the gold to wear unevenly. The triangle's
+     clip-path trims both ends. */
+  .cover-corner::after,
+  .back-cover-corner::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    width: 141.5%;
+    height: 1.5px;
+    transform-origin: 0 0;
+    background: linear-gradient(to right,
+      var(--gilt-faint) 0%, var(--gilt) 8%, var(--gilt) 24%, var(--gilt-faint) 31%, transparent 35%,
+      var(--gilt-faint) 40%, var(--gilt) 47%, var(--gilt) 62%, var(--gilt-faint) 68%, transparent 73%,
+      var(--gilt-faint) 79%, var(--gilt) 86%, var(--gilt-faint) 100%);
+  }
+  .cover-corner--tr::after,
+  .back-cover-corner--tr::after {
+    top: 0;
+    transform: translate(4.8px, -4.8px) rotate(45deg);
+  }
+  .cover-corner--br::after,
+  .back-cover-corner--br::after {
+    top: 100%;
+    transform: translate(4.8px, 4.8px) rotate(-45deg);
   }
 
   /* THE VERSO: the inside of the front board. Leather turn-ins round
@@ -1040,7 +1287,10 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
      this face's right-hand edge). */
   .cover-face--back {
     transform: rotateY(180deg);
-    background: linear-gradient(200deg, #2c1b13 0%, #1a100b 100%);
+    background:
+      linear-gradient(200deg, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.42)),
+      var(--hide) 0 0 / 512px;
+    background-color: var(--hide-ground);
   }
   .cover-pastedown {
     position: absolute;
@@ -1062,42 +1312,65 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     padding: 0 clamp(0.75rem, 4vw, 3rem);
   }
 
-  /* THE LABEL: paper, pasted to the board, with a printed double rule
-     (the inset shadows: paper, ink, paper, ink) and almost no shadow of
-     its own, because a pasted label has almost no thickness. */
+  /* THE LETTERING PIECE: a label of red leather, lettered in gold.
+     From the top: each corner rubbed pale, then each edge, then the red
+     itself, then the hide. The fillet and the pearl roll inside it are
+     the two pseudo-elements, in the worn gilt and the fainter one.
+
+     The children are positioned so they paint above those two: an
+     absolutely positioned pseudo-element otherwise covers in-flow
+     content. */
   .cover-label {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 0.7rem;
     text-align: center;
-    padding: clamp(1rem, 3vw, 1.9rem) clamp(1.1rem, 3.8vw, 2.8rem);
-    background: linear-gradient(165deg, #efe6d0, #e3d7ba);
-    box-shadow:
-      inset 0 0 0 5px var(--label),
-      inset 0 0 0 7px var(--ink),
-      inset 0 0 0 10px var(--label),
-      inset 0 0 0 11px var(--ink),
-      0 1px 2px rgba(20, 10, 0, 0.55),
-      0 3px 8px -3px rgba(20, 10, 0, 0.5);
+    padding: clamp(1.1rem, 3.2vw, 2rem) clamp(1.3rem, 4.2vw, 3rem);
+    border-radius: 2px;
+    background:
+      radial-gradient(circle at 0 0, rgba(var(--rub), 0.8), transparent 15%),
+      radial-gradient(circle at 100% 0, rgba(var(--rub), 0.7), transparent 12%),
+      radial-gradient(circle at 100% 100%, rgba(var(--rub), 0.85), transparent 17%),
+      radial-gradient(circle at 0 100%, rgba(var(--rub), 0.7), transparent 13%),
+      linear-gradient(to right, rgba(var(--rub), 0.5), transparent 6px),
+      linear-gradient(to left, rgba(var(--rub), 0.5), transparent 6px),
+      linear-gradient(to bottom, rgba(var(--rub), 0.45), transparent 5px),
+      linear-gradient(to top, rgba(var(--rub), 0.55), transparent 7px),
+      var(--morocco),
+      var(--hide) 70px 30px / 512px;
+    background-color: var(--morocco-ground);
+    box-shadow: 0 1px 2px rgba(20, 8, 4, 0.6);
   }
+  .cover-label > * {
+    position: relative;
+    z-index: 1;
+  }
+  .cover-label::before {
+    content: '';
+    position: absolute;
+    inset: 7px;
+    border: 1.5px solid var(--gilt);
+    box-shadow: inset 0 0 0 3px transparent, inset 0 0 0 3.8px var(--gilt-faint);
+  }
+  .cover-label::after {
+    content: '';
+    position: absolute;
+    inset: 14px;
+    border: 2.5px dotted var(--gilt-faint);
+  }
+  /* the signature keeps the gilt gradient it arrives with from
+     cover-signature.ts */
   .cover-signature {
     width: clamp(9.5rem, 40vw, 19rem);
     height: auto;
-  }
-  /* Written in ink. The paths arrive with the gilt gradient from
-     cover-signature.ts as their fill attribute; a CSS fill outranks an
-     attribute, so nothing in that file has to change, and deleting this
-     rule gives the gilt back. :global because the paths come in through
-     set:html and carry no scope. */
-  .cover-signature :global(path) {
-    fill: #2b1d14;
   }
   .cover-rule {
     display: block;
     width: clamp(8rem, 24vw, 12.5rem);
     height: auto;
-    color: var(--ink);
+    color: var(--gilt);
   }
   .cover-subtitle-group {
     display: flex;
@@ -1110,10 +1383,14 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     font-size: clamp(0.72rem, 1.5vw, 0.9rem);
     letter-spacing: 0.26em;
     text-transform: uppercase;
-    color: var(--ink);
+    color: var(--gilt-type);
   }
 
-  /* the cue: a paper tab, so it reads on the marbling */
+  /* THE CUE: a second, smaller lettering piece in the same red, the
+     way a ledger carried a title piece and a number piece. It breathes
+     without ever going translucent: the leather stays solid and a
+     faint wash of light over it (::after) fades in and out, which is
+     an opacity animation and so costs no repainting. */
   .cover-open-cue {
     position: absolute;
     left: calc(var(--spine) + (100% - var(--spine)) / 2);
@@ -1121,27 +1398,56 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     transform: translateX(-50%);
     z-index: 1;
     white-space: nowrap;
-    padding: 0.35em 0.9em;
-    font-family: theme('fontFamily.mono', ui-monospace, Menlo, monospace);
-    font-size: 0.9rem;
-    letter-spacing: 0.1em;
+    padding: 0.5em 1.15em 0.45em;
+    border-radius: 1.5px;
+    font-family: cormorant-garamond, serif;
+    font-weight: 600;
+    font-size: clamp(0.82rem, 1.5vw, 0.95rem);
+    letter-spacing: 0.24em;
+    text-indent: 0.24em;
     text-transform: uppercase;
-    color: #6a2f1e;
-    background: var(--label);
-    box-shadow: 0 1px 2px rgba(20, 10, 0, 0.5);
+    color: #e6dab4;
+    background:
+      linear-gradient(to right, rgba(var(--rub), 0.4), transparent 3px),
+      linear-gradient(to left, rgba(var(--rub), 0.4), transparent 3px),
+      linear-gradient(to bottom, rgba(var(--rub), 0.3), transparent 2.5px),
+      linear-gradient(to top, rgba(var(--rub), 0.38), transparent 3px),
+      linear-gradient(rgba(60, 12, 10, 0.22), rgba(60, 12, 10, 0.22)),
+      var(--morocco),
+      var(--hide) 300px 220px / 512px;
+    background-color: var(--morocco-ground);
+    box-shadow: 0 1px 2px rgba(20, 8, 4, 0.6);
+    transition: color 0.25s ease;
+  }
+  .cover-open-cue::before {
+    content: '';
+    position: absolute;
+    inset: 3.5px;
+    border: 1px solid var(--gilt-faint);
+  }
+  .cover-open-cue::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: rgba(255, 232, 190, 0.12);
+    opacity: 0;
     animation: cue-breathe 2.6s ease-in-out infinite;
   }
   @keyframes cue-breathe {
-    0%, 100% { opacity: 0.82; }
+    0%, 100% { opacity: 0; }
     50% { opacity: 1; }
   }
   .cover:hover .cover-open-cue,
   .cover:focus-visible .cover-open-cue {
-    color: var(--color-caprock, #B85A38);
+    color: #f6efdc;
+  }
+  .cover:hover .cover-open-cue::after,
+  .cover:focus-visible .cover-open-cue::after {
     animation-play-state: paused;
     opacity: 1;
   }
-  .cover[inert] .cover-open-cue {
+  .cover[inert] .cover-open-cue::after {
     animation-play-state: paused;
   }
   .cover:focus-visible {
@@ -1276,13 +1582,38 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       transparent 100%
     );
   }
+  /* the closed book's spine: the same leather, rubbed at head and tail */
   .leaves:has(.cover:not([inert])) .spine {
-    background: linear-gradient(
-      to right,
-      #120b07 0%,
-      #2c1b13 96%,
-      transparent 100%
-    );
+    background:
+      linear-gradient(to bottom, rgba(var(--rub), 0.5) 0, transparent 1.3rem),
+      linear-gradient(to top, rgba(var(--rub), 0.5) 0, transparent 1.5rem),
+      linear-gradient(to right, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.05) 70%, rgba(var(--rub), 0.25) 100%),
+      var(--hide) 200px 0 / 512px;
+    background-color: var(--hide-ground);
+  }
+  /* RAISED BANDS, only while the book is closed (once it opens, this
+     strip is the gutter's shadow, not leather). ::before lays the five
+     bands across the spine; ::after is their ends, standing 3.5px
+     proud of the book's left edge. */
+  .leaves:has(.cover:not([inert])) .spine::before,
+  .leaves:has(.cover:not([inert])) .spine::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    background-position: var(--bands);
+    background-size: 100% 2rem;
+    background-repeat: no-repeat;
+  }
+  .leaves:has(.cover:not([inert])) .spine::before {
+    left: 0;
+    right: 0;
+    background-image: var(--band), var(--band), var(--band), var(--band), var(--band);
+  }
+  .leaves:has(.cover:not([inert])) .spine::after {
+    left: -3.5px;
+    width: 5px;
+    background-image: var(--band-edge), var(--band-edge), var(--band-edge), var(--band-edge), var(--band-edge);
   }
 
   .leaf {
@@ -2038,15 +2369,14 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
 
   @media (min-width: 800px) {
   .register {
-    padding-top: 0.5rem; /* pulls the ledger up toward the site header */
+    padding-top: calc(var(--desk-pull) + 0.5rem); /* pulls the ledger up toward the site header */
   }
 
   .leaves {
     padding-bottom: 0.5rem;
   }
 
-  .leaves::before,
-  .leaves::after {
+  .desk-shadow {
     bottom: 0.5rem; /* keep in sync with .leaves padding-bottom above */
   }
 
@@ -2062,7 +2392,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   @media (max-width: 680px) {
     .spine { width: 1.05rem; }
     .book-stage { margin-left: 1.05rem; }
-    .leaves::before, .leaves::after { left: calc(clamp(1.25rem, 4vw, 3.5rem) + 1.05rem); }
+    .desk-shadow { left: calc(clamp(1.25rem, 4vw, 3.5rem) + 1.05rem); }
     .register-controls { flex-wrap: wrap; }
     .reg-tabs { order: 3; width: 100%; justify-content: center; }
     .leaf-header-title {
@@ -2121,7 +2451,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     .rake, .photo--develop, .cta::after, .cta::before, .reg-tab::after {
       transition: none;
     }
-    .cover-open-cue { animation: none; opacity: 1; }
+    .cover-open-cue::after { animation: none; opacity: 0; }
     .catchword,
     .catchword-arrow,
     .catchword-label::after { transition: none; }
@@ -2130,6 +2460,114 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
 </style>
 
 <script>
+  /* THE DESK'S LIGHT comes from the header. The Horizon header works out
+     the sun for Lubbock once a minute and publishes it as custom
+     properties on #horizon-header; this reads five of them and never
+     does any astronomy of its own, so the desk cannot disagree with
+     the sky above it (and follows the header's ?debugTime in dev).
+
+       --sun-azimuth-deg   the sun's true bearing, 0 north, 90 east
+       --sun-altitude-deg  its height above the horizon
+       --night             0 by day, 1 in full dark
+       --grazing-light     1 with the sun on the horizon, 0 once it is up
+       --grazing-color     the sun's colour when it is low
+
+     The first two are published by Header.astro for this purpose. A
+     header without them still lights the desk, from --sun-az and
+     --sun-white, but those are squeezed for drawing and the shadow
+     then hardly swings from morning to evening.
+
+     THE GEOMETRY. The header looks south, so the desk is the same
+     country seen from above with south at the top, which is also how
+     the plat is drawn. A sun in the east stands to the left and throws
+     the book's shadow to the right; at noon it is ahead and the shadow
+     falls short and straight down the page; in the evening it swings
+     left. The shadow's length is the book's thickness over the tangent
+     of the sun's height, so it is long at sunrise and sunset, and it
+     is soft and weak then too, because a low sun is a dim one.
+
+     The values are written onto three elements that have no children
+     to speak of, not onto .register: a custom property set there would
+     be inherited by the whole book and restyle it every minute.
+
+     A MutationObserver on the header's style attribute is the clock:
+     the desk updates when the header does and at no other time. It
+     disconnects itself once this page's DOM has been swapped out. With
+     no header on the page the stylesheet's mid-afternoon stands. */
+  function initDeskLight(register: HTMLElement) {
+    const header = document.getElementById('horizon-header');
+    const light = document.getElementById('desk-light');
+    const shadow = document.getElementById('desk-shadow');
+    const slip = document.getElementById('reg-tablist');
+    if (!header || !light || !shadow) return;
+
+    // how far the cover stands off the desk, and the longest shadow
+    // allowed: together they set the shadow's whole scale
+    const BOOK_LIFT_PX = 15;
+    const SHADOW_MAX_PX = 66;
+    const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+    const read = (name: string, fallback: number) => {
+      const v = parseFloat(header.style.getPropertyValue(name));
+      return Number.isFinite(v) ? v : fallback;
+    };
+    let last = '';
+
+    function syncDeskLight() {
+      const night = clamp(read('--night', 0), 0, 1);
+      const grazing = clamp(read('--grazing-light', 0), 0, 1);
+      const colour = header!.style.getPropertyValue('--grazing-color').trim() || 'rgb(232, 168, 92)';
+      const azimuth = read('--sun-azimuth-deg', NaN);
+      const altitude = read('--sun-altitude-deg', NaN);
+
+      // BEARING: how far round from straight ahead (south) the sun
+      // stands, east negative. Held short of 90deg so a shadow always
+      // falls a little toward the reader, never dead sideways.
+      // LENGTH: thickness over tan(height), with a floor on the height
+      // and a ceiling on the length so sunrise does not throw the
+      // shadow off the desk.
+      let bearing: number;
+      let length: number;
+      if (Number.isFinite(azimuth) && Number.isFinite(altitude)) {
+        bearing = clamp(azimuth - 180, -82, 82);
+        length = Math.min(SHADOW_MAX_PX, BOOK_LIFT_PX / Math.tan((Math.max(altitude, 4) * Math.PI) / 180));
+      } else {
+        const white = clamp(read('--sun-white', 0.3), 0, 1);
+        bearing = clamp((read('--sun-az', 40) - 50) / 50, -1, 1) * 78;
+        length = 10 + 54 * grazing + 16 * (1 - white) * (1 - grazing);
+      }
+      const rad = (bearing * Math.PI) / 180;
+
+      const values: [HTMLElement | null, string, string][] = [
+        [light, '--desk-night', night.toFixed(3)],
+        [light, '--light-angle', `${(180 + bearing).toFixed(1)}deg`],
+        [light, '--light-warm', (grazing * (1 - night)).toFixed(3)],
+        [light, '--light-color', colour],
+        [shadow, '--desk-night', night.toFixed(3)],
+        [shadow, '--shadow-x', `${(-Math.sin(rad) * length).toFixed(1)}px`],
+        [shadow, '--shadow-y', `${(Math.cos(rad) * length).toFixed(1)}px`],
+        [shadow, '--shadow-blur', `${(14 + length * 0.75).toFixed(1)}px`],
+        [shadow, '--shadow-a', (0.5 - 0.2 * grazing).toFixed(3)],
+        [slip, '--desk-night', night.toFixed(3)],
+      ];
+      // the header writes its properties one at a time; only repaint
+      // the desk when something it uses has actually moved
+      const key = values.map((v) => v[2]).join('|');
+      if (key === last) return;
+      last = key;
+      values.forEach(([el, name, value]) => el?.style.setProperty(name, value));
+    }
+
+    syncDeskLight();
+    const watch = new MutationObserver(() => {
+      if (!register.isConnected) {
+        watch.disconnect();
+        return;
+      }
+      syncDeskLight();
+    });
+    watch.observe(header, { attributes: true, attributeFilter: ['style'] });
+  }
+
   function initRegister() {
     const register = document.getElementById('register');
     const leavesWrap = document.getElementById('leaves');
@@ -2604,6 +3042,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     }
     initRake();
     initCover();
+    initDeskLight(register);
   }
 
   initRegister();
