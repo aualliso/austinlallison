@@ -40,6 +40,9 @@
 // fore-edge), and its cover, its spine, its open pages and the inside
 // of its opened cover all take the same light as the desk.
 //
+// HEADINGS. The page has one <h1>, the owner's name on the first leaf.
+// Each other leaf opens with an <h2>, and a line under that is an <h3>.
+//
 // THE RIBBON. A silk marker hangs from the foot of the book. It keeps
 // the last page the visitor was on (in localStorage) and opens the
 // book there. See initRibbon().
@@ -58,7 +61,9 @@
 // an aged leather spine and corners with a worn gilt fillet where
 // leather meets paper, and a red leather lettering piece carrying the
 // signature in gold, with a smaller piece of the same leather below it
-// as the cue to open the book.
+// as the cue to open the book. Inside, the front board is lined with
+// the same marbled paper as an endpaper, which is what shows when the
+// cover lies open.
 // Two images in public/images/cover/ supply the materials:
 // marbled-boards.webp for both boards (marbled-boards-phone.webp is its
 // middle half, for phones) and leather-aged.webp, a seamless tile, for
@@ -250,6 +255,9 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
 <RootLayout title="Home | Austin Allison">
   <section class="register not-prose" id="register" aria-roledescription="paged sections">
 
+    <!-- the map's blank lower margin; under the light, over the map -->
+    <div class="desk-margin" aria-hidden="true"></div>
+
     <!-- the light on the desk; see syncDeskLight() -->
     <div class="desk-light" id="desk-light" aria-hidden="true"></div>
 
@@ -339,6 +347,13 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
           </div>
         </button>
 
+        <!-- CLOSING THE BOOK. Once open, the cover is `inert` (that is what
+             every rule for the open state keys on), so it cannot be clicked
+             itself. This button lies exactly over where the opened cover
+             rests, to the left of the book, and is what a click on the
+             cover lands on. Hidden until the book is open; see closeBook(). -->
+        <button type="button" class="cover-close" id="cover-close" aria-label="Close the ledger" title="Close the ledger" hidden></button>
+
         <!-- .book-shell clips and rounds; .book-stage cannot, because the
              open cover swings outside it -->
         <div class="book-shell">
@@ -361,7 +376,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[0]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title ruled">Introduction</span>
-              <span class="leaf-header-page ruled">01</span>
+              <span class="leaf-header-page ruled" style="--stamp-turn:-2.2deg;--stamp-press:0.9">01</span>
             </div>
             <div class="leaf-body">
             <div class="leaf-inner leaf-inner--exlibris">
@@ -393,13 +408,13 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[1]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title ruled">{leaves[1].code}</span>
-              <span class="leaf-header-page ruled">02</span>
+              <span class="leaf-header-page ruled" style="--stamp-turn:1.4deg;--stamp-press:0.82">02</span>
             </div>
             <div class="leaf-body">
             <div class="leaf-inner">
-              <h1 class="heading ruled">
+              <h2 class="heading ruled">
                 Capturing the Heritage of the <span>South Plains, Texas, and the American West.</span>
-              </h1>
+              </h2>
               <p class="body ruled">
                 Exploring the intersection of library/archival science and regional heritage, 
                 this workspace highlights my academic research in history and digital preservation alongside 
@@ -417,16 +432,16 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[2]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title ruled">{leaves[2].code}</span>
-              <span class="leaf-header-page ruled">03</span>
+              <span class="leaf-header-page ruled" style="--stamp-turn:-0.8deg;--stamp-press:0.92">03</span>
             </div>
             <div class="leaf-body">
             <div class="rake" aria-hidden="true"></div>
             <div class="leaf-inner leaf-inner--split leaf-inner--plate">
               <div class="leaf-text">
-                <h1 class="title title--sm ruled">
+                <h2 class="title title--sm ruled">
                   Series I - IV
-                </h1>
-                <h2 class="heading heading--sm ruled">Visual Monographs of the American West</h2>
+                </h2>
+                <h3 class="heading heading--sm ruled">Visual Monographs of the American West</h3>
                 <p class="body ruled">
                   This photography series captures various landscapes of Texas and the American West.
                 </p>
@@ -458,15 +473,15 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[3]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title ruled">{leaves[3].code}</span>
-              <span class="leaf-header-page ruled">04</span>
+              <span class="leaf-header-page ruled" style="--stamp-turn:2.0deg;--stamp-press:0.84">04</span>
             </div>
             <div class="leaf-body">
             <div class="leaf-inner leaf-inner--split leaf-inner--table">
               <div class="leaf-text">
-                <h1 class="title title--sm ruled">
+                <h2 class="title title--sm ruled">
                   Family Collections
-                </h1>
-                <h2 class="heading heading--sm ruled">Photographs, and the papers that came down with them</h2>
+                </h2>
+                <h3 class="heading heading--sm ruled">Photographs, and the papers that came down with them</h3>
                 <ol class="entries">
                   {collectionRows.map((c) => (
                     <li class="entry">
@@ -506,18 +521,18 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
             <div class="leaf-face leaf-face--front" style={`--foxing-image:url("${foxingFront[4]}")`}>
             <div class="leaf-header" aria-hidden="true">
               <span class="leaf-header-title ruled">{leaves[4].code}</span>
-              <span class="leaf-header-page ruled">05</span>
+              <span class="leaf-header-page ruled" style="--stamp-turn:-1.5deg;--stamp-press:0.88">05</span>
             </div>
             <div class="leaf-body">
             <div class="leaf-inner leaf-inner--split leaf-inner--register">
               <div class="leaf-text">
-                <h1 class="title title--sm ruled">
+                <h2 class="title title--sm ruled">
                   Featured Publications
-                </h1>
+                </h2>
                 <ol class="entries" id="pub-entries">
                   {publicationVariants.map((v, i) => (
                     <li class:list={['entry', i === 0 && 'is-featured']}>
-                      <span class="entry-date ruled">{yearOf(v.cite)}</span>
+                      <span class="entry-date entry-date--stamp ruled">{yearOf(v.cite)}</span>
                       <a class="entry-title ruled" href={v.href}>{v.title}</a>
                       <span class="entry-note ruled">{v.cite}</span>
                     </li>
@@ -613,6 +628,9 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     // needed: this runs once per document PARSE, and Astro's
     // client-side navigation swaps the DOM without parsing.
     (function () {
+      // The visible page width, before first paint, so the desk is
+      // never drawn a scrollbar too wide: see .register and fitPage().
+      document.getElementById('register')?.style.setProperty('--page-w', document.documentElement.clientWidth + 'px');
       // Night, before first paint: the header's own pre-paint script
       // has already worked out how dark it is, so a visitor after dark
       // never sees the desk in daylight first. The rest of the light
@@ -689,8 +707,30 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
 
 <style>
   .register {
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
+    /* ONE ACCENT. --stamp-ink is the oxblood of the Ex Libris stamp, and
+       it is the only accent colour in the ledger: the stamp, the page
+       numbers and years struck in it, every link and catchword, the
+       coloured words in a heading, the ledger's red rules, the tab
+       underline and the focus rings. The site's caprock rust is not
+       used anywhere on this page; side by side on one sheet the two
+       reds fought. On the page's paper this ink stands at about 7:1,
+       twice what the rust managed. */
+    --stamp-ink: #7a2620;
+
+    /* FULL BLEED, to the edges of the page and no further. The obvious
+       unit, 100vw, is the wrong one on a desktop: it counts the width
+       of the vertical scrollbar, so a section sized with it is that
+       much wider than the page it sits in, half of it sticking out on
+       each side. That made the page scroll sideways by a few pixels
+       and let the map show past the end of the header.
+
+       --page-w is the width that is actually visible
+       (documentElement.clientWidth), written here by the script before
+       first paint and kept current by fitPage(). 100vw is only the
+       fallback, for a browser without script; on phones and anywhere
+       scrollbars float over the page the two are the same. */
+    width: var(--page-w, 100vw);
+    margin-left: calc(50% - var(--page-w, 100vw) / 2);
     position: relative;
     color: var(--color-iron, #1A1919);
 
@@ -708,14 +748,77 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     --desk-pull: 4rem;
     margin-top: calc(-1 * var(--desk-pull));
     padding: calc(var(--desk-pull) + clamp(1rem, 2vw, 1.75rem)) 0 clamp(2.5rem, 5vw, 4rem);
+
+    /* THE MAP RUNS ON UNDER THE FOOTER. The footer opens with a drawing
+       of the Caprock in section whose sky is left clear, so that the
+       land rises out of whatever is above it. Here that should be the
+       map, not a strip of bare page. So the sheet is carried down by
+       --desk-drop, the bottom padding RootLayout gives <main> (py-12),
+       and then by --footer-scarp, the height of the footer's drawing;
+       the footer, which comes later in the page, lies over it, and the
+       same two lengths are added back as padding so nothing above
+       moves.
+
+       --footer-scarp must repeat the height of .scarp in
+       src/components/Footer.astro exactly. Too short and a line of
+       page shows above the plain; too long and the foot of the map
+       shows below the rock. */
+    --desk-drop: 3rem;
+    --footer-scarp: clamp(104px, 12vw, 184px);
+    margin-bottom: calc(-1 * (var(--desk-drop) + var(--footer-scarp)));
+    padding-bottom: calc(clamp(2.5rem, 5vw, 4rem) + var(--desk-drop) + var(--footer-scarp));
+
     background: url('/images/home/survey-plat.webp') center top / cover no-repeat;
     background-color: #d9cba8;
-    /* the sheet's lower edge, lying on the page */
-    box-shadow: 0 10px 18px -10px rgba(30, 18, 6, 0.5);
+    /* (phones get the middle of the same sheet as a smaller file: see
+       the rule after this one) */
+    /* (the sheet has no lower edge to draw any more: it ends out of
+       sight, behind the footer's rock) */
     /* the open cover swings to about 158deg and can reach the viewport
        edge on narrow screens; crop it there rather than scroll */
     overflow-x: hidden;
   }
+  /* THE MAP'S LOWER MARGIN. The footer's drawing of the Caprock stands in
+     front of the foot of the map, and with the map's lines and lettering
+     running on behind it the two fought: the grass, the tumbleweed and
+     the long slope east of the rim were lost in the map's ink. So over
+     its last stretch the drawing thins out and leaves blank paper, the
+     way a map sheet has a margin.
+
+     This is a strip of that blank paper (plat-margin.webp, a seamless
+     tile in the map's own tone) laid over the foot of the map and let
+     in gradually by a mask: solid behind the footer's drawing, gone by
+     7.5rem above it. It sits under .desk-light, so it takes the day and
+     the night with the rest of the desk; a fade to nothing would leave a
+     white band by day and a bright one at night.
+
+     If the map is replaced by one on different paper, this tile wants
+     remaking in the new tone. */
+  .desk-margin {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: calc(var(--footer-scarp) + 8rem);
+    pointer-events: none;
+    background: url('/images/home/plat-margin.webp') center bottom / 384px repeat;
+    background-color: #f6ead7;
+    -webkit-mask-image: linear-gradient(to top, #000 0, #000 calc(var(--footer-scarp) * 0.55), transparent calc(var(--footer-scarp) + 7.5rem));
+    mask-image: linear-gradient(to top, #000 0, #000 calc(var(--footer-scarp) * 0.55), transparent calc(var(--footer-scarp) + 7.5rem));
+  }
+
+  /* A PHONE'S DESK is upright, so `cover` only ever shows it the middle
+     of the map, at the map's full height. This file is that middle (the
+     central 1100 of 3000 pixels, same height), so the desk looks as it
+     did while the phone downloads less and holds about a third as much
+     in memory. If the map is ever replaced, this file has to be remade
+     from the new one, or deleted along with this rule. */
+  @media (max-width: 440px) {
+    .register {
+      background-image: url('/images/home/survey-plat-phone.webp');
+    }
+  }
+
   /* THE LIGHT ON THE DESK, three layers over the plat and under the
      book. Its four inputs are written onto this element by
      syncDeskLight(); the values here are a plain mid-afternoon, which
@@ -796,6 +899,20 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       0 0 4px color-mix(in srgb, rgba(12, 10, 16, 0.8) calc(var(--menu-word-flip) * 100%), rgba(238, 228, 204, 0.8));
   }
 
+  /* SELECTED TEXT. The site highlights a selection in caprock; inside
+     the ledger that is the one place the rust would still turn up, so
+     here a selection is the stamp's ink with the paper's cream for the
+     letters (about 9:1). The colours are written out, not taken from
+     --stamp-ink, because a ::selection does not reliably see custom
+     properties in every browser. Two selectors: text directly in the
+     section, and text in anything inside it. */
+  .register::selection,
+  .register ::selection {
+    background-color: #7a2620;
+    color: #f6eedb;
+    text-shadow: none;
+  }
+
   .register-controls {
     position: relative;
     z-index: 2;
@@ -844,7 +961,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     content: '';
     position: absolute;
     left: 0; bottom: 0; width: 100%; height: 1px;
-    background: var(--color-caprock, #B85A38);
+    background: var(--stamp-ink);
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
@@ -853,7 +970,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   .reg-tab[aria-selected="true"]::after { transform: scaleX(1); }
   .reg-tab:hover { color: var(--color-iron, #1A1919); }
   .reg-tab:focus-visible {
-    outline: 2px solid var(--color-caprock, #B85A38);
+    outline: 2px solid var(--stamp-ink);
     outline-offset: 3px;
   }
 
@@ -932,7 +1049,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     --back-w: 1.35rem;
     /* the whole book's width, spine and boards: .leaves' own width less
        its side padding, both restated from the rule above */
-    --book-w: calc(min(100vw, 78rem) - 2 * clamp(1.25rem, 4vw, 3.5rem));
+    --book-w: calc(min(var(--page-w, 100vw), 78rem) - 2 * clamp(1.25rem, 4vw, 3.5rem));
     --depth-stack:
       0.58px 1px 0 #8a6a52,
       1.17px 2px 0 #2a1a12,
@@ -1442,7 +1559,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     justify-content: space-between;
     gap: 1rem;
     padding: 0 var(--page-margin) calc(var(--rule-pitch) - 6px);
-    border-bottom: 6px double color-mix(in srgb, var(--color-caprock, #B85A38) 65%, transparent);
+    border-bottom: 6px double color-mix(in srgb, var(--stamp-ink) 65%, transparent);
     flex-shrink: 0;
   }
   .leaf-header-title,
@@ -1461,14 +1578,24 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     overflow: hidden;
     text-overflow: ellipsis;
   }
+  /* THE PAGE NUMBER, struck by a numbering machine in the stamp's ink.
+     Each leaf's is set a little differently by hand (--stamp-turn is
+     its tilt, --stamp-press how firmly it took, both written on the
+     element), and the soft shadow in its own colour is the ink
+     spreading into the paper. The turn is a transform, so it moves
+     nothing on the ruling. */
   .leaf-header-page {
     font-family: cormorant-garamond, serif;
     font-size: 1.5rem;
-    letter-spacing: 0.04em;
-    font-variant-numeric: tabular-nums;
-    color: var(--color-sage, #5A6B5A);
+    letter-spacing: 0.08em;
+    font-variant-numeric: lining-nums tabular-nums;
+    color: var(--stamp-ink);
+    opacity: var(--stamp-press, 0.88);
+    text-shadow: 0 0 0.7px color-mix(in srgb, var(--stamp-ink) 60%, transparent);
+    transform: rotate(var(--stamp-turn, -1.5deg));
+    transform-origin: 60% 70%;
     flex-shrink: 0;
-    font-weight: 800;
+    font-weight: 700;
   }
 
   .cover {
@@ -1497,6 +1624,42 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     width: var(--cover-open-width);
     transform: rotateY(calc(-1 * var(--cover-open-deg)));
     cursor: default;
+  }
+
+  /* THE OPENED COVER IS CLICKABLE, by way of this. It is a clear button
+     the size of the opened cover's footprint: as wide as the cover is
+     when open (the same clamp as --cover-open-width, restated because
+     that lives on .cover), hung off the book's left edge, and a little
+     taller than the book because the cover's far edge stands nearer the
+     eye. On a phone most of it is off the side of the screen; what is
+     left is the strip of cover you can see, which is a tall enough
+     target to hit.
+
+     Pointing at it lifts the cover a few degrees toward closing, which
+     is the only sign it needs that it will move. */
+  .cover-close {
+    position: absolute;
+    top: -0.6rem;
+    bottom: -0.6rem;
+    right: 100%;
+    width: clamp(4.5rem, 22vw, 11rem);
+    z-index: 9;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+  }
+  .cover-close[hidden] {
+    display: none;
+  }
+  .cover-close:focus-visible {
+    outline: 2px solid var(--stamp-ink);
+    outline-offset: -4px;
+  }
+  .book-stage:has(.cover-close:hover) .cover[inert],
+  .book-stage:has(.cover-close:focus-visible) .cover[inert] {
+    transform: rotateY(calc(-1 * (var(--cover-open-deg) - 6deg)));
   }
 
   /* Each face is a backface-hidden panel and the back one is
@@ -1699,13 +1862,35 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       var(--hide) 0 0 / 512px;
     background-color: var(--hide-ground);
   }
+  /* THE ENDPAPER: the marbled sheet pasted down inside the front board,
+     with the leather turn-ins showing round three sides of it. It is
+     the boards' own paper (--marble, so phones get their smaller file
+     here too), taken from further along the sheet than the front of
+     the cover shows, so the two are plainly the same paper without
+     being the same picture.
+
+     Its size is fixed to the board's height (auto 100%), not `cover`:
+     the opened cover narrows as it swings, and `cover` would make the
+     pattern swell and shrink with it.
+
+     Over the paper, from the top: it darkens into the hinge on the
+     right, and it carries a thin wash of cream, because an endpaper
+     spends its life shut away from the light and stays a little
+     cleaner than the outside of the book. The inset shadow is the
+     turn-ins standing a leather's thickness above it. */
   .cover-pastedown {
     position: absolute;
     inset: clamp(0.4rem, 1.2vw, 0.7rem);
     right: 0;
     pointer-events: none;
-    background: linear-gradient(to right, #d8ccb0 0%, #cdbf9f 70%, #b3a585 100%);
-    box-shadow: inset 0 0 0 1px rgba(60, 40, 20, 0.18);
+    background:
+      linear-gradient(to right, transparent 50%, rgba(30, 18, 8, 0.36) 100%),
+      linear-gradient(rgba(246, 238, 216, 0.1), rgba(246, 238, 216, 0.1)),
+      var(--marble) 84% 50% / auto 100% no-repeat;
+    background-color: var(--marble-ground);
+    box-shadow:
+      inset 0 0 0 1px rgba(40, 24, 10, 0.4),
+      inset 2px 2px 5px rgba(20, 10, 4, 0.38);
   }
 
   /* THE LIGHT ON THE COVER, over the boards and the leather and under
@@ -1941,7 +2126,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     animation-play-state: paused;
   }
   .cover:focus-visible {
-    outline: 2px solid var(--color-caprock, #B85A38);
+    outline: 2px solid var(--stamp-ink);
     outline-offset: -3px;
   }
 
@@ -1977,7 +2162,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     --page-margin: 1.5rem;
 
     --ledger-rule: color-mix(in srgb, var(--color-iron, #1A1919) 12%, transparent);
-    --ledger-accent: color-mix(in srgb, var(--color-caprock, #B85A38) 45%, transparent);
+    --ledger-accent: color-mix(in srgb, var(--stamp-ink) 45%, transparent);
   }
 
   /* The ruled paper. Shared by .pages (seen only in the instant
@@ -2137,7 +2322,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     transform: rotate(-3deg) scaleY(1.04);
   }
   .ribbon:focus-visible {
-    outline: 2px solid var(--color-caprock, #B85A38);
+    outline: 2px solid var(--stamp-ink);
     outline-offset: 3px;
   }
 
@@ -2335,7 +2520,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
 
   /* ── Catchwords ─────────────────────────────────────
      Set as printing, not as chrome: the display serif at reading size,
-     in caprock, with the rule sweeping under the destination's name
+     in the stamp's ink, with the rule sweeping under the destination's name
      the way .cta's does, so a catchword and a link read as the same
      kind of object.
 
@@ -2364,7 +2549,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     font-family: cormorant-garamond, serif;
     font-size: clamp(1rem, 1.4vw, 1.15rem);
     letter-spacing: 0.02em;
-    color: var(--color-caprock, #B85A38);
+    color: var(--stamp-ink);
     transition: opacity 0.3s ease, color 0.25s ease;
   }
   .catchword--prev { left: var(--page-margin); }
@@ -2399,7 +2584,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   .catchword--prev:hover .catchword-arrow { transform: translateX(-3px); }
   .catchword--next:hover .catchword-arrow { transform: translateX(3px); }
   .catchword:focus-visible {
-    outline: 2px solid var(--color-caprock, #B85A38);
+    outline: 2px solid var(--stamp-ink);
     outline-offset: 3px;
     border-radius: 1px;
   }
@@ -2680,7 +2865,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   .heading--sm { font-size: clamp(1.3rem, 2.2vw, 1.75rem); }
   .heading span {
     font-weight: 800;
-    color: var(--color-caprock)
+    color: var(--stamp-ink)
   }
 
   .body {
@@ -2727,9 +2912,9 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     transition: color 0.25s ease;
   }
   .entry-title:hover,
-  .entry-title:focus-visible { color: var(--color-caprock, #B85A38); }
+  .entry-title:focus-visible { color: var(--stamp-ink); }
   .entry-title:focus-visible {
-    outline: 2px solid var(--color-caprock, #B85A38);
+    outline: 2px solid var(--stamp-ink);
     outline-offset: 3px;
     border-radius: 1px;
   }
@@ -2763,6 +2948,19 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
         letter-spacing: 0.02em;
         color: var(--color-sage, #5A6B5A);
       }
+      /* the years on the Publications leaf, struck with a date stamp in
+         the same ink as the page numbers; no two land quite alike */
+      .leaf--grid .entry-date--stamp {
+        color: var(--stamp-ink);
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        opacity: 0.88;
+        text-shadow: 0 0 0.6px color-mix(in srgb, var(--stamp-ink) 60%, transparent);
+        transform: rotate(-1.6deg);
+      }
+      .entry:nth-child(2) .entry-date--stamp { transform: rotate(1.3deg); opacity: 0.8; }
+      .entry:nth-child(3) .entry-date--stamp { transform: rotate(-0.5deg); opacity: 0.92; }
+      .entry:nth-child(4) .entry-date--stamp { transform: rotate(2deg); opacity: 0.84; }
 
     }
 
@@ -2777,7 +2975,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
         top: calc(var(--lh, 1.5rem) / 2 - 0.1em);
         width: 0.4em;
         height: 0.46em;
-        background: var(--color-caprock, #B85A38);
+        background: var(--stamp-ink);
         clip-path: polygon(0 0, 100% 50%, 0 100%);
       }
     }
@@ -2851,7 +3049,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     position: relative;
     padding-bottom: 2px;
     width: fit-content;
-    color: var(--color-caprock, #5A6B5A);
+    color: var(--stamp-ink);
   }
   .cta::after {
     content: '\2192';
@@ -2870,7 +3068,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   }
   .cta:hover::before, .cta:focus-visible::before { transform: scaleX(1); }
   .cta:focus-visible {
-    outline: 2px solid var(--color-caprock, #B85A38);
+    outline: 2px solid var(--stamp-ink);
     outline-offset: 4px;
     border-radius: 1px;
   }
@@ -2955,7 +3153,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     z-index: 4;
   }
   .print:focus-visible {
-    outline: 2px solid var(--color-caprock, #B85A38);
+    outline: 2px solid var(--stamp-ink);
     outline-offset: 3px;
   }
 
@@ -3026,8 +3224,8 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     transition: opacity 0.55s ease;
     background: radial-gradient(
       42rem 26rem at var(--mx, 50%) var(--my, 50%),
-      rgba(184, 90, 56, 0.07),
-      rgba(184, 90, 56, 0.02) 12%,
+      rgba(122, 38, 32, 0.07),
+      rgba(122, 38, 32, 0.02) 12%,
       transparent 70%
     );
   }
@@ -3142,8 +3340,10 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
        for measureLeavesHeight() and snapToRules() to read */
     .leaf[inert] { transform: none; visibility: hidden; transition: none; }
     .leaf.is-turning::after { animation: none; }
+    /* the cover opens and closes at once, without the swing. It used
+       to disappear when open; it stays now, lying still beside the
+       book, because clicking it is how the book is closed. */
     .cover { transition: none; }
-    .cover[inert] { transform: none; width: auto; display: none; }
     .register-controls { transition: none; }
     .rake, .photo--develop, .cta::after, .cta::before, .reg-tab::after {
       transition: none;
@@ -3851,11 +4051,30 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
       }
     }
 
+    /* CLOSING. The reverse of the click below, in an order that matters:
+       the cover is made live and given the focus BEFORE the pages and
+       the close button are taken out of reach, so focus is never left
+       inside something that has just become inert or hidden. The CSS
+       does the rest: without `inert` the cover swings shut, and without
+       .is-settled the closed book's edge slides back out. */
+    const coverClose = document.getElementById('cover-close');
+    function closeBook() {
+      if (!cover || !cover.hasAttribute('inert')) return;
+      cover.removeAttribute('inert');
+      cover.focus({ preventScroll: true });
+      leavesWrap?.classList.remove('is-settled');
+      controls?.setAttribute('inert', '');
+      pages?.setAttribute('inert', '');
+      coverClose?.setAttribute('hidden', '');
+    }
+
     function initCover() {
       if (!cover) return;
+      coverClose?.addEventListener('click', closeBook);
       cover.addEventListener('click', () => {
         if (cover.hasAttribute('inert')) return;
         cover.setAttribute('inert', '');
+        coverClose?.removeAttribute('hidden');
         // the book's edges settle to the open stack as the cover
         // swings (see .book-stack)
         leavesWrap?.classList.add('is-settled');
@@ -3873,6 +4092,25 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
           tabs[0]?.focus();
         }
       });
+    }
+
+    /* THE PAGE'S REAL WIDTH. Keeps --page-w on .register equal to the
+       width that is actually visible, which is the viewport less any
+       vertical scrollbar. A ResizeObserver on the root element is the
+       right watcher: it fires when the window is resized and also when
+       a scrollbar appears or goes, which a resize event does not
+       report. It lets go once this DOM has been swapped out. */
+    const fitPage = () => register.style.setProperty('--page-w', `${document.documentElement.clientWidth}px`);
+    fitPage();
+    if ('ResizeObserver' in window) {
+      const pageWatch = new ResizeObserver(() => {
+        if (!register.isConnected) {
+          pageWatch.disconnect();
+          return;
+        }
+        fitPage();
+      });
+      pageWatch.observe(document.documentElement);
     }
 
     syncCatchwords(current);

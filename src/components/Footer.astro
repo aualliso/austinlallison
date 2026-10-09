@@ -1,12 +1,102 @@
 ---
 /**
- * CaprockFooter.astro — "The Caprock"
+ * Footer.astro — "The Caprock"
  *
- * A measured stratigraphic section of the Llano Estacado:
- * flat plateau · hard rim break · colluvium apron · basin.
+ * A measured section through the edge of the Llano Estacado, looking
+ * north: the level plain on the left; the rim, where the caprock breaks
+ * off square; the steep slope in the sands under it; a bench where a
+ * sandstone ledge stands out of the face; the banded beds below that;
+ * and the low Rolling Plains on the right.
  *
- * Full-bleed by design. See the break-out note in <style> if your
- * layout wraps this in a max-width container.
+ * WHAT IS SHOWN, from the top down:
+ *
+ *   the caprock   a pale band of caliche under the plain. It is the
+ *                 hard bed, so at the rim it ends in a small cliff of
+ *                 its own, a little undercut, and does not run on down
+ *                 the slope
+ *   the Ogallala  the buff sands under it, exposed in the face. The
+ *                 dashed blue line is its water table and the greyer
+ *                 sand below that line is saturated
+ *   the ledge     a grey-brown sandstone the sands rest on. It is
+ *                 hard too: the face steps out onto it as a bench and
+ *                 drops off it in a second, smaller cliff
+ *   the bands     thin beds of maroon, lavender, ochre and white
+ *                 mudstone, which crop out in the face below the
+ *                 bench, as they do along the real escarpment
+ *   the redbeds   brick-red shale with seams of white gypsum, which is
+ *                 also what the Rolling Plains stand on. The footer's
+ *                 words are set in these, where they have gone dark
+ *                 with depth
+ *   the basement  the dark bar at the foot
+ *
+ * THE ROCK IS A PAINTING, not flat colour. It is one picture of the beds
+ * cut in two, in public/images/footer/:
+ *
+ *   caprock-strata.webp    the 180 units of the drawing. It lies under
+ *                          the drawing (.rock) and is cut to the land's
+ *                          profile by a clip made from the same path
+ *   caprock-redbeds.webp   the 600 pixels below, behind the words
+ *                          (.deep), shown at its own height from the
+ *                          top of the section however tall that is
+ *
+ * and a -phone pair, painted for a narrower section so that the beds are
+ * not squeezed sideways on a small screen. Both are ordinary images, so
+ * they load only as the footer comes near and only the pair that suits
+ * the screen. Until they arrive, flat colours and a gradient in the same
+ * tones stand in for them.
+ *
+ * The line-work (water table, well, cap, surface, grass) is still drawn
+ * here, over the painting. The rock's own colours are now IN the
+ * pictures: to change them, the pictures are painted again.
+ *
+ * THE HOUR lies over the rock as two flat washes, the low sun's colour
+ * at dawn and dusk and a dark blue at night, both from the header.
+ *
+ * THE WELL is the one thing here that moves. A bore runs from the plain
+ * down to the water table and water rises in it, at a pace taken from
+ * the header's windmill: the header turns its wheel by Lubbock's real
+ * wind, and this draws water as fast as that wheel is turning. Where
+ * the water table meets the face it comes out as a seep, as it does
+ * along the real escarpment.
+ *
+ * THE WEATHER reaches down here too, from the same reading the header
+ * takes for Lubbock:
+ *
+ *   the playa   the shallow dip in the plain. After rain it holds water,
+ *               and a trickle of recharge goes down to the water table,
+ *               which is how the Ogallala is really fed. In a dry spell
+ *               it is a cracked pan.
+ *   the grass   along the plain, leaning the way the wind is blowing and
+ *               further the harder it blows. Its colour is the season's:
+ *               straw through the winter, greening in spring, green in a
+ *               wet summer, gold in a dry one and curing again in autumn.
+ *               The turf along the plain's surface takes the same coat.
+ *   the weed    in a strong west wind a tumbleweed comes across the
+ *               plain, is blown off the rim, lands on the bench, goes
+ *               off that as well and away east.
+ *
+ * All of it, sky and weather, is driven by readHeader() in the script. Without a
+ * reading the plain is calm and the playa dry.
+ *
+ * THE SKY above the profile is the header's sky. The header is all sky
+ * and this is all ground, so the two do not share colours; what they
+ * share is the moment. Over the Caprock stands the same sky the header
+ * is showing: its blue at midday, its glow low in the west at dusk and
+ * in the east at dawn, its navy and its stars at night, rising out of
+ * the page above. Under a dark sky the land goes dark too.
+ *
+ * The home page is the one exception. There the map is carried down
+ * behind the profile (index.astro does that), so the land rises out of
+ * the map and there is no sky band; the rock still darkens at night,
+ * with the map behind it.
+ *
+ * Nothing is lettered in the sky; the marks all sit inside the rock.
+ *
+ * THE COLOURS of the type and the line-work are this file's own and are
+ * declared in one block at the top of the stylesheet, with the tones
+ * that stand in for the painting. They do not read the site's palette.
+ *
+ * Full-bleed by design. See the break-out note in <style>.
  */
 
 interface Link {
@@ -21,12 +111,13 @@ interface Props {
   index?: Link[];
   contact?: Link[];
   location?: string;
+  /** Accepted so existing callers keep working; neither is drawn. */
   coordinates?: string;
   status?: string;
-  /** Survey marks drawn in the sky above the profile */
+  /** Survey marks lettered in the rock, under the plain and under the basin */
   plateauMark?: string;
   basinMark?: string;
-  /** Elevations ticked against each bedding plane */
+  /** Elevations ticked at the head and the foot of the rail */
   ledeElevation?: string;
   linksElevation?: string;
 }
@@ -48,8 +139,6 @@ const {
     { label: 'ORCID ID', href: 'https://orcid.org/0000-0001-6787-9636' },
   ],
   location = 'Lubbock, Texas',
-  coordinates = '33.5779° N, 101.8552° W',
-  status = 'Section open',
   plateauMark = 'Llano Estacado — 3,241 ft',
   basinMark = 'Rolling Plains — 2,410 ft',
   ledeElevation = '3,241 ft',
@@ -58,85 +147,274 @@ const {
 
 const year = new Date().getFullYear();
 
-// The ground profile, shared by the rock body and the caliche cap so the
-// two can never drift apart. Plateau → rim rollover → face → apron → basin.
-const PLATEAU = 'M0,26 L170,26 C232,26 250,32 296,32 C342,32 360,26 424,26 L600,26';
-const RIM = 'C610,26 616,33 620,44';
-const FACE = 'C624,57 626,70 632,86';
-const APRON =
-  'C648,98 668,105 700,110 C752,118 812,123 872,126 L928,127 C946,127 954,129 966,131 C1024,137 1112,141 1216,142 L1440,144';
+// The home page runs its map down behind the drawing; every other page
+// gets the header's sky there instead. See THE SKY in the note above.
+const onMap = Astro.url.pathname === '/';
 
-const groundPath = `${PLATEAU} ${RIM} ${FACE} ${APRON} L1440,180 L0,180 Z`;
-const capPath = `${PLATEAU} ${RIM}`;
-const talusPath = `M632,86 ${APRON} L1440,170 L1216,168 C1112,167 1024,163 966,157 L928,153 L872,152 C812,149 752,144 700,136 C668,131 648,124 636,112 Z`;
+// THE GROUND PROFILE, in a 1440 x 180 box that is stretched to the page's
+// width. Every path below is built from these pieces, so they can never
+// drift apart. From west to east:
+//
+//   PLATEAU  the level plain, with the playa's shallow dip
+//   RIM      the caprock's own cliff: straight down, then cut back under
+//   SLOPE    steep, in the soft sands, easing out at its foot
+//   BENCH    the top of the sandstone ledge, and the ledge's small cliff
+//   SKIRT    the banded beds below the ledge, steep and then flattening
+//   PLAINS   the Rolling Plains: low swells, with one shallow draw
+//
+// THE BENCH IS FITTED TO THE PAINTING. Its top is where the sands rest on
+// the sandstone in the picture (about 96) and its cliff is as thick as
+// the picture's ledge (down to about 103), so the land steps exactly
+// where the rock changes. If the pictures are ever painted again with
+// those beds at other levels, BENCH has to move with them.
+const PLATEAU = 'M0,26 L170,26 C232,26 250,32 296,32 C342,32 360,26 424,26 L600,26';
+const RIM = 'L600,32.5 L597.5,34.5';
+const SLOPE = 'C603,50 622,84 646,94.2';
+const BENCH = 'L684,95.6 L686,96.4 L686.6,102.6 L685.5,103.6';
+const SKIRT = 'C694,116 708,128 736,134.5';
+const PLAINS =
+  'C764,139.5 800,141.5 850,142.5 C900,143.5 930,140.5 975,141 C1020,141.5 1040,147 1072,147.5 C1100,148 1118,144.5 1160,144 C1230,143.5 1330,148 1440,149';
+
+const surfacePath = `${PLATEAU} ${RIM} ${SLOPE} ${BENCH} ${SKIRT} ${PLAINS}`;
+const groundPath = `${surfacePath} L1440,180 L0,180 Z`;
+
+// THE CALICHE, as a shape: the plain's surface and the same line 6.5
+// units lower, which is the height of the rim's cliff. It is filled, not
+// stroked, so that it is always exactly as thick as that cliff is tall,
+// on a phone as on a wide screen.
+const capPath = `${PLATEAU} L600,32.5 L424,32.5 C360,32.5 342,38.5 296,38.5 C250,38.5 232,32.5 170,32.5 L0,32.5 Z`;
+
+// THE LEVELS, as heights in the same box. Level lines survive the
+// stretch unchanged, which is why the beds lie level and the profile
+// above is what cuts them off. The painting was made to these same
+// levels: its sand turns wet at WATER and rests on the beds below at
+// about OGALLALA_BASE (unevenly, as on an eroded surface). Move WATER
+// and the dashed line and the well will follow; the wet sand in the
+// picture will not.
+const SURFACE = 26; //        the plain
+const WATER = 74; //          the Ogallala's water table
+const OGALLALA_BASE = 96; //  where the sands rest on the beds below
+const WELL_X = 468; //        on the level plain, clear of the playa
+
+// THE PLAYA: the dip in the plain between x = 232 and 360, 6 units deep.
+const playaWater = 'M244,28.3 L348,28.3 C340,31.5 322,32 296,32 C270,32 252,31.5 244,28.3 Z';
+const playaCracks = 'M262,30.6 l5,-2.2 M281,31.7 l-4,-2.6 M300,32 l4,-2.6 M318,31.5 l-4,-2.2 M332,30.4 l4,-1.8';
+const rechargePath =
+  'M289,33 C286,45 293,56 290,74 M296,33 C299,47 294,60 297,74 M303,33 C306,46 300,58 304,74';
+
+// THE TUMBLEWEED'S ROAD. Across the plain it is the land surface. At the
+// rim it is not: a tumbleweed does not climb down a cliff, it is blown
+// off it. So the road leaves the rim level and falls in an arc through
+// the air to the bench, crosses the bench, goes off the ledge in a
+// second, shorter arc to the foot of the skirt, and is the land surface
+// again from there. It runs on a little past both edges of the box so
+// the weed arrives from off the page and leaves the same way. The
+// script scales this to the drawing's real size.
+const weedRoad =
+  `M-60,26 L0,26 ${PLATEAU.slice(PLATEAU.indexOf('L'))} ` +
+  `C620,26 644,56 662,95 L684,95.6 C700,96 722,112 736,134.5 ${PLAINS} L1500,149.4`;
+
+// THE TUMBLEWEED ITSELF, a Russian thistle: a ball of fine stems that
+// fork, fork again and cross one another. Three weights of stroke, back
+// to front. Drawn in a 40 x 40 box; generated once and kept as data.
+const WEED_SHADE =
+  'M12.1,11.1 Q21.2,22.2 35.2,18.9 M26.9,27.6 Q18.0,27.3 9.1,27.1 M14.2,34.0 Q15.2,22.9 11.5,12.5 M18.3,9.7 Q28.3,14.3 30.4,25.1 M33.9,15.9 Q23.8,20.5 19.1,30.4 M12.0,12.1 Q18.5,6.1 25.1,12.1 M22.6,34.2 Q8.7,34.2 3.6,21.3 M21.3,32.4 Q13.4,23.1 12.5,10.9 M3.8,20.5 Q10.1,12.2 17.9,5.4 M11.6,14.9 Q10.4,13.2 10.5,11.0 M13.9,30.9 Q13.4,31.6 13.1,32.5 M10.0,26.6 Q8.8,27.3 7.8,28.2 M9.3,8.6 Q8.4,7.9 7.3,7.3 M28.7,23.3 Q30.8,24.3 30.9,26.7 M5.6,23.6 Q4.2,22.9 2.9,22.2 M17.7,13.8 Q18.9,11.8 19.3,9.5 M26.6,23.6 Q26.5,26.6 28.4,28.8 M36.4,22.2 Q37.8,21.9 39.2,22.2 M30.7,25.6 Q32.0,25.5 32.8,26.5 M22.4,28.2 Q22.7,29.2 22.9,30.2 M19.1,9.1 Q18.0,8.6 16.9,8.4 M27.5,18.8 Q28.3,19.8 29.3,20.7 M24.7,5.3 Q24.3,4.1 24.8,3.0 M14.0,30.8 Q12.9,31.1 12.1,30.4 M12.2,33.9 Q11.8,35.1 11.7,36.3 M24.9,7.1 Q25.6,6.5 25.8,5.7 M15.8,30.2 Q14.0,30.6 12.5,31.7 M27.6,17.6 Q30.5,17.4 33.4,17.7 M32.1,11.1 Q33.9,11.3 35.6,11.1 M29.5,16.4 Q31.5,16.7 33.5,16.5 M22.6,27.8 Q23.5,29.1 24.2,30.5 M24.8,21.3 Q27.4,18.4 31.0,16.9 M21.4,8.2 Q20.6,8.2 19.9,8.1 M7.3,18.0 Q7.2,17.3 7.2,16.7 M7.5,12.5 Q6.3,12.0 5.0,12.7 M16.3,5.7 Q16.7,4.7 17.2,3.6 M13.7,29.1 Q13.0,30.8 12.8,32.7 M17.1,12.8 Q15.0,12.6 13.5,11.1 M29.3,27.2 Q28.7,27.9 28.3,28.7 M33.1,23.9 Q33.7,24.2 33.9,24.8 M19.6,10.1 Q19.7,9.2 20.0,8.3 M28.5,18.2 Q30.5,18.4 32.5,18.8 M24.0,26.7 Q22.5,28.2 21.5,30.1 M17.0,31.3 Q17.9,31.9 19.1,31.9 M21.9,9.8 Q21.7,7.8 19.9,6.9 M12.7,22.8 Q11.7,21.9 10.3,22.1 M17.2,11.4 Q15.6,10.2 14.5,8.5 M23.6,11.0 Q24.8,9.9 25.7,8.5 M21.2,11.5 Q19.3,10.5 18.9,8.5 M8.3,19.9 Q8.5,18.6 8.7,17.3 M8.5,20.8 Q7.3,20.9 6.2,20.9 M29.4,24.9 Q31.5,24.2 33.5,25.1 M31.0,24.1 Q32.4,23.9 33.8,23.8 M5.4,16.0 Q4.5,16.2 3.6,16.1 M9.6,19.4 Q7.8,19.0 6.9,17.4 M29.4,33.1 Q30.2,34.7 29.2,36.2 M10.3,32.5 Q10.0,33.4 9.6,34.2 M17.3,13.1 Q16.8,10.3 18.3,7.9 M16.3,17.9 Q16.0,14.5 15.3,11.1 M8.4,20.5 Q8.1,19.3 7.8,18.1 M30.5,17.5 Q31.7,17.3 32.4,16.5 M19.1,10.5 Q18.5,9.6 18.2,8.6 M16.7,30.6 Q16.3,31.9 16.5,33.3 M7.8,21.3 Q7.6,22.2 7.4,23.1 M15.7,13.5 Q14.8,11.7 13.0,10.7 M17.4,32.0 Q17.1,32.6 16.7,33.2 M31.9,16.6 Q32.7,16.9 33.4,17.4';
+const WEED_STEMS =
+  'M19.9,20.9 Q27.7,21.5 35.5,22.0 M19.9,20.9 Q27.8,22.6 35.3,25.7 M19.9,20.9 Q28.5,22.3 31.9,30.3 M19.9,20.9 Q25.5,26.9 26.5,35.0 M19.9,20.9 Q19.5,28.6 16.6,35.9 M19.9,20.9 Q18.4,28.5 12.6,33.7 M19.9,20.9 Q11.7,23.0 5.0,28.2 M19.9,20.9 Q12.3,20.4 4.7,21.1 M19.9,20.9 Q12.6,19.7 5.3,18.9 M19.9,20.9 Q14.4,15.6 7.2,13.0 M19.9,20.9 Q19.1,12.3 11.8,7.6 M19.9,20.9 Q17.4,14.1 16.6,6.9 M19.9,20.9 Q19.4,12.7 24.2,6.0 M19.9,20.9 Q23.1,14.1 28.2,8.5 M19.9,20.9 Q27.3,18.5 33.4,13.7 M26.7,7.0 Q19.2,18.6 23.8,31.6 M11.7,26.5 Q12.0,17.6 9.0,9.2 M16.0,34.4 Q18.4,22.6 13.8,11.4 M9.4,14.5 Q19.6,11.5 30.2,11.4 M8.1,14.9 Q21.4,1.7 34.8,14.8 M14.8,32.4 Q15.2,19.5 15.9,6.6 M21.4,4.8 Q23.4,15.2 30.9,22.6';
+const WEED_LIGHT =
+  'M26.4,21.4 Q27.9,19.1 30.5,18.1 M20.8,31.1 Q21.2,32.0 20.8,32.9 M8.5,24.9 Q8.3,24.1 7.7,23.7 M32.3,17.6 Q33.2,16.3 33.8,14.8 M11.8,19.7 Q9.8,20.1 8.9,21.9 M28.1,21.6 Q29.0,22.1 29.5,23.1 M15.0,9.3 Q15.2,8.5 15.2,7.7 M11.9,23.9 Q9.6,25.9 9.8,29.0 M30.5,25.0 Q30.5,26.1 30.4,27.1 M27.1,15.4 Q28.7,14.7 29.2,13.0 M14.0,11.5 Q13.2,11.7 12.6,12.1 M22.8,28.1 Q21.7,29.0 20.3,28.8 M25.8,21.3 Q29.3,23.0 30.1,26.8 M23.1,25.1 Q23.2,27.8 21.4,29.8 M32.0,25.4 Q32.7,24.6 33.6,23.9 M25.7,7.0 Q25.1,6.2 25.1,5.2 M14.5,10.4 Q13.9,9.1 14.3,7.8 M19.5,11.7 Q20.3,11.2 21.1,10.5 M17.2,30.5 Q16.3,30.0 15.4,30.3 M27.7,27.9 Q29.0,28.0 30.0,28.8 M33.2,11.3 Q34.6,10.6 34.7,9.1 M17.5,35.5 Q17.7,37.1 17.2,38.5 M31.8,25.4 Q32.4,24.5 33.4,24.4 M18.3,26.0 Q15.6,28.7 12.0,29.6 M24.9,18.9 Q27.9,18.1 30.3,20.2 M23.3,14.9 Q24.4,11.6 22.8,8.5 M29.2,25.9 Q29.1,27.4 29.8,28.7 M18.0,14.8 Q19.4,13.0 19.7,10.7 M10.4,19.5 Q8.5,20.7 6.8,22.2 M19.0,28.0 Q17.4,31.1 13.9,31.8 M9.7,20.7 Q9.5,21.6 9.1,22.4 M10.3,20.8 Q8.1,20.2 6.7,18.4 M8.3,18.9 Q7.6,18.1 7.7,17.1 M28.4,23.3 Q30.0,23.4 31.7,23.6 M20.0,30.3 Q21.5,30.3 22.8,29.6 M35.2,18.7 Q35.5,17.4 36.7,16.9 M29.7,18.4 Q29.4,16.7 30.4,15.4 M16.2,29.6 Q16.9,31.3 18.0,32.8 M10.5,11.8 Q9.6,11.9 8.9,11.4 M16.3,11.6 Q14.6,10.0 12.4,9.8 M10.3,20.8 Q7.7,20.9 6.4,18.7 M27.8,24.5 Q30.3,25.2 32.8,25.5 M22.3,28.8 Q22.6,30.0 23.3,30.9 M27.8,19.7 Q27.8,18.2 28.2,16.7 M32.9,30.0 Q33.6,31.0 33.4,32.1 M18.9,28.5 Q19.9,30.8 22.2,32.0 M3.7,21.8 Q2.8,22.4 1.8,22.6 M25.8,22.4 Q28.6,21.2 31.5,20.7 M34.3,27.8 Q35.7,27.7 37.1,27.2 M6.5,12.1 Q5.3,11.6 4.2,10.8 M22.8,15.6 Q25.9,15.5 29.0,15.4 M9.9,24.9 Q8.4,25.0 6.9,24.9 M15.1,20.7 Q13.1,22.4 11.3,24.2 M9.9,16.0 Q9.4,15.1 8.5,14.8 M18.8,28.6 Q17.7,30.3 16.0,31.3 M4.6,23.3 Q4.5,24.6 3.3,25.2 M12.6,15.5 Q10.8,15.4 9.2,16.3 M17.5,9.8 Q17.0,8.5 16.5,7.3 M35.9,22.5 Q37.2,21.6 38.7,21.0';
+
+// THE GRASS: one tile, 96 x 10, repeated along the plain. Nine tufts of
+// bunchgrass at uneven spacing, each a few blades fanning from one foot
+// on the bottom edge. The blades come as two sets, the darker ones and
+// the paler, and each set is used as a MASK, not as a picture: the mask
+// says where a blade is and the stylesheet says what colour it is, which
+// is what lets the grass change coat with the season.
+const GRASS_DARK = `url("data:image/svg+xml,${encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' width='96' height='10' fill='none' stroke-linecap='round'>" +
+    "<path stroke='#000' stroke-width='1.1' d='M4.8,10 q-0.2,-2.9 -0.7,-5.3 M5.2,10 q0.2,-2.4 0.7,-4.3 M4.2,10 q-0.7,-2.9 -2.9,-5.3 M17.5,10 q0.4,-1.6 1.7,-2.9 M16.5,10 q-0.6,-2.0 -2.2,-3.7 M27.0,10 q1.0,-3.0 4.1,-5.4 M25.0,10 q-1.0,-3.1 -3.8,-5.6 M25.5,10 q-0.6,-3.6 -2.4,-6.6 M26.0,10 q-0.1,-4.4 -0.3,-8.0 M39.5,10 q0.5,-2.6 2.0,-4.8 M39.0,10 q0.0,-2.9 0.0,-5.2 M47.8,10 q-0.1,-2.6 -0.5,-4.7 M48.2,10 q0.3,-3.8 1.2,-7.0 M47.2,10 q-0.6,-3.5 -2.5,-6.4 M59.5,10 q-0.6,-2.0 -2.4,-3.7 M60.5,10 q0.7,-1.7 2.7,-3.0 M67.0,10 q-0.7,-2.6 -2.9,-4.7 M67.5,10 q-0.5,-4.0 -1.9,-7.3 M68.5,10 q0.5,-3.5 1.9,-6.3 M68.0,10 q-0.1,-3.8 -0.2,-7.0 M79.2,10 q-0.9,-2.2 -3.4,-4.0 M79.8,10 q-0.3,-2.2 -1.1,-4.0 M80.8,10 q0.5,-1.9 2.2,-3.5 M89.5,10 q-0.6,-2.0 -2.2,-3.7 M90.0,10 q0.0,-1.8 0.1,-3.2'/>" +
+    '</svg>'
+)}")`;
+const GRASS_LIGHT = `url("data:image/svg+xml,${encodeURIComponent(
+  "<svg xmlns='http://www.w3.org/2000/svg' width='96' height='10' fill='none' stroke-linecap='round'>" +
+    "<path stroke='#000' stroke-width='1' d='M5.8,10 q0.6,-2.2 2.4,-3.9 M17.0,10 q0.0,-1.7 0.1,-3.1 M26.5,10 q0.5,-3.5 2.1,-6.3 M38.5,10 q-0.5,-1.9 -2.0,-3.4 M48.8,10 q0.6,-2.9 2.5,-5.2 M60.0,10 q0.0,-2.3 0.2,-4.1 M69.0,10 q1.1,-3.6 4.2,-6.5 M80.2,10 q0.2,-3.1 0.6,-5.7 M90.5,10 q0.6,-2.4 2.5,-4.3'/>" +
+    '</svg>'
+)}")`;
+
+// THE STARS over the footer at night: sixty-four of them, as the shadows
+// of one 1px box. Across in viewport widths, down in pixels from the top
+// of the sky; those that fall below the land are simply behind it.
+const STARS =
+  '16.8vw 112px 0 0px rgba(255, 255, 255, 0.66), 21.9vw 124px 0 0px rgba(255, 255, 255, 0.68), 23.9vw 26px 0 0px rgba(255, 255, 255, 0.91), 42.9vw 44px 0 0px rgba(255, 255, 255, 0.91), 69.2vw 80px 0 0.4px rgba(255, 255, 255, 0.74), 3.9vw 67px 0 0.4px rgba(255, 255, 255, 0.78), 64.7vw 142px 0 0px rgba(255, 255, 255, 0.49), 81.4vw 41px 0 0px rgba(255, 255, 255, 0.65), 55.1vw 69px 0 0.4px rgba(255, 255, 255, 0.48), 66.3vw 84px 0 0px rgba(255, 255, 255, 0.44), 20.0vw 110px 0 0px rgba(255, 255, 255, 0.47), 47.7vw 129px 0 0px rgba(255, 255, 255, 0.59), 15.0vw 92px 0 0px rgba(255, 255, 255, 0.60), 45.2vw 74px 0 0.4px rgba(255, 255, 255, 0.61), 3.2vw 38px 0 0.4px rgba(255, 255, 255, 0.40), 7.4vw 100px 0 0px rgba(255, 255, 255, 0.71), 32.0vw 148px 0 0px rgba(255, 255, 255, 0.50), 17.3vw 69px 0 0px rgba(255, 255, 255, 0.59), 59.6vw 64px 0 0px rgba(255, 255, 255, 0.49), 91.9vw 48px 0 0.4px rgba(255, 255, 255, 0.61), 68.2vw 110px 0 0px rgba(255, 255, 255, 0.62), 98.4vw 145px 0 0px rgba(255, 255, 255, 0.89), 49.1vw 73px 0 0px rgba(255, 255, 255, 0.91), 24.8vw 96px 0 0.4px rgba(255, 255, 255, 0.84), 77.1vw 86px 0 0px rgba(255, 255, 255, 0.43), 26.0vw 62px 0 0.4px rgba(255, 255, 255, 0.54), 39.6vw 134px 0 0px rgba(255, 255, 255, 0.94), 74.3vw 85px 0 0px rgba(255, 255, 255, 0.48), 64.9vw 139px 0 0.4px rgba(255, 255, 255, 0.42), 21.5vw 130px 0 0px rgba(255, 255, 255, 0.88), 60.0vw 79px 0 0.4px rgba(255, 255, 255, 0.57), 53.4vw 60px 0 0px rgba(255, 255, 255, 0.61), 13.0vw 115px 0 0px rgba(255, 255, 255, 0.73), 64.2vw 132px 0 0.4px rgba(255, 255, 255, 0.54), 40.7vw 145px 0 0px rgba(255, 255, 255, 0.47), 9.9vw 38px 0 0px rgba(255, 255, 255, 0.75), 78.3vw 35px 0 0px rgba(255, 255, 255, 0.76), 13.0vw 93px 0 0px rgba(255, 255, 255, 0.62), 88.4vw 103px 0 0px rgba(255, 255, 255, 0.50), 37.9vw 114px 0 0px rgba(255, 255, 255, 0.73), 50.5vw 118px 0 0px rgba(255, 255, 255, 0.83), 1.3vw 84px 0 0px rgba(255, 255, 255, 0.62), 56.6vw 132px 0 0px rgba(255, 255, 255, 0.54), 69.5vw 65px 0 0px rgba(255, 255, 255, 0.53), 16.0vw 116px 0 0px rgba(255, 255, 255, 0.85), 80.0vw 87px 0 0px rgba(255, 255, 255, 0.70), 6.4vw 100px 0 0px rgba(255, 255, 255, 0.93), 31.2vw 113px 0 0px rgba(255, 255, 255, 0.44), 81.2vw 147px 0 0px rgba(255, 255, 255, 0.44), 65.6vw 78px 0 0px rgba(255, 255, 255, 0.76), 62.5vw 126px 0 0.4px rgba(255, 255, 255, 0.68), 94.3vw 110px 0 0.4px rgba(255, 255, 255, 0.66), 51.3vw 135px 0 0px rgba(255, 255, 255, 0.52), 5.3vw 80px 0 0px rgba(255, 255, 255, 0.55), 58.9vw 76px 0 0.4px rgba(255, 255, 255, 0.65), 23.9vw 74px 0 0.4px rgba(255, 255, 255, 0.53), 91.1vw 107px 0 0px rgba(255, 255, 255, 0.66), 49.2vw 115px 0 0px rgba(255, 255, 255, 0.83), 62.6vw 120px 0 0px rgba(255, 255, 255, 0.53), 91.3vw 74px 0 0.4px rgba(255, 255, 255, 0.85), 95.9vw 149px 0 0px rgba(255, 255, 255, 0.49), 20.5vw 135px 0 0px rgba(255, 255, 255, 0.45), 17.9vw 91px 0 0.4px rgba(255, 255, 255, 0.81), 46.3vw 39px 0 0px rgba(255, 255, 255, 0.79)';
+
+// THE ROCK'S PICTURES (see THE ROCK IS A PAINTING, above).
+const ROCK = '/images/footer';
+
+// THE CLIP that cuts the rock's picture to the land. The picture is an
+// ordinary image under the drawing, so it cannot use the drawing's own
+// clip; it gets the same outline as a CSS polygon in percentages, which
+// stretches with the box exactly as the drawing does. The outline is
+// worked out here from surfacePath, so the two cannot drift apart: each
+// curve is walked in ten steps, which is finer than a pixel at any size
+// the footer is shown, and the drawing's surface line lies over the join.
+function outline(d: string, steps = 10): [number, number][] {
+  const points: [number, number][] = [];
+  let at: [number, number] = [0, 0];
+  for (const [, letter, rest] of d.matchAll(/([MLC])([^MLC]*)/g)) {
+    const n = rest.trim().split(/[\s,]+/).map(Number);
+    if (letter === 'C') {
+      for (let i = 0; i + 5 < n.length; i += 6) {
+        const [x1, y1, x2, y2, x3, y3] = n.slice(i, i + 6);
+        for (let step = 1; step <= steps; step++) {
+          const t = step / steps;
+          const k = 1 - t;
+          points.push([
+            k * k * k * at[0] + 3 * k * k * t * x1 + 3 * k * t * t * x2 + t * t * t * x3,
+            k * k * k * at[1] + 3 * k * k * t * y1 + 3 * k * t * t * y2 + t * t * t * y3,
+          ]);
+        }
+        at = [x3, y3];
+      }
+    } else {
+      for (let i = 0; i + 1 < n.length; i += 2) {
+        at = [n[i], n[i + 1]];
+        points.push(at);
+      }
+    }
+  }
+  return points;
+}
+const rockClip = `polygon(${[...outline(surfacePath), [1440, 180], [0, 180]]
+  .map(([x, y]) => `${(x / 14.4).toFixed(2)}% ${(y / 1.8).toFixed(2)}%`)
+  .join(', ')})`;
+
+// THE SEEP: where the water table (74) reaches the slope, and its run
+// from there: down the rest of the slope, across the bench, over the
+// ledge and a little way down the skirt. Each piece is a piece of the
+// surface above (the first and the last are SLOPE and SKIRT cut short).
+const seepPath =
+  'M620.8,74 C628.1,82.7 636.7,90.2 646,94.2 L684,95.6 L686,96.4 L686.6,102.6 L685.5,103.6 C688.6,108.1 692.4,112.4 697.2,116.5';
 ---
 
-<footer class="caprock" data-caprock>
+<footer class:list={['caprock', { 'caprock--map': onMap }]} data-caprock>
   <!-- ── the escarpment ─────────────────────────────────────── -->
-  <div class="rake" aria-hidden="true"></div>
   <div class="scarp-wrap">
+    <!-- the header's sky, over the land (not on the home page) -->
+    <div class="sky" aria-hidden="true">
+      <div class="sky-glow"></div>
+      <div class="sky-stars" style={`box-shadow:${STARS}`}></div>
+    </div>
+
+    <div class="scarp-box">
+    <!-- the rock: the painting of the beds, cut to the land's profile and
+         lying under the drawing. One image; the screen picks which. -->
+    <div class="rock" style={`clip-path:${rockClip};--sand-base:${(OGALLALA_BASE / 1.8).toFixed(1)}%`} aria-hidden="true">
+      <picture>
+        <source media="(max-width: 680px)" srcset={`${ROCK}/caprock-strata-phone.webp`} />
+        <img src={`${ROCK}/caprock-strata.webp`} alt="" width="2880" height="360" loading="lazy" decoding="async" />
+      </picture>
+    </div>
     <svg class="scarp" viewBox="0 0 1440 180" preserveAspectRatio="none" aria-hidden="true">
       <defs>
-        <linearGradient id="caprock-talus" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stop-color="#E8E1D1" stop-opacity=".050" />
-          <stop offset="1" stop-color="#E8E1D1" stop-opacity="0" />
-        </linearGradient>
+        <clipPath id="caprock-ground"><path d={groundPath}></path></clipPath>
       </defs>
 
-      <path class="rock" d={groundPath} />
-      <path class="talus" d={talusPath} />
-      <!-- the cap stops at the rim: resistant rock does not run down a slope -->
-      <path class="cap" d={capPath} />
+      <!-- The ground itself is not drawn here any more: it is the picture
+           under this drawing (.rock). Everything in this group is cut off
+           by the land surface. -->
+      <g clip-path="url(#caprock-ground)">
+        <!-- the hour's light on the rock: the low sun's colour, then the night -->
+        <rect class="wash wash--warm" x="0" y="0" width="1440" height="180"></rect>
+        <rect class="wash wash--night" x="0" y="0" width="1440" height="180"></rect>
+        <path class="water" d={`M0,${WATER} H1440`}></path>
+        <!-- rain that the playa held, on its way down -->
+        <path class="recharge" d={rechargePath}></path>
+        <!-- the caliche: a filled band under the plain, as thick as the
+             rim's cliff is tall -->
+        <path class="cap" d={capPath}></path>
+        <!-- the well: its bore, and the water rising in it -->
+        <path class="bore" d={`M${WELL_X},${SURFACE} V${WATER + 9}`}></path>
+        <path class="lift" d={`M${WELL_X},${WATER} V${SURFACE + 2}`}></path>
+      </g>
+
+      <path class="seep" d={seepPath}></path>
+      <path class="surface" d={surfacePath}></path>
+      <!-- the turf: the plain's surface, in the season's colour -->
+      <path class="turf" d={PLATEAU}></path>
+      <path class="playa-water" d={playaWater}></path>
+      <path class="playa-cracks" d={playaCracks}></path>
+      <path class="wellhead" d={`M${WELL_X - 6},${SURFACE} H${WELL_X + 6}`}></path>
     </svg>
 
+    <!-- the grass on the level plain, either side of the playa. These and
+         the tumbleweed are ordinary boxes laid over the drawing, sized in
+         pixels, because anything drawn inside the stretched box would be
+         stretched with it. -->
+    <div class="grass grass--west" style={`--blades-dark:${GRASS_DARK};--blades-light:${GRASS_LIGHT}`}></div>
+    <div class="grass grass--east" style={`--blades-dark:${GRASS_DARK};--blades-light:${GRASS_LIGHT}`}></div>
+
+    <div class="weed" data-road={weedRoad}>
+      <div class="weed-hop">
+        <svg class="weed-ball" viewBox="0 0 40 40" fill="none" stroke-linecap="round">
+          <ellipse cx="20" cy="21" rx="14.5" ry="13.5" fill="#7a6238" fill-opacity=".16"></ellipse>
+          <path d={WEED_SHADE} stroke="#4d3a1e" stroke-width=".55" stroke-opacity=".8"></path>
+          <path d={WEED_STEMS} stroke="#6b532c" stroke-width=".8"></path>
+          <path d={WEED_LIGHT} stroke="#b2935a" stroke-width=".5"></path>
+        </svg>
+      </div>
+    </div>
+
     <span class="mark mark--plateau">{plateauMark}</span>
+    <span class="mark mark--playa">playa<span class="playa-wet">, after rain</span><span class="playa-dry">, dry</span></span>
+    <span class="mark mark--water">water table</span>
     <span class="mark mark--basin">{basinMark}</span>
+    </div>
   </div>
 
   <!-- ── the section ────────────────────────────────────────── -->
   <div class="section">
-    
-
-    <div class="stratum s-lede">
-      <div class="inner">
-        <div class="rail">{ledeElevation}</div>
-        <div>
-          <a href="/"><p class="name">{name}</p></a>
-          <p class="roles">{roles.join(' · ')}</p>
-          <p class="tagline">{tagline}</p>
-        </div>
+    <!-- the redbeds under the drawing: the same painting, carried on down -->
+    <picture class="deep" aria-hidden="true">
+      <source media="(max-width: 680px)" srcset={`${ROCK}/caprock-redbeds-phone.webp`} />
+      <img src={`${ROCK}/caprock-redbeds.webp`} alt="" width="2880" height="1200" loading="lazy" decoding="async" />
+    </picture>
+    <div class="inner">
+      <div class="rail" aria-hidden="true">
+        <span>{ledeElevation}</span>
+        <span>{linksElevation}</span>
       </div>
-    </div>
 
-    <div class="stratum s-links">
-      <div class="inner">
-        <div class="rail">{linksElevation}</div>
-        <div class="cols">
-          <nav class="col" aria-label="Site index">
-            <p class="label">Index</p>
-            <ul>
-              {index.map((l) => (
-                <li><a href={l.href}>{l.label}</a></li>
-              ))}
-            </ul>
-          </nav>
-          <div class="col">
-            <p class="label">Contact</p>
-            <ul>
-              {contact.map((l) => (
-                <li>
-                  <a
-                    href={l.href}
-                    {...(l.href.startsWith('http')
-                      ? { target: '_blank', rel: 'noopener noreferrer' }
-                      : {})}
-                  >
-                    {l.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+      <div class="lede">
+        <a class="name" href="/">{name}</a>
+        <p class="roles">{roles.join(' · ')}</p>
+        <p class="tagline">{tagline}</p>
+      </div>
+
+      <div class="cols">
+        <nav class="col col--index" aria-label="Site index">
+          <p class="label">Index</p>
+          <ul>
+            {index.map((l) => (
+              <li><a href={l.href}>{l.label}</a></li>
+            ))}
+          </ul>
+        </nav>
+        <div class="col">
+          <p class="label">Contact</p>
+          <ul>
+            {contact.map((l) => (
+              <li>
+                <a
+                  href={l.href}
+                  {...(l.href.startsWith('http')
+                    ? { target: '_blank', rel: 'noopener noreferrer' }
+                    : {})}
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
     </div>
@@ -148,245 +426,661 @@ const talusPath = `M632,86 ${APRON} L1440,170 L1216,168 C1112,167 1024,163 966,1
       <span>© {year} {name}</span>
       <span>{location}</span>
       <span>All Rights Reserved</span>
-      
     </div>
   </div>
 </footer>
 
 <style>
   .caprock {
-    /* Tailwind v4 exposes theme colors as --color-*; the fallbacks cover v3.
-       Swap the fallback hexes for your real token values either way. */
+    /* ── THE PALETTE ──
+       The colours of the type and the line-work, and the tones that
+       stand in for the painting until it has loaded. Change them here
+       and nowhere else.
+
+       The rock itself is in the pictures now (see the note at the top
+       of the file). The five tones from --redbed to --permian-deep are
+       the painting's own fall of colour with depth, at 0, 55, 150, 252
+       and 600 pixels below the drawing; if the pictures are ever
+       painted again with a different fall, these have to follow, or
+       the footer will change tone as the picture arrives. */
+    --cap: #efe8d6; /*            caliche */
+    --ogallala: #c9a985; /*       dry sand, until the painting loads */
+    --rock-ink: #33251a; /*       lettering and line-work on the sand */
+    --water: #5f8ba3; /*          the water table and the seep */
+    --water-lift: #a9cfe0; /*     water in the bore */
+    --redbed: #99432c; /*         brick red: the top of the redbeds */
+    --redbed-2: #843827; /*       55px down */
+    --redbed-deep: #6c2d20; /*    150px down, about where the words sit */
+    --permian: #461c14; /*        252px down */
+    --permian-deep: #34150f; /*   600px down, and anything below that */
+    --basement: #22100b;
+    --ink: #e8e1d1; /*            type on the redbeds */
+    --ink-soft: rgba(240, 232, 216, 0.9);
+    --ink-faint: rgba(240, 232, 216, 0.82);
+    --rule: rgba(232, 225, 209, 0.16);
+
+    /* THE HOUR'S TWO WASHES, laid flat over the rock wherever it shows:
+       --wash-warm is the low sun's colour at dawn and dusk, --wash-night
+       the dark of the night. --graze, --grazing and --night come from
+       the header (see THE SKY, below). */
+    --wash-warm: color-mix(in srgb, var(--grazing) calc(var(--graze) * 27%), transparent);
+    --wash-night: color-mix(in srgb, #0b101d calc(var(--night) * 70%), transparent);
 
     /* ── FULL-BLEED BREAK-OUT ──
-       Works inside a max-width wrapper. If you get a horizontal
-       scrollbar, add `scrollbar-gutter: stable;` to html — or move
-       this component outside the wrapper and delete these two lines. */
-    width: 100vw;
-    margin-left: calc(50% - 50vw);
+       Works inside a max-width wrapper.
 
+       Sized to the page that is actually visible, not to 100vw. On a
+       desktop 100vw counts the width of the vertical scrollbar, so a
+       footer sized with it is that much wider than the page, sticks
+       out half of it on each side and makes the page scroll sideways
+       by a few pixels. --page-w is documentElement.clientWidth, kept
+       current by fitCaprock() in the script below; 100vw is only the
+       fallback until that has run. (The home page's desk does the
+       same: see .register in src/pages/index.astro.) */
+    width: var(--page-w, 100vw);
+    margin-left: calc(50% - var(--page-w, 100vw) / 2);
     position: relative;
-    color: var(--color-caliche);
-    font-family: theme('fontFamily.mono', ui-monospace, Menlo, monospace);
+    color: var(--ink);
+    font-family: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
     isolation: isolate;
     overflow: hidden;
   }
 
-  /* ── escarpment profile ─────────────────────────────────── */
+  /* ── the escarpment ───────────────────────────────────────── */
+  /* .scarp-wrap holds the sky and, below the sky's rise, .scarp-box,
+     which is the drawing and everything laid over it. All the positions
+     given as fractions of the drawing's height are fractions of
+     .scarp-box. */
   .scarp-wrap {
     position: relative;
-    .scarp-wrap { background: #1A1310; }   /* the book's hide-3 */
-
+    /* padding, not a margin on the box below: a margin there would
+       collapse through this element and leave the sky no taller than
+       the drawing */
+    padding-top: var(--sky-rise);
   }
+  .scarp-box {
+    position: relative;
+  }
+  /* THE ROCK, under the drawing: the painting, stretched to this box as
+     the drawing is and cut to the land by the clip-path written on the
+     element. Its background is what shows until the picture loads, sand
+     over brick, parted at --sand-base, where the sands rest on the beds
+     below (OGALLALA_BASE, written on the element with the clip). */
+  .rock {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, var(--ogallala) var(--sand-base, 53.3%), var(--redbed) var(--sand-base, 53.3%));
+  }
+  .rock img {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* ── THE SKY ──
+     The header's sky of this moment, standing over the land. Four values
+     come from the header by way of readHeader():
+
+       --sky-top, --sky-horizon   the header's own two sky colours, as it
+                                  has them right now
+       --night                    0 by day, 1 in full dark
+       --graze, --grazing         how low the sun is and the colour that
+                                  gives; --glow-x is where along the
+                                  footer that glow sits
+
+     The sky runs from nothing at its top, so that it rises out of the
+     page, through the header's upper colour to its horizon colour at the
+     land. --sky-rise is how far it stands above the drawing.
+
+     The section looks north, so west is on the left: the evening glow is
+     low over the plain and the morning's over the Rolling Plains.
+
+     Until the script has run, the values written here give a plain
+     midday sky. */
+  .caprock {
+    --sky-rise: clamp(4rem, 8vw, 7rem);
+    --sky-top: #c1d2e7;
+    --sky-horizon: #d6dde2;
+    --night: 0;
+    --graze: 0;
+    --grazing: rgb(232, 168, 92);
+    --glow-x: 12%;
+    --glow-y: 0.144;
+  }
+  .sky {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    background: linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--sky-top) 0%, transparent) 0%,
+      var(--sky-top) 58%,
+      var(--sky-horizon) 100%
+    );
+  }
+  /* THE GLOW of a low sun: a wide, shallow ellipse centred ON the horizon
+     at --glow-x, so that half of it is behind the land and the half that
+     shows lies along the skyline, strongest where the land meets the sky.
+     --glow-y is how far down the drawing that skyline is: the plain's
+     level in the west, the Rolling Plains' in the east. */
+  .sky-glow {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(
+      ellipse 38% 70% at var(--glow-x) calc(var(--sky-rise) + (100% - var(--sky-rise)) * var(--glow-y)),
+      color-mix(in srgb, var(--grazing) calc(var(--graze) * 88%), transparent) 0%,
+      color-mix(in srgb, var(--grazing) calc(var(--graze) * 46%), transparent) 38%,
+      transparent 100%
+    );
+  }
+  .sky-stars {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1px;
+    height: 1px;
+    border-radius: 50%;
+    opacity: var(--night);
+  }
+  /* On the home page the map is the backdrop: no sky, and the drawing
+     starts at the top of the footer, where index.astro expects it. */
+  .caprock--map {
+    --sky-rise: 0px;
+  }
+  .caprock--map .sky {
+    display: none;
+  }
+
+  /* NIGHT ON THE LAND. Under a dark sky (or, on the home page, a dark
+     map) the land cannot stay in daylight. The whole of the rock, down
+     to the basement, takes the two washes of the hour (--wash-warm and
+     --wash-night); the lettering in the sands turns from dark ink to
+     pale so it can still be read; the grass dulls; and the caliche and
+     the basement, which are not part of the painting, are tinted to
+     match. The footer's words only gain by it: the rock behind them
+     darkens and they do not. */
+  /* THE LETTERING IN THE SANDS switches from dark ink to pale; it does
+     not fade from one to the other. Faded in step with --night, the ink
+     passed through the sand's own tone on the way, and for about half
+     an hour at dawn and again at dusk the three labels in the sand could
+     not be read (measured at 1.1:1).
+
+       --ink-flip   0 by day, 1 by night. It steps at --night 0.45, which
+                    is where dark ink and pale ink are equally legible on
+                    the darkening sand.
+       --ink-push   how near that step the hour is, from either side: 0
+                    in full day and full night, 1 at the step. Both inks
+                    are strengthened by it, because that is when the sand
+                    is closest to them in tone.
+
+     --sand-ink is the brown lettering and --water-ink the blue. The
+     half-second transition on .mark is the only softening the switch
+     gets. */
+  .caprock {
+    --ink-flip: clamp(0, calc((var(--night) - 0.45) * 100000), 1);
+    --ink-push: calc(1 - min(1, max(var(--night) - 0.45, 0.45 - var(--night)) * 2.22));
+    --sand-ink: color-mix(in srgb,
+      color-mix(in srgb, var(--rock-ink), #120c07 calc(var(--ink-push) * 100%)),
+      color-mix(in srgb, #e3ddd0, #fbf7ee calc(var(--ink-push) * 100%)) calc(var(--ink-flip) * 100%));
+    --water-ink: color-mix(in srgb,
+      color-mix(in srgb, #1b3644, #06121a calc(var(--ink-push) * 100%)),
+      color-mix(in srgb, #c3dceb, #f4faff calc(var(--ink-push) * 100%)) calc(var(--ink-flip) * 100%));
+  }
+  .caprock .cap {
+    fill: color-mix(in srgb,
+      color-mix(in srgb, var(--cap), var(--grazing) calc(var(--graze) * 55%)),
+      #0b101d calc(var(--night) * 66%));
+  }
+  /* THE HEIGHT OF THE DRAWING. The home page repeats this clamp as
+     --footer-scarp so that it can run its map down behind the profile;
+     if you change it here, change it there. */
   .scarp {
     display: block;
+    position: relative; /* so that it lies over .rock */
     width: 100%;
     height: clamp(104px, 12vw, 184px);
   }
-  .rock {
-    fill: var(--color-dockum);
-  }
-  .talus {
-    fill: url(#caprock-talus);
-  }
-  .cap {
+  /* Line-work keeps its weight however far the box is stretched. */
+  .scarp path {
     fill: none;
-    stroke: var(--color-caliche);
-    stroke-width: 2;
-    stroke-linecap: butt;
     vector-effect: non-scaling-stroke;
   }
+  /* the hour's light, over the painting and under the line-work */
+  .wash--warm {
+    fill: var(--grazing);
+    opacity: calc(var(--graze) * 0.27);
+  }
+  .wash--night {
+    fill: #0b101d;
+    opacity: calc(var(--night) * 0.7);
+  }
+  .water {
+    stroke: var(--water);
+    stroke-width: 1.25;
+    stroke-dasharray: 7 5;
+  }
+  .cap {
+    fill: var(--cap);
+  }
+  .surface {
+    stroke: rgba(40, 24, 14, 0.62);
+    stroke-width: 1;
+  }
+  .bore {
+    stroke: var(--rock-ink);
+    stroke-width: 3;
+    opacity: 0.55;
+  }
+  /* THE WATER IN THE BORE. Short dashes climbing from the water table to
+     the well head, one dash-and-gap every --pump seconds. --pump comes
+     from the header's windmill (see pumpCaprock() below): a quarter of
+     the time its wheel takes to turn once, so a stiff wind lifts water
+     briskly and a calm day barely moves it. To have a still footer,
+     delete the animation line. */
+  .lift {
+    stroke: var(--water-lift);
+    stroke-width: 1.5;
+    stroke-dasharray: 2 6;
+    animation: caprock-lift var(--pump, 6s) linear infinite;
+  }
+  @keyframes caprock-lift {
+    to {
+      stroke-dashoffset: -8;
+    }
+  }
+  .wellhead {
+    stroke: var(--rock-ink);
+    stroke-width: 3;
+    stroke-linecap: square;
+  }
+  .seep {
+    stroke: var(--water);
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    opacity: 0.85;
+  }
 
-  /* survey marks are HTML, not SVG text — the non-uniform viewBox
-     scaling would stretch real letterforms */
+  /* ── THE PLAYA ──
+     --playa is how full it is, 0 to 1, from recent rain (the header works
+     it out; readHeader() copies it onto the footer). The water is one
+     lens-shaped path, drawn full, and scaled down from its lowest point:
+     a little narrower and a lot shallower as it dries, to nothing. The
+     cracks fade in as the last of it goes, and the recharge shows once
+     there is water enough to sink: three dotted threads to the water
+     table, their dots drifting downward. */
+  .caprock {
+    --playa: 0;
+  }
+  .scarp .playa-water {
+    fill: var(--water);
+    fill-opacity: 0.95;
+    stroke: #3f6c84;
+    stroke-width: 0.8;
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transform: scale(calc(0.45 + 0.55 * var(--playa)), var(--playa));
+    transition: transform 1.2s ease;
+  }
+  .playa-cracks {
+    stroke: var(--rock-ink);
+    stroke-width: 1;
+    opacity: calc(0.6 - var(--playa) * 4);
+  }
+  .recharge {
+    stroke: #9fcbe0;
+    stroke-width: 1.1;
+    stroke-dasharray: 1.5 4;
+    opacity: calc((var(--playa) - 0.12) * 2.2);
+    animation: caprock-sink 5s linear infinite;
+  }
+  @keyframes caprock-sink {
+    to {
+      stroke-dashoffset: -5.5;
+    }
+  }
+
+  /* ── THE GRASS ──
+     Two strips standing on the level plain, west and east of the playa,
+     their feet on the surface line (26 of the drawing's 180 units down).
+     --lean is how far the wind pushes the blades over, as an angle, with
+     its sign giving the direction; the strip is skewed by it from its
+     foot, and sways between a little less and a little more than that
+     every --gust seconds. In a calm --lean is nothing and so is the sway.
+     Skewing a strip is the cheap way to lean every blade on it at once. */
+  .caprock {
+    --lean: 0deg;
+    --gust: 3.6s;
+  }
+  .grass {
+    position: absolute;
+    top: calc(26 / 180 * 100% - 10px);
+    height: 10px;
+    pointer-events: none;
+    transform-origin: 50% 100%;
+    transform: skewX(var(--lean));
+    animation: caprock-sway var(--gust) ease-in-out infinite alternate;
+  }
+  /* THE SEASON'S COAT. Each strip is two flat fields of colour, one for
+     the darker blades and one for the paler, and each field is cut to
+     the shape of its blades by a mask (--blades-dark and --blades-light,
+     set on the element). The colours are --grass-dark and --grass-light,
+     which readHeader() works out from the date and the recent rain; the
+     ones written here are winter's, for a browser without script. The
+     turf is a line of the paler colour along the plain's surface, so the
+     season shows at any size, not only in the blades. */
+  .caprock {
+    --grass-dark: #7a6740;
+    --grass-light: #c2a871;
+  }
+  .grass::before,
+  .grass::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    transition: background-color 1.2s ease;
+    -webkit-mask-repeat: repeat-x;
+    mask-repeat: repeat-x;
+    -webkit-mask-position: left bottom;
+    mask-position: left bottom;
+  }
+  .grass::before {
+    background-color: color-mix(in srgb, var(--grass-dark), #262b3a calc(var(--night) * 62%));
+    -webkit-mask-image: var(--blades-dark);
+    mask-image: var(--blades-dark);
+  }
+  .grass::after {
+    background-color: color-mix(in srgb, var(--grass-light), #3a4052 calc(var(--night) * 62%));
+    -webkit-mask-image: var(--blades-light);
+    mask-image: var(--blades-light);
+  }
+  .turf {
+    stroke: color-mix(in srgb, var(--grass-light), #3a4052 calc(var(--night) * 55%));
+    stroke-width: 2.5;
+    stroke-linecap: butt;
+    transition: stroke 1.2s ease;
+  }
+  .grass--west {
+    left: 0;
+    width: calc(166 / 1440 * 100%);
+  }
+  .grass--east {
+    left: calc(428 / 1440 * 100%);
+    width: calc(170 / 1440 * 100%);
+  }
+  @keyframes caprock-sway {
+    from {
+      transform: skewX(calc(var(--lean) * 0.72));
+    }
+    to {
+      transform: skewX(calc(var(--lean) * 1.16));
+    }
+  }
+
+  /* ── THE TUMBLEWEED ──
+     Out of sight unless the script says the wind is strong enough and
+     from the west (data-weed="on"). Then it travels the land surface from
+     off the left of the page to off the right: offset-path is that
+     surface, written onto the element by layWeedRoad() at the drawing's
+     real size, and the animation moves offset-distance along it. Three
+     boxes, one job each: .weed goes along the road, .weed-hop bounces,
+     .weed-ball turns. --roll is the time for one crossing; the rest of
+     the cycle it waits out of sight, so it comes by now and then, not in
+     a procession. */
+  .caprock {
+    --roll: 22s;
+  }
+  .weed {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 30px;
+    height: 30px;
+    offset-rotate: 0deg;
+    offset-anchor: 50% 96%;
+    offset-distance: 0%;
+    pointer-events: none;
+  }
+  /* only where the browser can move a box along a path; anywhere else
+     the weed would sit in the corner of the drawing and spin there */
+  @supports (offset-path: path('M0,0 L1,1')) {
+    .caprock[data-weed='on'] .weed {
+      display: block;
+      animation: caprock-roll calc(var(--roll) / 0.6) linear infinite;
+    }
+  }
+  @keyframes caprock-roll {
+    0% {
+      offset-distance: 0%;
+    }
+    60%,
+    100% {
+      offset-distance: 100%;
+    }
+  }
+  .weed-hop {
+    animation: caprock-hop 2.3s ease-in-out infinite;
+  }
+  @keyframes caprock-hop {
+    0%, 16%, 38%, 68%, 90%, 100% { transform: translateY(0); }
+    8% { transform: translateY(-6px); }
+    30% { transform: translateY(-2px); }
+    55% { transform: translateY(-9px); }
+    80% { transform: translateY(-3px); }
+  }
+  .weed-ball {
+    display: block;
+    width: 100%;
+    height: 100%;
+    animation: caprock-turn calc(var(--roll) / 14) linear infinite;
+  }
+  @keyframes caprock-turn {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  /* THE MARKS, lettered in the rock. Their positions are fractions of
+     the drawing's height (a level in the 180-unit box, over 180), so
+     they keep their place in the strata at every size. */
   .mark {
-    z-index: 2;
     position: absolute;
     font-size: 0.5625rem;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: color-mix(in srgb, var(--iron) 38%, transparent);
     white-space: nowrap;
     pointer-events: none;
     font-variant-numeric: tabular-nums;
+    transition: color 0.5s ease;
   }
   .mark--plateau {
-    color: var(--color-dockum);
     left: clamp(1.25rem, 4vw, 3.5rem);
-    top: 2%;
+    top: calc(34 / 180 * 100%);
+    color: var(--sand-ink);
   }
+  /* under the playa, to the right of the threads of recharge; which of
+     its two endings shows follows the playa (the script sets data-playa) */
+  .mark--playa {
+    left: calc(312 / 1440 * 100%);
+    top: calc(40 / 180 * 100%);
+    font-family: cormorant-garamond, serif;
+    font-style: italic;
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    color: var(--sand-ink);
+  }
+  .playa-wet,
+  .caprock[data-playa='wet'] .playa-dry {
+    display: none;
+  }
+  .caprock[data-playa='wet'] .playa-wet {
+    display: inline;
+  }
+  .mark--water {
+    left: 35%;
+    top: calc(74 / 180 * 100% - 1.5em);
+    font-family: cormorant-garamond, serif;
+    font-style: italic;
+    font-size: 0.8125rem;
+    letter-spacing: 0.04em;
+    text-transform: none;
+    color: var(--water-ink);
+  }
+  /* on the brick-red rock, which is the brightest ground any lettering
+     here has to cross: full-strength cream by day */
   .mark--basin {
-    color: var(--color-dockum);
     right: clamp(1.25rem, 4vw, 3.5rem);
-    bottom: 23%;
+    top: calc(155 / 180 * 100%);
+    color: color-mix(in srgb, #f4eede, #e3ddd0 calc(var(--night) * 100%));
   }
 
-  /* ── the section ────────────────────────────────────────── */
+  /* ── the section ──────────────────────────────────────────── */
+  /* The redbeds, darkening with depth. Three layers, from the back:
+
+       the gradient   on .section itself: the painting's own fall of
+                      colour, in the same pixels. It is all that shows
+                      until the picture loads, and it is what goes on
+                      below the picture if the section is ever taller
+       .deep          the painting, hung from the top of the section at
+                      its own height (600px) and stretched only
+                      sideways, so the bright beds and the seams of
+                      gypsum stay in the first 22 pixels, above the
+                      words, at every size
+       ::before       the hour's two washes
+
+     and the words (.inner) over all of it. None of it uses a blend mode. */
   .section {
     position: relative;
     margin-top: -1px;
+    overflow: hidden;
     background: linear-gradient(to bottom,
-    var(--color-dockum) 0%,
-    var(--color-redbed) 29%,
-    var(--color-caprock-accent) 44%,
-    var(--color-dockum) 70%,
-    var(--color-basement) 100%);
-}
-
-  /* bedding planes + grain — this is what reads as rock
-     rather than as a CSS gradient */
+      var(--redbed) 0,
+      var(--redbed-2) 55px,
+      var(--redbed-deep) 150px,
+      var(--permian) 252px,
+      var(--permian-deep) 600px);
+  }
+  .deep img {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 600px;
+  }
   .section::before {
     content: '';
     position: absolute;
     inset: 0;
-    background: repeating-linear-gradient(
-      to bottom,
-      rgba(0, 0, 0, 0.055) 0px,
-      rgba(0, 0, 0, 0.055) 1px,
-      transparent 1px,
-      transparent 7px,
-      rgba(255, 255, 255, 0.028) 7px,
-      rgba(255, 255, 255, 0.028) 8px,
-      transparent 8px,
-      transparent 23px
-    );
-    mix-blend-mode: multiply;
-    opacity: 0.5;
+    z-index: 1;
     pointer-events: none;
-  }
-  .section::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)' opacity='.42'/%3E%3C/svg%3E");
-    opacity: 0.13;
-    mix-blend-mode: overlay;
-    pointer-events: none;
-  }
-
-  /* ── the one interaction: a raking field light ──────────── */
-  .rake {
-    z-index: 1; /
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.55s ease;
-    background: radial-gradient(
-      46rem 28rem at var(--mx, 50%) var(--my, 50%),
-      rgba(255, 241, 214, 0.15),
-      rgba(255, 241, 214, 0.045) 12%,
-      transparent 70%
-    );
-  }
-  .caprock:hover .rake {
-    opacity: 1;
-  }
-
-  /* ── strata: dividers run full bleed, like true bedding ─── */
-  .stratum {
-    position: relative;
-    z-index: 2;
-    border-bottom: 1px solid rgba(232, 225, 209, 0.13);
-  }
-  .stratum:last-of-type {
-    border-bottom: 0;
+    background: linear-gradient(var(--wash-night), var(--wash-night)), linear-gradient(var(--wash-warm), var(--wash-warm));
   }
   .inner {
+    position: relative;
+    z-index: 2;
     max-width: 78rem;
     margin: 0 auto;
-    padding: 0 clamp(1.25rem, 4vw, 3.5rem);
+    padding: clamp(2.25rem, 4vw, 3.25rem) clamp(1.25rem, 4vw, 3.5rem) clamp(3rem, 5vw, 4rem);
     display: grid;
-    grid-template-columns: 5.5rem 1fr;
-    gap: clamp(1rem, 4vw, 3rem);
-  }
-  .s-lede .inner {
-    padding-top: clamp(2.75rem, 5vw, 4.25rem);
-    padding-bottom: clamp(2.5rem, 4.5vw, 3.75rem);
-  }
-  .s-links .inner {
-    padding-top: clamp(2.25rem, 3.6vw, 3rem);
-    padding-bottom: clamp(2.25rem, 3.6vw, 3rem);
+    grid-template-columns: 5.5rem minmax(0, 1fr) auto;
+    gap: clamp(1.25rem, 4vw, 3.5rem);
   }
 
-  /* left rail: bare elevation, ticked to the bedding plane */
+  /* the rail: a scale down the left, ticked at its head and its foot */
   .rail {
-    position: relative;
-    padding-top: 0.55rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     font-size: 0.75rem;
     letter-spacing: 0.08em;
-    color: rgba(232, 225, 209, 0.55);
+    color: var(--ink-faint);
     font-variant-numeric: tabular-nums;
+    border-left: 1px solid var(--rule);
   }
-  .rail::before {
+  .rail span {
+    position: relative;
+    padding-left: 1.75rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+  .rail span::before {
     content: '';
     position: absolute;
     left: 0;
-    top: 0;
-    width: 1.375rem;
+    top: 50%;
+    width: 1.25rem;
     height: 1px;
-    background: rgba(232, 225, 209, 0.4);
+    background: rgba(232, 225, 209, 0.45);
   }
 
-  /* ── lede ───────────────────────────────────────────────── */
   .name {
+    display: inline-block;
     font-family: cormorant-garamond, serif;
-    font-weight: 400;
-    font-size: clamp(2.5rem, 7vw, 5.75rem);
-    line-height: 0.92;
-    letter-spacing: 0em;
-    margin: 0;
-    color: var(--color-caliche);
+    font-weight: 500;
+    font-size: clamp(1.75rem, 2.6vw, 2.3rem);
+    line-height: 1;
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .name:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 4px;
+    border-radius: 1px;
   }
   .roles {
     font-size: 0.6875rem;
     letter-spacing: 0.2em;
     text-transform: uppercase;
-    color: rgba(232, 225, 209, 0.55);
-    margin: 1.5rem 0 0;
+    color: var(--ink-faint);
+    margin: 1rem 0 0;
   }
   .tagline {
     font-family: cormorant-garamond, serif;
     font-size: clamp(1.0625rem, 1.5vw, 1.1875rem);
-    line-height: 1.55;
-    color: rgba(232, 225, 209, 0.82);
-    max-width: 39rem;
-    margin: 1.15rem 0 0;
+    line-height: 1.5;
+    color: var(--ink-soft);
+    max-width: 30rem;
+    margin: 0.85rem 0 0;
   }
 
-  /* ── links ──────────────────────────────────────────────── */
   .cols {
     display: flex;
     flex-wrap: wrap;
-    gap: clamp(2rem, 7vw, 6rem);
+    gap: clamp(2rem, 5vw, 4.5rem);
   }
   .label {
     font-size: 0.625rem;
     font-weight: 400;
     letter-spacing: 0.19em;
     text-transform: uppercase;
-    color: var(--color-caliche);
-    margin: 0 0 1rem;
+    color: var(--ink-faint);
+    margin: 0 0 0.9rem;
   }
   .col ul {
     list-style: none;
     margin: 0;
     padding: 0;
   }
+  /* the index runs in two columns of three, so the footer stays low */
+  .col--index ul {
+    columns: 2;
+    column-gap: clamp(2rem, 4vw, 3.5rem);
+  }
   .col li {
     margin-bottom: 0.6rem;
-  }
-  .col li:last-child {
-    margin-bottom: 0;
+    break-inside: avoid;
   }
   .col a {
     font-family: cormorant-garamond, serif;
-    color: var(--color-caliche);
+    color: var(--ink);
     text-decoration: none;
-    font-size: 0.9375rem;
+    font-size: 1rem;
     letter-spacing: 0.015em;
     position: relative;
     padding-bottom: 2px;
+    white-space: nowrap;
   }
   .col a::after {
     content: '';
@@ -405,82 +1099,95 @@ const talusPath = `M632,86 ${APRON} L1440,170 L1216,168 C1112,167 1024,163 966,1
     transform: scaleX(1);
   }
   .col a:focus-visible {
-    outline: 2px solid var(--color-caliche);
+    outline: 2px solid var(--ink);
     outline-offset: 4px;
     border-radius: 1px;
   }
 
-  /* ── basement ───────────────────────────────────────────── */
+  /* ── basement ─────────────────────────────────────────────── */
   .basement {
     position: relative;
-    z-index: 2;
-    background: var(--color-basement);
+    background: color-mix(in srgb,
+      color-mix(in srgb, var(--basement), var(--grazing) calc(var(--graze) * 8%)),
+      #0b101d calc(var(--night) * 70%));
     border-top: 1px solid rgba(232, 225, 209, 0.1);
   }
   .basement .wrap {
     max-width: 78rem;
     margin: 0 auto;
-    padding: 1.15rem clamp(1.25rem, 4vw, 3.5rem);
+    padding: 1rem clamp(1.25rem, 4vw, 3.5rem);
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.6rem 1.75rem;
+    gap: 0.5rem 1.75rem;
     font-size: 0.6875rem;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(232, 225, 209, 0.38);
+    color: rgba(232, 225, 209, 0.62);
     font-variant-numeric: tabular-nums;
   }
-  .spacer {
-    margin-left: auto;
-  }
-  .live {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.55rem;
-  }
-  .dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--sage);
-    animation: caprock-pulse 2.8s ease-out infinite;
-  }
-  @keyframes caprock-pulse {
-    0% {
-      box-shadow: 0 0 0 0 rgba(138, 154, 123, 0.5);
-    }
-    70% {
-      box-shadow: 0 0 0 7px rgba(138, 154, 123, 0);
-    }
-    100% {
-      box-shadow: 0 0 0 0 rgba(138, 154, 123, 0);
-    }
-  }
 
-  /* ── responsive ─────────────────────────────────────────── */
+  /* ── responsive ───────────────────────────────────────────── */
+  /* Below this width the playa's label would run into the plateau's,
+     which is set from the left margin while the playa keeps its place
+     in the drawing. The playa itself still shows whether it is wet. */
+  @media (max-width: 1140px) {
+    .mark--playa {
+      display: none;
+    }
+    /* the slope under the rim leans back toward the well, so on a
+       narrower page there is less sand between the two: the water
+       table's name moves up against the well and is set a size smaller */
+    .mark--water {
+      left: calc(468 / 1440 * 100% + 7px);
+      font-size: 0.75rem;
+    }
+  }
+  @media (max-width: 900px) {
+    .inner {
+      grid-template-columns: 5.5rem minmax(0, 1fr);
+    }
+    .cols {
+      grid-column: 2;
+    }
+  }
   @media (max-width: 680px) {
+    /* the drawing is too low here to carry lettering */
     .mark {
       display: none;
     }
+    .weed {
+      width: 22px;
+      height: 22px;
+    }
     .inner {
       grid-template-columns: 1fr;
-      gap: 0.85rem;
-    }
-    .rail {
-      padding-top: 0.75rem;
+      gap: 1.75rem;
     }
     .cols {
+      grid-column: auto;
       gap: 2rem 3rem;
+    }
+    .rail {
+      display: none;
     }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .rake {
+    .lift,
+    .recharge,
+    .grass {
+      animation: none;
+    }
+    .caprock[data-weed='on'] .weed {
       display: none;
     }
-    .dot {
-      animation: none;
+    .scarp .playa-water,
+    .grass::before,
+    .grass::after,
+    .turf,
+    .mark {
+      transition: none;
     }
     .col a::after {
       transition: none;
@@ -489,23 +1196,248 @@ const talusPath = `M632,86 ${APRON} L1440,170 L1216,168 C1112,167 1024,163 966,1
 </style>
 
 <script>
+  const footerNow = () => document.querySelector<HTMLElement>('[data-caprock]');
+
+  /* The page's real width, for the full-bleed break-out (see .caprock).
+     Written onto whichever footer is in the page now: on first load, after
+     every client-side navigation (the footer element is a new one each
+     time), and whenever the root element changes size, which covers both
+     a window resize and a scrollbar appearing or going. */
+  function fitCaprock() {
+    footerNow()?.style.setProperty('--page-w', `${document.documentElement.clientWidth}px`);
+  }
+
+  /* THE WELL KEEPS TIME WITH THE WINDMILL. The header turns its windmill
+     by Lubbock's wind and records how long one turn of the wheel takes as
+     --windmill-speed on #windmill (13s in a gale, about 26s in a calm).
+     The water in the footer's bore climbs one step in a quarter of that.
+     With no header on the page, or before the wind has been read, the
+     stylesheet's 6s stands. */
+  function pumpCaprock() {
+    const turn = parseFloat(document.getElementById('windmill')?.style.getPropertyValue('--windmill-speed') ?? '');
+    const footer = footerNow();
+    if (!footer) return;
+    if (Number.isFinite(turn) && turn > 0) footer.style.setProperty('--pump', `${(turn / 4).toFixed(2)}s`);
+    else footer.style.removeProperty('--pump');
+  }
+
+  /* THE WEATHER. The header reads Lubbock's wind and recent rain and
+     publishes them on #horizon-header:
+
+       --wind-mph        2 to 45
+       --wind-from-deg   the bearing the wind blows FROM
+       --playa           how full the playa is, 0 to 1
+
+     This turns them into what the drawing needs. The section looks
+     north, so east is to the right: a wind from the west leans the grass
+     to the right. Only the east-west part of the wind shows in a section,
+     so a due north or south wind stirs the grass without leaning it far.
+
+     The tumbleweed needs a real blow, 18 mph or more, with most of it
+     from the west, since it has to cross the plain and go over the rim.
+     Nothing is done here when nothing has changed.
+
+     The sky is read first, from the same element at the same moments. */
+  /* THE SEASON'S COAT, for the grass and the turf.
+
+     The Llano's grasses are warm-season ones (blue grama, buffalograss):
+     dormant and straw-coloured from mid November to mid March, greening
+     through spring, at their best in early summer, tiring by late summer
+     and curing through the autumn. `green` is that calendar as a number,
+     0 for dormant to about 0.7 at the peak. Rain pushes it up and a dry
+     spell lets it sag, but only while the grass is growing: no amount of
+     December rain turns it green.
+
+     The result picks a colour along straw -> gold -> green, for the
+     darker blades and the paler ones separately. */
+  const COATS = {
+    dark: [[122, 103, 64], [106, 100, 40], [60, 95, 42]],
+    light: [[194, 168, 113], [179, 161, 74], [127, 163, 76]],
+  };
+  function coat(stops: number[][], green: number): string {
+    const t = Math.max(0, Math.min(1, green)) * 2;
+    const [a, b] = t < 1 ? [stops[0], stops[1]] : [stops[1], stops[2]];
+    const f = t < 1 ? t : t - 1;
+    return `rgb(${a.map((v, i) => Math.round(v + (b[i] - v) * f)).join(' ')})`;
+  }
+  /* Dev only: ?debugDate=2026-05-20 shows the footer as on that day. */
+  function footerToday(): Date {
+    if (import.meta.env.DEV) {
+      const raw = new URLSearchParams(location.search).get('debugDate');
+      const d = raw ? new Date(`${raw}T12:00:00`) : null;
+      if (d && !Number.isNaN(d.getTime())) return d;
+    }
+    return new Date();
+  }
+  function greenness(playa: number): number {
+    const now = footerToday();
+    const day = (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 86400000;
+    // day of the year -> how green the calendar alone would make it
+    const calendar: [number, number][] = [
+      [0, 0], [74, 0], [135, 0.6], [196, 0.7], [258, 0.45], [319, 0], [366, 0],
+    ];
+    let base = 0;
+    for (let i = 1; i < calendar.length; i++) {
+      const [d0, g0] = calendar[i - 1];
+      const [d1, g1] = calendar[i];
+      if (day <= d1) {
+        base = g0 + ((g1 - g0) * (day - d0)) / (d1 - d0);
+        break;
+      }
+    }
+    if (base <= 0) return 0;
+    // growing: recent rain lifts it by up to 0.35, none at all costs 0.15
+    return Math.max(0.12, Math.min(1, base + playa * 0.5 - 0.15));
+  }
+
+  /* THE HEADER'S SKY COLOURS. The header keeps them as --sky-top and
+     --sky-horizon in its own stylesheet, where each is a chain of
+     colour-mixing that this footer cannot inherit and should not copy.
+     So they are read off the header as finished colours: a probe, a
+     zero-sized span inside the header whose background is the variable,
+     is asked what colour it turned out to be. (The header reads its own
+     --sky-top the same way, for the browser's address bar.) An answer of
+     "transparent" means the header has not got that far yet. */
+  const skyProbes = new Map<string, HTMLElement>();
+  function skyColour(header: HTMLElement, token: string): string | null {
+    let probe = skyProbes.get(token);
+    if (!probe || !probe.isConnected) {
+      probe = document.createElement('span');
+      probe.setAttribute('aria-hidden', 'true');
+      probe.style.cssText = `position:absolute;width:0;height:0;overflow:hidden;pointer-events:none;background-color:var(${token})`;
+      header.appendChild(probe);
+      skyProbes.set(token, probe);
+    }
+    const colour = getComputedStyle(probe).backgroundColor;
+    return !colour || colour === 'transparent' || colour === 'rgba(0, 0, 0, 0)' ? null : colour;
+  }
+
+  /* THE SKY, copied from the header onto the footer: its two colours, how
+     dark it is, how low the sun is and what colour that makes the light,
+     and which side the glow is on. The section looks north, so the sun in
+     the west (azimuth 270) is at the left and in the east at the right. */
+  let skyKey = '';
+  function readSky(footer: HTMLElement, header: HTMLElement | null) {
+    if (!header) return;
+    const get = (name: string) => header.style.getPropertyValue(name).trim();
+    const top = skyColour(header, '--sky-top');
+    const low = skyColour(header, '--sky-horizon');
+    const night = parseFloat(get('--night'));
+    const graze = parseFloat(get('--grazing-light'));
+    const azimuth = parseFloat(get('--sun-azimuth-deg'));
+    const glowX = Number.isFinite(azimuth) ? 50 + 40 * Math.sin((azimuth * Math.PI) / 180) : 12;
+    const key = [top, low, night, graze, get('--grazing-color'), glowX.toFixed(0)].join('|');
+    if (key === skyKey && footer.style.getPropertyValue('--night')) return;
+    skyKey = key;
+    if (top) footer.style.setProperty('--sky-top', top);
+    if (low) footer.style.setProperty('--sky-horizon', low);
+    if (Number.isFinite(night)) footer.style.setProperty('--night', night.toFixed(3));
+    if (Number.isFinite(graze)) footer.style.setProperty('--graze', graze.toFixed(3));
+    if (get('--grazing-color')) footer.style.setProperty('--grazing', get('--grazing-color'));
+    footer.style.setProperty('--glow-x', `${glowX.toFixed(0)}%`);
+    // the skyline under the glow: the plain (26 of 180 down) when the sun
+    // is in the west, the Rolling Plains (about 145) when it is in the east
+    footer.style.setProperty('--glow-y', (glowX < 50 ? 26 / 180 : 145 / 180).toFixed(3));
+  }
+
+  let weatherKey = '';
+  function readHeader() {
+    const footer = footerNow();
+    if (!footer) return;
+    const header = document.getElementById('horizon-header');
+    readSky(footer, header);
+    const num = (name: string) => parseFloat(header?.style.getPropertyValue(name) ?? '');
+    const mph = Number.isFinite(num('--wind-mph')) ? num('--wind-mph') : 0;
+    const from = Number.isFinite(num('--wind-from-deg')) ? num('--wind-from-deg') : 270;
+    const playa = Number.isFinite(num('--playa')) ? Math.max(0, Math.min(1, num('--playa'))) : 0;
+
+    // +1 blowing due east, -1 due west
+    const eastward = -Math.sin((from * Math.PI) / 180);
+    const lean = Math.min(30, mph * 1.1) * eastward;
+    const gust = Math.max(1.3, 4.2 - mph * 0.07);
+    const weed = mph >= 18 && eastward > 0.5;
+    const roll = Math.max(11, 32 - mph * 0.45);
+
+    const green = greenness(playa);
+    const key = [lean.toFixed(1), gust.toFixed(2), weed, roll.toFixed(1), playa.toFixed(2), green.toFixed(2)].join('|');
+    if (key === weatherKey && footer.dataset.playa) return;
+    weatherKey = key;
+    // skewX leans to the left for a positive angle, hence the minus
+    footer.style.setProperty('--lean', `${(-lean).toFixed(1)}deg`);
+    footer.style.setProperty('--gust', `${gust.toFixed(2)}s`);
+    footer.style.setProperty('--roll', `${roll.toFixed(1)}s`);
+    footer.style.setProperty('--playa', playa.toFixed(2));
+    footer.style.setProperty('--grass-dark', coat(COATS.dark, green));
+    footer.style.setProperty('--grass-light', coat(COATS.light, green));
+    footer.dataset.playa = playa >= 0.15 ? 'wet' : 'dry';
+    footer.dataset.weed = weed ? 'on' : 'off';
+  }
+
+  /* THE TUMBLEWEED'S ROAD, at the drawing's real size. The road is kept
+     on the element in the drawing's own 1440 x 180 units; offset-path
+     wants pixels, so every pair of numbers in it is scaled to the box as
+     it is now. Redone whenever the box changes size. */
+  function layWeedRoad() {
+    const footer = footerNow();
+    const weed = footer?.querySelector<HTMLElement>('.weed');
+    const scarp = footer?.querySelector<SVGElement>('.scarp');
+    if (!weed || !scarp) return;
+    const box = scarp.getBoundingClientRect();
+    if (!box.width) return;
+    const sx = box.width / 1440;
+    const sy = box.height / 180;
+    const road = (weed.dataset.road ?? '').replace(
+      /(-?\d+(?:\.\d+)?),(-?\d+(?:\.\d+)?)/g,
+      (_m, x: string, y: string) => `${(parseFloat(x) * sx).toFixed(1)},${(parseFloat(y) * sy).toFixed(1)}`
+    );
+    weed.style.setProperty('offset-path', `path('${road}')`);
+  }
+
+  /* IF A PICTURE OF THE ROCK IS MISSING (not yet copied to
+     public/images/footer/, say, or blocked), take its empty frame out
+     of the way so that the flat tones behind it show cleanly, and not a
+     broken-image box. A picture that is merely still loading is left
+     alone. */
+  function dropMissingRock() {
+    footerNow()
+      ?.querySelectorAll<HTMLImageElement>('.rock img, .deep img')
+      .forEach((img) => {
+        const drop = () => {
+          img.style.visibility = 'hidden';
+        };
+        if (img.complete && img.naturalWidth === 0 && img.currentSrc) drop();
+        else img.addEventListener('error', drop, { once: true });
+      });
+  }
+
   function initCaprock() {
-    const footer = document.querySelector<HTMLElement>('[data-caprock]');
-    if (!footer || footer.dataset.caprockReady === 'true') return;
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    dropMissingRock();
+    fitCaprock();
+    pumpCaprock();
+    readHeader();
+    layWeedRoad();
+  }
 
-    const rake = footer.querySelector<HTMLElement>('.rake');
-    if (!rake) return;
-
-    footer.dataset.caprockReady = 'true';
-    footer.addEventListener('pointermove', (event: PointerEvent) => {
-      const rect = footer.getBoundingClientRect();
-      rake.style.setProperty('--mx', `${((event.clientX - rect.left) / rect.width) * 100}%`);
-      rake.style.setProperty('--my', `${((event.clientY - rect.top) / rect.height) * 100}%`);
-    });
+  if ('ResizeObserver' in window) {
+    new ResizeObserver(() => {
+      fitCaprock();
+      layWeedRoad();
+    }).observe(document.documentElement);
+  }
+  // The header writes the weather when its reading arrives and again
+  // every minute with the sky; either way the footer follows.
+  const horizon = document.getElementById('horizon-header');
+  if (horizon) {
+    new MutationObserver(readHeader).observe(horizon, { attributes: true, attributeFilter: ['style'] });
+  }
+  // The header writes the windmill's speed when the wind reading arrives,
+  // which is after this script first runs, so watch for it.
+  const windmill = document.getElementById('windmill');
+  if (windmill) {
+    new MutationObserver(pumpCaprock).observe(windmill, { attributes: true, attributeFilter: ['style'] });
   }
 
   initCaprock();
-  // re-run after client-side navigation if you use <ViewTransitions />
+  // re-run after client-side navigation: the footer is a new element then
   document.addEventListener('astro:page-load', initCaprock);
 </script>
