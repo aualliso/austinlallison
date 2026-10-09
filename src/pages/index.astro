@@ -365,15 +365,16 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
             </div>
             <div class="leaf-body">
             <div class="leaf-inner leaf-inner--exlibris">
-              <svg class="exlibris-mark" viewBox="0 0 66 32" aria-hidden="true">
-                <g fill="none" stroke="currentColor" stroke-width="2.2"
-                   stroke-linecap="round" stroke-linejoin="round">
-                  <path d="M4 5 H28 L12 28" />
-                  <path d="M34 4 L62 16 L34 28" />
-                  <path d="M44.5 10 V22" />
-                </g>
-              </svg>
-              <span class="exlibris-label ruled">Ex Libris</span>
+              <!-- THE STAMP: an oval ownership stamp in oxblood ink, with
+                   "Ex Libris" round the top, the name round the foot and
+                   the Seven Lazy A in the middle. It is a picture, not
+                   live artwork: the uneven ink was made once with an SVG
+                   filter and saved, so the page carries no filter for
+                   it. Because the stamp says "Ex Libris", the small label
+                   that used to sit above the name is gone. -->
+              <img class="exlibris-mark" src="/images/home/exlibris-stamp.webp"
+                   width="560" height="375" decoding="async" draggable="false"
+                   alt="Ex Libris stamp of Austin Allison, with the Seven Lazy A brand" />
               <h1 class="exlibris-name ruled">Austin Allison</h1>
               <p class="body ruled">
                 I am a cataloging and metadata librarian, a historian, and a photographer of the
@@ -2462,14 +2463,32 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     gap: 0.6rem;
   }
   .exlibris-mark {
-    /* the Seven Lazy A, viewBox 66 x 32. Sized by width; the height is
-       spelled out (rather than auto) so the grid can count it. */
-    --mark-w: clamp(4.5rem, 11vw, 6.5rem);
-    width: var(--mark-w);
-    height: calc(var(--mark-w) * 32 / 66);
+    /* the stamp, 212 x 142. Its height is a whole number of ruled
+       lines (--mark-rows) less the half rem of space under it, so stamp
+       plus space is exactly that many lines and the name below stays
+       on the ruling; the width follows from the shape. Change the size
+       by changing the number of lines.
+
+       It is struck a little crooked, as stamps are. The turn does not
+       move anything else: a transform takes up no room. */
+    --mark-rows: 6;
+    height: calc(var(--mark-rows) * var(--rule-pitch, 1.5rem) - 0.5rem);
+    width: auto;
+    max-width: none;
+    aspect-ratio: 212 / 142;
     flex-shrink: 0;
-    color: var(--color-caprock, #B85A38);
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.5rem;
+    transform: rotate(-4.5deg);
+    opacity: 0.92;
+    user-select: none;
+  }
+  /* fewer lines where the leaf is shorter, so the text below keeps
+     clear of the catchwords at the foot of the page */
+  @media (max-width: 999px) {
+    .exlibris-mark { --mark-rows: 5; }
+  }
+  @media (max-width: 680px) {
+    .exlibris-mark { --mark-rows: 4; }
   }
   .exlibris-label {
     font-family: theme('fontFamily.mono', ui-monospace, Menlo, monospace);
@@ -2651,9 +2670,8 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
   .leaf--grid .leaf-inner--exlibris {
     gap: 0;
   }
-  .leaf--grid .exlibris-mark {
-    margin-bottom: calc(2 * var(--rule-pitch) - var(--mark-w) * 32 / 66);
-  }
+  /* (the stamp needs nothing here: its own height and margin already
+     add up to a whole number of lines; see .exlibris-mark) */
   .leaf--grid .exlibris-name {
     --lh: calc(2 * var(--rule-pitch));
     margin: 0 0 var(--rule-pitch);
