@@ -538,15 +538,15 @@ const runPath =
     {JUNIPERS.map((t) => (
       <svg class:list={treeClass('juniper', t)} viewBox="0 0 14 11" style={stand(t.x, t.w, 11 / 14)} aria-hidden="true">
         <path class="trunk" d="M6.4,11 L6.6,8.6 L7.6,8.6 L7.8,11 Z"></path>
-        <path class="leaf-dark" d="M2,9.6 C0.6,8.6 0.8,6.4 2.4,5.8 C2.2,3.8 4,2.4 5.8,3 C6.6,1.4 9,1.2 10,2.8 C11.8,2.6 13,4.4 12.2,6 C13.6,6.8 13.4,9 12,9.6 Z"></path>
-        <path class="leaf-light" d="M3,6.4 C3,4.8 4.2,3.8 5.6,4 C6.2,3 7.6,2.6 8.6,3.2 C7.4,3.6 6.6,4.4 6.4,5.4 C5.2,5.2 3.8,5.6 3,6.4 Z M2.2,8.8 C1.8,8 2.2,7.2 3,7 C3.6,7.6 4.4,8 5.4,8 C4.4,8.6 3.2,8.9 2.2,8.8 Z"></path>
+        <path class="foliage-dark" d="M2,9.6 C0.6,8.6 0.8,6.4 2.4,5.8 C2.2,3.8 4,2.4 5.8,3 C6.6,1.4 9,1.2 10,2.8 C11.8,2.6 13,4.4 12.2,6 C13.6,6.8 13.4,9 12,9.6 Z"></path>
+        <path class="foliage-light" d="M3,6.4 C3,4.8 4.2,3.8 5.6,4 C6.2,3 7.6,2.6 8.6,3.2 C7.4,3.6 6.6,4.4 6.4,5.4 C5.2,5.2 3.8,5.6 3,6.4 Z M2.2,8.8 C1.8,8 2.2,7.2 3,7 C3.6,7.6 4.4,8 5.4,8 C4.4,8.6 3.2,8.9 2.2,8.8 Z"></path>
       </svg>
     ))}
     {MESQUITES.map((t) => (
       <svg class:list={treeClass('mesquite', t)} viewBox="0 0 24 17" style={stand(t.x, t.w, 17 / 24)} aria-hidden="true">
         <g transform={t.flip ? 'translate(24,0) scale(-1,1)' : undefined}>
           <path class="wood" d="M11.6,17 C11.2,14 9.4,12.4 7,10.2 M12.2,17 C12.8,13.6 15,12 17.4,9.6 M11.9,17 C11.9,14 12.3,12 12.8,9 M9.2,12.2 C8,11.6 6.4,11.8 5,12.4 M15.2,11.8 C16.6,11 18.4,11 19.8,11.4 M12.4,11.4 C11.4,9.8 10.2,8.6 9,7.6 M7,10.2 C6,9 4.6,8.2 3.4,8 M17.4,9.6 C18.6,8.4 20,7.8 21.2,7.8 M12.8,9 C13.4,7.4 14.6,6.2 15.8,5.6"></path>
-          <g class="leaf">
+          <g class="foliage">
             <ellipse cx="6.2" cy="8.4" rx="5.6" ry="2.9"></ellipse>
             <ellipse cx="12.4" cy="5.6" rx="6.2" ry="3.3"></ellipse>
             <ellipse cx="18.2" cy="8" rx="5.2" ry="2.8"></ellipse>
@@ -563,7 +563,7 @@ const runPath =
         <g transform={t.flip ? 'translate(22,0) scale(-1,1)' : undefined}>
           <path class="bole" d="M9.9,28 C10.1,23 9.6,19.5 10.2,15 L11.8,15 C12.2,19.5 12,23 12.4,28 Z"></path>
           <path class="wood" d="M10.6,17 C9,15 7.4,13.6 5.6,12.6 M11.6,16.6 C13,14.6 14.8,13.2 16.6,12.4 M11,15.4 C11,13 11.2,11 11.4,8.6 M7.6,14 C6.6,12 6.2,10 6.4,8 M14.6,13.6 C15.4,11.6 15.6,9.6 15.2,7.6 M11.3,10.4 C10.2,8.6 9,7.2 7.8,6.2 M11.4,9.6 C12.4,7.8 13.4,6.6 14.6,5.6"></path>
-          <g class="leaf">
+          <g class="foliage">
             <circle cx="11" cy="8" r="6.8"></circle>
             <circle cx="5.6" cy="11.6" r="4.4"></circle>
             <circle cx="16.4" cy="11.4" r="4.6"></circle>
@@ -571,7 +571,7 @@ const runPath =
             <circle cx="14.6" cy="5.2" r="4.2"></circle>
             <circle cx="11" cy="13.4" r="4"></circle>
           </g>
-          <g class="leaf-light">
+          <g class="foliage-light">
             <circle cx="8" cy="6" r="2.6"></circle>
             <circle cx="5" cy="10.6" r="2"></circle>
             <circle cx="12.6" cy="4.6" r="2.4"></circle>
@@ -1162,7 +1162,15 @@ const runPath =
      for a browser without script. The junipers do not change.
 
      Everything darkens with --night as the grass does, and the stone of
-     the house takes the low sun's colour as the fallen blocks do. */
+     the house takes the low sun's colour as the fallen blocks do.
+
+     THE LEAVES ARE CLASSED "foliage", NEVER "leaf". The home page's
+     ledger finds its pages by asking the whole document for .leaf, so
+     a tree here classed that way is counted as a page of the book: the
+     book then cannot work out how tall its pages are, and on a phone it
+     collapses to nothing. That happened. Astro keeps one component's
+     styles off another's elements, but it cannot keep a script's
+     document-wide search to its own component. */
   .caprock {
     --mesquite: #74884a;
     --mesquite-leaf: 1;
@@ -1191,21 +1199,21 @@ const runPath =
     stroke: color-mix(in srgb, #5d4e3d, #0b101d calc(var(--night) * 60%));
     stroke-width: 0.8;
   }
-  .flora--juniper .leaf-dark {
+  .flora--juniper .foliage-dark {
     fill: color-mix(in srgb, #3c4832, #121722 calc(var(--night) * 66%));
   }
-  .flora--juniper .leaf-light {
+  .flora--juniper .foliage-light {
     fill: color-mix(in srgb, #5c6c46, #1a202c calc(var(--night) * 66%));
   }
-  .flora--mesquite .leaf {
+  .flora--mesquite .foliage {
     fill: color-mix(in srgb, var(--mesquite), #262b3a calc(var(--night) * 62%));
     opacity: calc(var(--mesquite-leaf) * 0.8);
   }
-  .flora--cottonwood .leaf {
+  .flora--cottonwood .foliage {
     fill: color-mix(in srgb, var(--cottonwood), #262b3a calc(var(--night) * 62%));
     opacity: var(--cottonwood-leaf);
   }
-  .flora--cottonwood .leaf-light {
+  .flora--cottonwood .foliage-light {
     fill: color-mix(in srgb, color-mix(in srgb, var(--cottonwood), #fff1b8 34%), #3a4052 calc(var(--night) * 62%));
     opacity: calc(var(--cottonwood-leaf) * 0.9);
   }

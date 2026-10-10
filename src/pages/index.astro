@@ -3547,7 +3547,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     const register = document.getElementById('register');
     const leavesWrap = document.getElementById('leaves');
     const pages = document.getElementById('pages');
-    const leafEls = [...document.querySelectorAll<HTMLElement>('.leaf')];
+    const leafEls = [...document.querySelectorAll<HTMLElement>('#pages .leaf')];
     const tabs = [...document.querySelectorAll<HTMLButtonElement>('.reg-tab')];
     const tablist = document.getElementById('reg-tablist');
     const prevBtn = document.getElementById('reg-prev') as HTMLButtonElement | null;
