@@ -86,8 +86,10 @@
 //     navigations, so listeners added there on each visit used to pile up.
 
 import RootLayout from '../../../layouts/RootLayout.astro';
+import FamilyBar from '../../../components/FamilyBar.astro';
 import {
   ALL_ITEMS,
+  FAMILY_SIGN_IN,
   collectionBySlug,
   itemBySlug,
   itemsOf,
@@ -100,7 +102,7 @@ import {
 } from '../../../data/collections/index';
 import { naturalName, naturalNameWithDates, RIGHTS } from '../../../data/collections/types';
 import type { Region } from '../../../data/collections/types';
-import { plate } from '../../../data/collections/images';
+import { plate, servedId } from '../../../data/collections/images';
 import iiifImages from '../../../data/collections/iiif-images.json';
 import { mountTokens, mountStyle } from '../../../data/collections/mount';
 
@@ -120,6 +122,15 @@ const EM = '\u2014';
 const site = Astro.site ?? Astro.url;
 const abs = (path: string) => new URL(path, site).href;
 const permalink = abs(item.href);
+// PRIVATE ITEMS AND PAGES. This page is only ever built for a private item
+// when the site is built for family (the public site has no such page), so
+// `item.private` is all it needs to know: it says so under the title, and
+// offers no IIIF manifest, because a manifest is for viewers on other sites
+// and none of them can sign in. A private PAGE of an otherwise public album
+// is the "withheld" card on the public site and is named here when signed in.
+const privatePages = item.faces.filter((f) => f.private);
+const PRIVATE_MARK =
+  'font-mono text-[0.65rem] uppercase tracking-[0.12em] border border-iron/50 text-iron px-1.5 py-0.5 whitespace-nowrap';
 const manifestUrl = `/iiif/${item.collection}/${item.slug}/manifest.json`;
 const miradorUrl = `https://projectmirador.org/embed/?iiif-content=${encodeURIComponent(abs(manifestUrl))}`;
 
@@ -133,8 +144,11 @@ const miradorUrl = `https://projectmirador.org/embed/?iiif-content=${encodeURICo
 type DownloadFile = { file: string; width: number; height: number; bytes: number };
 type IiifEntry = { id: string; download?: { full: DownloadFile; share: DownloadFile | null } };
 const bare = (url: string) => url.replace(/\/+$/, '');
+// servedId(): a private scan's files are served from this site, not the
+// image host, so its address here is not the one in the manifest. Asking
+// images.ts for the address keeps the two in step.
 const downloadsById = new Map(
-  Object.values(iiifImages as unknown as Record<string, IiifEntry>).map((e) => [bare(e.id), e.download] as const)
+  Object.values(iiifImages as unknown as Record<string, IiifEntry>).map((e) => [bare(servedId(e.id)), e.download] as const)
 );
 // `download: false` on an item withholds the links for every view of it.
 const allowDownload = (item as unknown as { download?: boolean }).download !== false;
@@ -556,7 +570,8 @@ const pageData = json({
 // and some preview services still handle WebP unreliably.
 const shareImage = faces[0].img.view.replace(/default\.webp$/, 'default.jpg');
 // The IIIF image server, to connect to before the plate is reached.
-const iiifOrigin = faces[0].img.iiif ? new URL(faces[0].img.iiif).origin : null;
+// (A private scan is served from this site, so there is nothing to connect to.)
+const iiifOrigin = /^https?:\/\//.test(faces[0].img.iiif) ? new URL(faces[0].img.iiif).origin : null;
 
 const rights = RIGHTS[item.rights.status];
 const reliable = (conf: string) => conf === 'certain' || conf === 'probable';
@@ -637,12 +652,14 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
   prose={false}
 >
   {iiifOrigin && <link slot="head" rel="preconnect" href={iiifOrigin} />}
-  <link
-    slot="head"
-    rel="alternate"
-    type='application/ld+json;profile="http://iiif.io/api/presentation/3/context.json"'
-    href={abs(manifestUrl)}
-  />
+  {!item.private && (
+    <link
+      slot="head"
+      rel="alternate"
+      type='application/ld+json;profile="http://iiif.io/api/presentation/3/context.json"'
+      href={abs(manifestUrl)}
+    />
+  )}
   <script type="application/ld+json" is:inline set:html={structured} />
   <script type="application/json" id="item-data" is:inline set:html={pageData} />
   <noscript>
@@ -657,6 +674,7 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
   </noscript>
 
   <div class="item-page max-w-6xl mx-auto py-6 text-iron font-serif" style={mountStyle(tone)} data-item-page data-pagefind-body>
+    <FamilyBar />
     {/* THE CATALOGUE SHEET. Screen readers and browsers ignore these; they
         appear only on paper, where a printed record needs to say where it
         came from and how to get back to it. */}
@@ -701,7 +719,26 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
     {/* The title leads, above both columns. Below the photograph on a phone,
         or under a full-width landscape print, it arrived after the thing it
         names. */}
-    <h1 class="text-3xl font-medium tracking-tight leading-tight mb-6 title">{item.title}</h1>
+    <h1 class:list={['text-3xl font-medium tracking-tight leading-tight title', item.private || privatePages.length ? 'mb-2' : 'mb-6']}>{item.title}</h1>
+    {item.private && (
+      <p class="mb-6 flex flex-wrap items-baseline gap-x-3 gap-y-1" data-pagefind-ignore>
+        <span class={PRIVATE_MARK}>Private</span>
+        <span class="text-sm opacity-75">Not on the public site. Please do not share it.</span>
+      </p>
+    )}
+    {!item.private && privatePages.length > 0 && (
+      <p class="mb-6 flex flex-wrap items-baseline gap-x-3 gap-y-1" data-pagefind-ignore>
+        <span class={PRIVATE_MARK}>{privatePages.length === 1 ? '1 page' : `${privatePages.length} pages`} private</span>
+        {faces.some((f) => f.img.withheld) ? (
+          <span class="text-sm opacity-75">
+            Withheld to protect living people, and open to family.{' '}
+            <a href={FAMILY_SIGN_IN} class={LINK}>Family sign-in</a>
+          </span>
+        ) : (
+          <span class="text-sm opacity-75">Not on the public site: {privatePages.map((f) => f.label).join(', ')}.</span>
+        )}
+      </p>
+    )}
 
     {/* WHAT PAGEFIND READS, and nothing else sees. Pagefind builds the site's
         photograph search from these pages after `astro build`: the h1 is the
@@ -1277,10 +1314,12 @@ const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
               <dt class={DT}>Collection</dt>
               <dd class="m-0 min-w-0 flex-1"><a href={`/collections/${c.slug}`} class={LINK}>{c.title}</a></dd>
             </div>
-            <div class={ROW}>
-              <dt class={DT}>IIIF manifest</dt>
-              <dd class="m-0 min-w-0 flex-1"><a href={manifestUrl} class={LINK}>manifest.json</a> · <a href={miradorUrl} class={LINK} target="_blank" rel="noopener">Open in Mirador</a></dd>
-            </div>
+            {!item.private && (
+              <div class={ROW}>
+                <dt class={DT}>IIIF manifest</dt>
+                <dd class="m-0 min-w-0 flex-1"><a href={manifestUrl} class={LINK}>manifest.json</a> · <a href={miradorUrl} class={LINK} target="_blank" rel="noopener">Open in Mirador</a></dd>
+              </div>
+            )}
           </dl>
 
 

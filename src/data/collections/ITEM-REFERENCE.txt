@@ -243,3 +243,53 @@ An item's own value always wins. This is where the repetition goes.
   4. A `related` slug, or a duplicate slug or control number.
 
 Each throws by name. Nothing here fails quietly.
+
+
+------------------------------------------------------------------------------
+5. LIVING PEOPLE AND PRIVATE ITEMS
+------------------------------------------------------------------------------
+
+Photographs of living people are private: off the public site entirely, and
+shown to family who sign in at /collections/family. You say who is living;
+the rest follows.
+
+  IN people.ts
+      living: true        this person is living. Every photograph they are
+                          in becomes private, and they have no public page.
+      death: '1998'       they have died: take `living` off and enter the
+                          year. Their photographs are looked at again; one
+                          that still shows another living person stays
+                          private.
+      living: false       known to have died, year unknown.
+
+  ON AN ITEM
+      restricted: true    private whoever is in it. For a living person
+                          nobody has identified, or a photograph someone
+                          asked you to hold back.
+
+  ON A DEPICTION OR MENTION (a name given only as `as`, with no record)
+      living: true        the same as marking a person, for this one item.
+
+  ON ONE PAGE OF AN ALBUM OR JOURNAL (an entry in `pages`)
+      restricted: true    that page only.
+
+An album or journal is private PAGE BY PAGE: a page a living person is boxed
+or named on is withheld, and the rest of the volume stays public. A living
+person in an album with no box on a page makes the whole album private,
+since nothing says where they are.
+
+THE SAFETY NET. Someone with no death year who was born in the last hundred
+years, or whom nothing dates at all, is presumed living without being marked.
+
+AFTER CHANGING ANY OF THIS
+      npm run private       what is private now, and why; also any living
+                            person's name found in the text of a PUBLIC
+                            record, which the rules cannot see
+      npm run iiif          moves the scans and face crops to match
+      (commit, push, wait for the site)
+      npm run iiif -- --purge    deletes the public copies; then clear
+                                 Cloudflare's cache
+
+The words on a public record are published as written. If a caption on a
+public photograph names a living grandchild, marking the grandchild living
+does not change the caption: `npm run private` lists these for you.

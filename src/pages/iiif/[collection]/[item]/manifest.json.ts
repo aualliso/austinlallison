@@ -59,13 +59,18 @@ export const GET: APIRoute = async ({ props, site }) => {
   const base = abs(`/iiif/${item.collection}/${item.slug}`);
   const permalink = abs(item.href);
 
-  const faces = await Promise.all(
-    item.faces.map(async (f) => ({
-      key: f.key,
-      label: f.label,
-      img: await plate(item.collection, f.surrogate.file, f.surrogate),
-    }))
-  );
+  // A private page of an album has no image to offer and is left out: a
+  // manifest lists what a viewer can open. (A private ITEM never gets here -
+  // it is not in ALL_ITEMS on the public site.)
+  const faces = (
+    await Promise.all(
+      item.faces.map(async (f) => ({
+        key: f.key,
+        label: f.label,
+        img: await plate(item.collection, f.surrogate.file, f.surrogate),
+      }))
+    )
+  ).filter((f) => !f.img.withheld);
 
   // Every region, as { face, region, text }, in the order the page lists them.
   type Note = { face: string; r: { x: number; y: number; w: number; h: number }; text: string };

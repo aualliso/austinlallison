@@ -2,6 +2,7 @@
 import { defineConfig } from 'astro/config';
 import tailwindcss from '@tailwindcss/vite';
 import sitemap from '@astrojs/sitemap';
+import { privateBucketInDev } from './scripts/dev-private.mjs';
 
 // https://astro.build/config
 export default defineConfig({
@@ -9,7 +10,8 @@ export default defineConfig({
 
   // Needs `site` above, which is already set, so this just works.
   // Emits /sitemap-index.xml at build time.
-  integrations: [sitemap()],
+  // The family sign-in page is not something to send a search engine to.
+  integrations: [sitemap({ filter: (page) => !page.includes('/collections/family') })],
 
   prefetch: {
     /* ClientRouter turns prefetching on by ITSELF, with prefetchAll:
@@ -31,6 +33,9 @@ export default defineConfig({
   vite: {
     plugins: [
       tailwindcss(),
+      // Dev server only: shows private photographs from the private bucket
+      // while you work on their records. See scripts/dev-private.mjs.
+      privateBucketInDev(),
       {
         name: 'fix-windows-astro-virtual-extension-bug',
         /* Scoped to the dev server. This hooks an Astro INTERNAL

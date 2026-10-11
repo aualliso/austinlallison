@@ -1,5 +1,7 @@
 # build output
 dist/
+# the family pages, while the build is comparing them (scripts/family.mjs)
+.family-dist/
 # generated types
 .astro/
 

@@ -45,6 +45,9 @@ export const GET: APIRoute = async ({ props, site }) => {
   const faces = await Promise.all(
     item.faces.map(async (f) => {
       const r = await plate(item.collection, f.surrogate.file, f.surrogate);
+      // A private page of an album, on the public site: the record says the
+      // page exists and is withheld, and gives no file name or image.
+      if (r.withheld) return { key: f.key, label: f.label, withheld: true };
       return {
         key: f.key,
         label: f.label,
@@ -70,6 +73,9 @@ export const GET: APIRoute = async ({ props, site }) => {
     ...(item.controlNumber ? { controlNumber: item.controlNumber } : {}),
     title: item.title,
     titleSource: item.titleSource,
+    // Only ever true in the copy family are served: the public site has no
+    // record.json for a private item at all.
+    ...(item.private ? { private: true } : {}),
     ...(item.description ? { description: item.description } : {}),
     collection: { slug: c.slug, title: c.title, url: abs(`/collections/${c.slug}`) },
     ...(item.series ? { series: item.series } : {}),

@@ -135,9 +135,12 @@
 //     beside it larger (12rem, was 10rem).
 
 import RootLayout from '../../layouts/RootLayout.astro';
+import FamilyBar from '../../components/FamilyBar.astro';
 import {
   COLLECTIONS,
   ALL_ITEMS,
+  withheldIn,
+  FAMILY_SIGN_IN,
   PEOPLE_WITH_ITEMS,
   itemsOf,
   keyItemsOf,
@@ -665,6 +668,20 @@ const structured = {
   })),
 };
 const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
+
+// WHAT IS WITHHELD, across every collection. Photographs of living people
+// are private and are not in ALL_ITEMS on the public site, so no figure on
+// this page counts them. The colophon says how many there are and where
+// family sign in. Signed in, the figures are zero and nothing is said.
+const heldAll = COLLECTIONS.map((c) => withheldIn(c.slug)).reduce(
+  (sum, h) => ({ items: sum.items + h.items, pages: sum.pages + h.pages }),
+  { items: 0, pages: 0 }
+);
+const heldParts = [
+  heldAll.items ? plural(heldAll.items, 'photograph') : '',
+  heldAll.pages ? plural(heldAll.pages, 'album page') : '',
+].filter(Boolean);
+const heldVerb = heldAll.items + heldAll.pages === 1 ? 'is' : 'are';
 ---
 
 <RootLayout
@@ -683,6 +700,7 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
   </noscript>
 
   <div class="guide max-w-4xl mx-auto py-6 text-iron font-serif" data-guide data-noun={NOUN}>
+    <FamilyBar />
     <!-- 0. The front: the desk - title and finder beside the table -->
     <header class="front" data-room>
       <div class="grain" aria-hidden="true"></div>
@@ -1167,6 +1185,13 @@ const structuredJson = JSON.stringify(structured).replace(/</g, '\\u003c');
         authority file</a>, and a date is given as a range wherever the evidence
         allows nothing closer.
       </p>
+      {heldParts.length > 0 && (
+        <p data-withheld>
+          {heldParts.join(' and ')} {heldVerb} withheld to protect living people,
+          and open to family.{' '}
+          <a href={FAMILY_SIGN_IN} class="text-caprock hover:underline">Family sign-in</a>
+        </p>
+      )}
     </div>
   </div>
 </RootLayout>

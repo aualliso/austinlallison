@@ -126,7 +126,14 @@ const TRANSCRIPTIONS = new Map<string, Map<number, string>>(
     return [slug, pages] as const;
   })
 );
-import { PEOPLE, personById, NAME_INDEX } from './people';
+import {
+  PEOPLE as EVERY_PERSON,
+  personById as everyPersonById,
+  NAME_INDEX as EVERY_NAME,
+} from './people';
+import IIIF_IMAGES from './iiif-images.json';
+import { createHash } from 'node:crypto';
+import { existsSync } from 'node:fs';
 
 import { COLLECTION as SWANN_FAMILY } from './swann-family';
 import { COLLECTION as THOMAS_FAMILY } from './thomas-family';
@@ -142,7 +149,8 @@ const REGISTERED: Collection[] = [
   INGLE_FAMILY
 ];
 
-export const COLLECTIONS: Collection[] = [...REGISTERED].sort((a, b) =>
+/** Every collection as written, private material and all. */
+const EVERY_COLLECTION: Collection[] = [...REGISTERED].sort((a, b) =>
   a.title.localeCompare(b.title)
 );
 
@@ -292,7 +300,7 @@ export const readDate = (display: string): ReadDate | null => {
  *   - neither possible: a display with a year in it that cannot be read is
  *     reported, so nothing drops out of the chronology in silence.
  */
-const resolveDate = (slug: string, date?: DateEstimate): DateEstimate => {
+const resolveDate = (slug: string, date?: DateEstimate, quiet = false): DateEstimate => {
   if (!date) return UNDATED_ESTIMATE;
   const read = readDate(date.display);
   if (date.earliest !== undefined || date.latest !== undefined) {
@@ -301,7 +309,7 @@ const resolveDate = (slug: string, date?: DateEstimate): DateEstimate => {
       const hi = date.latest ?? date.earliest!;
       const disjoint = hi < read.earliest! || lo > read.latest!;
       const statedEnds = read.kind === 'range' && !/ca\.?|circa|approx|about/i.test(date.display);
-      if (disjoint || (statedEnds && (lo !== read.earliest || hi !== read.latest))) {
+      if (!quiet && (disjoint || (statedEnds && (lo !== read.earliest || hi !== read.latest)))) {
         console.warn(
           `[collections] ${slug}: date reads "${date.display}" but earliest/latest are ` +
             `${date.earliest ?? '-'}/${date.latest ?? '-'}. One of the two is probably mistyped.`
@@ -311,7 +319,7 @@ const resolveDate = (slug: string, date?: DateEstimate): DateEstimate => {
     return date;
   }
   if (read && read.kind !== 'undated') return { ...date, earliest: read.earliest, latest: read.latest };
-  if (!read && /\d{3}/.test(date.display)) {
+  if (!quiet && !read && /\d{3}/.test(date.display)) {
     console.warn(
       `[collections] ${slug}: could not read a date from "${date.display}". Add earliest/latest, ` +
         `or it sorts as undated.`
@@ -320,13 +328,222 @@ const resolveDate = (slug: string, date?: DateEstimate): DateEstimate => {
   return date;
 };
 
+/* ------------------------------------------------------------------ *
+ * WHO SEES WHAT
+ *
+ * The site is built for one of two audiences:
+ *
+ *   'public'   everyone. Living people and the photographs they are in are
+ *              not there at all - no page, no name, no thumbnail.
+ *   'family'   relatives who have signed in at /collections/family.
+ *              Everything, with the private things marked.
+ *
+ * `npm run build` builds the public site, then (scripts/family.mjs) builds
+ * the family one beside it and keeps only the pages that differ, encrypted.
+ * `npm run dev` shows the family view, because that is the one you work in;
+ * `npm run dev:public` shows what everyone else gets.
+ *
+ * NOTHING BELOW THIS FILE DECIDES ANYTHING. The pages read ALL_ITEMS, PEOPLE,
+ * FACES and the rest exactly as before; what those hold is settled here, once,
+ * from three things you write:
+ *
+ *   living: true       on a person in people.ts (or on a depiction or
+ *                      mention of someone who has no record)
+ *   restricted: true   on an item, or on one page of a paged item
+ *   death: '1998'      which is what makes a person public again
+ *
+ * `npm run private` prints what is private and why.
+ * ------------------------------------------------------------------ */
+const ENV =
+  (globalThis as { process?: { env?: Record<string, string | undefined> } }).process?.env ?? {};
+const ASKED = ENV.COLLECTIONS_AUDIENCE;
+if (ASKED && ASKED !== 'public' && ASKED !== 'family') {
+  throw new Error(`COLLECTIONS_AUDIENCE is "${ASKED}"; it can only be "public" or "family".`);
+}
+/** Left unset, a build is PUBLIC. Only the dev server defaults to family. */
+export const AUDIENCE: 'public' | 'family' =
+  ASKED === 'public' || ASKED === 'family' ? ASKED : import.meta.env.DEV ? 'family' : 'public';
+
+/** Where relatives sign in. Also reserved as a collection slug, below. */
+export const FAMILY_SIGN_IN = '/collections/family';
+
 /**
- * Every item, with the collection's defaults folded in. Pages read THIS, so
- * they never test for a missing date, an absent rights statement or an
- * undefined array.
+ * How long ago someone must have been born before a missing death year
+ * stops meaning "may be living". See `living` on Person.
  */
-export const ALL_ITEMS: ResolvedItem[] = COLLECTIONS.flatMap((c) =>
-  c.items.map((i): ResolvedItem => {
+export const LIVING_YEARS = 100;
+const THIS_YEAR = new Date().getFullYear();
+const yearIn = (v?: string) => {
+  const m = v?.match(/\d{4}/);
+  return m ? Number(m[0]) : undefined;
+};
+
+/** The latest year a date allows, or undefined when it sets no upper bound. */
+const latestOf = (date?: DateEstimate): number | undefined => {
+  if (!date) return undefined;
+  if (date.latest !== undefined) return date.latest;
+  if (date.earliest !== undefined) return undefined;
+  const r = readDate(date.display);
+  return r && r.kind !== 'undated' ? r.latest : undefined;
+};
+
+/**
+ * WHEN SOMEONE WITH NO BIRTH YEAR MUST HAVE BEEN BORN BY. A person pictured
+ * in a cabinet card of 1890 was born by 1890, whatever their record leaves
+ * out; so was the parent of a child born in 1902 (by 1890, say), and the
+ * child of a mother who died in 1911. These bounds are only ever used to
+ * decide that someone is long dead - never to print a date - and each is
+ * generous, so a doubt leaves the person private.
+ */
+const bornBy = new Map<string, number>();
+{
+  const bound = (id: string | undefined, year: number | undefined) => {
+    if (id && year !== undefined) bornBy.set(id, Math.min(bornBy.get(id) ?? Infinity, year));
+  };
+  for (const c of EVERY_COLLECTION) {
+    for (const i of c.items) {
+      const y = latestOf(i.date);
+      for (const dep of i.depicts ?? []) bound(dep.person, y);
+      for (const m of i.mentions ?? []) bound(m.person, y);
+    }
+  }
+  // `b` is `a`'s <type>: their child, parent, sibling or spouse.
+  const fromKin = (a: Person, b: Person, type: Relation['type']) => {
+    const born = yearIn(b.birth);
+    const died = yearIn(b.death);
+    if (type === 'child' && born !== undefined) bound(a.id, born - 12);
+    if (type === 'parent') {
+      if (born !== undefined) bound(a.id, born + 70);
+      if (died !== undefined) bound(a.id, died + 1);
+    }
+    if (type === 'sibling' && born !== undefined) bound(a.id, born + 30);
+    if (type === 'spouse') {
+      if (born !== undefined) bound(a.id, born + 40);
+      if (died !== undefined) bound(a.id, died - 14);
+    }
+  };
+  const back: Record<Relation['type'], Relation['type']> = {
+    child: 'parent',
+    parent: 'child',
+    spouse: 'spouse',
+    sibling: 'sibling',
+  };
+  for (const p of EVERY_PERSON) {
+    for (const r of p.relations ?? []) {
+      const q = everyPersonById.get(r.person);
+      if (!q) continue;
+      fromKin(p, q, r.type);
+      fromKin(q, p, back[r.type]);
+    }
+  }
+}
+
+/** Every living person's id, with the reason they count as living. */
+const LIVING = new Map<string, string>();
+for (const p of EVERY_PERSON) {
+  if (p.living === true) {
+    LIVING.set(p.id, 'marked living: true');
+    continue;
+  }
+  if (p.living === false || p.death?.trim()) continue;
+  const own = yearIn(p.birth);
+  const by = own ?? bornBy.get(p.id);
+  if (by === undefined) {
+    LIVING.set(p.id, 'presumed: no dates, and nothing dates them');
+  } else if (THIS_YEAR - by < LIVING_YEARS) {
+    LIVING.set(
+      p.id,
+      own !== undefined
+        ? `presumed: born ${own}, no death year`
+        : `presumed: no dates, and nothing puts their birth before ${by}`
+    );
+  }
+}
+
+type LivingClaim = { person?: string; as?: string; living?: boolean };
+const isLivingClaim = (x: LivingClaim) => x.living === true || (!!x.person && LIVING.has(x.person));
+
+/**
+ * What the rules decide about one item. `whole`: the item is private.
+ * `pages`: the private pages of an item that is otherwise public. `byHand`
+ * and `pagesByHand` remember a `restricted: true` you set yourself: nothing
+ * is published from those, not even a dead person's face (see safeCrop).
+ */
+type Privacy = {
+  whole: boolean;
+  pages: Set<string>;
+  byHand: boolean;
+  pagesByHand: Set<string>;
+  why: string[];
+};
+const PUBLIC_ITEM: Privacy = {
+  whole: false,
+  pages: new Set(),
+  byHand: false,
+  pagesByHand: new Set(),
+  why: [],
+};
+const privacyOf = new Map<string, Privacy>();
+for (const c of EVERY_COLLECTION) {
+  for (const i of c.items) {
+    const pageKeys = new Set((i.pages ?? []).map((_, n) => `p${n + 1}`));
+    const p: Privacy = { whole: false, pages: new Set(), byHand: false, pagesByHand: new Set(), why: [] };
+    if (i.restricted) {
+      p.whole = true;
+      p.byHand = true;
+      p.why.push('marked restricted: true');
+    }
+    (i.pages ?? []).forEach((pg, n) => {
+      if (!pg.restricted) return;
+      p.pages.add(`p${n + 1}`);
+      p.pagesByHand.add(`p${n + 1}`);
+      p.why.push(`page ${n + 1} is marked restricted: true`);
+    });
+    const place = (x: LivingClaim, on: string | undefined, verb: string) => {
+      if (!isLivingClaim(x)) return;
+      const who = x.person ?? x.as ?? 'someone';
+      if (on && pageKeys.has(on)) {
+        p.pages.add(on);
+        p.why.push(`${who} (living) is ${verb} on ${on}`);
+      } else {
+        // Not a paged item, or nobody has said which page: the whole item.
+        p.whole = true;
+        p.why.push(
+          `${who} (living) is ${verb}${pageKeys.size ? ', and no page is given for them' : ''}`
+        );
+      }
+    };
+    for (const dep of i.depicts ?? []) place(dep, dep.region?.face, 'pictured');
+    for (const m of i.mentions ?? []) place(m, m.page ?? m.region?.face, 'named');
+    if (!p.whole && pageKeys.size > 0 && p.pages.size === pageKeys.size) {
+      p.whole = true;
+      p.why.push('every page is private');
+    }
+    if (p.whole) p.pages = new Set();
+    if (p.whole || p.pages.size) privacyOf.set(i.slug, p);
+  }
+}
+
+/**
+ * One item with the collection's defaults folded in, so no page ever tests
+ * for a missing date, an absent rights statement or an undefined array.
+ *
+ * `how` carries what the privacy rules above decided about it. The same
+ * function resolves an item twice when it has private pages: once whole (for
+ * family), once with those pages emptied (for everyone else) - `redact` -
+ * and the second time it keeps quiet, having said its warnings already.
+ */
+type How = {
+  whole: boolean;
+  pages: Set<string>;
+  redact?: boolean;
+  quiet?: boolean;
+  depictSource?: number[];
+};
+const resolveItem = (c: Collection, i: Item, how: How): ResolvedItem => {
+    const warn = (msg: string) => {
+      if (!how.quiet) warn(msg);
+    };
     const d = c.defaults ?? {};
     const rights = i.rights ?? d.rights ?? { status: 'undetermined' as const };
     const basisFor = (b?: string) =>
@@ -364,13 +581,21 @@ export const ALL_ITEMS: ResolvedItem[] = COLLECTIONS.flatMap((c) =>
       }
     }
     const faces: ResolvedItem['faces'] = pages.length
-      ? pages.map((pg, n) => ({
-          key: `p${n + 1}`,
-          label: pg.label ?? `Page ${n + 1}`,
-          surrogate: withCapture(pg),
-          page: n + 1,
-          transcription: tx?.get(n + 1),
-        }))
+      ? pages.map((pg, n) => {
+          const key = `p${n + 1}`;
+          const priv = how.pages.has(key);
+          const label = pg.label ?? `Page ${n + 1}`;
+          return {
+            key,
+            // On the public site a private page says so in its name, and its
+            // transcription is gone with everything else on it.
+            label: priv && how.redact ? `${label} (withheld)` : label,
+            surrogate: withCapture(pg),
+            page: n + 1,
+            transcription: priv && how.redact ? undefined : tx?.get(n + 1),
+            ...(priv ? { private: true } : {}),
+          };
+        })
       : [{ key: 'recto', label: i.recto.label ?? 'Recto', surrogate: withCapture(i.recto) }];
     if (!pages.length && i.verso) {
       faces.push({
@@ -469,7 +694,7 @@ export const ALL_ITEMS: ResolvedItem[] = COLLECTIONS.flatMap((c) =>
       countOn.set(page, onPage);
       return {
         ...p,
-        date: p.date ? resolveDate(`${i.slug}, ${what}`, p.date) : undefined,
+        date: p.date ? resolveDate(`${i.slug}, ${what}`, p.date, how.quiet) : undefined,
         id: `print-${pageNo}-${onPage}`,
         n: n + 1,
         page,
@@ -490,7 +715,7 @@ export const ALL_ITEMS: ResolvedItem[] = COLLECTIONS.flatMap((c) =>
           const inA = holds(a, b.region.x + b.region.w / 2, b.region.y + b.region.h / 2);
           const inB = holds(b, a.region.x + a.region.w / 2, a.region.y + a.region.h / 2);
           if (inA || inB) {
-            console.warn(
+            warn(
               `[collections] ${i.slug}: prints ${a.onPage} and ${b.onPage} on ${a.page} overlap. ` +
                 `One box is probably drawn twice, or drawn round two prints.`
             );
@@ -506,7 +731,7 @@ export const ALL_ITEMS: ResolvedItem[] = COLLECTIONS.flatMap((c) =>
       const home = here.find((p) => holds(p, r.x + r.w / 2, r.y + r.h / 2));
       if (home) home.people.push(n);
       else {
-        console.warn(
+        warn(
           `[collections] ${i.slug}: "${dep.person ?? dep.as}" is on ${r.face} but inside none of ` +
             `the prints listed for that page. Check the face's box, or add the print.`
         );
@@ -518,11 +743,13 @@ export const ALL_ITEMS: ResolvedItem[] = COLLECTIONS.flatMap((c) =>
       collection: c.slug,
       kind: i.kind ?? 'photograph',
       faces,
+      private: how.whole,
+      depictSource: how.depictSource ?? (i.depicts ?? []).map((_, n) => n),
       pageCount: pages.length,
       prints,
       href,
       titleSource: i.titleSource ?? 'supplied',
-      date: resolveDate(i.slug, i.date),
+      date: resolveDate(i.slug, i.date, how.quiet),
       place: i.place ?? d.place,
       recto: withCapture(i.recto),
       verso: i.verso ? withCapture(i.verso) : undefined,
@@ -551,13 +778,26 @@ export const ALL_ITEMS: ResolvedItem[] = COLLECTIONS.flatMap((c) =>
         return { ...m, basis };
       }),
     };
+};
+
+/**
+ * EVERY ITEM AS WRITTEN - private ones included, each carrying what the
+ * rules decided (`private`, and `private` on a page). This is what family
+ * see, what the checks below run over, and what the scripts read. The pages
+ * read ALL_ITEMS, further down, which is this list as their audience may
+ * see it.
+ */
+const EVERY_ITEM: ResolvedItem[] = EVERY_COLLECTION.flatMap((c) =>
+  c.items.map((i) => {
+    const p = privacyOf.get(i.slug) ?? PUBLIC_ITEM;
+    return resolveItem(c, i, { whole: p.whole, pages: p.pages });
   })
 );
 
 // A transcription file for an item that does not exist is a mistyped file
 // name, and its text would otherwise never be seen.
 {
-  const slugs = new Set(ALL_ITEMS.map((i) => i.slug));
+  const slugs = new Set(EVERY_ITEM.map((i) => i.slug));
   for (const slug of TRANSCRIPTIONS.keys()) {
     if (!slugs.has(slug)) {
       throw new Error(
@@ -582,7 +822,9 @@ if (registeredSlugs.size !== REGISTERED.length) {
 // /collections/names is the authority file, and a static route wins over a
 // dynamic one - so a collection slugged 'names' would be unreachable with no
 // error to tell you why.
-const RESERVED_SLUGS = new Set(['names']);
+// 'family' is the sign-in page, '-' the address private files are served
+// from, and 'faces' the folder of face crops.
+const RESERVED_SLUGS = new Set(['names', 'family', '-', 'faces']);
 for (const c of REGISTERED) {
   if (RESERVED_SLUGS.has(c.slug)) {
     throw new Error(
@@ -597,7 +839,7 @@ const seenSlugs = new Set<string>();
 // system together, so it is validated but never depended on.
 const seenControlNumbers = new Set<string>();
 
-for (const item of ALL_ITEMS) {
+for (const item of EVERY_ITEM) {
   if (seenSlugs.has(item.slug)) throw new Error(`Duplicate item slug: ${item.slug}`);
   seenSlugs.add(item.slug);
 
@@ -611,7 +853,7 @@ for (const item of ALL_ITEMS) {
   }
 
   for (const d of item.depicts) {
-    if (d.person && !personById.has(d.person)) {
+    if (d.person && !everyPersonById.has(d.person)) {
       throw new Error(
         `${item.slug} depicts unknown person "${d.person}". Add a record to people.ts.`
       );
@@ -623,7 +865,7 @@ for (const item of ALL_ITEMS) {
     }
   }
   for (const m of item.mentions) {
-    if (m.person && !personById.has(m.person)) {
+    if (m.person && !everyPersonById.has(m.person)) {
       throw new Error(
         `${item.slug} names unknown person "${m.person}". Add a record to people.ts.`
       );
@@ -634,7 +876,7 @@ for (const item of ALL_ITEMS) {
   }
 }
 
-for (const item of ALL_ITEMS) {
+for (const item of EVERY_ITEM) {
   for (const r of item.related ?? []) {
     if (!seenSlugs.has(r.slug)) {
       throw new Error(`${item.slug} relates to unknown item "${r.slug}".`);
@@ -653,7 +895,7 @@ for (const item of ALL_ITEMS) {
   }
 }
 
-for (const item of ALL_ITEMS) {
+for (const item of EVERY_ITEM) {
   const { earliest, latest } = item.date;
   if (earliest !== undefined && latest !== undefined && earliest > latest) {
     throw new Error(
@@ -674,13 +916,162 @@ for (const c of REGISTERED) {
   }
 }
 
-for (const p of PEOPLE) {
+for (const p of EVERY_PERSON) {
   for (const r of p.relations ?? []) {
-    if (!personById.has(r.person)) {
+    if (!everyPersonById.has(r.person)) {
       throw new Error(`${p.id} has a relation to unknown person "${r.person}".`);
     }
   }
 }
+
+/* ------------------------------------------------------------------ *
+ * THE AUDIENCE'S VIEW. Everything the pages read from here down is the
+ * data as the audience may see it (see WHO SEES WHAT, above). For family
+ * that is all of it. For everyone else:
+ *
+ *   - a private item is not in ALL_ITEMS, so it has no page, no row in any
+ *     list, no manifest and nothing for the search to index;
+ *   - a paged item with private pages keeps its place, but those pages are
+ *     emptied: no people, prints, details, inscriptions or transcription
+ *     (and images.ts gives the page the "withheld" card for a picture);
+ *   - a living person is not in PEOPLE, so they have no page and no line in
+ *     the names index, and nobody's relations point at them;
+ *   - a collection does not choose a private item as its key item,
+ *     frontispiece or epigraph.
+ * ------------------------------------------------------------------ */
+const isPrivateItem = (slug?: string) => !!slug && privacyOf.get(slug)?.whole === true;
+
+/** A paged item as the public see it: its private pages emptied. */
+const redacted = (c: Collection, i: Item, p: Privacy): ResolvedItem => {
+  const gone = (face?: string) => !!face && p.pages.has(face);
+  const kept = (i.depicts ?? []).map((d, n) => ({ d, n })).filter(({ d }) => !gone(d.region?.face));
+  // The item is represented by its recto. If that is one of the private
+  // pages (a cover with a name on it), the first open page stands in.
+  const pages = i.pages ?? [];
+  const rectoGone = pages.some((pg, n) => gone(`p${n + 1}`) && pg.file === i.recto.file);
+  const firstOpen = pages.find((_, n) => !gone(`p${n + 1}`));
+  return resolveItem(
+    c,
+    {
+      ...i,
+      recto: rectoGone && firstOpen ? firstOpen : i.recto,
+      depicts: kept.map((k) => k.d),
+      mentions: (i.mentions ?? []).filter((m) => !gone(m.page ?? m.region?.face)),
+      prints: (i.prints ?? []).filter((pr) => !gone(pr.region.face)),
+      details: (i.details ?? []).filter((det) => !gone(det.face)),
+      inscriptions: (i.inscriptions ?? []).filter((ins) => !gone(ins.region?.face)),
+    },
+    { whole: false, pages: p.pages, redact: true, quiet: true, depictSource: kept.map((k) => k.n) }
+  );
+};
+
+/** Nothing public may point at a private item. */
+const unlinked = (it: ResolvedItem): ResolvedItem => {
+  const related = it.related?.some((r) => isPrivateItem(r.slug));
+  const prints = it.prints.some((pr) => isPrivateItem(pr.item));
+  if (!related && !prints) return it;
+  return {
+    ...it,
+    related: it.related?.filter((r) => !isPrivateItem(r.slug)),
+    prints: it.prints.map((pr) => (isPrivateItem(pr.item) ? { ...pr, item: undefined } : pr)),
+  };
+};
+
+const everyItemBySlug = new Map(EVERY_ITEM.map((i) => [i.slug, i]));
+
+/**
+ * Every item this audience may see, with the collection's defaults folded
+ * in. Pages read THIS, so they never test for a missing date, an absent
+ * rights statement or an undefined array - nor for who is living.
+ */
+const PUBLIC_ITEMS: ResolvedItem[] = EVERY_COLLECTION.flatMap((c) =>
+  c.items.flatMap((i) => {
+    const p = privacyOf.get(i.slug);
+    if (p?.whole) return [];
+    return [unlinked(p ? redacted(c, i, p) : (everyItemBySlug.get(i.slug) as ResolvedItem))];
+  })
+);
+export const ALL_ITEMS: ResolvedItem[] = AUDIENCE === 'family' ? EVERY_ITEM : PUBLIC_ITEMS;
+
+export const COLLECTIONS: Collection[] =
+  AUDIENCE === 'family'
+    ? EVERY_COLLECTION
+    : EVERY_COLLECTION.map((c) => {
+        const keyItems = c.keyItems?.filter((s) => !isPrivateItem(s));
+        return {
+          ...c,
+          items: c.items.filter((i) => !isPrivateItem(i.slug)),
+          keyItems: keyItems?.length ? keyItems : undefined,
+          frontispiece: isPrivateItem(c.frontispiece) ? undefined : c.frontispiece,
+          // An epigraph taken from a private item goes with it, words and all.
+          epigraph: isPrivateItem(c.epigraph?.source) ? undefined : c.epigraph,
+        };
+      });
+
+/** The authority file as this audience may see it: the living left out. */
+export const PEOPLE: Person[] =
+  AUDIENCE === 'family'
+    ? EVERY_PERSON
+    : EVERY_PERSON.filter((p) => !LIVING.has(p.id)).map((p) =>
+        p.relations?.some((r) => LIVING.has(r.person))
+          ? { ...p, relations: p.relations.filter((r) => !LIVING.has(r.person)) }
+          : p
+      );
+export const personById = new Map(PEOPLE.map((p) => [p.id, p]));
+export const NAME_INDEX = EVERY_NAME.filter((n) => personById.has(n.id));
+
+/* Private scans ------------------------------------------------------ */
+
+/**
+ * Every scan that belongs in the private bucket, as 'collection/file' in
+ * lower case: all the views of a private item, and each private page.
+ * scripts/iiif-tiles.mjs puts the tiles where this says; images.ts asks it
+ * before it writes an address.
+ */
+const PRIVATE_SCAN_KEYS = new Set<string>();
+{
+  const key = (collection: string, file: string) => `${collection}/${file}`.toLowerCase();
+  for (const it of EVERY_ITEM) {
+    if (it.private) {
+      PRIVATE_SCAN_KEYS.add(key(it.collection, it.recto.file));
+      for (const f of it.faces) PRIVATE_SCAN_KEYS.add(key(it.collection, f.surrogate.file));
+    } else {
+      for (const f of it.faces) if (f.private) PRIVATE_SCAN_KEYS.add(key(it.collection, f.surrogate.file));
+    }
+  }
+  // One scan, two records, one of them private: the scan can only be in one
+  // bucket, and it goes to the private one. Say so, since the public record
+  // will show the "withheld" card where its picture was.
+  for (const it of EVERY_ITEM) {
+    if (it.private) continue;
+    for (const f of it.faces) {
+      if (!f.private && PRIVATE_SCAN_KEYS.has(key(it.collection, f.surrogate.file))) {
+        console.warn(
+          `[collections] ${it.slug}: ${f.surrogate.file} is also the scan of something private, ` +
+            `so it is withheld here too. Give the two records separate files.`
+        );
+      }
+    }
+  }
+}
+export const isPrivateScan = (collection: string, file: string) =>
+  PRIVATE_SCAN_KEYS.has(`${collection}/${file}`.toLowerCase());
+
+/** How many people are left out of the names for this audience. */
+export const withheldPeople = (): number => (AUDIENCE === 'family' ? 0 : LIVING.size);
+
+/** How much of a collection is withheld from this audience. */
+export const withheldIn = (slug: string): { items: number; pages: number } => {
+  let items = 0;
+  let pages = 0;
+  if (AUDIENCE === 'family') return { items, pages };
+  for (const it of EVERY_ITEM) {
+    if (it.collection !== slug) continue;
+    if (it.private) items++;
+    else pages += it.faces.filter((f) => f.private).length;
+  }
+  return { items, pages };
+};
 
 /* ------------------------------------------------------------------ *
  * The joins
@@ -709,17 +1100,139 @@ export type Face = {
   region: Region;
   confidence: Confidence;
   basis: string;
+  /**
+   * WHERE THE CROP FILE LIVES. 'public': public/collections/faces/, as
+   * always. 'private': the private bucket, served only to family. A face is
+   * private when it is on a private item or page - unless it is `fromWithheld`.
+   */
+  store: 'public' | 'private';
+  /**
+   * A DEAD PERSON'S FACE FROM A PRIVATE PHOTOGRAPH, published on its own. A
+   * tight crop of someone long dead shows only them, and a group photograph
+   * with one living grandchild in it is often the best likeness there is. So
+   * the crop is public while the photograph stays private - but only when
+   * safeCrop(), below, can show that no living person is inside it.
+   */
+  fromWithheld: boolean;
+  /**
+   * THE CROP'S FILE NAME, without extension. Ordinarily the id. A face
+   * published from a private photograph gets a name that does not contain
+   * the photograph's slug - a slug is made of the title's words, and the
+   * title of a private photograph is not for the public either.
+   */
+  crop: string;
 };
 
 /** Crop size at 1x. 4:5, the proportion of a carte de visite portrait. */
 export const FACE_W = 240;
 export const FACE_H = 300;
+/** How much larger than the recorded region a face crop is cut. */
+export const FACE_MARGIN = 1.45;
 
-const faceByDepiction = new Map<string, Face>();
-export const FACES: Face[] = (() => {
+/**
+ * THE CROP RECTANGLE, in pixels of a scan W x H: the region grown by
+ * FACE_MARGIN, widened or heightened to FACE_W:FACE_H, and slid back inside
+ * the picture. scripts/faces.mjs cuts with THIS function, and safeCrop()
+ * checks with it, so what is checked is exactly what is cut.
+ */
+export function faceCropRect(region: Region, W: number, H: number) {
+  const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
+  const aspect = FACE_W / FACE_H;
+  const cx = ((region.x + region.w / 2) / 100) * W;
+  const cy = ((region.y + region.h / 2) / 100) * H;
+  let cw = (region.w / 100) * W * FACE_MARGIN;
+  let ch = (region.h / 100) * H * FACE_MARGIN;
+  if (cw / ch > aspect) ch = cw / aspect;
+  else cw = ch * aspect;
+  if (cw > W) {
+    cw = W;
+    ch = cw / aspect;
+  }
+  if (ch > H) {
+    ch = H;
+    cw = ch * aspect;
+  }
+  const left = Math.round(clamp(cx - cw / 2, 0, W - cw));
+  const top = Math.round(clamp(cy - ch / 2, 0, H - ch));
+  return {
+    left,
+    top,
+    width: Math.max(1, Math.min(W - left, Math.round(cw))),
+    height: Math.max(1, Math.min(H - top, Math.round(ch))),
+  };
+}
+
+/** A scan's pixel size, from the tiling script's record of it. */
+const SCANS = IIIF_IMAGES as unknown as Record<string, { width: number; height: number }>;
+const scanByLowerKey = new Map(Object.keys(SCANS).map((k) => [k.toLowerCase(), k]));
+const scanSize = (collection: string, file: string) => {
+  const k = scanByLowerKey.get(`${collection}/${file}`.toLowerCase());
+  return k ? SCANS[k] : null;
+};
+
+/**
+ * MAY THIS FACE BE PUBLISHED, though its photograph is private? Returns
+ * null for yes, or the reason for no - which `npm run private` prints, so
+ * you can see what would release it (usually: draw the missing box, or
+ * tighten one). The answer is no unless every one of these holds:
+ *
+ *   - the person is not living;
+ *   - the photograph is private only because of who is in it, not because
+ *     you marked it `restricted` yourself;
+ *   - every living person in it has a box, so it is known where they are;
+ *   - the crop, exactly as faces.mjs will cut it, touches none of those
+ *     boxes - each grown by LIVING_PAD on every side, because a box drawn
+ *     round a face stops short of the hair and the shoulder.
+ */
+const LIVING_PAD = 0.15;
+const safeCrop = (f: Omit<Face, 'store' | 'fromWithheld' | 'crop'>): string | null => {
+  if (LIVING.has(f.person)) return 'the person is living';
+  const p = privacyOf.get(f.item.slug);
+  if (!p) return null;
+  if (p.byHand) return 'the item is marked restricted: true';
+  if (p.pagesByHand.has(f.view)) return 'the page is marked restricted: true';
+  const boxes: Region[] = [];
+  for (const d of f.item.depicts) {
+    if (!isLivingClaim(d)) continue;
+    const who = d.person ?? d.as ?? 'someone';
+    if (!d.region) return `${who} (living) has no box, so it is not known where they are`;
+    if ((d.region.face ?? 'recto') === f.view) boxes.push(d.region);
+  }
+  for (const m of f.item.mentions) {
+    if (!isLivingClaim(m)) continue;
+    const who = m.person ?? m.as ?? 'someone';
+    const on = m.page ?? m.region?.face;
+    if (!on) return `${who} (living) is named, and no page is given for them`;
+    if (on !== f.view) continue;
+    if (!m.region) return `${who} (living) is named on this page with no box`;
+    boxes.push(m.region);
+  }
+  const size = scanSize(f.collection, f.file);
+  if (!size) return 'the scan has not been tiled yet; run npm run iiif';
+  const r = faceCropRect(f.region, size.width, size.height);
+  const crop = {
+    x0: (r.left / size.width) * 100,
+    y0: (r.top / size.height) * 100,
+    x1: ((r.left + r.width) / size.width) * 100,
+    y1: ((r.top + r.height) / size.height) * 100,
+  };
+  for (const b of boxes) {
+    const px = b.w * LIVING_PAD;
+    const py = b.h * LIVING_PAD;
+    const apart =
+      b.x + b.w + px <= crop.x0 || b.x - px >= crop.x1 || b.y + b.h + py <= crop.y0 || b.y - py >= crop.y1;
+    if (!apart) return 'a living person is too close: the crop would take in part of them';
+  }
+  return null;
+};
+
+/** Every face there is, private ones included, each with where its file lives. */
+const everyFaceAt = new Map<string, Face>();
+const heldFaces: { id: string; item: string; why: string }[] = [];
+const EVERY_FACE: Face[] = (() => {
   const seen = new Map<string, number>();
   const out: Face[] = [];
-  for (const item of ALL_ITEMS) {
+  for (const item of EVERY_ITEM) {
     item.depicts.forEach((d, n) => {
       if (!d.person || !d.region) return;
       const view = d.region.face ?? 'recto';
@@ -728,7 +1241,7 @@ export const FACES: Face[] = (() => {
       const base = `${d.person}--${item.slug}`;
       const count = (seen.get(base) ?? 0) + 1;
       seen.set(base, count);
-      const face: Face = {
+      const bare = {
         id: count > 1 ? `${base}-${count}` : base,
         person: d.person,
         item,
@@ -739,16 +1252,51 @@ export const FACES: Face[] = (() => {
         confidence: d.confidence,
         basis: d.basis,
       };
+      const hidden = item.private || surface.private === true;
+      const why = hidden ? safeCrop(bare) : null;
+      if (hidden && why && !LIVING.has(d.person)) heldFaces.push({ id: bare.id, item: item.slug, why });
+      const fromWithheld = hidden && !why;
+      const face: Face = {
+        ...bare,
+        store: hidden && why ? 'private' : 'public',
+        fromWithheld,
+        crop: fromWithheld
+          ? `${d.person}--w${createHash('sha256').update(bare.id).digest('hex').slice(0, 12)}`
+          : bare.id,
+      };
       out.push(face);
-      faceByDepiction.set(`${item.slug}#${n}`, face);
+      everyFaceAt.set(`${item.slug}#${n}`, face);
     });
   }
   return out;
 })();
 
-export const faceById = new Map(FACES.map((f) => [f.id, f]));
-export const faceHref = (id: string, density: 1 | 2 = 1) =>
-  `/collections/faces/${id}${density === 2 ? '@2x' : ''}.webp`;
+/**
+ * The faces this audience may see IN THEIR PHOTOGRAPHS. On the public site
+ * that leaves out the ones published from private photographs: those have
+ * no photograph to stand in, and are reached through withheldFor().
+ */
+const faceByDepiction = new Map<string, Face>();
+export const FACES: Face[] = ALL_ITEMS.flatMap((item) =>
+  item.depicts.flatMap((_, n) => {
+    const full = everyFaceAt.get(`${item.slug}#${item.depictSource[n]}`);
+    if (!full) return [];
+    // The face belongs to the item as THIS audience has it.
+    const face = full.item === item ? full : { ...full, item };
+    faceByDepiction.set(`${item.slug}#${n}`, face);
+    return [face];
+  })
+);
+
+export const faceById = new Map(EVERY_FACE.map((f) => [f.id, f]));
+/**
+ * A private crop is served from the private bucket, to family only; the
+ * address says which, so no page has to ask.
+ */
+export const faceHref = (id: string, density: 1 | 2 = 1) => {
+  const f = faceById.get(id);
+  return `/collections/${f?.store === 'private' ? '-/' : ''}faces/${f?.crop ?? id}${density === 2 ? '@2x' : ''}.webp`;
+};
 
 export type Appearance = {
   item: ResolvedItem;
@@ -864,6 +1412,56 @@ export const relationsOf = (personId: string): Kin[] => {
     }
   }
   return [...out.values()];
+};
+
+/**
+ * HOW MANY OF A PERSON'S RELATIVES ARE LIVING, by relation. The public site
+ * does not name them or link to them (they are not in PEOPLE, so relationsOf
+ * never returns them); a page can still say "and two living".
+ */
+export const livingKinOf = (personId: string): Record<Relation['type'], number> => {
+  const out = { parent: 0, child: 0, spouse: 0, sibling: 0 };
+  if (AUDIENCE === 'family') return out;
+  const seen = new Set<string>();
+  const count = (type: Relation['type'], other: string) => {
+    if (!LIVING.has(other) || seen.has(`${type}|${other}`)) return;
+    seen.add(`${type}|${other}`);
+    out[type]++;
+  };
+  for (const r of everyPersonById.get(personId)?.relations ?? []) count(r.type, r.person);
+  for (const other of EVERY_PERSON) {
+    for (const r of other.relations ?? []) {
+      if (r.person === personId) count(INVERSE[r.type], other.id);
+    }
+  }
+  return out;
+};
+
+/**
+ * WHAT IS WITHHELD OF ONE PERSON: how many private photographs (or private
+ * album pages) they are in, and the faces of theirs that are published from
+ * those photographs anyway (see `fromWithheld` on Face). Nothing for a
+ * living person, and nothing when the audience is family.
+ */
+export const withheldFor = (personId: string): { n: number; faces: Face[] } => {
+  if (AUDIENCE === 'family' || LIVING.has(personId)) return { n: 0, faces: [] };
+  const units = new Set<string>();
+  for (const it of EVERY_ITEM) {
+    const note = (who: string | undefined, on: string | undefined) => {
+      if (who !== personId) return;
+      if (it.private) units.add(it.slug);
+      else if (on && it.faces.some((f) => f.key === on && f.private)) units.add(`${it.slug}#${on}`);
+    };
+    for (const d of it.depicts) note(d.person, d.region?.face);
+    for (const m of it.mentions) note(m.person, m.page ?? m.region?.face);
+  }
+  // Only the crops that have been cut. Until `npm run faces` has made one
+  // it is not offered, so a page never asks for a file that is not there.
+  const cut = (f: Face) => existsSync(`public/collections/faces/${f.crop}.webp`);
+  return {
+    n: units.size,
+    faces: EVERY_FACE.filter((f) => f.person === personId && f.fromWithheld && cut(f)),
+  };
 };
 
 /** People who appear in at least one item, with their appearance count. */
@@ -1059,9 +1657,130 @@ export const keyItemsOf = (slug: string, n = 3): ResolvedItem[] => {
   return [...new Set(picks)].map((k) => pool[k]);
 };
 
-export { PEOPLE, personById, NAME_INDEX };
 export { heading, headingDates, naturalName, naturalNameWithDates, KIND_NOUN } from './types';
 export type { Collection, Item, Person, ResolvedItem, ResolvedPrint };
+
+/* ------------------------------------------------------------------ *
+ * FOR THE SCRIPTS, never for a page: the whole of what is private and why.
+ * scripts/iiif-tiles.mjs reads `scans` to choose a bucket, scripts/faces.mjs
+ * reads `faces` to cut the crops and put each where it belongs, and
+ * scripts/family.mjs reads `paths` to check that nothing private reached
+ * the public site. `npm run private` prints the rest.
+ * ------------------------------------------------------------------ */
+export const PRIVACY = {
+  audience: AUDIENCE,
+  living: [...LIVING].map(([id, why]) => ({
+    id,
+    name: heading(everyPersonById.get(id) as Person),
+    why,
+  })),
+  items: EVERY_ITEM.flatMap((it) => {
+    const p = privacyOf.get(it.slug);
+    return p
+      ? [{ slug: it.slug, collection: it.collection, title: it.title, whole: p.whole, pages: [...p.pages], why: p.why }]
+      : [];
+  }),
+  /** 'collection/file', lower case. */
+  scans: [...PRIVATE_SCAN_KEYS],
+  faces: EVERY_FACE.map((f) => ({
+    id: f.id,
+    item: f.item.slug,
+    collection: f.collection,
+    file: f.file,
+    region: f.region,
+    store: f.store,
+    fromWithheld: f.fromWithheld,
+    crop: f.crop,
+  })),
+  /** Dead people's faces that stay private with their photograph, and why. */
+  heldFaces,
+  /** Addresses that must never appear on the public site. */
+  paths: [
+    ...EVERY_ITEM.filter((it) => it.private).map((it) => it.href),
+    ...[...LIVING.keys()].map((id) => `/collections/names/${id}`),
+  ],
+};
+
+/**
+ * A LIVING PERSON'S NAME, TYPED INTO SOMETHING PUBLIC. The rules above
+ * follow who is PICTURED or NAMED IN the records; they cannot read prose. A
+ * caption that says "with her grandson Austin Allison", an inscription
+ * naming a child, a dead person's scope note that lists their living
+ * children - those are words you wrote, on records that are public, and they
+ * are published as written. This finds them: every public record whose text
+ * holds a living person's name in full (two words or more, so a first name
+ * alone is not reported). `npm run private` prints the list; whether a line
+ * should change is yours to say.
+ */
+export const livingNamedInPublic = (): { person: string; where: string; found: string }[] => {
+  const out: { person: string; where: string; found: string }[] = [];
+  const living = [...LIVING.keys()].map((id) => {
+    const p = everyPersonById.get(id) as Person;
+    const forms = [...new Set([naturalName(p), ...(p.variants ?? [])])].filter((f) => f.trim().split(/\s+/).length >= 2);
+    return {
+      name: naturalName(p),
+      tests: forms.map((f) => ({
+        form: f,
+        re: new RegExp(`(^|[^\\p{L}])${f.trim().replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+')}($|[^\\p{L}])`, 'iu'),
+      })),
+    };
+  });
+  if (!living.length) return out;
+  const look = (where: string, texts: (string | undefined | null)[]) => {
+    const text = texts.filter(Boolean).join('\n');
+    if (!text) return;
+    for (const l of living) {
+      const hit = l.tests.find((t) => t.re.test(text));
+      if (hit) out.push({ person: l.name, where, found: hit.form });
+    }
+  };
+  for (const c of EVERY_COLLECTION) {
+    look(`collection ${c.slug}`, [c.title, c.scope, c.custody, c.arrangement, isPrivateItem(c.epigraph?.source) ? '' : c.epigraph?.text, c.epigraph?.attribution]);
+  }
+  for (const it of PUBLIC_ITEMS) {
+    look(`item ${it.slug}`, [
+      it.title,
+      it.description,
+      it.place,
+      it.provenance,
+      it.studio,
+      it.photographer?.name,
+      it.photographer?.basis,
+      it.identificationBasis,
+      it.rights.note,
+      ...it.date.basis,
+      ...it.inscriptions.flatMap((x) => [x.text, x.hand, x.note]),
+      ...it.depicts.flatMap((x) => [x.as, x.position, x.basis]),
+      ...it.mentions.flatMap((x) => [x.as, x.note, x.basis]),
+      ...(it.details ?? []).map((x) => x.caption),
+      ...it.prints.flatMap((x) => [x.title, x.description, x.place]),
+      ...(it.related ?? []).map((x) => x.relation),
+      ...it.faces.flatMap((x) => [x.label, x.transcription, x.surrogate.note]),
+    ]);
+  }
+  for (const p of EVERY_PERSON) {
+    if (LIVING.has(p.id)) continue;
+    look(`person ${p.id}`, [
+      p.scopeNote,
+      p.qualifier,
+      ...(p.sources ?? []),
+      ...(p.variants ?? []),
+      ...(p.relations ?? []).filter((r) => !LIVING.has(r.person)).map((r) => r.basis),
+    ]);
+  }
+  return out;
+};
+
+// Said once per build, in numbers only: a build log is no place for names.
+{
+  const whole = PRIVACY.items.filter((i) => i.whole).length;
+  const pages = PRIVACY.items.reduce((n, i) => n + i.pages.length, 0);
+  console.log(
+    `[collections] audience: ${AUDIENCE}. Private: ${LIVING.size} living ` +
+      `${LIVING.size === 1 ? 'person' : 'people'}, ${whole} item${whole === 1 ? '' : 's'}, ` +
+      `${pages} page${pages === 1 ? '' : 's'}, ${PRIVATE_SCAN_KEYS.size} scan${PRIVATE_SCAN_KEYS.size === 1 ? '' : 's'}.`
+  );
+}
 
 /* ------------------------------------------------------------------ *
  * Warnings, not errors: brothers and sisters whose recorded PARENTS do not

@@ -7,11 +7,13 @@
   },
   "scripts": {
     "dev": "node scripts/faces.mjs --check --warn && astro dev",
-    "build": "node scripts/faces.mjs --check && astro build && pagefind --site dist",
+    "dev:public": "node scripts/family.mjs --dev-public",
+    "build": "node scripts/faces.mjs --check && astro build && node --env-file-if-exists=.env scripts/family.mjs && pagefind --site dist",
     "preview": "astro preview",
     "astro": "astro",
     "iiif": "node --env-file=.env scripts/iiif-tiles.mjs",
-    "faces": "node --env-file-if-exists=.env scripts/faces.mjs"
+    "faces": "node --env-file-if-exists=.env scripts/faces.mjs",
+    "private": "node --env-file-if-exists=.env scripts/family.mjs --report"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",

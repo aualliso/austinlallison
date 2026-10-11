@@ -1,0 +1,86 @@
+---
+// src/components/FamilyBar.astro
+//
+// THE FAMILY BAR. One line across the top of every collections page, shown
+// only to a relative who has signed in at /collections/family: it says they
+// are looking at the family view, and lets them sign out.
+//
+// WHY IT IS IN EVERY PAGE, HIDDEN. Most collections pages are the same for
+// family as for everyone else, and those are served as the ordinary public
+// file. So the bar cannot be something only the family pages have. It is in
+// all of them, hidden, and the script below shows it when the sign-in's
+// marker cookie is there. That cookie (fam_ui) grants nothing - the real
+// one is checked by functions/collections/[[path]].js and cannot be read
+// from here - it only says whether to show this line.
+//
+// The `hidden` attribute does the hiding, so the rule below must never set
+// `display` on the bar itself: an author rule beats the browser's own
+// [hidden] rule, and the bar would show to everyone. It has bitten this
+// project twice. Hence :not([hidden]).
+import { FAMILY_SIGN_IN } from '../data/collections/index';
+---
+
+<div class="family-bar" hidden data-family-bar data-pagefind-ignore>
+  <svg class="family-bar-lock" aria-hidden="true" width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="3" y="7" width="10" height="7" rx="1"></rect>
+    <path d="M5.5 7V5a2.5 2.5 0 0 1 5 0v2"></path>
+  </svg>
+  <p class="family-bar-text">
+    Family view. Photographs marked private are not public; please do not share them.
+  </p>
+  <a href={`${FAMILY_SIGN_IN}/out`} class="family-bar-out" data-astro-reload>Sign out</a>
+</div>
+
+<style>
+  .family-bar:not([hidden]) {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin: 0 0 1.25rem;
+    padding: 0.45rem 0.9rem;
+    background: var(--color-iron);
+    color: var(--color-canvas);
+  }
+  .family-bar-lock {
+    flex-shrink: 0;
+  }
+  .family-bar-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    margin: 0;
+    font-family: var(--font-serif);
+    font-size: 1.05rem;
+    line-height: 1.3;
+  }
+  .family-bar-out {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    color: inherit;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+  @media print {
+    .family-bar {
+      display: none !important;
+    }
+  }
+</style>
+
+<script>
+  // Runs once per full page load; astro:page-load then fires after every
+  // navigation the router makes, so one listener serves every page.
+  const sync = () => {
+    const on = /(?:^|;\s*)fam_ui=1(?:;|$)/.test(document.cookie);
+    document.querySelectorAll<HTMLElement>('[data-family-bar]').forEach((el) => {
+      el.hidden = !on;
+    });
+  };
+  document.addEventListener('astro:page-load', sync);
+  sync();
+</script>

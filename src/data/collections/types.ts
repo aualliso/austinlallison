@@ -128,6 +128,13 @@ export interface Depiction {
   /** Where in the frame, once known. Leave unset rather than guessing. */
   position?: string;
   /**
+   * A LIVING PERSON WITH NO RECORD. Someone with a record in people.ts is
+   * marked there (`living: true`), once, and every photograph follows. This
+   * is for a name given only as `as` - set it and the photograph is private,
+   * exactly as if the person had a record. See "Living people" on Person.
+   */
+  living?: boolean;
+  /**
    * WHERE IN THE PICTURE, as a box. Optional, and worth it on any group
    * photograph: the item page outlines the face when a reader points at the
    * name, and Examine flies to it. `position` stays useful as words; this is
@@ -207,6 +214,8 @@ export interface Mention {
   confidence: Confidence;
   /** Omit to inherit the item's `identificationBasis`, as depictions do. */
   basis?: string;
+  /** A living person with no record in people.ts. See Depiction.living. */
+  living?: boolean;
   /** Anything else: the office held, the other pages the name appears on. */
   note?: string;
   /**
@@ -232,6 +241,13 @@ export interface Page extends Surrogate {
    * page on.
    */
   label?: string;
+  /**
+   * KEEP THIS ONE PAGE PRIVATE, whoever is or is not named on it. A page is
+   * already private when a living person is boxed or named on it; this is
+   * for the page that should be withheld for some other reason. The rest of
+   * the album or journal stays public. See `restricted` on Item.
+   */
+  restricted?: boolean;
 }
 
 export interface Inscription {
@@ -320,6 +336,31 @@ export interface Item {
   /** Defaults to 'supplied'. Say 'inscribed' when the object names itself. */
   titleSource?: 'inscribed' | 'supplied';
   series?: string;
+
+  /**
+   * KEEP THIS ITEM PRIVATE: `restricted: true`.
+   *
+   * YOU RARELY NEED IT. An item is private BY ITSELF when anyone in it is
+   * living - a person marked `living: true` in people.ts, or a depiction or
+   * mention marked `living: true` here. This flag is for everything that rule
+   * cannot see: a living person nobody has identified yet, a photograph a
+   * relative asked you to hold back.
+   *
+   * WHAT PRIVATE MEANS. The public site has no page for it, no thumbnail, no
+   * title, no names, no manifest, no search result and no place in the
+   * sitemap; its scans sit in the private bucket. A collection page says only
+   * how many items are withheld. Family who have signed in at
+   * /collections/family see it exactly as before, marked "Private".
+   *
+   * A PAGED ITEM (an album, a journal) is private PAGE BY PAGE: only the
+   * pages a living person is boxed or named on are withheld, and the rest of
+   * the volume stays public. Set this flag to withhold the whole volume, or
+   * `restricted: true` on one of its `pages` to withhold that page.
+   *
+   * TO MAKE SOMETHING PUBLIC AGAIN, take the flag off (or record the death)
+   * and run `npm run iiif`. `npm run private` lists what is private and why.
+   */
+  restricted?: boolean;
 
   /** Omit when you have not determined it; renders as nothing, not 'unknown'. */
   format?: ObjectFormat;
@@ -582,6 +623,23 @@ export interface Person {
    */
   dateType?: 'exact' | 'approximate' | 'active';
   /**
+   * LIVING PEOPLE. `living: true` and this person is private: no page of
+   * their own on the public site, no name in any public list, and every
+   * photograph they are in is withheld from the public (see `restricted` on
+   * Item). Family who have signed in see everything.
+   *
+   * WHEN SOMEONE DIES, enter the `death` year and take this line off; then
+   * `npm run iiif`. Each photograph is looked at again, and one that still
+   * shows another living person stays private.
+   *
+   * THE SAFETY NET. A person with no `death` year who was born in the last
+   * LIVING_YEARS years (index.ts), or who has no dates at all, is PRESUMED
+   * living even without this line - so a forgotten flag hides a photograph
+   * rather than exposing one. `living: false` overrules that, for someone
+   * known to have died whose year you do not have.
+   */
+  living?: boolean;
+  /**
    * Other designation, for when dates cannot distinguish two people who would
    * otherwise share a heading: 'cotton ginner', 'of Bailey County, Tex.'
    */
@@ -662,7 +720,26 @@ export interface ResolvedItem extends Item {
     surrogate: Surrogate;
     page?: number;
     transcription?: string;
+    /**
+     * A PRIVATE PAGE of a paged item. On the public site its image is the
+     * "withheld" card and nothing on it is listed; signed in, it is the page
+     * itself, and this flag is what the pages mark "Private" by.
+     */
+    private?: boolean;
   }[];
+  /**
+   * TRUE when the whole item is private (see `restricted` on Item, which is
+   * only one of the ways it gets there). Never true on the public site,
+   * where a private item is simply not in ALL_ITEMS.
+   */
+  private: boolean;
+  /**
+   * For each entry of `depicts`, its position in the item AS WRITTEN. The
+   * two differ only on the public site, where a paged item has lost the
+   * people on its private pages. Face crops are named by the written
+   * position, so they keep their file names either way.
+   */
+  depictSource: number[];
   /** How many pages; 0 for anything read as views rather than pages. */
   pageCount: number;
   /** The prints of an album, resolved; empty for everything else. */

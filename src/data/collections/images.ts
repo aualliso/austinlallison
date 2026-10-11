@@ -41,12 +41,39 @@
 // Page images are WebP. Every size also exists as default.jpg, which is what
 // IIIF viewers ask for; the WebP files sit beside them for this site only.
 //
+// PRIVATE SCANS (2026-10). A scan of a private item, or of a private page of
+// an album, has its tiles in the PRIVATE bucket, which has no address of its
+// own. What plate() returns for one depends on who the site is being built
+// for (AUDIENCE in index.ts):
+//
+//   family   the same files, under PRIVATE_BASE on this site. A request
+//            there is answered by functions/collections/[[path]].js, which
+//            reads the private bucket - and only for a signed-in relative.
+//   public   the "withheld" card, at every size, and no tile service. The
+//            picture's own proportions are kept, so the page around it does
+//            not move. `withheld` is true, for the routes that must leave
+//            such a view out altogether (the IIIF manifests, record.json).
+//
+// Which scans are private is decided in index.ts and nowhere else. WHERE a
+// private scan's files are just now is the tiling script's business: until
+// `npm run iiif` has moved them (`store: "private"` on the entry) they are
+// still in the public bucket, and the family pages go on using them from
+// there - so marking someone living never leaves family with a broken
+// picture. The public pages show the card from the moment the record says
+// private, whether or not the files have moved.
+//
 // FULL RESOLUTION lives in the tiles, not in any single file. An 8000px scan
 // decoded whole costs a browser something near 200 MB, which is a crash on
 // Firefox Android, so no page ever asks for one. `iiif` below is the service
 // address a tiled viewer uses to reach full resolution a few tiles at a time.
 
 import manifest from './iiif-images.json';
+import { AUDIENCE, isPrivateScan } from './index';
+
+/** Where the private bucket is served from, on this site, to family. */
+export const PRIVATE_BASE = '/collections/-';
+/** What the public are shown in place of a private page. */
+export const WITHHELD_IMAGE = '/collections/withheld.svg';
 
 type Size = { width: number; height: number };
 
@@ -59,6 +86,14 @@ type Entry = {
   sizes: Size[];
   rungs: { index: number[]; view: number[]; detail: number; study: number | null };
   hash: string;
+  /**
+   * Set by the tiling script once this scan's files are in the PRIVATE
+   * bucket. Absent: they are in the public one. `publicCopy` and
+   * `publicStale` are the script's own notes; nothing here reads them.
+   */
+  store?: 'private';
+  publicCopy?: boolean;
+  publicStale?: string[];
 };
 
 const IIIF = manifest as Record<string, Entry>;
@@ -94,9 +129,37 @@ export type Rendered = {
   /** Pixel size of the scan itself. */
   width: number;
   height: number;
-  /** IIIF Image service id, for a tiled viewer and for manifests. */
+  /**
+   * IIIF Image service id, for a tiled viewer and for manifests. Empty for a
+   * withheld view: there is nothing to zoom into.
+   */
   iiif: string;
+  /** True for a private scan shown to the public: every URL is the card. */
+  withheld: boolean;
 };
+
+/**
+ * The address a scan's files are served from. A public scan's is the one the
+ * tiling script recorded. A private scan's files have the same paths in the
+ * private bucket, so its address is that path under PRIVATE_BASE.
+ */
+const withheldIds = new Set<string>(); // private, by the records
+const privateIds = new Set<string>(); // ...and already in the private bucket
+const served = (id: string, isPrivate: boolean) =>
+  isPrivate ? `${PRIVATE_BASE}/${id.replace(/^https?:\/\/[^/]+\//, '')}` : id;
+for (const [key, e] of Object.entries(IIIF)) {
+  const slash = key.indexOf('/');
+  if (slash > 0 && isPrivateScan(key.slice(0, slash), key.slice(slash + 1))) {
+    withheldIds.add(e.id);
+    if (e.store === 'private') privateIds.add(e.id);
+  }
+}
+/**
+ * The same translation for anything that holds an address out of
+ * iiif-images.json and has to match it against what plate() returned - the
+ * item page's download list does.
+ */
+export const servedId = (id: string) => served(id, privateIds.has(id));
 
 /**
  * The manifest entry for a collection file: exact match, then a match on case
@@ -152,7 +215,7 @@ function sized(entry: Entry, width: number, format: 'webp' | 'jpg' = 'webp'): st
       `[collections] ${entry.id} has no ${width}px image. Run: npm run iiif -- --force`
     );
   }
-  return `${entry.id}/full/${size.width},${size.height}/0/default.${format}`;
+  return `${served(entry.id, privateIds.has(entry.id))}/full/${size.width},${size.height}/0/default.${format}`;
 }
 
 /**
@@ -169,6 +232,23 @@ export async function plate(
   const e = resolveEntry(collection, file);
   const { index, view, detail, study } = e.rungs;
 
+  if (withheldIds.has(e.id) && AUDIENCE !== 'family') {
+    return {
+      index: WITHHELD_IMAGE,
+      indexSrcset: `${WITHHELD_IMAGE} 1x`,
+      view: WITHHELD_IMAGE,
+      viewSrcset: `${WITHHELD_IMAGE} ${view[view.length - 1]}w`,
+      detail: WITHHELD_IMAGE,
+      detailWidth: detail,
+      study: WITHHELD_IMAGE,
+      studyWidth: detail,
+      width: e.width,
+      height: e.height,
+      iiif: '',
+      withheld: true,
+    };
+  }
+
   return {
     index: sized(e, index[0]),
     indexSrcset: index.map((w, i) => `${sized(e, w)} ${i + 1}x`).join(', '),
@@ -180,6 +260,7 @@ export async function plate(
     studyWidth: study ?? detail,
     width: e.width,
     height: e.height,
-    iiif: e.id,
+    iiif: served(e.id, privateIds.has(e.id)),
+    withheld: false,
   };
 }

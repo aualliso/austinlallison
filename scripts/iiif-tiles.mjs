@@ -8,6 +8,35 @@
 //   npm run iiif -- --dry-run          tile locally, upload nothing, write nothing
 //   npm run iiif -- --only swann       only scans whose path contains "swann"
 //   npm run iiif -- --force            redo scans even if unchanged
+//   npm run iiif -- --purge            delete the public copies of private scans
+//
+// PRIVATE SCANS (2026-10). A photograph of a living person is private, and
+// its files must not sit in the public bucket, where anyone with the address
+// can fetch them. So there are two buckets: R2_BUCKET, which the image host
+// serves, and R2_PRIVATE_BUCKET, which has no address at all and is read only
+// by functions/collections/[[path]].js, for signed-in family. A scan's files
+// have the SAME paths in either; only the bucket differs.
+//
+// WHICH SCANS ARE PRIVATE is decided in src/data/collections/index.ts (from
+// `living` on people and `restricted` on items) and only followed here.
+// Every run, after the tiling, each scan is put where it belongs:
+//
+//   newly private     its files are COPIED to the private bucket - bucket to
+//                     bucket, on Cloudflare's side, so nothing is re-tiled
+//                     and the scan need not be at hand. Its entry in
+//                     iiif-images.json gets `store: "private"`, and
+//                     `publicCopy: true` because the public files are still
+//                     there.
+//   public again      copied back, and deleted from the private bucket.
+//
+// THE PUBLIC COPIES ARE NOT DELETED BY AN ORDINARY RUN, on purpose. The site
+// that is live right now still shows those pictures from the public bucket;
+// deleting them first would break it until the new build is up. So:
+//   1. npm run iiif                 copies them across
+//   2. commit and push; wait for the site to deploy
+//   3. npm run iiif -- --purge      deletes the public copies
+//   4. clear Cloudflare's cache, which may hold them for up to a year
+// --purge tiles nothing and moves nothing; it only deletes.
 //
 // Only scans that are new, changed, or from an older VERSION are processed.
 //
@@ -54,7 +83,9 @@ import {
 import { tmpdir } from 'node:os';
 import { basename, dirname, extname, join, relative, sep } from 'node:path';
 import sharp from 'sharp';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  CopyObjectCommand, DeleteObjectsCommand, ListObjectsV2Command, PutObjectCommand, S3Client,
+} from '@aws-sdk/client-s3';
 
 // ── Settings ──────────────────────────────────────────────────────────────
 const MANIFEST_PATH = 'src/data/collections/iiif-images.json';
@@ -97,16 +128,21 @@ function env(key) {
 const args = process.argv.slice(2);
 const DRY = args.includes('--dry-run');
 const FORCE = args.includes('--force');
+const PURGE = args.includes('--purge');
 const onlyAt = args.indexOf('--only');
 const ONLY = onlyAt >= 0 ? args[onlyAt + 1] : null;
 
 const SCANS_DIR = env('SCANS_DIR');
 const IIIF_BASE = env('IIIF_BASE').replace(/\/+$/, '');
 const BUCKET = DRY ? null : env('R2_BUCKET');
+// Asked for only when a scan is private: see bucketOf().
+const PRIVATE_BUCKET = process.env.R2_PRIVATE_BUCKET || null;
 
 const s3 = DRY ? null : new S3Client({
   region: 'auto',
-  endpoint: `https://${env('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
+  // R2_ENDPOINT is for testing against a stand-in; leave it unset.
+  endpoint: process.env.R2_ENDPOINT || `https://${env('R2_ACCOUNT_ID')}.r2.cloudflarestorage.com`,
+  forcePathStyle: !!process.env.R2_ENDPOINT,
   credentials: {
     accessKeyId: env('R2_ACCESS_KEY_ID'),
     secretAccessKey: env('R2_SECRET_ACCESS_KEY'),
@@ -163,11 +199,11 @@ const CONTENT_TYPES = { '.jpg': 'image/jpeg', '.webp': 'image/webp', '.json': 'a
 // Anything under download/ is saved, not shown: see the header.
 const isDownload = (key) => key.split('/').at(-2) === DOWNLOAD_DIR;
 
-async function upload(key, file) {
+async function upload(key, file, bucket = BUCKET) {
   for (let attempt = 1; ; attempt++) {
     try {
       await s3.send(new PutObjectCommand({
-        Bucket: BUCKET,
+        Bucket: bucket,
         Key: key,
         Body: readFileSync(file),
         ContentType: CONTENT_TYPES[extname(file)] ?? 'application/octet-stream',
@@ -234,7 +270,7 @@ async function cutDownloads(base, root, rel, stem, W, H) {
 }
 
 // A scan tiled before downloads existed: cut and upload those alone.
-async function addDownloads(src, rel, hash, entry) {
+async function addDownloads(src, rel, hash, entry, bucket) {
   const { prefix, name, stem } = addressFor(rel, hash);
   const work = join(tmpdir(), `iiif-${process.pid}-${hash.slice(0, 10)}-dl`);
   rmSync(work, { recursive: true, force: true });
@@ -244,7 +280,7 @@ async function addDownloads(src, rel, hash, entry) {
     const files = walk(work);
     if (!DRY) {
       await pool(files, UPLOAD_CONCURRENCY, (f) =>
-        upload(`${prefix}/${name}/${toPosix(relative(work, f))}`, f));
+        upload(`${prefix}/${name}/${toPosix(relative(work, f))}`, f, bucket));
     }
     return download;
   } finally {
@@ -253,7 +289,7 @@ async function addDownloads(src, rel, hash, entry) {
 }
 
 // ── One face ──────────────────────────────────────────────────────────────
-async function processImage(src, rel, hash) {
+async function processImage(src, rel, hash, bucket) {
   const { prefix, name, stem } = addressFor(rel, hash);
   const serviceId = `${IIIF_BASE}/${prefix}/${name}`;
   const work = join(tmpdir(), `iiif-${process.pid}-${hash.slice(0, 10)}`);
@@ -334,7 +370,7 @@ async function processImage(src, rel, hash) {
     const files = walk(root);
     if (!DRY) {
       await pool(files, UPLOAD_CONCURRENCY, (f) =>
-        upload(`${prefix}/${name}/${toPosix(relative(root, f))}`, f));
+        upload(`${prefix}/${name}/${toPosix(relative(root, f))}`, f, bucket));
     }
 
     return {
@@ -346,10 +382,133 @@ async function processImage(src, rel, hash) {
   }
 }
 
+// ── Private scans ─────────────────────────────────────────────────────────
+// Which scans are private, from the records themselves: loaded through Vite,
+// as scripts/faces.mjs loads the faces (see the note there). 'collection/
+// file' in lower case, since Windows does not tell case apart and the
+// records and the folder need not agree on it.
+async function loadPrivateScans() {
+  let createServer;
+  try {
+    ({ createServer } = await import('vite'));
+  } catch {
+    console.error('Could not load Vite, which comes with Astro. Run: npm install');
+    process.exit(1);
+  }
+  const server = await createServer({
+    configFile: false,
+    root: process.cwd(),
+    logLevel: 'error',
+    appType: 'custom',
+    server: { middlewareMode: true, hmr: false, ws: false, watch: null },
+    optimizeDeps: { noDiscovery: true, include: [] },
+  });
+  try {
+    const data = await server.ssrLoadModule('/src/data/collections/index.ts');
+    return new Set(data.PRIVACY.scans);
+  } finally {
+    await server.close();
+  }
+}
+
+const privateScans = await loadPrivateScans();
+const isPrivate = (rel) => privateScans.has(rel.toLowerCase());
+
+function needPrivateBucket() {
+  if (PRIVATE_BUCKET || DRY) return;
+  console.error(
+    'Some scans are private, and R2_PRIVATE_BUCKET is not in .env.\n' +
+      'Add the name of the private bucket, e.g.  R2_PRIVATE_BUCKET=austinlallison-private',
+  );
+  process.exit(1);
+}
+const bucketOf = (rel) => {
+  if (!isPrivate(rel)) return BUCKET;
+  needPrivateBucket();
+  return PRIVATE_BUCKET;
+};
+
+// Everything one scan has in a bucket lives under one folder: the path of
+// its address, 'iiif/3/<collection>/<name>-<hash>/'.
+const folderOf = (id) => `${new URL(id).pathname.replace(/^\/+|\/+$/g, '')}/`;
+
+async function listFolder(bucket, folder) {
+  const keys = [];
+  let token;
+  do {
+    const page = await s3.send(new ListObjectsV2Command({ Bucket: bucket, Prefix: folder, ContinuationToken: token }));
+    for (const o of page.Contents ?? []) keys.push(o.Key);
+    token = page.IsTruncated ? page.NextContinuationToken : undefined;
+  } while (token);
+  return keys;
+}
+
+// Bucket to bucket, on the storage side: nothing is downloaded. Each file
+// keeps its content type and, for a download, its "save, don't show" header.
+async function copyFolder(from, to, folder) {
+  const keys = await listFolder(from, folder);
+  if (!keys.length) throw new Error(`nothing under ${folder} in ${from}`);
+  await pool(keys, UPLOAD_CONCURRENCY, (Key) =>
+    s3.send(new CopyObjectCommand({
+      Bucket: to,
+      Key,
+      CopySource: `${from}/${Key.split('/').map(encodeURIComponent).join('/')}`,
+    })));
+  return keys.length;
+}
+
+async function deleteFolder(bucket, folder) {
+  const keys = await listFolder(bucket, folder);
+  for (let n = 0; n < keys.length; n += 1000) {
+    await s3.send(new DeleteObjectsCommand({
+      Bucket: bucket,
+      Delete: { Objects: keys.slice(n, n + 1000).map((Key) => ({ Key })), Quiet: true },
+    }));
+  }
+  return keys.length;
+}
+
 // ── Run ───────────────────────────────────────────────────────────────────
 const manifest = existsSync(MANIFEST_PATH)
   ? JSON.parse(readFileSync(MANIFEST_PATH, 'utf8'))
   : {};
+
+// --purge: delete what private scans still have in the PUBLIC bucket, and
+// nothing else. See the header for when.
+if (PURGE) {
+  if (DRY) {
+    console.error('--purge deletes; it has no dry run. Run `npm run private` to see what it would do.');
+    process.exit(1);
+  }
+  let scans = 0, files = 0, problems = 0;
+  for (const [rel, entry] of Object.entries(manifest)) {
+    if (!entry.publicCopy && !entry.publicStale?.length) continue;
+    // Never while the records say the scan is public: then the public
+    // copy is the one the site uses.
+    if (entry.store !== 'private' || !isPrivate(rel)) continue;
+    try {
+      const folders = [...(entry.publicCopy ? [folderOf(entry.id)] : []), ...(entry.publicStale ?? [])];
+      for (const folder of folders) files += await deleteFolder(BUCKET, folder);
+      delete entry.publicCopy;
+      delete entry.publicStale;
+      saveManifest(manifest);
+      scans++;
+      console.log(`- ${rel}`);
+    } catch (err) {
+      problems++;
+      console.error(`✗ ${rel}: ${err.message}`);
+    }
+  }
+  console.log(`\n${scans} private scan(s) removed from the public bucket, ${files} files, ${problems} failed`);
+  if (scans) {
+    console.log(
+      '\nNow clear Cloudflare\'s cache for the image host, or it may go on serving its own\n' +
+        'copies: in the Cloudflare dashboard open the site (austinlallison.com), then\n' +
+        'Caching > Configuration > Purge Everything. Then commit iiif-images.json.',
+    );
+  }
+  process.exit(problems ? 1 : 0);
+}
 
 const all = walk(SCANS_DIR, (n) => SOURCE_EXTS.has(extname(n).toLowerCase()));
 const sources = all.filter((p) => !ONLY || toPosix(relative(SCANS_DIR, p)).includes(ONLY));
@@ -371,7 +530,10 @@ for (const src of sources) {
     // Tiled already, but from before downloads: add those and nothing else.
     const t0 = Date.now();
     try {
-      const download = await addDownloads(src, rel, hash, manifest[rel]);
+      const download = await addDownloads(
+        src, rel, hash, manifest[rel],
+        manifest[rel].store === 'private' ? (needPrivateBucket(), PRIVATE_BUCKET) : BUCKET,
+      );
       topped++;
       if (!DRY) {
         manifest[rel].download = download;
@@ -389,16 +551,30 @@ for (const src of sources) {
 
   const t0 = Date.now();
   try {
-    const { entry, files } = await processImage(src, rel, hash);
+    const before = manifest[rel];
+    const { entry, files } = await processImage(src, rel, hash, bucketOf(rel));
     tiles += files;
     done++;
+    if (isPrivate(rel)) {
+      entry.store = 'private';
+      // A private scan that used to be public, replaced by a new file: the
+      // OLD files are still in the public bucket, at the old address.
+      // Remembered here so --purge can delete them.
+      const leftPublic = before && (before.store !== 'private' || before.publicCopy);
+      if (leftPublic && before.id === entry.id) entry.publicCopy = true;
+      const stale = [
+        ...(before?.publicStale ?? []),
+        ...(leftPublic && before.id !== entry.id ? [folderOf(before.id)] : []),
+      ];
+      if (stale.length) entry.publicStale = stale;
+    }
     if (!DRY) {
       manifest[rel] = entry;
       saveManifest(manifest); // after every image, so an interrupted run resumes
     }
     const secs = ((Date.now() - t0) / 1000).toFixed(1);
-    console.log(`✓ ${rel}  ${entry.width}×${entry.height}  ${files} files  ${secs}s`);
-    console.log(`    ${entry.id}/info.json`);
+    console.log(`✓ ${rel}  ${entry.width}×${entry.height}  ${files} files  ${secs}s${entry.store === 'private' ? '  [private]' : ''}`);
+    if (entry.store !== 'private') console.log(`    ${entry.id}/info.json`);
   } catch (err) {
     failed++;
     console.error(`✗ ${rel}: ${err.message}`);
@@ -415,13 +591,62 @@ if (!ONLY) {
   }
 }
 
+// ── Put every scan where it belongs ───────────────────────────────────────
+// For scans tiled before they were private, or private no longer. Bucket to
+// bucket: the scans themselves are not needed, so this also runs for scans
+// that are not in the folder.
+let madePrivate = 0, madePublic = 0;
+if (!DRY) {
+  for (const [rel, entry] of Object.entries(manifest)) {
+    if (ONLY && !rel.includes(ONLY)) continue;
+    const want = isPrivate(rel);
+    const have = entry.store === 'private';
+    if (want === have) continue;
+    const folder = folderOf(entry.id);
+    try {
+      if (want) {
+        needPrivateBucket();
+        const n = await copyFolder(BUCKET, PRIVATE_BUCKET, folder);
+        entry.store = 'private';
+        entry.publicCopy = true;
+        madePrivate++;
+        console.log(`→ private  ${rel}  ${n} files copied`);
+      } else {
+        needPrivateBucket();
+        // If its public files were never purged they are still there.
+        const n = entry.publicCopy ? 0 : await copyFolder(PRIVATE_BUCKET, BUCKET, folder);
+        await deleteFolder(PRIVATE_BUCKET, folder);
+        delete entry.store;
+        delete entry.publicCopy;
+        delete entry.publicStale;
+        madePublic++;
+        console.log(`→ public   ${rel}  ${n ? `${n} files copied back` : 'its public files were still in place'}`);
+      }
+      saveManifest(manifest);
+    } catch (err) {
+      failed++;
+      console.error(`✗ ${rel}: could not move it (${err.message})`);
+    }
+  }
+}
+const awaitingPurge = Object.values(manifest).filter((e) => e.publicCopy || e.publicStale?.length).length;
+
 const mins = ((Date.now() - started) / 60000).toFixed(1);
 console.log(`\n${done} processed, ${topped} given downloads, ${skipped} unchanged, ${failed} failed, ${tiles} files, ${mins} min`);
+if (madePrivate || madePublic) {
+  console.log(`${madePrivate} made private, ${madePublic} made public again`);
+}
+if (awaitingPurge) {
+  console.log(
+    `\n${awaitingPurge} private scan(s) still have a copy in the public bucket. Commit and push, wait\n` +
+      'for the site to deploy, then run:  npm run iiif -- --purge',
+  );
+}
 
 // Face crops are cut from these same scans, so any face on a scan processed
 // above is now stale. Recut them while the scans are at hand. The child
 // inherits SCANS_DIR from this process's environment.
-if (!DRY && done) {
+if (!DRY && (done || madePrivate || madePublic)) {
   console.log('\nUpdating face crops...');
   const faces = spawnSync(process.execPath, ['scripts/faces.mjs'], { stdio: 'inherit' });
   if (faces.status !== 0) {

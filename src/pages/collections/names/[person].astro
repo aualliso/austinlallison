@@ -79,8 +79,12 @@
 //   against an AbortController that aborts on astro:before-swap.
 
 import RootLayout from '../../../layouts/RootLayout.astro';
+import FamilyBar from '../../../components/FamilyBar.astro';
 import {
   PEOPLE,
+  withheldFor,
+  livingKinOf,
+  FAMILY_SIGN_IN,
   personById,
   appearancesOf,
   personHref,
@@ -644,6 +648,34 @@ const STATUS_GLOSS: Record<string, string> = {
   provisional: 'The heading rests on the collection\u2019s own objects.',
 };
 
+// LIVING RELATIVES AND PRIVATE PHOTOGRAPHS. On the public site a living
+// relative is not in `kin` (relationsOf cannot return them) and a private
+// photograph is not in `appearances`; nothing above knows they exist. Two
+// lines say what is left out, in numbers only:
+//   - under the family, how many living relatives are not shown;
+//   - under the photographs, how many more are withheld - with, where it
+//     can be done safely, this person's own face from them (a tight crop of
+//     someone dead shows only them; see `fromWithheld` on Face).
+// Signed in, both are empty: the relatives and photographs are simply here,
+// and a private photograph is marked.
+const livingKin = livingKinOf(p.id);
+const LIVING_NOUN: Record<string, [string, string]> = {
+  parent: ['parent', 'parents'],
+  spouse: ['spouse', 'spouses'],
+  child: ['child', 'children'],
+  sibling: ['brother or sister', 'brothers and sisters'],
+};
+const livingKinParts = (['parent', 'spouse', 'child', 'sibling'] as const)
+  .filter((t) => livingKin[t] > 0)
+  .map((t) => `${livingKin[t]} living ${LIVING_NOUN[t][livingKin[t] === 1 ? 0 : 1]}`);
+const livingKinLine =
+  livingKinParts.length <= 1
+    ? livingKinParts.join('')
+    : `${livingKinParts.slice(0, -1).join(', ')} and ${livingKinParts[livingKinParts.length - 1]}`;
+const held = withheldFor(p.id);
+const PRIVATE_MARK =
+  'font-mono text-[0.65rem] uppercase tracking-[0.12em] border border-iron/50 text-iron px-1.5 py-0.5 ml-2 align-middle whitespace-nowrap';
+
 const H2 = 'sec-h mb-3';
 const MONO = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-sage';
 const QUAL = 'font-mono text-[0.7rem] uppercase tracking-[0.12em] text-caprock';
@@ -665,6 +697,7 @@ const LINK = 'text-caprock hover:underline';
   </noscript>
 
   <div class="person-page max-w-4xl mx-auto py-6 text-iron font-serif" data-person-page>
+    <FamilyBar />
     <div class="topline">
       <nav class={MONO} aria-label="Breadcrumb">
         <a href="/collections" class={LINK}>Collections</a>
@@ -916,6 +949,12 @@ const LINK = 'text-caprock hover:underline';
         </details>
       </section>
     )}
+    {livingKinLine && (
+      <p class="note mt-3" data-withheld>
+        {kin.length > 0 ? 'Also in the family: ' : 'In the family: '}{livingKinLine}, not shown here.{' '}
+        <a href={FAMILY_SIGN_IN} class={LINK}>Family sign-in</a>
+      </p>
+    )}
 
     <div class="bleed bleed--life">
     <!-- A LIFE IN PHOTOGRAPHS -->
@@ -1139,6 +1178,7 @@ const LINK = 'text-caprock hover:underline';
                 </a>
                 <div class="photo-text">
                   <a href={a.href} class={`${LINK} photo-title`}>{a.title}</a>
+                  {(a.item.private || a.leaf?.private) && <span class={PRIVATE_MARK}>Private</span>}
                   <div class={`${MONO} mt-1`}>
                     {a.when}
                     {coll && <> &middot; {coll}</>}
@@ -1171,6 +1211,35 @@ const LINK = 'text-caprock hover:underline';
             );
           })}
         </ul>
+      )}
+      {held.n > 0 && (
+        <div class="mt-6 border-t border-b border-haze py-3" data-withheld>
+          <p class="m-0 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+            <span class="text-lg">
+              {held.n} {appearances.length > 0 ? 'more ' : ''}{held.n === 1 ? 'photograph' : 'photographs'} withheld.
+            </span>
+            <span class="text-sm opacity-75 flex-1 min-w-[14rem]">Private, to protect living people. Open to family.</span>
+            <a href={FAMILY_SIGN_IN} class="font-mono text-[0.7rem] uppercase tracking-[0.12em] text-caprock hover:underline py-2">Family sign-in</a>
+          </p>
+          {held.faces.length > 0 && (
+            <ul class="list-none p-0 mt-3 mb-0 flex flex-wrap gap-3" aria-label={`${name}, from withheld photographs`}>
+              {held.faces.map((f) => (
+                <li>
+                  <img
+                    src={faceHref(f.id)}
+                    srcset={`${faceHref(f.id)} 1x, ${faceHref(f.id, 2)} 2x`}
+                    width={FACE_W}
+                    height={FACE_H}
+                    alt={`${name}, from a withheld photograph`}
+                    loading="lazy"
+                    decoding="async"
+                    class="block w-20 h-auto"
+                  />
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
       )}
     </section>
 

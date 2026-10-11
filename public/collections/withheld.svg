@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" role="img" aria-label="Image withheld">
+  <!-- Shown in place of a private page. No viewBox, on purpose: the card
+       fills whatever box the page gives it, and the words stay one size. -->
+  <rect width="100%" height="100%" fill="#e9e3d5"/>
+  <rect x="5%" y="5%" width="90%" height="90%" fill="#cfc7b6"/>
+  <rect x="5%" y="5%" width="90%" height="90%" fill="none" stroke="#3b3833" stroke-opacity="0.25"/>
+  <text x="50%" y="50%" text-anchor="middle" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="12" letter-spacing="1.6" fill="#3b3833">
+    <tspan x="50%" dy="-0.4em">IMAGE WITHHELD</tspan>
+    <tspan x="50%" dy="1.7em" font-size="10" letter-spacing="0.8" fill-opacity="0.75">shows living persons</tspan>
+  </text>
+</svg>

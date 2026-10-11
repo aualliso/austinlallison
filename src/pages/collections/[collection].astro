@@ -83,8 +83,11 @@
 // `mount: '#rrggbb'` on the collection pins or overrules it. Without either,
 // the page falls back to the site palette.
 import RootLayout from '../../layouts/RootLayout.astro';
+import FamilyBar from '../../components/FamilyBar.astro';
 import {
   COLLECTIONS,
+  withheldIn,
+  FAMILY_SIGN_IN,
   itemsOf,
   collectionBySlug,
   depictedNames,
@@ -350,6 +353,23 @@ const people = names
 const PEOPLE_NOTE = 'The people in this collection, in order of birth';
 const sortable = sections.some((s) => s.items.length > 1);
 const custodyKnown = !/^TODO/i.test(c.custody);
+
+// WHAT IS WITHHELD. Photographs of living people are private (see WHO SEES
+// WHAT in the data index): they are not in `items` at all on the public
+// site, so nothing above counts them or names them. The inventory closes
+// with one line saying how many there are and where family sign in. Signed
+// in, nothing is withheld, the figures are zero and the line is not drawn;
+// the private items are in the inventory with everything else, marked.
+const held = withheldIn(c.slug);
+const heldParts = [
+  held.items ? plural(held.items, 'photograph') : '',
+  held.pages ? plural(held.pages, 'album page') : '',
+].filter(Boolean);
+const heldLine = heldParts.length ? `${heldParts.join(' and ')} withheld` : '';
+// On a line of its own under the title: in the sheet view an entry is only
+// as wide as its print, and a tall portrait is narrow.
+const PRIVATE_MARK =
+  'inline-block font-mono text-[0.65rem] leading-tight uppercase tracking-[0.12em] border border-iron/50 text-iron px-1.5 py-0.5';
 ---
 
 <RootLayout
@@ -365,6 +385,7 @@ const custodyKnown = !/^TODO/i.test(c.custody);
   </noscript>
 
   <div class="collection max-w-4xl mx-auto py-6 text-iron font-serif" style={mountStyle(tone)} data-collection>
+    <FamilyBar />
     <!-- THE SPREAD: frontispiece and title page -->
     {fronti && frontR && record && (
       <section class="fronti" aria-labelledby="coll-title" data-room>
@@ -686,6 +707,11 @@ const custodyKnown = !/^TODO/i.test(c.custody);
                 </span>
                 <div class="entry-text">
                   <a href={i.href} class="entry-link text-caprock">{i.title}</a>
+                  {(i.private || i.faces.some((f) => f.private)) && (
+                    <div class="mt-1">
+                      <span class={PRIVATE_MARK}>{i.private ? 'Private' : 'Private pages'}</span>
+                    </div>
+                  )}
                   <div class="entry-meta font-mono text-[0.7rem] uppercase tracking-[0.08em] text-sage mt-0.5">
                     {i.controlNumber && <span>{i.controlNumber} &middot; </span>}
                     {i.format && <span>{i.format} &middot; </span>}
@@ -713,6 +739,14 @@ const custodyKnown = !/^TODO/i.test(c.custody);
         </ul>
       </section>
     ))}
+
+    {heldLine && (
+      <p class="mt-8 border-t border-b border-haze py-3 flex flex-wrap items-baseline gap-x-4 gap-y-1" data-withheld>
+        <span class="text-lg">{heldLine}.</span>
+        <span class="text-sm opacity-75 flex-1 min-w-[14rem]">Private, to protect living people. Open to family.</span>
+        <a href={FAMILY_SIGN_IN} class="font-mono text-[0.7rem] uppercase tracking-[0.1em] text-caprock hover:underline py-2">Family sign-in</a>
+      </p>
+    )}
 
     {names.length > 0 && (
       <section aria-labelledby={NAMES_ID} class="bleed names-band">

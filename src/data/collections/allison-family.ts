@@ -1450,14 +1450,16 @@ export const COLLECTION: Collection = {
           region: { face: 'recto', x: 67, y: 37.8, w: 14.7, h: 13.3 },
         },
         {
-          as: 'Susan',
+          as: 'Susan Allison Black',
+          living: true,
           confidence: 'certain',
           basis:
             'Known identity',
           region: { face: 'recto', x: 36, y: 46.6, w: 12.5, h: 11.4 },
         },
         {
-          as: 'Mack',
+          as: 'Mack Allison',
+          living: true,
           confidence: 'certain',
           basis:
             'Known identity',

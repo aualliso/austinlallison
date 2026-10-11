@@ -1115,6 +1115,7 @@ export const PEOPLE: Person[] = [
   },
   {
     id: 'allison-james-wiley',
+    living: true,
     authorized: 'Allison, James Wiley',
     surname: 'Allison',
     given: 'James Wiley',

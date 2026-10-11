@@ -34,7 +34,8 @@ export const GET: APIRoute = async ({ props, site }) => {
         id: abs(manifestPath(i.collection, i.slug)),
         type: 'Manifest',
         label: en(i.title),
-        thumbnail: [iiifImage(r.index, r.iiif)],
+        // No thumbnail when the item's own picture is a private page.
+        ...(r.withheld ? {} : { thumbnail: [iiifImage(r.index, r.iiif)] }),
       };
     })
   );

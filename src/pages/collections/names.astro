@@ -7,7 +7,16 @@
 // A-Z bar, and a filter over headings, reading forms and see-from forms
 // (?q= in the address keeps it).
 import RootLayout from '../../layouts/RootLayout.astro';
-import { PEOPLE, NAME_INDEX, appearancesOf, personById, personHref } from '../../data/collections/index';
+import FamilyBar from '../../components/FamilyBar.astro';
+import {
+  PEOPLE,
+  NAME_INDEX,
+  appearancesOf,
+  personById,
+  personHref,
+  withheldPeople,
+  FAMILY_SIGN_IN,
+} from '../../data/collections/index';
 import { heading, naturalName } from '../../data/collections/types';
 
 const H2 = 'sec-h border-b border-haze pb-1.5 mt-10 mb-4';
@@ -44,6 +53,9 @@ const fold = (v: string) =>
     .trim();
 const hayOf = (p: (typeof PEOPLE)[number]) => fold([heading(p), naturalName(p), ...(p.variants ?? [])].join(' '));
 const LETTER = 'font-mono text-[0.7rem] uppercase tracking-[0.1em]';
+// Living people have no heading here on the public site (they are not in
+// PEOPLE). The page says that there are some, and nothing else about them.
+const livingHeld = withheldPeople();
 ---
 
 <RootLayout
@@ -52,6 +64,7 @@ const LETTER = 'font-mono text-[0.7rem] uppercase tracking-[0.1em]';
   prose={false}
 >
   <div class="max-w-4xl mx-auto py-6 text-iron font-serif">
+    <FamilyBar />
     <nav class="font-mono text-[0.7rem] uppercase tracking-[0.1em] text-sage mb-4">
       <a href="/collections" class="text-caprock hover:underline">Collections</a>
     </nav>
@@ -102,6 +115,14 @@ const LETTER = 'font-mono text-[0.7rem] uppercase tracking-[0.1em]';
       </section>
     ))}
     <p class="italic opacity-70 mt-6" hidden data-names-empty>No heading or variant form matches.</p>
+
+    {livingHeld > 0 && (
+      <p class="mt-8 border-t border-b border-haze py-3 flex flex-wrap items-baseline gap-x-4 gap-y-1" data-withheld>
+        <span class="text-lg">Living people are not listed.</span>
+        <span class="text-sm opacity-75 flex-1 min-w-[14rem]">Their records are private, and open to family.</span>
+        <a href={FAMILY_SIGN_IN} class={`${LETTER} text-caprock hover:underline py-2`}>Family sign-in</a>
+      </p>
+    )}
 
     {variants.length > 0 && (
       <>
