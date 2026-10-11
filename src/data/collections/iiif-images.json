@@ -1,4 +1,72 @@
 {
+  "allison-family/allison-grizzle-military-newspaper.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-grizzle-military-newspaper-0cda9068db",
+    "width": 3204,
+    "height": 20352,
+    "sizes": [
+      {
+        "width": 51,
+        "height": 318
+      },
+      {
+        "width": 340,
+        "height": 2160
+      },
+      {
+        "width": 409,
+        "height": 2598
+      },
+      {
+        "width": 680,
+        "height": 4319
+      },
+      {
+        "width": 787,
+        "height": 4999
+      },
+      {
+        "width": 800,
+        "height": 5082
+      },
+      {
+        "width": 1200,
+        "height": 7622
+      },
+      {
+        "width": 1900,
+        "height": 12069
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 409,
+      "study": 787
+    },
+    "hash": "0cda9068db2ac66c83fed9f06948370f09ffb90e411ad823f16a7df0c8c95970",
+    "download": {
+      "full": {
+        "file": "allison-grizzle-military-newspaper.jpg",
+        "width": 3204,
+        "height": 20352,
+        "bytes": 14665782
+      },
+      "share": {
+        "file": "allison-grizzle-military-newspaper-2600px.jpg",
+        "width": 409,
+        "height": 2600,
+        "bytes": 301905
+      }
+    }
+  },
   "allison-family/allison-harold-discharged-1945-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-discharged-1945-recto-0fc4184e79",
@@ -525,6 +593,210 @@
       "share": null
     }
   },
+  "allison-family/allison-harold-jean-wedding-newspaper.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-wedding-newspaper-7921d584ab",
+    "width": 2945,
+    "height": 11938,
+    "sizes": [
+      {
+        "width": 93,
+        "height": 374
+      },
+      {
+        "width": 340,
+        "height": 1378
+      },
+      {
+        "width": 641,
+        "height": 2598
+      },
+      {
+        "width": 680,
+        "height": 2756
+      },
+      {
+        "width": 800,
+        "height": 3243
+      },
+      {
+        "width": 1200,
+        "height": 4864
+      },
+      {
+        "width": 1233,
+        "height": 4998
+      },
+      {
+        "width": 1900,
+        "height": 7702
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 641,
+      "study": 1233
+    },
+    "hash": "7921d584aba0e77be4d46dad05f630d268dcc779d6d69310300fed46e411d9ba",
+    "download": {
+      "full": {
+        "file": "allison-harold-jean-wedding-newspaper.jpg",
+        "width": 2945,
+        "height": 11938,
+        "bytes": 6810097
+      },
+      "share": {
+        "file": "allison-harold-jean-wedding-newspaper-2600px.jpg",
+        "width": 641,
+        "height": 2600,
+        "bytes": 453072
+      }
+    }
+  },
+  "allison-family/allison-harold-jim-grizzle.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jim-grizzle-0ce450d17a",
+    "width": 5422,
+    "height": 4390,
+    "sizes": [
+      {
+        "width": 339,
+        "height": 275
+      },
+      {
+        "width": 340,
+        "height": 275
+      },
+      {
+        "width": 680,
+        "height": 551
+      },
+      {
+        "width": 800,
+        "height": 648
+      },
+      {
+        "width": 1200,
+        "height": 972
+      },
+      {
+        "width": 1900,
+        "height": 1538
+      },
+      {
+        "width": 2600,
+        "height": 2105
+      },
+      {
+        "width": 5000,
+        "height": 4048
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "0ce450d17ac5cc1837620d078b29289b3e04f6215f00cd524604ccf32e1f05ca",
+    "download": {
+      "full": {
+        "file": "allison-harold-jim-grizzle.jpg",
+        "width": 5422,
+        "height": 4390,
+        "bytes": 3639344
+      },
+      "share": {
+        "file": "allison-harold-jim-grizzle-2600px.jpg",
+        "width": 2600,
+        "height": 2105,
+        "bytes": 883378
+      }
+    }
+  },
+  "allison-family/allison-harold-ollie-grizzle.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-ollie-grizzle-11b9251fd2",
+    "width": 5029,
+    "height": 7719,
+    "sizes": [
+      {
+        "width": 315,
+        "height": 483
+      },
+      {
+        "width": 340,
+        "height": 522
+      },
+      {
+        "width": 680,
+        "height": 1044
+      },
+      {
+        "width": 800,
+        "height": 1228
+      },
+      {
+        "width": 1200,
+        "height": 1842
+      },
+      {
+        "width": 1694,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2916
+      },
+      {
+        "width": 3258,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1694,
+      "study": 3258
+    },
+    "hash": "11b9251fd22bce29af16c4d5fab21a837409a5efadbbba1bb1dd61ef6aedfc0e",
+    "download": {
+      "full": {
+        "file": "allison-harold-ollie-grizzle.jpg",
+        "width": 5029,
+        "height": 7719,
+        "bytes": 3599531
+      },
+      "share": {
+        "file": "allison-harold-ollie-grizzle-2600px.jpg",
+        "width": 1694,
+        "height": 2600,
+        "bytes": 492016
+      }
+    }
+  },
   "allison-family/allison-harold-ollie-mae-grizzle-mildred-mckinstry-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-ollie-mae-grizzle-mildred-mckinstry-recto-d2cf610cd9",
@@ -729,6 +1001,74 @@
       }
     }
   },
+  "allison-family/allison-harold-oscar-pleasent-valley.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-oscar-pleasent-valley-6cfc435eae",
+    "width": 4416,
+    "height": 4396,
+    "sizes": [
+      {
+        "width": 276,
+        "height": 275
+      },
+      {
+        "width": 340,
+        "height": 338
+      },
+      {
+        "width": 680,
+        "height": 677
+      },
+      {
+        "width": 800,
+        "height": 796
+      },
+      {
+        "width": 1200,
+        "height": 1195
+      },
+      {
+        "width": 1900,
+        "height": 1891
+      },
+      {
+        "width": 2600,
+        "height": 2588
+      },
+      {
+        "width": 4416,
+        "height": 4396
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4416
+    },
+    "hash": "6cfc435eae57cb926e261574586009afeaf108221e170fb800d912c31a0c1702",
+    "download": {
+      "full": {
+        "file": "allison-harold-oscar-pleasent-valley.jpg",
+        "width": 4416,
+        "height": 4396,
+        "bytes": 1671690
+      },
+      "share": {
+        "file": "allison-harold-oscar-pleasent-valley-2600px.jpg",
+        "width": 2600,
+        "height": 2588,
+        "bytes": 654008
+      }
+    }
+  },
   "allison-family/allison-harold-san-antonio-1-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-san-antonio-1-recto-cdb93e6bdf",
@@ -797,6 +1137,74 @@
       }
     }
   },
+  "allison-family/allison-harold-training.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-training-8cf699398f",
+    "width": 5741,
+    "height": 4877,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 289
+      },
+      {
+        "width": 359,
+        "height": 305
+      },
+      {
+        "width": 680,
+        "height": 578
+      },
+      {
+        "width": 800,
+        "height": 680
+      },
+      {
+        "width": 1200,
+        "height": 1019
+      },
+      {
+        "width": 1900,
+        "height": 1614
+      },
+      {
+        "width": 2600,
+        "height": 2209
+      },
+      {
+        "width": 5000,
+        "height": 4248
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "8cf699398fdc3e735a9fdbe2e2388fbdf74f5074b9213f0278784ccd6e77d127",
+    "download": {
+      "full": {
+        "file": "allison-harold-training.jpg",
+        "width": 5741,
+        "height": 4877,
+        "bytes": 3076785
+      },
+      "share": {
+        "file": "allison-harold-training-2600px.jpg",
+        "width": 2600,
+        "height": 2209,
+        "bytes": 757336
+      }
+    }
+  },
   "allison-family/allison-harold-walking-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-walking-recto-5f59b3114f",
@@ -862,6 +1270,482 @@
         "width": 1668,
         "height": 2600,
         "bytes": 554695
+      }
+    }
+  },
+  "allison-family/allison-home-construction.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-home-construction-2e2246e906",
+    "width": 4454,
+    "height": 4520,
+    "sizes": [
+      {
+        "width": 279,
+        "height": 283
+      },
+      {
+        "width": 340,
+        "height": 345
+      },
+      {
+        "width": 680,
+        "height": 690
+      },
+      {
+        "width": 800,
+        "height": 812
+      },
+      {
+        "width": 1200,
+        "height": 1218
+      },
+      {
+        "width": 1900,
+        "height": 1928
+      },
+      {
+        "width": 2562,
+        "height": 2600
+      },
+      {
+        "width": 4454,
+        "height": 4520
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2562,
+      "study": 4454
+    },
+    "hash": "2e2246e906b01cdf692188c78d1ff309a4cce5452e0bf17327fd5b8f4f061e02",
+    "download": {
+      "full": {
+        "file": "allison-home-construction.jpg",
+        "width": 4454,
+        "height": 4520,
+        "bytes": 1787257
+      },
+      "share": {
+        "file": "allison-home-construction-2600px.jpg",
+        "width": 2562,
+        "height": 2600,
+        "bytes": 650691
+      }
+    }
+  },
+  "allison-family/allison-jack-football-1.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jack-football-1-fab5cc2752",
+    "width": 6139,
+    "height": 4928,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 273
+      },
+      {
+        "width": 384,
+        "height": 308
+      },
+      {
+        "width": 680,
+        "height": 546
+      },
+      {
+        "width": 800,
+        "height": 642
+      },
+      {
+        "width": 1200,
+        "height": 963
+      },
+      {
+        "width": 1900,
+        "height": 1525
+      },
+      {
+        "width": 2600,
+        "height": 2087
+      },
+      {
+        "width": 5000,
+        "height": 4014
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "fab5cc2752d1f7dcd7ec26ec0aa380ff9f8852e22b8b190b4c1ca79a45d9ab65",
+    "download": {
+      "full": {
+        "file": "allison-jack-football-1.jpg",
+        "width": 6139,
+        "height": 4928,
+        "bytes": 3538602
+      },
+      "share": {
+        "file": "allison-jack-football-1-2600px.jpg",
+        "width": 2600,
+        "height": 2087,
+        "bytes": 735687
+      }
+    }
+  },
+  "allison-family/allison-jack-football-2.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jack-football-2-d1cab59eb1",
+    "width": 6189,
+    "height": 5082,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 279
+      },
+      {
+        "width": 387,
+        "height": 318
+      },
+      {
+        "width": 680,
+        "height": 558
+      },
+      {
+        "width": 800,
+        "height": 657
+      },
+      {
+        "width": 1200,
+        "height": 985
+      },
+      {
+        "width": 1900,
+        "height": 1560
+      },
+      {
+        "width": 2600,
+        "height": 2135
+      },
+      {
+        "width": 5000,
+        "height": 4106
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "d1cab59eb183418b84aff606ba58a4ce51162bffa8ce2581267d141a0fcf6c38",
+    "download": {
+      "full": {
+        "file": "allison-jack-football-2.jpg",
+        "width": 6189,
+        "height": 5082,
+        "bytes": 4036860
+      },
+      "share": {
+        "file": "allison-jack-football-2-2600px.jpg",
+        "width": 2600,
+        "height": 2135,
+        "bytes": 821050
+      }
+    }
+  },
+  "allison-family/allison-jack-letterman-jacket-1.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jack-letterman-jacket-1-d592ad118e",
+    "width": 4332,
+    "height": 4295,
+    "sizes": [
+      {
+        "width": 271,
+        "height": 269
+      },
+      {
+        "width": 340,
+        "height": 337
+      },
+      {
+        "width": 680,
+        "height": 674
+      },
+      {
+        "width": 800,
+        "height": 793
+      },
+      {
+        "width": 1200,
+        "height": 1190
+      },
+      {
+        "width": 1900,
+        "height": 1884
+      },
+      {
+        "width": 2600,
+        "height": 2578
+      },
+      {
+        "width": 4332,
+        "height": 4295
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4332
+    },
+    "hash": "d592ad118ecee0c655b7705756937e9cb221539b89db04a43f4a6827c5f20299",
+    "download": {
+      "full": {
+        "file": "allison-jack-letterman-jacket-1.jpg",
+        "width": 4332,
+        "height": 4295,
+        "bytes": 1381437
+      },
+      "share": {
+        "file": "allison-jack-letterman-jacket-1-2600px.jpg",
+        "width": 2600,
+        "height": 2578,
+        "bytes": 515303
+      }
+    }
+  },
+  "allison-family/allison-jack-letterman-jacket-2.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jack-letterman-jacket-2-43a09ed0cc",
+    "width": 4291,
+    "height": 4305,
+    "sizes": [
+      {
+        "width": 269,
+        "height": 270
+      },
+      {
+        "width": 340,
+        "height": 341
+      },
+      {
+        "width": 680,
+        "height": 682
+      },
+      {
+        "width": 800,
+        "height": 803
+      },
+      {
+        "width": 1200,
+        "height": 1204
+      },
+      {
+        "width": 1900,
+        "height": 1906
+      },
+      {
+        "width": 2592,
+        "height": 2600
+      },
+      {
+        "width": 4291,
+        "height": 4305
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2592,
+      "study": 4291
+    },
+    "hash": "43a09ed0cc4114082b90a3b24c0f538e4fa37300011d9f63b217a23c6e731132",
+    "download": {
+      "full": {
+        "file": "allison-jack-letterman-jacket-2.jpg",
+        "width": 4291,
+        "height": 4305,
+        "bytes": 1481108
+      },
+      "share": {
+        "file": "allison-jack-letterman-jacket-2-2600px.jpg",
+        "width": 2592,
+        "height": 2600,
+        "bytes": 554838
+      }
+    }
+  },
+  "allison-family/allison-jack-letterman-jacket-3.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jack-letterman-jacket-3-d74764ca55",
+    "width": 4253,
+    "height": 4282,
+    "sizes": [
+      {
+        "width": 266,
+        "height": 268
+      },
+      {
+        "width": 340,
+        "height": 342
+      },
+      {
+        "width": 680,
+        "height": 685
+      },
+      {
+        "width": 800,
+        "height": 805
+      },
+      {
+        "width": 1200,
+        "height": 1208
+      },
+      {
+        "width": 1900,
+        "height": 1913
+      },
+      {
+        "width": 2582,
+        "height": 2600
+      },
+      {
+        "width": 4253,
+        "height": 4282
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2582,
+      "study": 4253
+    },
+    "hash": "d74764ca5585dbab025876ea254bbbf1518c8fc67fa3b76fa294eb4cf3a885ed",
+    "download": {
+      "full": {
+        "file": "allison-jack-letterman-jacket-3.jpg",
+        "width": 4253,
+        "height": 4282,
+        "bytes": 1645387
+      },
+      "share": {
+        "file": "allison-jack-letterman-jacket-3-2600px.jpg",
+        "width": 2582,
+        "height": 2600,
+        "bytes": 638890
+      }
+    }
+  },
+  "allison-family/allison-james-wiley-birthday-1959.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-james-wiley-birthday-1959-0d70fe0675",
+    "width": 4441,
+    "height": 6140,
+    "sizes": [
+      {
+        "width": 278,
+        "height": 384
+      },
+      {
+        "width": 340,
+        "height": 470
+      },
+      {
+        "width": 680,
+        "height": 940
+      },
+      {
+        "width": 800,
+        "height": 1106
+      },
+      {
+        "width": 1200,
+        "height": 1659
+      },
+      {
+        "width": 1881,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 2627
+      },
+      {
+        "width": 3616,
+        "height": 4999
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1881,
+      "study": 3616
+    },
+    "hash": "0d70fe0675906c4e07f06f362be18a2153fbe4a016495cc86c362b611ef2eda4",
+    "download": {
+      "full": {
+        "file": "allison-james-wiley-birthday-1959.jpg",
+        "width": 4441,
+        "height": 6140,
+        "bytes": 2881285
+      },
+      "share": {
+        "file": "allison-james-wiley-birthday-1959-2600px.jpg",
+        "width": 1881,
+        "height": 2600,
+        "bytes": 662290
       }
     }
   },
@@ -1740,6 +2624,142 @@
       }
     }
   },
+  "allison-family/allison-oscar-mia-newspaper.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-mia-newspaper-99c6e33797",
+    "width": 3725,
+    "height": 5535,
+    "sizes": [
+      {
+        "width": 233,
+        "height": 346
+      },
+      {
+        "width": 340,
+        "height": 505
+      },
+      {
+        "width": 680,
+        "height": 1010
+      },
+      {
+        "width": 800,
+        "height": 1189
+      },
+      {
+        "width": 1200,
+        "height": 1783
+      },
+      {
+        "width": 1750,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2823
+      },
+      {
+        "width": 3365,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1750,
+      "study": 3365
+    },
+    "hash": "99c6e33797624956680af8bc79d565bc97a66032e6a8a1bd705c29fadb104981",
+    "download": {
+      "full": {
+        "file": "allison-oscar-mia-newspaper.jpg",
+        "width": 3725,
+        "height": 5535,
+        "bytes": 3558116
+      },
+      "share": {
+        "file": "allison-oscar-mia-newspaper-2600px.jpg",
+        "width": 1750,
+        "height": 2600,
+        "bytes": 884114
+      }
+    }
+  },
+  "allison-family/allison-oscar-portrait.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-portrait-bc82c47633",
+    "width": 5055,
+    "height": 7748,
+    "sizes": [
+      {
+        "width": 316,
+        "height": 485
+      },
+      {
+        "width": 340,
+        "height": 521
+      },
+      {
+        "width": 680,
+        "height": 1042
+      },
+      {
+        "width": 800,
+        "height": 1226
+      },
+      {
+        "width": 1200,
+        "height": 1839
+      },
+      {
+        "width": 1696,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2912
+      },
+      {
+        "width": 3262,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1696,
+      "study": 3262
+    },
+    "hash": "bc82c47633b974c810139bd389fcf663cee7f11d53c706fb0c3d224e99f74004",
+    "download": {
+      "full": {
+        "file": "allison-oscar-portrait.jpg",
+        "width": 5055,
+        "height": 7748,
+        "bytes": 3973219
+      },
+      "share": {
+        "file": "allison-oscar-portrait-2600px.jpg",
+        "width": 1696,
+        "height": 2600,
+        "bytes": 517146
+      }
+    }
+  },
   "allison-family/allison-oscar-simmon-portrait-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-simmon-portrait-recto-6aeb029d29",
@@ -2126,6 +3146,74 @@
       "share": null
     }
   },
+  "allison-family/allison-oscar-with-other-military-men.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-with-other-military-men-985bec6b1a",
+    "width": 5852,
+    "height": 4327,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 251
+      },
+      {
+        "width": 366,
+        "height": 271
+      },
+      {
+        "width": 680,
+        "height": 503
+      },
+      {
+        "width": 800,
+        "height": 592
+      },
+      {
+        "width": 1200,
+        "height": 887
+      },
+      {
+        "width": 1900,
+        "height": 1405
+      },
+      {
+        "width": 2600,
+        "height": 1922
+      },
+      {
+        "width": 5000,
+        "height": 3697
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "985bec6b1a7f631f29003ae08f3912bd3fa0af33ad278e15455a6b24a7da5ada",
+    "download": {
+      "full": {
+        "file": "allison-oscar-with-other-military-men.jpg",
+        "width": 5852,
+        "height": 4327,
+        "bytes": 2519152
+      },
+      "share": {
+        "file": "allison-oscar-with-other-military-men-2600px.jpg",
+        "width": 2600,
+        "height": 1922,
+        "bytes": 617993
+      }
+    }
+  },
   "allison-family/allison-oscar-wrestling-calf-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-wrestling-calf-recto-f601e5371b",
@@ -2395,6 +3483,210 @@
         "width": 2600,
         "height": 1769,
         "bytes": 625771
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-working-on-car.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-working-on-car-ec4dde4bd8",
+    "width": 5620,
+    "height": 3824,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 231
+      },
+      {
+        "width": 352,
+        "height": 239
+      },
+      {
+        "width": 680,
+        "height": 463
+      },
+      {
+        "width": 800,
+        "height": 544
+      },
+      {
+        "width": 1200,
+        "height": 817
+      },
+      {
+        "width": 1900,
+        "height": 1293
+      },
+      {
+        "width": 2600,
+        "height": 1769
+      },
+      {
+        "width": 5000,
+        "height": 3402
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "ec4dde4bd8e747d386fccf62a57b588e6cfb43b07444e643a6980a55f63a1448",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-working-on-car.jpg",
+        "width": 5620,
+        "height": 3824,
+        "bytes": 2114654
+      },
+      "share": {
+        "file": "grizzle-wiley-working-on-car-2600px.jpg",
+        "width": 2600,
+        "height": 1769,
+        "bytes": 536633
+      }
+    }
+  },
+  "allison-family/hewatt-aubrey-sammy-kids.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/hewatt-aubrey-sammy-kids-c6062474a2",
+    "width": 3120,
+    "height": 4415,
+    "sizes": [
+      {
+        "width": 195,
+        "height": 276
+      },
+      {
+        "width": 340,
+        "height": 481
+      },
+      {
+        "width": 680,
+        "height": 962
+      },
+      {
+        "width": 800,
+        "height": 1132
+      },
+      {
+        "width": 1200,
+        "height": 1698
+      },
+      {
+        "width": 1837,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2689
+      },
+      {
+        "width": 3120,
+        "height": 4415
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1837,
+      "study": 3120
+    },
+    "hash": "c6062474a295593445066d1e7c807f8f664e6b649a615df4451e04d643a8f969",
+    "download": {
+      "full": {
+        "file": "hewatt-aubrey-sammy-kids.jpg",
+        "width": 3120,
+        "height": 4415,
+        "bytes": 1405960
+      },
+      "share": {
+        "file": "hewatt-aubrey-sammy-kids-2600px.jpg",
+        "width": 1837,
+        "height": 2600,
+        "bytes": 550616
+      }
+    }
+  },
+  "allison-family/hewatt-prisoner-newspaper.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/hewatt-prisoner-newspaper-844ca85868",
+    "width": 2820,
+    "height": 3774,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 455
+      },
+      {
+        "width": 353,
+        "height": 472
+      },
+      {
+        "width": 680,
+        "height": 910
+      },
+      {
+        "width": 800,
+        "height": 1071
+      },
+      {
+        "width": 1200,
+        "height": 1606
+      },
+      {
+        "width": 1900,
+        "height": 2543
+      },
+      {
+        "width": 1943,
+        "height": 2600
+      },
+      {
+        "width": 2820,
+        "height": 3774
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1943,
+      "study": 2820
+    },
+    "hash": "844ca858684cd6a2eae42fb525081157d03380e139723e7fa254d98b4ca9071e",
+    "download": {
+      "full": {
+        "file": "hewatt-prisoner-newspaper.jpg",
+        "width": 2820,
+        "height": 3774,
+        "bytes": 1895397
+      },
+      "share": {
+        "file": "hewatt-prisoner-newspaper-2600px.jpg",
+        "width": 1943,
+        "height": 2600,
+        "bytes": 936376
       }
     }
   },
@@ -17651,6 +18943,74 @@
       }
     }
   },
+  "mckinstry-family/mckinstry-jean-4H-newspaper.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-4H-newspaper-e415b41ff6",
+    "width": 10294,
+    "height": 9156,
+    "sizes": [
+      {
+        "width": 322,
+        "height": 287
+      },
+      {
+        "width": 340,
+        "height": 302
+      },
+      {
+        "width": 680,
+        "height": 605
+      },
+      {
+        "width": 800,
+        "height": 712
+      },
+      {
+        "width": 1200,
+        "height": 1067
+      },
+      {
+        "width": 1900,
+        "height": 1690
+      },
+      {
+        "width": 2600,
+        "height": 2313
+      },
+      {
+        "width": 5000,
+        "height": 4447
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "e415b41ff6fb7178dff060c7695a51989fd1f4b5503fb4d3e31a46423c5a1484",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-4H-newspaper.jpg",
+        "width": 10294,
+        "height": 9156,
+        "bytes": 21411738
+      },
+      "share": {
+        "file": "mckinstry-jean-4H-newspaper-2600px.jpg",
+        "width": 2600,
+        "height": 2313,
+        "bytes": 1787403
+      }
+    }
+  },
   "mckinstry-family/mckinstry-jean-and-mildred-1-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-and-mildred-1-recto-dff8dba4aa",
@@ -22101,6 +23461,74 @@
         "bytes": 645741
       },
       "share": null
+    }
+  },
+  "mckinstry-family/mckinstry-sam-school-board-newspaper.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sam-school-board-newspaper-63f87aad8f",
+    "width": 3432,
+    "height": 1392,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 138
+      },
+      {
+        "width": 429,
+        "height": 174
+      },
+      {
+        "width": 680,
+        "height": 276
+      },
+      {
+        "width": 800,
+        "height": 324
+      },
+      {
+        "width": 1200,
+        "height": 487
+      },
+      {
+        "width": 1900,
+        "height": 771
+      },
+      {
+        "width": 2600,
+        "height": 1055
+      },
+      {
+        "width": 3432,
+        "height": 1392
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 3432
+    },
+    "hash": "63f87aad8f03f36decda7aea9f05c9298b5e016dc2d09cf196dcd54b4f75202a",
+    "download": {
+      "full": {
+        "file": "mckinstry-sam-school-board-newspaper.jpg",
+        "width": 3432,
+        "height": 1392,
+        "bytes": 791417
+      },
+      "share": {
+        "file": "mckinstry-sam-school-board-newspaper-2600px.jpg",
+        "width": 2600,
+        "height": 1055,
+        "bytes": 464485
+      }
     }
   },
   "mckinstry-family/mckinstry-sam-standing-next-to-house-recto.jpg": {

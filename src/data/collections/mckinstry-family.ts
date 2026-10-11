@@ -4203,6 +4203,9 @@ export const COLLECTION: Collection = {
         status: 'public-domain',
         note: 'Photographer unidentified; unpublished.',
       },
+      related: [
+        { slug: 'mckinstry-jean-4H-newspaper', relation: 'Likely from same show'}
+      ],
       inscriptions: [
         { location: 'recto',
           medium: 'ink',
@@ -7263,6 +7266,73 @@ export const COLLECTION: Collection = {
           basis: 'Known identity',
           region: { face: 'recto', x: 42.8, y: 30.3, w: 11.5, h: 9.3 },
         },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-sam-school-board-newspaper',
+      title: '[Sam McKinstry re-elected to school board]',
+      controlNumber: 'e.1.15',
+      titleSource: 'supplied',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '1941',
+        basis: [
+          'This newspaper is from February 18, 1941',
+        ],
+        confidence: 'certain',
+      },
+      format: 'newspaper',
+      recto: { file: 'mckinstry-sam-school-board-newspaper.jpg' },
+      description: 'This 1941 newspaper article mentions the re-election of Sam McKinstry to the Hagerman Board of Education',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        
+      ],
+      mentions: [
+        {person: 'mckinstry-samuel-small', basis: 'mentioned in text', confidence: 'certain'}
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-jean-4H-newspaper',
+      title: '[Sears Roebuck Buys Five 4-H Calves]',
+      controlNumber: 'e.1.21',
+      titleSource: 'supplied',
+      place: 'Roswell, New Mexico',
+      date: {
+        display: '[1938]',
+        basis: [
+          'It is presumed this is from 1938.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'newspaper',
+      recto: { file: 'mckinstry-jean-4H-newspaper.jpg' },
+      description: 'This newspaper matches a photograph of Jean supposedly taken from 1938 when she participated in 4-H around this time.',
+      related: [
+        { slug: 'mckinstry-jean-4H-calf', relation: 'Likely from same show'}
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 57.2, y: 32.1, w: 6.6, h: 7.9 },
+        },
+      ],
+      mentions: [
+        {person: 'allison-veta-jean-mckinstry', basis: 'mentioned in text', confidence: 'certain'}
       ],
       rights: {
         status: 'public-domain',

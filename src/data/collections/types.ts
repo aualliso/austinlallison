@@ -61,6 +61,7 @@ export type ObjectFormat =
   | 'bound photograph album'
   | 'letter'
   | 'document'
+  | 'newspaper'
   | 'unknown';
 
 /**

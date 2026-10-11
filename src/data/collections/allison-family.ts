@@ -1209,7 +1209,7 @@ export const COLLECTION: Collection = {
       controlNumber: 'e.1.12',
       date: {
         display: '[1940-1942]',
-        earliest: 1941,
+        earliest: 1940,
         latest: 1942,
         basis: ['This photograph was likely taken prior to Oscar\'s time in the military or before he was deployed.'],
         confidence: 'probable',
@@ -1276,6 +1276,323 @@ export const COLLECTION: Collection = {
           basis:
             'Known identity',
           region: { face: 'recto', x: 16.6, y: 24.7, w: 8.5, h: 15.8 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-oscar-mia-newspaper',
+      title: '[Sgt. Allison of Dexter Reported Missing In Action]',
+      titleSource: 'supplied',
+      format: 'newspaper',
+      place: 'Roswell, New Mexico',
+      controlNumber: 'e.1.14',
+      date: {
+        display: '1944',
+        earliest: 1944,
+        latest: 1944,
+        basis: ['The date of this newspaper is April 14, 1944.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-oscar-mia-newspaper.jpg',
+      },
+      description:
+        'This April 14, 1944 article from the Roswell Daily Record notes that Oscar Allison was reported missing in action.',
+      inscriptions: [
+        
+      ],
+      mentions: [
+        { person: 'allison-oscar-ingle', basis: 'mentioned in article', confidence: 'certain',}
+        //   note: 'As "W. M. Swann", presiding.' },
+        // { as: 'J. H. Bledsoe', page: 'p5', confidence: 'certain',
+        //   note: 'Elected secretary.' },
+      ],
+      depicts: [
+       
+      ],
+    },
+    {
+      slug: 'allison-harold-jean-wedding-newspaper',
+      title: '[McKinstry-Allison Wedding Solemnized Sunday Evening]',
+      titleSource: 'supplied',
+      format: 'newspaper',
+      place: 'Hagerman, New Mexico',
+      controlNumber: 'e.1.16',
+      date: {
+        display: '1944',
+        earliest: 1944,
+        latest: 1944,
+        basis: ['The Allison wedding was in 1944.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-harold-jean-wedding-newspaper.jpg',
+      },
+      description:
+        'This newspaper article highlights the wedding of Harold and Jean Allison on March 26th, 1944.',
+      inscriptions: [
+        
+      ],
+      mentions: [
+        { person: 'allison-harold-lamar', basis: 'mentioned in article', confidence: 'certain',},
+        { person: 'allison-veta-jean-mckinstry', basis: 'mentioned in article', confidence: 'certain',}
+      ],
+      depicts: [
+       
+      ],
+    },
+    {
+      slug: 'allison-grizzle-military-newspaper',
+      title: '[Three Roswell Boys Serve Their Country]',
+      titleSource: 'supplied',
+      format: 'newspaper',
+      place: 'Roswell, New Mexico',
+      controlNumber: 'e.1.17',
+      date: {
+        display: '1944',
+        earliest: 1944,
+        latest: 1944,
+        basis: ['The date of April 24, 1944 is written on the newspaper'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-grizzle-military-newspaper.jpg',
+      },
+      description:
+        'This newspaper article highlights the military service of Harold Allison, Oscar Allison, and Wiley Grizzle, Jr.',
+      inscriptions: [
+        
+      ],
+      mentions: [
+        { person: 'allison-harold-lamar', basis: 'mentioned in article', confidence: 'certain',},
+        { person: 'allison-oscar-ingle', basis: 'mentioned in article', confidence: 'certain',},
+        { person: 'grizzle-wiley-jr', basis: 'mentioned in article', confidence: 'certain',}
+      ],
+      depicts: [
+       
+      ],
+    },
+    {
+      slug: 'hewatt-prisoner-newspaper',
+      title: '[Lt. A.E. Hewatt Arrives Home From German Prison Camp]',
+      titleSource: 'supplied',
+      format: 'newspaper',
+      place: 'Roswell, New Mexico',
+      controlNumber: 'e.1.19',
+      date: {
+        display: '1945',
+        earliest: 1945,
+        latest: 1945,
+        basis: ['The date of May 25, 1945 is written on the newspaper'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'hewatt-prisoner-newspaper.jpg',
+      },
+      description:
+        'This newspaper details the return of Aubrey Hewatt home from a German prison camp in 1945.',
+      inscriptions: [
+        
+      ],
+      mentions: [
+        { person: 'hewatt-aubrey-edward', basis: 'mentioned in article', confidence: 'certain',},
+        { person: 'allison-sammy-nan-mckinstry', basis: 'mentioned in article', confidence: 'certain',},
+        
+      ],
+      depicts: [
+       
+      ],
+    },
+    {
+      slug: 'hewatt-aubrey-sammy-kids',
+      title: '[Aubrey and Sammy Hewatt with kids Nan, Susan, and Mack]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Roswell, New Mexico',
+      controlNumber: 'e.1.20',
+      date: {
+        display: '[1945]',
+        earliest: 1945,
+        latest: 1945,
+        basis: ['This photograph was likely taken about the time Aubrey Hewatt returned from being a prisoner of war in May 1945.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'hewatt-aubrey-sammy-kids.jpg',
+      },
+      description:
+        'This photograph depicts Aubrey and Sammy Hewatt standing near a car with their three children, Nan, Susan, and Mack.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'hewatt-aubrey-edward',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 25.3, y: 9.3, w: 15.8, h: 12.1 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 46.6, y: 12.6, w: 14, h: 12.3 },
+        },
+        {
+          person: 'johnson-nan-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 67, y: 37.8, w: 14.7, h: 13.3 },
+        },
+        {
+          as: 'Susan',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 36, y: 46.6, w: 12.5, h: 11.4 },
+        },
+        {
+          as: 'Mack',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 16.6, y: 21.9, w: 15.1, h: 11.7 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-james-wiley-birthday-1959',
+      title: '[Jim Allison birthday, 1959]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'e.1.22',
+      date: {
+        display: '[1959]',
+        earliest: 1959,
+        latest: 1959,
+        basis: ['Jim Allison appears to be 2 years old here'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-james-wiley-birthday-1959.jpg',
+      },
+      description:
+        'This photograph depicts James (Jim) Wiley Allison on his second birthday in 1959.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 56.9, y: 38.3, w: 9.7, h: 9.1 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'allison-harold-oscar-pleasent-valley',
+      title: '[Harold and Oscar Allison standing with two men at Pleasent Valley sign]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'e.1.23',
+      date: {
+        display: '[1955]',
+        earliest: 1955,
+        latest: 1955,
+        basis: ['A date of 1955 is printed on the photograph'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-oscar-pleasent-valley.jpg',
+      },
+      description:
+        'This photograph depicts Harold and Oscar Allison standing with two other men next to a sign that says "Pleasent Valley." A date of December 1955 is printed on the right side. The other two men are unidentified.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 19.1, y: 43.3, w: 10.3, h: 12.1 },
+        },
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 66.3, y: 41.6, w: 8.8, h: 11.3 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-jim-grizzle',
+      title: '[Harold Allison and Jim Grizzle hugging]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'e.1.28',
+      date: {
+        display: '[1980-1985]',
+        earliest: 1980,
+        latest: 1985,
+        basis: ['There is no date on this photograph, but it is possible it is from 1980 to 1985.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-jim-grizzle.jpg',
+      },
+      description:
+        'This photograph depicts Harold Allison and Jim Grizzle hugging. George Didlake and Verona Grizzle can be seen in the background.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 27, y: 15.5, w: 19.3, h: 25.4 },
+        },
+        {
+          person: 'grizzle-james',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 51.1, y: 10.6, w: 21.5, h: 30 },
+        },
+        {
+          person: 'didlake-george-howard',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 42.5, y: 13.2, w: 10.9, h: 16.1 },
+        },
+        {
+          person: 'grizzle-verona-jo-warner',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 85.3, y: 25.1, w: 13.4, h: 20.1 },
         },
       ],
     },

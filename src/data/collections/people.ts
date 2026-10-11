@@ -984,10 +984,57 @@ export const PEOPLE: Person[] = [
       'Find a Grave memorial 45723671',
     ],
     relations: [
+      { type: 'spouse', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'spouse', person: 'hewatt-aubrey-edward', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'johnson-nan-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-samuel-small', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-loveta-swann', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'osborn-mildred-adeline-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'hewatt-aubrey-edward',
+    authorized: 'Hewatt, Aubrey Edward',
+    surname: 'Hewatt',
+    given: 'Aubrey Edward',
+    birth: '1918',
+    death: '2007',
+    variants: ['Aubrey Hewatt'],
+    status: 'established',
+    scopeNote:
+      'Aubrey was the first husband of Sammy.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '30119378' },
+    sources: [
+      'Find a Grave memorial 30119378',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'johnson-nan-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'johnson-nan-allison',
+    authorized: 'Johnson, Nan Allison',
+    surname: 'Johnson',
+    given: 'Nan Allison',
+    birth: '1940',
+    death: '2013',
+    variants: ['Nan John'],
+    status: 'established',
+    scopeNote:
+      'Nan Allison Johnson was the first daughter of Aubrey and Sammy Hewatt. After Sammy and Hewatt divorced and Sammy married Oscar Allison, Nan was adopted and took the Allison surname.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '112370911' },
+    sources: [
+      'Find a Grave memorial 112370911',
+    ],
+    relations: [
+      { type: 'parent', person: 'hewatt-aubrey-edward', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -1009,10 +1056,84 @@ export const PEOPLE: Person[] = [
     ],
     relations: [
       { type: 'spouse', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-carolyn', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-jack-william', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-james-wiley', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-samuel-small', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-loveta-swann', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'osborn-mildred-adeline-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-carolyn',
+    authorized: 'Allison, Carolyn',
+    surname: 'Allison',
+    given: 'Carolyn',
+    birth: '1948',
+    death: '1999',
+    variants: ['Carolyn Allison'],
+    status: 'established',
+    scopeNote:
+      'Carolyn Allison was the second daughter of Harold and Jean Allison',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '36638764' },
+    sources: [
+      'Find a Grave memorial 36638764',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-jack-william', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-james-wiley', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-jack-william',
+    authorized: 'Allison, Carolyn',
+    surname: 'Allison',
+    given: 'Carolyn',
+    birth: '1953',
+    death: '1973',
+    variants: ['Allison, Jack', 'Jack William Allison'],
+    status: 'established',
+    scopeNote:
+      'Jack William Allison was the second son of Harold and Jean Allison',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '53561008' },
+    sources: [
+      'Find a Grave memorial 53561008',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-carolyn', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-james-wiley', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-james-wiley',
+    authorized: 'Allison, James Wiley',
+    surname: 'Allison',
+    given: 'James Wiley',
+    birth: '1957',
+    variants: ['Jim Allison', 'Jim Wiley Allison', 'Allison, Jim', 'Allison, James'],
+    status: 'established',
+    scopeNote:
+      'Jack William Allison is the third son of Harold and Jean Allison',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '' },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-carolyn', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-jack-william', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -2409,6 +2530,9 @@ export const PEOPLE: Person[] = [
     ],
     relations: [
       { type: 'spouse', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-carolyn', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-jack-william', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-james-wiley', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
@@ -2465,6 +2589,7 @@ export const PEOPLE: Person[] = [
     // the two is a slip, so no link is made here until it is settled: open
     // findagrave.com/memorial/132669877, see whose it is, and add
     // identifiers: { findagrave: '...' } to each record with its own number.
+    identifiers: { findagrave: '132669877' },
     sources: [
       'Find a Grave memorial 132669877.',
     ],
@@ -2492,6 +2617,7 @@ export const PEOPLE: Person[] = [
       'Family Search ID: LXFR-KX1.',
     ],
     relations: [
+      { type: 'spouse', person: 'didlake-george-howard', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-wiley', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', half: true, person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
@@ -2500,6 +2626,25 @@ export const PEOPLE: Person[] = [
       { type: 'sibling', person: 'grizzle-wiley-jr', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'andreas-mary-lorene-grizzle', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'grizzle-james', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'didlake-george-howard',
+    authorized: 'Didlake, George Howard',
+    surname: 'Didlake',
+    given: 'George Howard',
+    birth: '1927',
+    death: '2013',
+    variants: ['Didlake, George', 'George Didlake', 'George Howard Didlake'],
+    status: 'established',
+    scopeNote:
+      '',
+    identifiers: { familysearch: '27QB-DVQ' },
+    sources: [
+      'Family Search ID: 27QB-DVQ.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'didlake-ollie-mae-grizzle', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -2539,11 +2684,12 @@ export const PEOPLE: Person[] = [
     status: 'established',
     scopeNote:
       '',
-    identifiers: { familysearch: 'LJPD-MN5' },
+    identifiers: { familysearch: 'LJPD-MN5', findagrave: '160435259' },
     sources: [
       'Family Search ID: LJPD-MN5.',
     ],
     relations: [
+      { type: 'spouse', person: 'grizzle-verona-jo-warner', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-wiley', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', half: true, person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
@@ -2552,6 +2698,26 @@ export const PEOPLE: Person[] = [
       { type: 'sibling', person: 'grizzle-wiley-jr', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'didlake-ollie-mae-grizzle', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'andreas-mary-lorene-grizzle', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'grizzle-verona-jo-warner',
+    authorized: 'Grizzle, Verona Jo Warner',
+    surname: 'Grizzle',
+    given: 'Verona Jo Warner',
+    birth: '1931',
+    death: '2020',
+    variants: ['Grizzle, Verona', 'Verona Grizzle', 'Warner, Verona', 'Verona Warner'],
+    status: 'established',
+    scopeNote:
+      '',
+    identifiers: { familysearch: 'GWDJ-D6R', findagrave: '211292222' },
+    sources: [
+      'Find A Grave: 211292222',
+      'Family Search ID: GWDJ-D6R.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'grizzle-james', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
 ];
