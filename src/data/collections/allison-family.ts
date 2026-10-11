@@ -1640,5 +1640,423 @@ export const COLLECTION: Collection = {
   
       ],
     },
+    {
+      slug: 'allison-oscar-portrait',
+      title: '[Portrait of Oscar Allison, 1941]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'e.1.34',
+      date: {
+        display: '[1941]',
+        earliest: 1941,
+        latest: 1941,
+        basis: ['There is no date on this photograph, but it was likely taken around the time Oscar enlisted in the military in 1941.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-oscar-portrait.jpg',
+      },
+      description:
+        'This is a portrait of Oscar Allison that was likely taken around the time Oscar enlisted in the military.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 29.7, y: 17.9, w: 47.1, h: 39.9 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'grizzle-wiley-working-on-car',
+      title: '[Photograph of Wiley Grizzle working on a car]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'e.1.35',
+      date: {
+        display: '[1941-1943]',
+        earliest: 1941,
+        latest: 1943,
+        basis: ['There is no date on this photograph, but it can be presumed that the photograph was taken between 1941 and 1943.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-wiley-working-on-car.jpg',
+      },
+      description:
+        'This is a photograph of Wiley Grizzle working on a car. His face is not visible.',
+      inscriptions: [
+        {
+          location: 'recto',
+          medium: 'ink',
+          text: 'See "Mechanic Kitty" on the fender helping Daddy?'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'grizzle-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 20.4, y: 35.7, w: 9.1, h: 17.4 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'allison-home-construction',
+      title: '[Home of Harold and Jean Allison]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'e.1.36',
+      date: {
+        display: '[1952-1953]',
+        earliest: 1952,
+        latest: 1953,
+        basis: ['This photograph is undated, but it was likely taken near the end of construction of the new Allison home in 1952 or 1953.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-home-construction.jpg',
+      },
+      description:
+        'This photograph shows the home of Harold and Jean Allison either at the end of construction or just prior to the Allisons moving in. This view was taken from what became the backyard facing south and southwest.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        
+      ],
+    },
+    {
+      slug: 'allison-harold-training',
+      title: '[Harold Allison B-17 training with others]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'unknown',
+      controlNumber: 'e.1.41',
+      date: {
+        display: '[1943-1945]',
+        earliest: 1943,
+        latest: 1945,
+        basis: ['A 1943 to 1945 date is probable and coincides with Harold\'s military training.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-training.jpg',
+      },
+      description:
+        'This photograph depicts Harold Allison training with three others to evacuate a B-17. This was likely taken during Harold\'s time training to fly a B-17.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 38.8, y: 41, w: 7.3, h: 9.7 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-oscar-with-other-military-men',
+      title: '[Oscar Allison standing with military friends Joe and Al]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Roswell, New Mexico',
+      controlNumber: 'e.1.42',
+      date: {
+        display: '[1943]',
+        earliest: 1943,
+        latest: 1943,
+        basis: ['This photograph was likely taken during the time Oscar was training and prior to his deployment. Oscar visited Roswell in 1943 prior to deploying, and this is likely during that trip.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-oscar-with-other-military-men.jpg',
+      },
+      description:
+        'This photograph depicts Oscar Allison standing with two other men identified as Joe and Al. The water tower in the background is labeled "Roswell, N.M.", so this must be before Oscar deployed to Europe.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 68.7, y: 38.8, w: 9.7, h: 16.3 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jack-letterman-jacket-1',
+      title: '[Jack Allison standing in front of his house in his letterman jacket]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'e.1.43',
+      date: {
+        display: '[1970-1971]',
+        earliest: 1970,
+        latest: 1971,
+        basis: ['This was likely taken during Jack\'s senior year in 1970-1971.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jack-letterman-jacket-1.jpg',
+      },
+      description:
+        'This photograph depicts Jack standing in front of his Lamb County home wearing his Muleshoe High School letterman jacket.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 53, y: 13.1, w: 21.1, h: 25.2 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jack-letterman-jacket-2',
+      title: '[Jack Allison standing in front of his house in his letterman jacket]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'e.1.44',
+      date: {
+        display: '[1970-1971]',
+        earliest: 1970,
+        latest: 1971,
+        basis: ['This was likely taken during Jack\'s senior year in 1970-1971.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jack-letterman-jacket-2.jpg',
+      },
+      description:
+        'This photograph depicts Jack standing in front of his Lamb County home wearing his Muleshoe High School letterman jacket. A black labrador dog can be seen.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 48.2, y: 7.3, w: 19.2, h: 21.1 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jack-letterman-jacket-3',
+      title: '[Jack Allison standing in front of his house in his letterman jacket]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'e.1.47',
+      date: {
+        display: '[1970-1971]',
+        earliest: 1970,
+        latest: 1971,
+        basis: ['This was likely taken during Jack\'s senior year in 1970-1971.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jack-letterman-jacket-3.jpg',
+      },
+      description:
+        'This photograph depicts Jack standing in front of his Lamb County home wearing his Muleshoe High School letterman jacket.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 37.4, y: 15.8, w: 20.9, h: 24.8 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jack-football-1',
+      title: '[Jack Allison football portrait, 1969]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'e.1.45',
+      date: {
+        display: '[1969]',
+        earliest: 1969,
+        latest: 1969,
+        basis: ['This was likely taken during Jack\'s junior year football season in 1969.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jack-football-1.jpg',
+      },
+      description:
+        'This photograph depicts Jack Allison in his football uniform from the 1969 Muleshoe Mules season. He is wearing the number 86 here.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 43.7, y: 15.3, w: 18.7, h: 27.5 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jack-football-2',
+      title: '[Jack Allison football portrait, 1968]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'e.1.46',
+      date: {
+        display: '[1968]',
+        earliest: 1968,
+        latest: 1968,
+        basis: ['This was likely taken during Jack\'s sophomore year football season in 1968.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jack-football-2.jpg',
+      },
+      description:
+        'This photograph depicts Jack Allison in his football uniform from the 1968 Muleshoe Mules season. He is wearing the number 84 here.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 39.1, y: 20.6, w: 17.8, h: 26 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jim-nancy-carolyn-1979',
+      title: '[Jim, Nancy, and Carolyn Allison at the wedding of Fred and Martha Allison]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'e.1.25',
+      date: {
+        display: '[1979]',
+        earliest: 1979,
+        latest: 1979,
+        basis: ['This may be from the 1979 wedding of Fred and Martha Allison'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jim-nancy-carolyn-1979.jpg',
+      },
+      description:
+        'This photograph depicts Jim, Nancy, and Carolyn Allison at the 1979 wedding of Fred and Martha Allison.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 9.1, y: 22, w: 18.9, h: 26.9 },
+        },
+        {
+          person: 'allison-nancy-ann-webster',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 42.3, y: 31.7, w: 17.6, h: 24.7 },
+        },
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 58.5, y: 24.2, w: 12.7, h: 22.5 },
+        },
+        {
+          person: 'osborn-stephen-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 74.6, y: 15.1, w: 11.8, h: 17 },
+        },
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 1.4, y: 24.6, w: 7.8, h: 16.8 },
+        },
+        {
+          person: 'mckinstry-loveta-swann',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 24.2, y: 25.3, w: 9.3, h: 15.8 },
+        },
+      ],
+    },
   ]
 }

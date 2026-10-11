@@ -1022,7 +1022,7 @@ export const PEOPLE: Person[] = [
     given: 'Nan Allison',
     birth: '1940',
     death: '2013',
-    variants: ['Nan John'],
+    variants: ['Nan Johnson'],
     status: 'established',
     scopeNote:
       'Nan Allison Johnson was the first daughter of Aubrey and Sammy Hewatt. After Sammy and Hewatt divorced and Sammy married Oscar Allison, Nan was adopted and took the Allison surname.',
@@ -1035,6 +1035,129 @@ export const PEOPLE: Person[] = [
     relations: [
       { type: 'parent', person: 'hewatt-aubrey-edward', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'black-susan-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-edward-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-sam-oscar', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'black-susan-allison',
+    living: true,
+    authorized: 'Black, Susan Allison',
+    surname: 'Johnson',
+    given: 'Susan Allison',
+    birth: '1942',
+    variants: ['Susan Black', 'Susan Hewatt', 'Susan Allison'],
+    status: 'established',
+    scopeNote:
+      'Susan Allison Black is the second daughter of Aubrey and Sammy Hewatt. After Sammy and Hewatt divorced and Sammy married Oscar Allison, Susan was adopted and took the Allison surname.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'parent', person: 'hewatt-aubrey-edward', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'johnson-nan-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-edward-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-sam-oscar', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-edward-mckinstry',
+    living: true,
+    authorized: 'Allison, Mack',
+    surname: 'Allison',
+    given: 'Edward McKinstry',
+    birth: '1944',
+    variants: ['Mack Hewatt', 'Mack Allison', 'Allison, Edward McKinstry', 'Edward McKinstry'],
+    status: 'established',
+    scopeNote:
+      'Mack Allison is the first son of Aubrey and Sammy Hewatt. After Sammy and Hewatt divorced and Sammy married Oscar Allison, Susan was adopted and took the Allison surname.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'parent', person: 'hewatt-aubrey-edward', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'johnson-nan-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'black-susan-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-sam-oscar', basis: 'Established relationship', confidence: 'certain' },
+
+    ]
+  },
+  {
+    id: 'allison-sam-oscar',
+    living: true,
+    authorized: 'Allison, Sam Oscar',
+    surname: 'Allison',
+    given: 'Samuel Oscar',
+    birth: '1949',
+    variants: ['Sam Allison', 'Sam O. Allison', 'Allison, Sam'],
+    status: 'established',
+    scopeNote:
+      'Sam Oscar Allison is the first son of Oscar and Sammy Allison.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'johnson-nan-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'black-susan-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', half: true, person: 'allison-edward-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-kathy-jean-kelley',
+    living: true,
+    authorized: 'Allison, Kathy Jean Kelley',
+    surname: 'Allison',
+    given: 'Kathy Jean Kelley',
+    birth: '1951',
+    variants: ['Kathy Allison', 'Kathy Jean Allison', 'Allison, Kathy', 'Kathy Kelley', 'Kelley, Kathy'],
+    status: 'established',
+    scopeNote:
+      'Kathy Allison is the wife of Sam O. Allison.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-sam-oscar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'weinheimer-samantha-jean-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'weinheimer-samantha-jean-allison',
+    living: true,
+    authorized: 'Weinheimer, Samantha Jean Allison',
+    surname: 'Weinheimer',
+    given: 'Samantha Jean Allison',
+    birth: '1977',
+    variants: ['Samantha Allison', 'Samantha Jean Allison', 'Allison, Samantha', 'Samantha Weinheimer', 'Weinheimer, Samantha Jean'],
+    status: 'established',
+    scopeNote:
+      'Samantha Jean Allison Weinheimer is the first daughter of Sam and Kathy Allison',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-sam-oscar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-kathy-jean-kelley', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -1066,6 +1189,28 @@ export const PEOPLE: Person[] = [
     ]
   },
   {
+    id: 'skogland-veta-sue-allison',
+    living: true,
+    authorized: 'Skogland, Veta Sue Allison',
+    surname: 'Skogland',
+    given: 'Veta Sue Allison',
+    birth: '1946',
+    variants: ['Veta Skogland', 'Skogland, Veta', 'Veta Allison', 'Allison, Veta'],
+    status: 'established',
+    scopeNote:
+      'Veta Skogland is the first daughter and eldest child of Harold and Jean Allison',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    relations: [
+      { type: 'parent', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-carolyn', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-fred-harold', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-jack-william', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-james-wiley', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
     id: 'allison-carolyn',
     authorized: 'Allison, Carolyn',
     surname: 'Allison',
@@ -1085,15 +1230,39 @@ export const PEOPLE: Person[] = [
     relations: [
       { type: 'parent', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'skogland-veta-sue-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-fred-harold', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-jack-william', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-james-wiley', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-fred-harold',
+    living: true,
+    authorized: 'Allison, Fred Harold',
+    surname: 'Allison',
+    given: 'Fred Harold',
+    birth: '1950',
+    variants: ['Fred Allison', 'Allison, Fred', 'Fred Harold Allison', 'Fred H. Allison'],
+    status: 'established',
+    scopeNote:
+      'Fred Allison is the first son of Harold and Jean Allison',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    relations: [
+      { type: 'parent', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'skogland-veta-sue-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-carolyn', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-jack-william', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-james-wiley', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
     id: 'allison-jack-william',
-    authorized: 'Allison, Carolyn',
+    authorized: 'Allison, Jack William',
     surname: 'Allison',
-    given: 'Carolyn',
+    given: 'Jack William',
     birth: '1953',
     death: '1973',
     variants: ['Allison, Jack', 'Jack William Allison'],
@@ -1109,7 +1278,9 @@ export const PEOPLE: Person[] = [
     relations: [
       { type: 'parent', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'skogland-veta-sue-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-carolyn', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-fred-harold', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-james-wiley', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
@@ -1123,7 +1294,7 @@ export const PEOPLE: Person[] = [
     variants: ['Jim Allison', 'Jim Wiley Allison', 'Allison, Jim', 'Allison, James'],
     status: 'established',
     scopeNote:
-      'Jack William Allison is the third son of Harold and Jean Allison',
+      'James Wiley Allison is the third son of Harold and Jean Allison',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
     identifiers: { findagrave: '' },
@@ -1131,10 +1302,34 @@ export const PEOPLE: Person[] = [
       '',
     ],
     relations: [
+      { type: 'spouse', person: 'allison-nancy-ann-webster', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'skogland-veta-sue-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-carolyn', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-fred-harold', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-jack-william', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-nancy-ann-webster',
+    living: true,
+    authorized: 'Allison, Nancy Ann Webster',
+    surname: 'Allison',
+    given: 'Nancy Ann Webster',
+    birth: '1958',
+    variants: ['Nancy Allison', 'Nancy Webster', 'Webster, Nancy Ann', 'Allison, Nancy Ann'],
+    status: 'established',
+    scopeNote:
+      'Nancy Ann Webster Allison is the second daughter of Ruth and Daniel Webster.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '' },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'spouse', person: 'allison-james-wiley', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -1155,10 +1350,56 @@ export const PEOPLE: Person[] = [
       'Find a Grave memorial 96413628',
     ],
     relations: [
+      { type: 'spouse', person: 'osborn-kenneth', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'osborn-stephen-mckinstry', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-samuel-small', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'mckinstry-loveta-swann', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'osborn-kenneth',
+    authorized: 'Osborn, Kenneth',
+    surname: 'Osborn',
+    given: 'Kenneth',
+    birth: '1918',
+    death: '1995',
+    variants: ['Kenneth Osborn', 'Samuel Kennneth Osborn', 'Osborn, Kenneth'],
+    status: 'established',
+    scopeNote:
+      'Kenneth Osborn was the first husband of Mildred Adeline McKinstry',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '16512195' },
+    sources: [
+      'Find a Grave memorial 16512195',
+    ],
+    relations: [
+      { type: 'spouse', person: 'osborn-mildred-adeline-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'osborn-stephen-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'osborn-stephen-mckinstry',
+    living: true,
+    authorized: 'Osborn, Stephen McKinstry',
+    surname: 'Osborn',
+    given: 'Stephen McKinstry',
+    birth: '1955',
+    variants: ['Steve Osborn', 'Stephen Osborn', 'Osborn, Steve'],
+    status: 'established',
+    scopeNote:
+      'Stephen McKinstry Osborn is the only son of Mildred and Kenneth Osborn',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: {  },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'parent', person: 'osborn-kenneth', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'osborn-mildred-adeline-mckinstry', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
