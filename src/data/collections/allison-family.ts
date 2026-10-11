@@ -1596,5 +1596,47 @@ export const COLLECTION: Collection = {
         },
       ],
     },
+    {
+      slug: 'allison-harold-ollie-grizzle',
+      title: '[Harold Allison and his mother, Ollie Grizzle]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'e.1.33',
+      date: {
+        display: '[1944]',
+        earliest: 1944,
+        latest: 1944,
+        basis: ['There is no date on this photograph, but it is probable that it came from shortly after Harold and Jean were married in 1944..'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-ollie-grizzle.jpg',
+      },
+      description:
+        'This photograph depicts Harold Allison and his mother, Ollie Grizzle, standing outside a building.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 49.5, y: 16.7, w: 24, h: 19 },
+        },
+        {
+          person: 'grizzle-ollie-blanche-ingle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 25.1, y: 20, w: 23.4, h: 19.9 },
+        },
+  
+      ],
+    },
   ]
 }
