@@ -1616,6 +1616,15 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     --cover-open-deg: 158deg;
     --cover-open-width: clamp(4.5rem, 22vw, 11rem);
 
+    /* The moment the swinging cover is edge-on to the eye (90deg): how
+       long after it starts to open, and how long after it starts to
+       close. Worked out from the open angle and the curve below, so
+       they change if either does: with e(t) the curve's progress at
+       time t, opening passes 90deg when e = 90 / angle and closing
+       when e = 1 - 90 / angle. See .cover-face--front for their use. */
+    --cover-edge-opening: 0.17s;
+    --cover-edge-closing: 0.115s;
+
     transition: transform 0.9s cubic-bezier(0.25, 1, 0.5, 1),
                 width 0.9s cubic-bezier(0.25, 1, 0.5, 1);
   }
@@ -1672,6 +1681,33 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     border-radius: 2px 8px 8px 2px;
     overflow: hidden;
     backface-visibility: hidden;
+  }
+
+  /* THE FRONT IS ALSO SWITCHED OFF ONCE IT HAS TURNED AWAY.
+     backface-visibility ought to be enough, and in Chrome and Firefox
+     it is. Safari on an iPad or iPhone hides the board itself but not
+     the pieces of it that it keeps as separate layers: the label and
+     the cue stayed, mirrored, on top of the endpaper of the opened
+     cover. `visibility` has no such gap, since everything inside the
+     face inherits it.
+
+     So the front face goes invisible at the moment the cover is
+     edge-on, when there is nothing of it to see, and comes back at the
+     same moment on the way shut. The delay is the whole transition
+     (its duration is 0s), which is the way the leaves do it. Where
+     backface-visibility already works this changes nothing: the face
+     is hidden by then anyway.
+
+     Only the front needs it. Nothing on the back face is kept as a
+     separate layer, and switching both would leave no room for the two
+     to be a frame apart. */
+  .cover-face--front {
+    visibility: visible;
+    transition: visibility 0s linear var(--cover-edge-closing);
+  }
+  .cover[inert] .cover-face--front {
+    visibility: hidden;
+    transition-delay: var(--cover-edge-opening);
   }
 
   /* THE FRONT BOARD: marbled paper, toned down a quarter so the label
@@ -3311,6 +3347,9 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
          less canvas to swing into */
       --cover-open-deg: 148deg;
       --cover-open-width: clamp(3.25rem, 30vw, 6rem);
+      /* 90deg of 148 comes a little later opening, sooner closing */
+      --cover-edge-opening: 0.185s;
+      --cover-edge-closing: 0.105s;
     }
     /* a single margin pair on phones. Same tile recipe as the base
        rule, or .pages and the faces above it would disagree. */
@@ -3344,6 +3383,8 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
        to disappear when open; it stays now, lying still beside the
        book, because clicking it is how the book is closed. */
     .cover { transition: none; }
+    .cover-face--front,
+    .cover[inert] .cover-face--front { transition: none; }
     .register-controls { transition: none; }
     .rake, .photo--develop, .cta::after, .cta::before, .reg-tab::after {
       transition: none;
@@ -3547,7 +3588,7 @@ const foxingBack = FOXING_SEEDS.map((seed) =>
     const register = document.getElementById('register');
     const leavesWrap = document.getElementById('leaves');
     const pages = document.getElementById('pages');
-    const leafEls = [...document.querySelectorAll<HTMLElement>('#pages .leaf')];
+    const leafEls = [...document.querySelectorAll<HTMLElement>('.leaf')];
     const tabs = [...document.querySelectorAll<HTMLButtonElement>('.reg-tab')];
     const tablist = document.getElementById('reg-tablist');
     const prevBtn = document.getElementById('reg-prev') as HTMLButtonElement | null;

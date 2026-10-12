@@ -2058,5 +2058,69 @@ export const COLLECTION: Collection = {
         },
       ],
     },
+    {
+      slug: 'allison-jim-nancy-carolyn-kathy',
+      title: '[Jim, Nancy, Carolyn, Kathy, and Samantha Allison at an unspecified event]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'e.1.26',
+      date: {
+        display: '[1982]',
+        earliest: 1982,
+        latest: 1982,
+        basis: ['1982 is an estimated date'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jim-nancy-carolyn-kathy.jpg',
+      },
+      description:
+        'This photograph depicts Jim, Nancy, Carolyn, and Kathy Allison at an unspecified event.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 27.5, y: 35.6, w: 10.5, h: 17.5 },
+        },
+        {
+          person: 'allison-nancy-ann-webster',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 40.5, y: 42.2, w: 10.8, h: 17.2 },
+        },
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 14.2, y: 36.7, w: 10.8, h: 16.7 },
+        },
+        {
+          person: 'allison-kathy-jean-kelley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 61.7, y: 37.3, w: 12.7, h: 18.5 },
+        },
+        {
+          person: 'weinheimer-samantha-jean-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 54.6, y: 38.7, w: 11.6, h: 18.8 },
+        },
+        
+      ],
+    },
   ]
 }

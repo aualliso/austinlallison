@@ -2014,6 +2014,75 @@
     },
     "store": "private"
   },
+  "allison-family/allison-jim-nancy-carolyn-kathy.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jim-nancy-carolyn-kathy-5765aec742",
+    "width": 5455,
+    "height": 4347,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 271
+      },
+      {
+        "width": 341,
+        "height": 272
+      },
+      {
+        "width": 680,
+        "height": 542
+      },
+      {
+        "width": 800,
+        "height": 638
+      },
+      {
+        "width": 1200,
+        "height": 956
+      },
+      {
+        "width": 1900,
+        "height": 1514
+      },
+      {
+        "width": 2600,
+        "height": 2072
+      },
+      {
+        "width": 5000,
+        "height": 3984
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "5765aec742c9e2bacf4513cd69f8022d93914256daeb6748126a7a095fdad987",
+    "download": {
+      "full": {
+        "file": "allison-jim-nancy-carolyn-kathy.jpg",
+        "width": 5455,
+        "height": 4347,
+        "bytes": 3290390
+      },
+      "share": {
+        "file": "allison-jim-nancy-carolyn-kathy-2600px.jpg",
+        "width": 2600,
+        "height": 2072,
+        "bytes": 783612
+      }
+    },
+    "store": "private"
+  },
   "allison-family/allison-joseph-carroll-ned-hogan-1-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-joseph-carroll-ned-hogan-1-recto-fb36aa049c",
