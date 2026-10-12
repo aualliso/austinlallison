@@ -1,138 +1,704 @@
 ---
 // src/pages/publications.astro
 //
-// REBUILT 2026-09-09. Every card on this page used to be hand-typed HTML, and
-// it had drifted: two titles disagreed with the CV, three volume formats were
-// in use across four entries, and two finished article pages (ja_cattle_company,
-// newspapers_oil_and_railroad_land) had no card at all.
+// REBUILT 2026-10-12 as an exhibition catalogue. The three major articles
+// are set as full spreads at the top; the shorter pieces follow "in the forms
+// they took" - a newspaper page, a magazine opener, documents on an archive
+// board, a chapter in an open book.
 //
-// The page now derives from src/data/publications/index.ts, which reads the
-// CITATION each article data file already exports. Nothing here restates a
-// citation, so nothing here can disagree with one. Add a data file and a page
-// the normal way and the card appears on its own.
+// Everything still derives from src/data/publications/index.ts, which reads
+// the CITATION (and FIGURES, and NOTES) each article data file exports.
+// Nothing here restates a title, a citation, a caption or a credit. Where a
+// piece appears, its opening line and which images it shows live in the SHOW
+// blocks in index.ts. A new article with no SHOW block still appears, in the
+// form its section implies, with its first figure.
 //
-// The card designs are unchanged - the row layout for articles, the
-// bottom-bleed card for everything else.
+// No client script. Motion is CSS only - plates rise as they scroll in, and
+// the two full-width photographs drift inside their frames - and both sit
+// behind @supports (animation-timeline: view()), so browsers without
+// scroll-driven animations (Firefox included) get a still page, and
+// prefers-reduced-motion turns them off. No filter, blend mode or mask
+// anywhere on the page.
 import RootLayout from '../layouts/RootLayout.astro';
-import {
-  SECTIONS,
-  bySection,
-  sourceLine,
-  PUBLICATIONS,
-  type SectionId,
-} from '../data/publications/index';
+import Plate from '../components/publications/Plate.astro';
+import { PUBLICATIONS, byForm, type Entry } from '../data/publications/index';
+import type { Citation } from '../lib/citation';
 
-/** Sections that use the thumbnail-beside-text row layout. */
-const ROW_LAYOUT: SectionId[] = ['articles', 'notes'];
+const features = byForm('feature');
+const newspaper = byForm('newspaper');
+const magazine = byForm('magazine');
+const archive = byForm('archive');
+const books = byForm('book');
+const shorter = PUBLICATIONS.length - features.length;
 
-const H2 =
-  'text-sm font-mono text-sage uppercase tracking-widest font-bold flex items-center gap-2';
-const CARD =
-  'border-t-4 border-t-caprock border-x border-b border-haze rounded-sm bg-haze/10 flex flex-col justify-between hover:shadow-sm transition-all group overflow-hidden';
-const TITLE =
-  'font-serif text-xl font-medium tracking-tight text-iron group-hover:text-caprock transition-colors duration-300';
-const IMG =
-  'w-full h-full object-cover filter group-hover:grayscale transition-all duration-500';
-const BTN =
-  'px-3 py-1.5 bg-caprock text-canvas rounded-sm hover:bg-sage transition-colors';
-const READ =
-  'text-xs font-mono text-caprock font-semibold hover:text-iron pt-2 inline-block';
+const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX', 'X'];
+const WORDS = [
+  'no', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
+  'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen', 'sixteen', 'seventeen',
+  'eighteen', 'nineteen', 'twenty',
+];
+const word = (n: number) => WORDS[n] ?? String(n);
+const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 
-const visible = SECTIONS.map((s) => ({ ...s, items: bySection(s.id) })).filter(
-  (s) => s.items.length > 0
-);
+/** Main title and deck. Uses displayTitle/subtitle, else splits at the first colon. */
+const titleParts = (c: Citation) => {
+  if (c.displayTitle) return { main: c.displayTitle, sub: c.subtitle };
+  const i = c.title.indexOf(': ');
+  return i > 0
+    ? { main: c.title.slice(0, i), sub: c.title.slice(i + 2) }
+    : { main: c.title, sub: c.subtitle };
+};
+
+/** Journal - Vol. x, no. y - date. */
+const kicker = (c: Citation) =>
+  [
+    c.status === 'chapter' ? c.bookTitle : c.journal,
+    c.volume ? `Vol. ${c.volume}${c.issue ? `, no. ${c.issue}` : ''}` : '',
+    c.monthYear ?? c.dateLabel ?? String(c.year),
+  ]
+    .filter(Boolean)
+    .join(' \u00b7 ');
+
+const when = (c: Citation) => c.dateLabel ?? c.monthYear ?? String(c.year);
+
+const extent = (e: Entry) =>
+  [
+    e.citation.firstPage != null && e.citation.lastPage != null
+      ? `pp. ${e.citation.firstPage}\u2013${e.citation.lastPage}`
+      : '',
+    e.noteCount ? `${e.noteCount} notes` : '',
+  ]
+    .filter(Boolean)
+    .join(' \u00b7 ');
+
+/** Column spans for a shelf of n objects on a 12-column grid. */
+const shelfSpans = (n: number): number[] =>
+  n === 4 ? [3, 5, 2, 2] : n === 3 ? [4, 5, 3] : n === 2 ? [5, 7] : Array(n).fill(Math.max(2, Math.floor(12 / n)));
+const shelfStarts = (spans: number[]) => spans.map((_, i) => 1 + spans.slice(0, i).reduce((a, b) => a + b, 0));
+
+const LETTERS = 'abcdefghij';
+
+const years = newspaper.map((e) => e.citation.year);
+const newsYears = years.length ? `${Math.min(...years)} \u2013 ${Math.max(...years)}` : '';
+const papers = [...new Set(newspaper.map((e) => e.citation.journal).filter(Boolean))];
+const magTitles = [...new Set(magazine.map((e) => e.citation.journal).filter(Boolean))];
+
+const [newsLead, ...newsRail] = newspaper;
+const [magOpener, ...magRest] = magazine;
 ---
 
 <RootLayout
-  title="Research and Creative Activity | Austin Allison"
-  description={`Articles, essays, columns and book chapters by Austin Allison on the history and landscapes of Texas and the American West - ${PUBLICATIONS.length} pieces, most readable in full on this site.`}
+  title="Publications | Austin Allison"
+  description={`Articles, columns, notes and a book chapter by Austin Allison on land, survey, water and settlement in Texas and the American West - ${PUBLICATIONS.length} pieces, most readable in full on this site.`}
   prose={false}
+  bleed={true}
 >
-  <div class="max-w-4xl mx-auto py-6 text-iron">
-    <header class="border-b-2 border-caprock pb-4 mb-12">
-      <h1 class="font-serif text-3xl font-medium tracking-tight text-iron">Research and Creative Activity</h1>
+  <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Old+Standard+TT:ital,wght@0,400;0,700;1,400&display=swap"
+  />
+
+  <div class="pubs">
+    <header class="pubs-wrap pubs-masthead">
+      <div class="pubs-ears">
+        <span>Austin Lamar Allison</span>
+        <span>Writings on Texas &amp; the American West</span>
+        <span>{cap(word(PUBLICATIONS.length))} pieces</span>
+      </div>
+      <h1 class="pubs-h1">Publications</h1>
+      <div class="pubs-g pubs-intro">
+        <p class="pubs-lede">
+          Articles, notes, columns and a book chapter on land, survey, water and settlement in the
+          West. {cap(word(features.length))} are set here at full size; the other {word(shorter)} follow
+          in the forms they first took. Every piece can be read in full on this site.
+        </p>
+        <nav aria-label="Featured articles" class="pubs-toc">
+          {features.map((e, i) => (
+            <a href={`#${ROMAN[i].toLowerCase()}`}>
+              <span class="pubs-toc-n">{ROMAN[i]}</span>
+              <span class="pubs-toc-t">
+                {titleParts(e.citation).main}
+                <span class="pubs-toc-s">{e.citation.journal} &middot; {e.citation.year}</span>
+              </span>
+            </a>
+          ))}
+          {shorter > 0 && (
+            <a href="#forms" class="pubs-more pubs-ul">And {word(shorter)} shorter pieces &darr;</a>
+          )}
+        </nav>
+      </div>
     </header>
 
-    <div class="space-y-16">
-      {visible.map((section) => (
-        <section class="space-y-6">
-          <h2 class={H2} id={section.id}>
-            <span aria-hidden="true">&bull;</span> {section.title}
+    {features.map((e, i) => {
+      const t = titleParts(e.citation);
+      const id = ROMAN[i].toLowerCase();
+      const layout = e.layout ?? 'portrait';
+      const [hero, ...more] = e.images;
+
+      const head = (
+        <>
+          <p class="pubs-kicker">{kicker(e.citation)}</p>
+          <h2 id={`t-${id}`} class:list={['pubs-feature-title', layout !== 'portrait' && 'is-split']}>
+            <a class="pubs-tl" href={e.citation.canonicalPath}>
+              <span class="pubs-ft-main">{t.main}</span>
+              {t.sub && <span class="pubs-ft-sub">{t.sub}</span>}
+            </a>
           </h2>
+        </>
+      );
+      const links = (
+        <div class="pubs-links">
+          <a class="pubs-ul pubs-strong" href={e.citation.canonicalPath}>Read the article &rarr;</a>
+          {e.otherVersions.map((v) => (
+            <a class="pubs-ul" href={v.path}>{v.label} &rarr;</a>
+          ))}
+          {extent(e) && <span class="pubs-muted">{extent(e)}</span>}
+        </div>
+      );
 
-          {ROW_LAYOUT.includes(section.id) ? (
-            <div class="space-y-8 pl-4 border-l border-haze">
-              {section.items.map((e) => (
-                <div class="group flex flex-col sm:flex-row gap-5 items-start">
-                  {e.thumb && (
-                    <div class="w-full sm:w-24 md:w-28 shrink-0 aspect-[4/3] sm:aspect-square overflow-hidden bg-haze rounded-sm">
-                      <img src={e.thumb} alt={e.alt ?? ''} loading="lazy" decoding="async" class={IMG} />
-                    </div>
-                  )}
-                  <div class="flex-1">
-                    <span class="text-xs font-mono text-caprock font-semibold block mb-1">
-                      {e.citation.monthYear ?? e.citation.dateLabel ?? e.citation.year}
-                    </span>
-                    <h3 class={TITLE}>{e.citation.displayTitle ?? e.citation.title}</h3>
-                    <p class="text-base text-iron/70 mt-1 font-serif">
-                      <span class="italic">{sourceLine(e.citation)}</span>
+      if (layout === 'shelf') {
+        const spans = shelfSpans(e.images.length);
+        const starts = shelfStarts(spans);
+        return (
+          <section id={id} aria-labelledby={`t-${id}`} class="pubs-feature pubs-band">
+            <div class="pubs-wrap">
+              <div class="pubs-g pubs-rise" style="align-items: end">
+                <div style="grid-column: 1 / span 8">
+                  <div class="pubs-numrow"><span class="pubs-num pubs-num--md" aria-hidden="true">{ROMAN[i]}</span></div>
+                  {head}
+                </div>
+                <div style="grid-column: 9 / span 4">
+                  {e.lead && <p class="pubs-lead pubs-lead--sm">{e.lead}</p>}
+                  {links}
+                </div>
+              </div>
+              {e.images.length > 0 && (
+                <>
+                  <div class="pubs-g pubs-shelf">
+                    {e.images.map((img, k) => (
+                      <figure class="pubs-rise" style={`grid-column: ${starts[k]} / span ${spans[k]}; margin: 0`}>
+                        <Plate img={img} class="pubs-plate" sizes={`(max-width: 860px) 100vw, ${Math.round((spans[k] / 12) * 1180)}px`} />
+                      </figure>
+                    ))}
+                  </div>
+                  <ol class="pubs-g pubs-shelf-caps">
+                    {e.images.map((img, k) => (
+                      <li style={`grid-column: ${starts[k]} / span ${spans[k]}`}>
+                        <span class="pubs-letter">{LETTERS[k]}</span>
+                        {img.caption && <span set:html={img.caption} />}
+                        {img.credit && <span class="pubs-credit" set:html={` ${img.credit}`} />}
+                      </li>
+                    ))}
+                  </ol>
+                </>
+              )}
+            </div>
+          </section>
+        );
+      }
+
+      if (layout === 'panorama') {
+        return (
+          <section id={id} aria-labelledby={`t-${id}`} class="pubs-feature">
+            {hero && (
+              <div class="pubs-bleed pubs-bleed--pano">
+                <Plate img={hero} class="pubs-drift" sizes="100vw" />
+              </div>
+            )}
+            <div class="pubs-wrap">
+              {/* The hero's caption lives INSIDE the left column, not in a
+                  full-width line above the grid. The matted plate on the right
+                  is lifted 170px into the photograph above it; a full-width
+                  caption sat in exactly that band and was hidden behind it.
+                  Rule for this page: anything lifted with a negative margin
+                  may only overlap an image, never text - so text that shares
+                  its band must sit in grid columns the lifted element does
+                  not occupy. */}
+              <div class="pubs-g" style="align-items: start">
+                <div class="pubs-rise" style="grid-column: 1 / span 6">
+                  {hero && (hero.caption || hero.credit) && (
+                    <p class="pubs-cap pubs-cap--pano">
+                      {hero.caption && <span set:html={hero.caption} />}
+                      {hero.credit && <span class="pubs-credit" set:html={` ${hero.credit}`} />}
                     </p>
-                    <div class="mt-4 flex flex-wrap gap-3 text-xs font-mono">
-                      <a
-                        href={e.citation.canonicalPath}
-                        aria-label={`Read the full text of \u201c${e.citation.title}\u201d`}
-                        class={BTN}
-                      >read full text</a>
-                      {e.otherVersions.map((v) => (
-                        <a
-                          href={v.path}
-                          aria-label={`Read the ${v.label.toLowerCase()} of \u201c${e.citation.title}\u201d`}
-                          class={BTN}
-                        >{v.label.toLowerCase()}</a>
-                      ))}
-                    </div>
-                  </div>
+                  )}
+                  <div class="pubs-numrow pubs-numrow--pano"><span class="pubs-num pubs-num--md" aria-hidden="true">{ROMAN[i]}</span></div>
+                  {head}
+                  {e.lead && <p class="pubs-lead pubs-drop">{e.lead}</p>}
+                  {links}
                 </div>
-              ))}
+                {more[0] && (
+                  <figure class="pubs-rise pubs-lift" style="grid-column: 8 / span 5; margin: -170px 0 0">
+                    <Plate img={more[0]} class="pubs-plate pubs-matted" sizes="(max-width: 860px) 100vw, 480px" />
+                    <figcaption class="pubs-cap">
+                      {more[0].caption && <span set:html={more[0].caption} />}
+                      {more[0].credit && <span class="pubs-credit" set:html={` ${more[0].credit}`} />}
+                    </figcaption>
+                  </figure>
+                )}
+              </div>
             </div>
-          ) : (
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {section.items.map((e) => (
-                <div class={CARD}>
-                  <div class="p-6 pb-4 space-y-2">
-                    <span class="text-[10px] font-mono uppercase tracking-wider text-sage font-bold block">
-                      {sourceLine(e.citation)}
-                    </span>
-                    <h3 class={TITLE}>{e.citation.displayTitle ?? e.citation.title}</h3>
-                    <a
-                      href={e.citation.canonicalPath}
-                      aria-label={`Read the full text of \u201c${e.citation.title}\u201d`}
-                      class={READ}
-                    >read full article &rarr;</a>
-                    {e.otherVersions.length > 0 && (
-                      <div class="flex flex-wrap gap-4">
-                        {e.otherVersions.map((v) => (
-                          <a
-                            href={v.path}
-                            aria-label={`Read the ${v.label.toLowerCase()} of \u201c${e.citation.title}\u201d`}
-                            class={READ}
-                          >{v.label.toLowerCase()} &rarr;</a>
-                        ))}
-                      </div>
-                    )}
-                  </div>
+          </section>
+        );
+      }
 
-                  {e.thumb && (
-                    <div class="w-full h-40 overflow-hidden bg-haze mt-auto border-t border-haze/50">
-                      <img src={e.thumb} alt={e.alt ?? ''} loading="lazy" decoding="async" class={IMG} />
+      // portrait
+      return (
+        <section id={id} aria-labelledby={`t-${id}`} class="pubs-feature pubs-wrap">
+          <div class="pubs-g" style="align-items: start">
+            {hero && (
+              <figure class="pubs-rise" style="grid-column: 1 / span 6; margin: 0">
+                <Plate img={hero} class="pubs-plate" sizes="(max-width: 860px) 100vw, 560px" />
+                <figcaption class="pubs-cap">
+                  {hero.caption && <span set:html={hero.caption} />}
+                  {hero.credit && <span class="pubs-credit pubs-block" set:html={hero.credit} />}
+                </figcaption>
+              </figure>
+            )}
+            <div class="pubs-rise" style={`grid-column: ${hero ? '8 / span 5' : '1 / span 8'}; padding-top: 30px`}>
+              <div class="pubs-num pubs-num--lg" aria-hidden="true">{ROMAN[i]}</div>
+              {head}
+              {e.lead && <p class="pubs-lead pubs-drop">{e.lead}</p>}
+              {links}
+              {more[0] && (
+                <figure class="pubs-inset">
+                  <Plate img={more[0]} class="pubs-plate" sizes="120px" widths={[240, 360]} />
+                  <figcaption class="pubs-cap pubs-cap--sm">
+                    {more[0].caption && <span set:html={more[0].caption} />}
+                    {more[0].credit && <span class="pubs-credit pubs-block" set:html={more[0].credit} />}
+                  </figcaption>
+                </figure>
+              )}
+            </div>
+          </div>
+        </section>
+      );
+    })}
+
+    {shorter > 0 && (
+      <section id="forms" aria-labelledby="t-forms" class="pubs-forms">
+        <div class="pubs-wrap">
+          <div class="pubs-g pubs-forms-head">
+            <h2 id="t-forms" class="pubs-forms-title">In the forms <em>they took</em></h2>
+            <p class="pubs-forms-lede">
+              {cap(word(shorter))} shorter pieces, each set the way it first reached readers.
+            </p>
+          </div>
+        </div>
+
+        {newsLead && (
+          <div class="pubs-news">
+            <div class="pubs-wrap">
+              <div class="pubs-news-ears">
+                <span>{papers.join(' \u00b7 ')}</span>
+                <span class="pubs-hide-sm">Columns by Austin Allison</span>
+                <span>{newsYears}</span>
+              </div>
+              <div class="pubs-news-plate pubs-rise">Caprock Chronicles</div>
+              <h3 class="pubs-news-strap">
+                In the newspaper &middot; {word(newspaper.length)} {newspaper.length === 1 ? 'column' : 'columns'}
+              </h3>
+              <div class="pubs-g pubs-news-cols">
+                <article class="pubs-news-lead">
+                  <p class="pubs-dateline">{when(newsLead.citation)}</p>
+                  <h4 class="pubs-news-h pubs-news-h--lead">
+                    <a class="pubs-tl" href={newsLead.citation.canonicalPath}>{newsLead.citation.title}</a>
+                  </h4>
+                  {newsLead.images[0] && (
+                    <figure class="pubs-rise" style="margin: 26px 0 0">
+                      <Plate img={newsLead.images[0]} class="pubs-fill" sizes="(max-width: 860px) 100vw, 760px" />
+                      <figcaption class="pubs-news-cap">
+                        {newsLead.images[0].caption && <span set:html={newsLead.images[0].caption} />}
+                        {newsLead.images[0].credit && <span set:html={` ${newsLead.images[0].credit}`} />}
+                      </figcaption>
+                    </figure>
+                  )}
+                  {newsLead.lead && <p class="pubs-news-leadpara">{newsLead.lead}</p>}
+                  <p class="pubs-byline">
+                    <span>By Austin Allison</span>
+                    <a class="pubs-ul pubs-strong" href={newsLead.citation.canonicalPath}>Read the column &rarr;</a>
+                  </p>
+                </article>
+                {newsRail.length > 0 && (
+                  <div class="pubs-news-rail">
+                    {newsRail.map((e) => (
+                      <article>
+                        <p class="pubs-dateline">{when(e.citation)}</p>
+                        <h4 class="pubs-news-h">
+                          <a class="pubs-tl" href={e.citation.canonicalPath}>{e.citation.title}</a>
+                        </h4>
+                        {e.images[0] && (
+                          <>
+                            <Plate img={e.images[0]} class="pubs-fill pubs-news-art" sizes="(max-width: 860px) 100vw, 360px" />
+                            {(e.images[0].caption || e.images[0].credit) && (
+                              <p class="pubs-news-cap">
+                                {e.images[0].caption && <span set:html={e.images[0].caption} />}
+                                {e.images[0].credit && <span set:html={` ${e.images[0].credit}`} />}
+                              </p>
+                            )}
+                          </>
+                        )}
+                        {e.lead && <p class="pubs-news-body">{e.lead}</p>}
+                        <a class="pubs-ul pubs-strong pubs-news-more" href={e.citation.canonicalPath}>Read the column &rarr;</a>
+                      </article>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {magOpener && (
+          <div class="pubs-mag">
+            <div class="pubs-wrap pubs-group-head">
+              <h3 class="pubs-group-title">In the magazine</h3>
+              <span class="pubs-group-meta">
+                {magTitles.join(' \u00b7 ')} &middot; {word(magazine.length)} {magazine.length === 1 ? 'feature' : 'features'}
+              </span>
+            </div>
+            {magOpener.images[0] && (
+              <div class="pubs-bleed pubs-bleed--mag">
+                <Plate img={magOpener.images[0]} class="pubs-drift" sizes="100vw" />
+              </div>
+            )}
+            <div class="pubs-wrap">
+              <div class="pubs-g">
+                <div class:list={['pubs-mag-panel pubs-rise', magOpener.images[0] && 'pubs-lift is-over']}>
+                  <p class="pubs-date">{when(magOpener.citation)}</p>
+                  <h4 class="pubs-mag-title">
+                    <a class="pubs-tl" href={magOpener.citation.canonicalPath}>{titleParts(magOpener.citation).main}</a>
+                  </h4>
+                  {titleParts(magOpener.citation).sub && <p class="pubs-deck">{titleParts(magOpener.citation).sub}</p>}
+                  {magOpener.lead && <p class="pubs-lead pubs-lead--sm pubs-drop">{magOpener.lead}</p>}
+                  <a class="pubs-ul pubs-strong pubs-mag-more" href={magOpener.citation.canonicalPath}>Read the feature &rarr;</a>
+                </div>
+                {magOpener.images[0] && (magOpener.images[0].caption || magOpener.images[0].credit) && (
+                  <p class="pubs-cap pubs-mag-cap">
+                    {magOpener.images[0].caption && <span set:html={magOpener.images[0].caption} />}
+                    {magOpener.images[0].credit && <span class="pubs-credit" set:html={` ${magOpener.images[0].credit}`} />}
+                  </p>
+                )}
+              </div>
+              {magRest.length > 0 && (
+                <div class="pubs-g pubs-mag-row">
+                  {magRest.map((e) => {
+                    const t = titleParts(e.citation);
+                    const img = e.images[0];
+                    return img ? (
+                      <article class="pubs-mag-item pubs-rise">
+                        <a href={e.citation.canonicalPath} tabindex="-1" aria-hidden="true" class="pubs-frame">
+                          <Plate img={{ ...img, alt: '' }} sizes="(max-width: 860px) 100vw, 480px" />
+                        </a>
+                        <p class="pubs-date">{when(e.citation)}</p>
+                        <h4 class="pubs-mag-item-title"><a class="pubs-tl" href={e.citation.canonicalPath}>{t.main}</a></h4>
+                        {t.sub && <p class="pubs-deck pubs-deck--sm">{t.sub}</p>}
+                      </article>
+                    ) : (
+                      <article class="pubs-mag-item pubs-mag-type pubs-rise">
+                        <p class="pubs-date">{when(e.citation)}</p>
+                        <h4 class="pubs-mag-type-title"><a class="pubs-tl" href={e.citation.canonicalPath}>{t.main}</a></h4>
+                        {t.sub && <p class="pubs-deck pubs-deck--sm">{t.sub}</p>}
+                        <span class="pubs-mag-rule" aria-hidden="true" />
+                      </article>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {archive.length > 0 && (
+          <div class="pubs-archive">
+            <div class="pubs-wrap">
+              <div class="pubs-group-head pubs-group-head--dark">
+                <h3 class="pubs-group-title">From the archive</h3>
+                <span class="pubs-group-meta">Southwest Collection/Special Collections Library</span>
+              </div>
+              <div class="pubs-g pubs-docs">
+                {archive.map((e) => {
+                  const img = e.images[0];
+                  return (
+                    <article class="pubs-doc pubs-rise">
+                      {img && <Plate img={img} class="pubs-doc-img" sizes="(max-width: 860px) 100vw, 600px" />}
+                      <div class:list={['pubs-slip', !img && 'is-alone']}>
+                        <p class="pubs-slip-src">{e.citation.journal ?? e.citation.bookTitle} &middot; {e.citation.year}</p>
+                        <h4 class="pubs-slip-title"><a class="pubs-tl" href={e.citation.canonicalPath}>{e.citation.title}</a></h4>
+                        {img && (img.label || img.caption) && (
+                          <p class="pubs-slip-label" set:html={img.label ?? img.caption} />
+                        )}
+                      </div>
+                    </article>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {books.length > 0 && (
+          <div class="pubs-wrap pubs-books">
+            <div class="pubs-group-head">
+              <h3 class="pubs-group-title">In {books.length === 1 ? 'a book' : 'books'}</h3>
+              <span class="pubs-group-meta">{[...new Set(books.map((b) => b.citation.publisher).filter(Boolean))].join(' \u00b7 ')}</span>
+            </div>
+            {books.map((e) => {
+              const [book, sub] = (e.citation.bookTitle ?? '').split(/:\s+/);
+              const img = e.images[0];
+              return (
+                <div class:list={['pubs-book pubs-rise', !img && 'is-text']}>
+                  {img && (
+                    <div class="pubs-book-page pubs-book-left">
+                      <Plate img={img} class="pubs-fill" sizes="(max-width: 860px) 100vw, 520px" />
+                      {(img.caption || img.credit) && (
+                        <p class="pubs-cap pubs-cap--sm">
+                          {img.caption && <span set:html={img.caption} />}
+                          {img.credit && <span class="pubs-credit" set:html={` ${img.credit}`} />}
+                        </p>
+                      )}
                     </div>
                   )}
+                  <div class="pubs-book-page pubs-book-right">
+                    <p class="pubs-book-in">{book}</p>
+                    {sub && <p class="pubs-book-sub">{sub}</p>}
+                    <h4 class="pubs-book-title"><a class="pubs-tl" href={e.citation.canonicalPath}>{e.citation.title}</a></h4>
+                    <p class="pubs-book-author">Austin Allison</p>
+                    <div class="pubs-fleuron" aria-hidden="true"><span /><b>&#10086;</b><span /></div>
+                    <a class="pubs-ul pubs-strong" href={e.citation.canonicalPath}>Read the chapter &rarr;</a>
+                    <p class="pubs-muted pubs-book-meta">{[e.citation.publisher, String(e.citation.year), extent(e)].filter(Boolean).join(' \u00b7 ')}</p>
+                  </div>
+                  {img && <div class="pubs-book-gutter" aria-hidden="true" />}
                 </div>
-              ))}
-            </div>
-          )}
-        </section>
-      ))}
-    </div>
+              );
+            })}
+          </div>
+        )}
+      </section>
+    )}
   </div>
 </RootLayout>
+
+<style is:global>
+  /* Everything is scoped under .pubs. is:global because Plate renders the
+     <img> inside a child component, which a scoped style cannot reach. */
+  .pubs {
+    --pubs-ink: #25211c;
+    --pubs-ink-2: #2e2923;
+    --pubs-ink-soft: #3c362e;
+    --pubs-muted: #5e564b;
+    --pubs-rule: #cdc3b1;
+    --pubs-accent: var(--color-caprock, #9c5b3f);
+    --pubs-link: #7e4632;
+    --pubs-serif: var(--font-serif, 'Cormorant Garamond', Georgia, serif);
+    --pubs-mono: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+    --pubs-news: 'Old Standard TT', Georgia, serif;
+    background: #f5f1e8;
+    color: var(--pubs-ink);
+    font-family: var(--pubs-serif);
+    overflow-x: clip;
+    padding-bottom: 160px;
+  }
+  .pubs a { color: var(--pubs-link); }
+  .pubs a:hover { color: #4f2a1d; }
+  .pubs a:focus-visible { outline: 2px solid var(--pubs-accent); outline-offset: 4px; }
+  .pubs ::selection { background: #e2c9ae; }
+  .pubs [id] { scroll-margin-top: var(--header-h, 6rem); }
+
+  .pubs-wrap { max-width: 1240px; margin: 0 auto; padding: 0 32px; box-sizing: border-box; }
+  .pubs-g { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); column-gap: 40px; }
+
+  /* links */
+  .pubs-ul { text-decoration: none; background-image: linear-gradient(currentColor, currentColor); background-repeat: no-repeat; background-position: 0 100%; background-size: 0% 1px; transition: background-size 420ms cubic-bezier(.2,.7,.2,1), color 300ms; }
+  .pubs-ul:hover { background-size: 100% 1px; }
+  .pubs a.pubs-tl { color: var(--pubs-ink); text-decoration: none; background-image: linear-gradient(var(--pubs-accent), var(--pubs-accent)); background-repeat: no-repeat; background-position: 0 92%; background-size: 0% 2px; transition: background-size 520ms cubic-bezier(.2,.7,.2,1); }
+  .pubs a.pubs-tl:hover { color: var(--pubs-ink); background-size: 100% 2px; }
+  .pubs-strong { font-weight: 500; }
+  .pubs-muted { color: var(--pubs-muted); }
+  .pubs-block { display: block; margin-top: 4px; }
+
+  /* masthead */
+  .pubs-masthead { padding-top: 64px; }
+  .pubs-ears { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; font-family: var(--pubs-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--pubs-muted); padding-bottom: 14px; border-bottom: 1px solid var(--pubs-ink); }
+  .pubs-h1 { margin: 30px 0 0; font-size: clamp(84px, 15.5vw, 228px); font-weight: 300; letter-spacing: -.035em; line-height: .8; }
+  .pubs-intro { margin-top: 56px; align-items: start; }
+  .pubs-lede { grid-column: 1 / span 5; margin: 0; font-size: 23px; line-height: 1.4; color: var(--pubs-ink-soft); }
+  .pubs-toc { grid-column: 7 / span 6; border-top: 1px solid var(--pubs-rule); }
+  .pubs-toc > a:not(.pubs-more) { display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-bottom: 1px solid var(--pubs-rule); color: var(--pubs-ink); text-decoration: none; transition: color 300ms; }
+  .pubs-toc > a:not(.pubs-more):hover { color: var(--pubs-link); }
+  .pubs-toc-n { font-style: italic; font-size: 26px; color: var(--pubs-accent); }
+  .pubs-toc-t { font-size: 22px; line-height: 1.2; }
+  .pubs-toc-s { display: block; margin-top: 4px; font-family: var(--pubs-mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--pubs-muted); }
+  .pubs-more { display: inline-block; margin-top: 14px; padding: 6px 0; font-family: var(--pubs-mono); font-size: 12px; letter-spacing: .06em; }
+
+  /* features */
+  .pubs-feature { margin-top: 160px; }
+  .pubs-feature.pubs-wrap { padding-top: 0; }
+  .pubs-band { background: #eae2d2; padding: 120px 0 110px; }
+  .pubs-numrow { display: flex; align-items: baseline; gap: 22px; }
+  .pubs-num { font-style: italic; font-weight: 300; line-height: .7; color: var(--pubs-accent); }
+  .pubs-num--lg { font-size: 132px; }
+  .pubs-num--md { font-size: 96px; }
+  .pubs-kicker { margin: 40px 0 18px; font-family: var(--pubs-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--pubs-muted); }
+  .pubs-numrow + .pubs-kicker { margin-top: 26px; }
+  .pubs-feature-title { margin: 0; font-weight: 400; line-height: 1; letter-spacing: -.015em; }
+  .pubs-feature-title .pubs-ft-main { font-size: clamp(42px, 4.8vw, 62px); }
+  .pubs-feature-title .pubs-ft-sub { display: block; margin-top: 12px; font-size: clamp(22px, 2.2vw, 30px); line-height: 1.15; }
+  .pubs-feature-title.is-split .pubs-ft-main { display: block; font-style: italic; font-weight: 300; font-size: clamp(56px, 8.2vw, 116px); line-height: .95; letter-spacing: -.02em; }
+  .pubs-feature-title.is-split .pubs-ft-sub { font-size: clamp(24px, 2.6vw, 36px); line-height: 1.12; }
+  .pubs-lead { margin: 34px 0 0; font-size: 23px; line-height: 1.45; color: var(--pubs-ink-2); }
+  .pubs-lead--sm { font-size: 21px; margin-top: 0; }
+  .pubs-drop::first-letter { float: left; font-size: 4.6em; line-height: .78; padding: .08em .1em 0 0; color: var(--pubs-accent); font-weight: 400; }
+  .pubs-links { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 28px; margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--pubs-rule); font-family: var(--pubs-mono); font-size: 12.5px; }
+  .pubs-links > * { padding: 8px 0; }
+  .pubs-plate { display: block; width: 100%; height: auto; box-shadow: 0 1px 0 rgba(255,255,255,.6), 0 34px 50px -34px rgba(48,32,16,.45); }
+  .pubs-matted { border: 10px solid #fbf8f1; box-sizing: border-box; }
+  .pubs-cap { margin: 14px 0 0; font-size: 15px; font-style: italic; line-height: 1.4; color: var(--pubs-ink-soft); }
+  .pubs-cap--sm { font-size: 14px; }
+  .pubs-cap--pano { margin-top: 12px; }
+  .pubs-numrow--pano { margin-top: 64px; }
+  .pubs-credit { font-style: normal; font-family: var(--pubs-mono); font-size: 10.5px; letter-spacing: .03em; color: var(--pubs-muted); }
+  .pubs-inset { margin: 44px 0 0; display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 18px; align-items: end; }
+  .pubs-inset .pubs-cap { margin: 0; }
+  .pubs-shelf { margin-top: 80px; align-items: end; row-gap: 32px; padding-bottom: 26px; border-bottom: 2px solid #b9ad97; }
+  .pubs-shelf-caps { list-style: none; margin: 18px 0 0; padding: 0; row-gap: 14px; font-size: 15px; font-style: italic; line-height: 1.4; color: var(--pubs-ink-soft); }
+  .pubs-letter { font-style: normal; font-family: var(--pubs-mono); font-size: 11px; color: var(--pubs-accent); margin-right: 6px; }
+
+  .pubs-bleed { overflow: hidden; background: #2e2a25; }
+  .pubs-bleed img { display: block; width: 100%; height: 100%; object-fit: cover; }
+  .pubs-bleed--pano { height: clamp(340px, 50vw, 700px); }
+  .pubs-bleed--mag { height: clamp(380px, 58vw, 800px); background: #d8cfbe; }
+
+  /* the forms */
+  .pubs-forms { padding-top: 200px; }
+  .pubs-forms-head { align-items: end; padding-bottom: 22px; border-bottom: 1px solid var(--pubs-ink); }
+  .pubs-forms-title { grid-column: 1 / span 7; margin: 0; font-size: clamp(52px, 7vw, 104px); font-weight: 300; letter-spacing: -.03em; line-height: .92; }
+  .pubs-forms-lede { grid-column: 8 / span 5; margin: 0; font-size: 20px; line-height: 1.4; color: var(--pubs-ink-soft); }
+  .pubs-group-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 40px; }
+  .pubs-group-title { margin: 0; font-size: clamp(48px, 6vw, 84px); font-weight: 300; font-style: italic; letter-spacing: -.02em; line-height: 1; }
+  .pubs-group-meta { font-family: var(--pubs-mono); font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--pubs-muted); }
+  .pubs-date { margin: 20px 0 8px; font-family: var(--pubs-mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--pubs-link); }
+  .pubs-deck { margin: 10px 0 0; font-size: 24px; font-style: italic; color: var(--pubs-ink-soft); }
+  .pubs-deck--sm { font-size: 18px; line-height: 1.35; }
+  .pubs-fill { display: block; width: 100%; height: auto; }
+
+  /* in the newspaper */
+  .pubs-news { margin-top: 110px; background: #ece6d9; border-top: 1px solid #d6ccb9; border-bottom: 1px solid #d6ccb9; padding: 44px 0 90px; color: #1f1b16; }
+  .pubs-news .pubs-tl { color: #1f1b16 !important; }
+  .pubs-news-ears { display: flex; justify-content: space-between; gap: 16px; font-family: var(--pubs-mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: #4a4339; padding-bottom: 10px; border-bottom: 1px solid #1f1b16; }
+  .pubs-news-plate { text-align: center; font-family: var(--pubs-news); font-weight: 700; font-size: clamp(54px, 11.4vw, 158px); line-height: .95; letter-spacing: -.02em; padding: 14px 0 12px; }
+  .pubs-news-strap { margin: 0; border-top: 5px double #1f1b16; padding-top: 8px; text-align: center; font-family: var(--pubs-mono); font-weight: 400; font-size: 10.5px; letter-spacing: .3em; text-transform: uppercase; color: #4a4339; }
+  .pubs-news-cols { column-gap: 0; margin-top: 40px; align-items: start; }
+  .pubs-news-lead { grid-column: 1 / span 8; padding-right: 34px; }
+  .pubs-news-rail { grid-column: 9 / span 4; padding-left: 30px; border-left: 1px solid #bdb2a0; display: flex; flex-direction: column; gap: 30px; }
+  .pubs-news-rail > article + article { border-top: 3px double #1f1b16; padding-top: 22px; }
+  .pubs-dateline { margin: 0 0 10px; font-family: var(--pubs-mono); font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: #4a4339; }
+  .pubs-news-h { margin: 0; font-family: var(--pubs-news); font-weight: 700; font-size: 27px; line-height: 1.08; }
+  .pubs-news-h--lead { font-size: clamp(34px, 4.2vw, 56px); line-height: 1.02; letter-spacing: -.01em; }
+  .pubs-news-art { margin-top: 16px; }
+  .pubs-news-cap { margin: 8px 0 0; padding-top: 6px; border-top: 1px solid #bdb2a0; font-family: var(--pubs-news); font-style: italic; font-size: 13.5px; line-height: 1.4; color: #4a4339; }
+  .pubs-news-leadpara { margin: 22px 0 0; font-family: var(--pubs-news); font-size: 24px; line-height: 1.45; }
+  .pubs-news-body { margin: 12px 0 0; font-family: var(--pubs-news); font-size: 17px; line-height: 1.5; text-align: justify; hyphens: auto; }
+  .pubs-news-more { display: inline-block; margin-top: 8px; padding: 6px 0; font-family: var(--pubs-mono); font-size: 12px; }
+  .pubs-byline { margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 8px 24px; align-items: baseline; font-family: var(--pubs-mono); font-size: 12px; }
+  .pubs-byline > span { color: #4a4339; letter-spacing: .1em; text-transform: uppercase; font-size: 10.5px; }
+  .pubs-byline > a { padding: 6px 0; }
+
+  /* in the magazine */
+  .pubs-mag { margin-top: 150px; }
+  .pubs-mag-panel { grid-column: 1 / span 7; position: relative; background: #fbf9f4; padding: 44px 48px 40px; box-shadow: 0 40px 60px -40px rgba(48,32,16,.55); }
+  .pubs-mag-panel.is-over { margin-top: -170px; }
+  .pubs-mag-panel .pubs-date { margin-top: 0; }
+  .pubs-mag-panel .pubs-lead { margin-top: 26px; font-size: 20px; }
+  .pubs-mag-title { margin: 0; font-size: clamp(40px, 5vw, 66px); font-weight: 400; line-height: 1; letter-spacing: -.015em; }
+  .pubs-mag-more { display: inline-block; margin-top: 18px; padding: 8px 0; font-family: var(--pubs-mono); font-size: 12.5px; }
+  .pubs-mag-cap { grid-column: 9 / span 4; text-align: right; }
+  .pubs-mag-row { margin-top: 110px; align-items: start; row-gap: 72px; }
+  .pubs-mag-item:nth-child(3n+1) { grid-column: 1 / span 5; }
+  .pubs-mag-item:nth-child(3n+2) { grid-column: 6 / span 4; padding-top: 180px; }
+  .pubs-mag-item:nth-child(3n+3) { grid-column: 10 / span 3; padding-top: 60px; }
+  .pubs-mag-item:nth-child(3n+1) .pubs-frame { aspect-ratio: 4 / 5; }
+  .pubs-mag-item:nth-child(3n+2) .pubs-frame { aspect-ratio: 3 / 4; }
+  .pubs-mag-item:nth-child(3n+3) .pubs-frame { aspect-ratio: 4 / 5; }
+  .pubs-mag-item-title { margin: 0; font-size: clamp(30px, 3vw, 40px); font-weight: 400; line-height: 1.03; }
+  .pubs-mag-type { border-top: 1px solid var(--pubs-ink); }
+  .pubs-mag-type .pubs-date { margin-top: 18px; margin-bottom: 14px; }
+  .pubs-mag-type-title { margin: 0; font-size: clamp(36px, 3.4vw, 48px); font-weight: 300; font-style: italic; line-height: 1; letter-spacing: -.01em; }
+  .pubs-mag-rule { display: block; margin-top: 28px; width: 56px; border-top: 2px solid var(--pubs-accent); }
+  .pubs-frame { display: block; overflow: hidden; background: #e3daca; box-shadow: 0 30px 44px -32px rgba(48,32,16,.45); }
+  .pubs-frame img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform 1200ms cubic-bezier(.2,.7,.2,1); }
+  .pubs-mag-item:hover .pubs-frame img { transform: scale(1.025); }
+
+  /* from the archive */
+  .pubs-archive { margin-top: 160px; background: #4c544e; color: #f1ece0; padding: 90px 0 120px; }
+  .pubs-group-head--dark { margin-bottom: 70px; }
+  .pubs-group-head--dark .pubs-group-title { color: #f4efe2; }
+  .pubs-group-head--dark .pubs-group-meta { color: #d9d2c3; }
+  .pubs-docs { align-items: start; row-gap: 40px; }
+  .pubs-doc { position: relative; }
+  .pubs-doc:nth-child(4n+1) { grid-column: 1 / span 6; z-index: 1; }
+  .pubs-doc:nth-child(4n+2) { grid-column: 7 / span 4; margin-top: 90px; z-index: 2; }
+  /* margin-top 0, not negative: this document sits under the first one's
+     label slip, and a lift here would slide it over that text. */
+  .pubs-doc:nth-child(4n+3) { grid-column: 2 / span 5; margin-top: 0; z-index: 2; }
+  .pubs-doc:nth-child(4n+4) { grid-column: 7 / span 6; margin-top: 70px; z-index: 1; }
+  .pubs-doc-img { display: block; width: 100%; height: auto; box-shadow: 0 30px 40px -24px rgba(0,0,0,.7); }
+  .pubs-slip { position: relative; z-index: 3; background: #f4efe2; color: var(--pubs-ink); padding: 18px 22px 20px; box-shadow: 0 16px 24px -14px rgba(0,0,0,.6); }
+  .pubs-doc:nth-child(4n+1) .pubs-slip { width: 72%; margin: -54px 0 0 auto; }
+  .pubs-doc:nth-child(4n+2) .pubs-slip { width: 86%; margin: -64px 0 0 -40px; }
+  .pubs-doc:nth-child(4n+3) .pubs-slip { width: 80%; margin: -48px 0 0 -30px; }
+  .pubs-doc:nth-child(4n+4) .pubs-slip { width: 70%; margin: -44px 0 0 auto; }
+  .pubs-slip.is-alone { width: auto !important; margin: 0 !important; }
+  .pubs-slip-src { margin: 0 0 6px; font-family: var(--pubs-mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--pubs-link); }
+  .pubs-slip-title { margin: 0; font-size: 26px; font-weight: 500; line-height: 1.1; }
+  .pubs-slip-label { margin: 6px 0 0; font-size: 15px; font-style: italic; color: var(--pubs-muted); }
+
+  /* in a book */
+  .pubs-books { padding-top: 160px; display: flex; flex-direction: column; gap: 80px; }
+  .pubs-books .pubs-group-head { margin-bottom: -30px; }
+  .pubs-book { position: relative; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); background: #fcfaf4; box-shadow: 1px 1px 0 #e7e0d0, 2px 2px 0 #fcfaf4, 3px 3px 0 #e2dac8, 4px 4px 0 #fcfaf4, 5px 5px 0 #ddd4c1, 0 60px 80px -50px rgba(48,32,16,.6); }
+  .pubs-book.is-text { grid-template-columns: 1fr; max-width: 620px; margin: 0 auto; }
+  .pubs-book-page { padding: 56px 52px; display: flex; flex-direction: column; justify-content: center; }
+  .pubs-book-right { padding: 80px 52px 64px; text-align: center; align-items: center; }
+  .pubs-book-in { margin: 0; font-family: var(--pubs-mono); font-size: 10.5px; letter-spacing: .32em; text-transform: uppercase; color: var(--pubs-muted); }
+  .pubs-book-sub { margin: 8px 0 0; font-size: 18px; font-style: italic; color: var(--pubs-ink-soft); }
+  .pubs-book-title { margin: 46px 0 0; font-size: clamp(56px, 7vw, 104px); font-weight: 300; font-style: italic; line-height: .9; letter-spacing: -.025em; }
+  .pubs-book-author { margin: 18px 0 0; font-size: 15px; letter-spacing: .24em; text-transform: uppercase; color: var(--pubs-ink-soft); }
+  .pubs-fleuron { margin: 32px auto 26px; width: 110px; display: flex; align-items: center; gap: 10px; color: var(--pubs-accent); }
+  .pubs-fleuron span { flex: 1; border-top: 1px solid currentColor; }
+  .pubs-fleuron b { font-weight: 400; font-size: 17px; }
+  .pubs-book-right .pubs-ul { padding: 8px 0; font-family: var(--pubs-mono); font-size: 12.5px; }
+  .pubs-book-meta { margin: 16px 0 0; font-family: var(--pubs-mono); font-size: 11px; letter-spacing: .06em; }
+  .pubs-book-gutter { position: absolute; top: 0; bottom: 0; left: 50%; width: 70px; margin-left: -35px; pointer-events: none; background: linear-gradient(90deg, rgba(40,28,14,0) 0%, rgba(40,28,14,.13) 44%, rgba(40,28,14,.22) 50%, rgba(40,28,14,.13) 56%, rgba(40,28,14,0) 100%); }
+
+  /* motion: scroll-driven where supported, otherwise none */
+  @supports (animation-timeline: view()) {
+    .pubs-rise { animation: pubs-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 55%; }
+    .pubs-drift { animation: pubs-drift linear both; animation-timeline: view(); animation-range: cover 0% cover 100%; }
+  }
+  @keyframes pubs-rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: none; } }
+  @keyframes pubs-drift { from { object-position: 50% 20%; } to { object-position: 50% 80%; } }
+  @media (prefers-reduced-motion: reduce) {
+    .pubs-rise, .pubs-drift { animation: none !important; }
+    .pubs-frame img { transition: none !important; }
+  }
+
+  @media (max-width: 860px) {
+    .pubs-wrap { padding-left: 20px; padding-right: 20px; }
+    .pubs-g { column-gap: 0; row-gap: 28px; }
+    .pubs-g > * { grid-column: 1 / -1 !important; }
+    .pubs-lift, .pubs-mag-panel.is-over { margin-top: 0 !important; }
+    .pubs-feature { margin-top: 110px; }
+    .pubs-mag-panel { padding: 28px 22px; }
+    .pubs-mag-item { padding-top: 0 !important; }
+    .pubs-news { padding: 28px 0 56px; }
+    .pubs-news-lead { padding-right: 0; }
+    .pubs-news-rail { padding-left: 0; border-left: 0; border-top: 1px solid #bdb2a0; padding-top: 24px; }
+    .pubs-news-leadpara { font-size: 20px; }
+    .pubs-doc { margin-top: 0 !important; }
+    .pubs-doc .pubs-slip { width: auto !important; margin: -28px 12px 0 !important; }
+    .pubs-book { grid-template-columns: 1fr; }
+    .pubs-book-page { padding: 28px 22px; }
+    .pubs-book-gutter, .pubs-hide-sm { display: none; }
+  }
+</style>

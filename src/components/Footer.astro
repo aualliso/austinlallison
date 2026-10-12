@@ -130,6 +130,10 @@
  *               September, and is shut off after a soaking rain, as a
  *               farmer would. While it runs, water climbs the well and
  *               sprays from the span. (THE IRRIGATION WELL, below.)
+ *   the cotton  the field the pivot waters, through its year: listed
+ *               beds waiting in spring, seedlings, squaring, bloom,
+ *               green bolls, open bolls through the autumn, and stalks
+ *               after the harvest. (THE COTTON, below.)
  *   the mill    the wheel of the windmill at the Rock House turns at
  *               the pace of the header's.
  *   the weed    in a strong west wind a tumbleweed comes across the
@@ -589,9 +593,30 @@ const runPath =
       data-offsets={[PIVOT_FOOT - PIVOT_POINT, ...PIVOT_TOWERS.map((x) => PIVOT_FOOT - x)].join(' ')}
       aria-hidden="true"
     >
+      <!-- THE COTTON'S TILES, one for each stage of its year: two plants
+           in a tile 6.4px wide, standing on its foot. The field under
+           the span and the one east of the well both fill with them
+           (see THE COTTON in the stylesheet for which shows when). -->
+      <defs>
+        <pattern id="cotton-stalks" width="6.4" height="10" y="1.6" patternUnits="userSpaceOnUse"><path d="M1.4,10 V8.6 M1.4,9.1 L0.9,8.8 M4.6,10 V8.8 M4.6,9.3 L5.1,9" style="stroke:color-mix(in srgb, #6b5038, #0b101d calc(var(--night) * 60%));stroke-width:.35;fill:none"/></pattern>
+        <pattern id="cotton-fallow" width="6.4" height="10" y="1.6" patternUnits="userSpaceOnUse"><path d="M0,10 Q1.6,9.1 3.2,10 Q4.8,9.1 6.4,10 Z" style="fill:color-mix(in srgb, #8b6b4c, #0b101d calc(var(--night) * 60%))"/></pattern>
+        <pattern id="cotton-seedling" width="6.4" height="10" y="1.6" patternUnits="userSpaceOnUse"><path d="M0,10 Q1.6,9.2 3.2,10 Q4.8,9.2 6.4,10 Z" style="fill:color-mix(in srgb, #8b6b4c, #0b101d calc(var(--night) * 60%))"/><path d="M1.6,9.6 V9 M4.8,9.6 V9.05" style="stroke:color-mix(in srgb, #6f8f3e, #0b101d calc(var(--night) * 60%));stroke-width:.3;fill:none"/><ellipse cx="1.2" cy="8.95" rx=".45" ry=".26" style="fill:color-mix(in srgb, #86ad4f, #0b101d calc(var(--night) * 60%))"/><ellipse cx="2" cy="8.95" rx=".45" ry=".26" style="fill:color-mix(in srgb, #86ad4f, #0b101d calc(var(--night) * 60%))"/><ellipse cx="4.4" cy="9" rx=".42" ry=".25" style="fill:color-mix(in srgb, #86ad4f, #0b101d calc(var(--night) * 60%))"/><ellipse cx="5.2" cy="9" rx=".42" ry=".25" style="fill:color-mix(in srgb, #86ad4f, #0b101d calc(var(--night) * 60%))"/></pattern>
+        <pattern id="cotton-squaring" width="6.4" height="10" y="1.6" patternUnits="userSpaceOnUse"><path d="M1.6,10 V8.6 M4.8,10 V8.8" style="stroke:color-mix(in srgb, #5b6e34, #0b101d calc(var(--night) * 60%));stroke-width:.35;fill:none"/><ellipse cx="1.6" cy="8.5" rx="1.25" ry=".95" style="fill:color-mix(in srgb, #5f8c3a, #0b101d calc(var(--night) * 60%))"/><ellipse cx="1.4" cy="8.2" rx=".6" ry=".4" style="fill:color-mix(in srgb, #7aa64b, #0b101d calc(var(--night) * 60%))"/><ellipse cx="4.8" cy="8.7" rx="1.1" ry=".85" style="fill:color-mix(in srgb, #5f8c3a, #0b101d calc(var(--night) * 60%))"/><ellipse cx="4.6" cy="8.4" rx=".55" ry=".35" style="fill:color-mix(in srgb, #7aa64b, #0b101d calc(var(--night) * 60%))"/></pattern>
+        <pattern id="cotton-bloom" width="6.4" height="10" y="1.6" patternUnits="userSpaceOnUse"><path d="M0,10 V7.3 C0.6,6.4 1.4,6 2.2,6.3 C3,5.8 4,5.9 4.6,6.4 C5.4,6 6.1,6.5 6.4,7.3 V10 Z" style="fill:color-mix(in srgb, #4f7f33, #0b101d calc(var(--night) * 60%))"/><path d="M0,10 V8.7 H6.4 V10 Z" style="fill:color-mix(in srgb, #3e6628, #0b101d calc(var(--night) * 60%))"/><path d="M1,7 C1.6,6.5 2.3,6.5 2.8,6.9 M3.8,6.8 C4.4,6.4 5.1,6.4 5.6,6.9" style="stroke:color-mix(in srgb, #6e9e46, #0b101d calc(var(--night) * 60%));stroke-width:.4;fill:none"/><circle cx="1.6" cy="6.5" r=".42" style="fill:color-mix(in srgb, #f2ead0, #0b101d calc(var(--night) * 60%))"/><circle cx="4.5" cy="6.7" r=".4" style="fill:color-mix(in srgb, #d8798c, #0b101d calc(var(--night) * 60%))"/></pattern>
+        <pattern id="cotton-bolls" width="6.4" height="10" y="1.6" patternUnits="userSpaceOnUse"><path d="M0,10 V7.2 C0.6,6.3 1.4,5.9 2.2,6.2 C3,5.7 4,5.8 4.6,6.3 C5.4,5.9 6.1,6.4 6.4,7.2 V10 Z" style="fill:color-mix(in srgb, #5c7a32, #0b101d calc(var(--night) * 60%))"/><path d="M0,10 V8.7 H6.4 V10 Z" style="fill:color-mix(in srgb, #4a6428, #0b101d calc(var(--night) * 60%))"/><circle cx="1.3" cy="6.9" r=".45" style="fill:color-mix(in srgb, #9aaf5c, #0b101d calc(var(--night) * 60%))"/><circle cx="3" cy="7.6" r=".45" style="fill:color-mix(in srgb, #9aaf5c, #0b101d calc(var(--night) * 60%))"/><circle cx="4.9" cy="6.8" r=".42" style="fill:color-mix(in srgb, #9aaf5c, #0b101d calc(var(--night) * 60%))"/></pattern>
+        <pattern id="cotton-open" width="6.4" height="10" y="1.6" patternUnits="userSpaceOnUse"><path d="M1.6,10 V6 M1.6,8.1 L0.7,7.2 M1.6,7.2 L2.6,6.5 M1.6,9 L2.5,8.5 M4.8,10 V6.2 M4.8,8.3 L3.9,7.5 M4.8,7.4 L5.8,6.7 M4.8,9.1 L5.7,8.7" style="stroke:color-mix(in srgb, #6b5038, #0b101d calc(var(--night) * 60%));stroke-width:.35;fill:none"/><circle cx="1.6" cy="5.9" r=".7" style="fill:color-mix(in srgb, #f6f3ea, #0b101d calc(var(--night) * 60%))"/><circle cx="0.7" cy="7.1" r=".65" style="fill:color-mix(in srgb, #efebe0, #0b101d calc(var(--night) * 60%))"/><circle cx="2.6" cy="6.4" r=".66" style="fill:color-mix(in srgb, #f6f3ea, #0b101d calc(var(--night) * 60%))"/><circle cx="2.5" cy="8.4" r=".58" style="fill:color-mix(in srgb, #efebe0, #0b101d calc(var(--night) * 60%))"/><circle cx="4.8" cy="6.1" r=".68" style="fill:color-mix(in srgb, #f6f3ea, #0b101d calc(var(--night) * 60%))"/><circle cx="3.9" cy="7.4" r=".62" style="fill:color-mix(in srgb, #efebe0, #0b101d calc(var(--night) * 60%))"/><circle cx="5.8" cy="6.6" r=".64" style="fill:color-mix(in srgb, #f6f3ea, #0b101d calc(var(--night) * 60%))"/><circle cx="5.7" cy="8.6" r=".56" style="fill:color-mix(in srgb, #efebe0, #0b101d calc(var(--night) * 60%))"/></pattern>
+      </defs>
       <g class="pivot-span-all">
         {pivotSpans.map((s, k) => (
           <g class="span" style={`transform-origin:${s.east}px 0;--from:var(--d${k});--to:var(--d${k + 1});--len:${s.east - s.west}px`}>
+            <!-- the field under this span; the last runs on under the overhang -->
+            <rect
+              class="cotton"
+              x={s.west - (k === PIVOT_TOWERS.length - 1 ? 6 : 0)}
+              y="11.8"
+              width={s.east - s.west + (k === PIVOT_TOWERS.length - 1 ? 6 : 0)}
+              height="9.8"
+            ></rect>
             <path class="spray spray--a" d={s.sprayA}></path>
             <path class="spray spray--b" d={s.sprayB}></path>
             <path class="drops" d={s.drops}></path>
@@ -620,8 +645,16 @@ const runPath =
       <path class="cap" d={`M${PIVOT_FOOT - 2.1},11.6 H${PIVOT_FOOT + 2.1} V12.5 H${PIVOT_FOOT - 2.1} Z`}></path>
     </svg>
 
-    <!-- a survey corner on the plain: a mound of rock and its stake. A
-         box in pixels like the grass, so that it keeps its shape. -->
+    <!-- the rest of the pivot's field, east of the well to a few paces
+         short of the rim. In the drawing's width, not in pixels, so that
+         it stops before the rim however narrow the page. -->
+    <svg class="field-east" aria-hidden="true">
+      <rect class="cotton" x="0" y="1.8" width="100%" height="9.8"></rect>
+    </svg>
+
+    <!-- a survey corner on the plain: a mound of rock and its stake, at
+         the rim. A box in pixels like the grass, so that it keeps its
+         shape. -->
     <svg class="corner" viewBox="0 0 16 14" aria-hidden="true">
       <path class="stake" d="M7.7,7.4 L8.1,0.9 L9.2,1 L9,7.4 Z"></path>
       <path class="stone stone--shade" d="M5.9,9 L6.5,7 L9.5,6.8 L10.1,9 Z"></path>
@@ -1293,9 +1326,10 @@ const runPath =
      tips with no foot under them. So each strip is shortened by a few
      pixels (--trim-west, --trim-east, set by trimGrass() in the script
      whenever the drawing changes size) to end in a gap between tufts.
-     Both are shortened at the playa's side, where the grass thins out
-     anyway: the west strip from its right, the east strip from its
-     left, which keeps its other end at the rim. */
+     Both are shortened on their inner side: the west strip from its
+     right, at the playa, and the east strip (the native grass left at
+     the rim beyond the cotton, 22px of it) from its left, which keeps
+     its other end at the rim. */
   .caprock {
     --lean: 0deg;
     --gust: 3.6s;
@@ -1353,8 +1387,8 @@ const runPath =
     width: calc(166 / 1440 * 100% - var(--trim-west, 0px));
   }
   .grass--east {
-    left: calc(428 / 1440 * 100% + var(--trim-east, 0px));
-    width: calc(170 / 1440 * 100% - var(--trim-east, 0px));
+    left: calc(596.5 / 1440 * 100% - 22px + var(--trim-east, 0px));
+    width: calc(22px - var(--trim-east, 0px));
   }
   @keyframes caprock-sway {
     from {
@@ -1508,15 +1542,59 @@ const runPath =
     }
   }
 
+  /* ── THE COTTON ──
+     The pivot's field. It covers the circle the pivot waters, so in
+     section it runs both ways from the well: under the span to the
+     west, where each span's piece of field is tipped with the span to
+     lie on the ground (THE SPAN ON THE GROUND), and east of the well in
+     .field-east, which ends a little short of the rim, leaving the
+     survey corner a strip of native grass to stand in.
+
+     The script sets data-cotton by the date (see THE COTTON'S YEAR
+     there); each stage is a tile in the pivot's <defs>. Without a
+     script the field is in listed beds. The plants are drawn about half
+     again their real height beside the pivot: true to scale, a grown
+     crop would be under 3px tall and read as a line. A phone shows none
+     of it, as it shows none of the span. */
+  .cotton {
+    fill: url(#cotton-fallow);
+  }
+  .caprock[data-cotton='stalks'] .cotton {
+    fill: url(#cotton-stalks);
+  }
+  .caprock[data-cotton='seedling'] .cotton {
+    fill: url(#cotton-seedling);
+  }
+  .caprock[data-cotton='squaring'] .cotton {
+    fill: url(#cotton-squaring);
+  }
+  .caprock[data-cotton='bloom'] .cotton {
+    fill: url(#cotton-bloom);
+  }
+  .caprock[data-cotton='bolls'] .cotton {
+    fill: url(#cotton-bolls);
+  }
+  .caprock[data-cotton='open'] .cotton {
+    fill: url(#cotton-open);
+  }
+  .field-east {
+    position: absolute;
+    left: calc(474 / 1440 * 100%);
+    width: calc(122.5 / 1440 * 100% - 24px);
+    top: calc(26 / 180 * 100% - 11.4px);
+    height: 12px;
+    overflow: visible;
+    pointer-events: none;
+  }
+
   /* ── THE SURVEY CORNER ──
-     A mound of rock with a stake in it, standing on the plain between
-     the well and the rim. Its place across is a fraction of the
-     drawing's width and its foot is on the surface line; its size is in
-     pixels. The rocks are caliche, picked up where the mound was built;
+     A mound of rock with a stake in it, standing on the plain at the
+     rim, a few pixels in from where the plain rolls over. Its foot is
+     on the surface line; its size is in pixels. The rocks are caliche, picked up where the mound was built;
      alternate ones are a shade darker so the pile reads as stones. */
   .corner {
     position: absolute;
-    left: calc(524 / 1440 * 100% - 8px);
+    left: calc(596.5 / 1440 * 100% - 19px);
     top: calc(26 / 180 * 100% - 13.5px);
     width: 16px;
     height: 14px;
@@ -1885,8 +1963,11 @@ const runPath =
     .pivot .pivot-span-all {
       display: none;
     }
+    .field-east {
+      display: none;
+    }
     .corner {
-      left: calc(524 / 1440 * 100% - 6px);
+      left: calc(596.5 / 1440 * 100% - 14px);
       top: calc(26 / 180 * 100% - 10.2px);
       width: 12px;
       height: 10.5px;
@@ -1954,14 +2035,15 @@ const runPath =
      across it where no blade stands, measured from the tile's drawing.
      For each strip: how far its natural width runs into its last tile,
      back to the nearest gap before that, and the difference is the trim.
-     The widths are the strips' shares of the drawing's 1440. */
+     The west strip is a share of the drawing's 1440 units; the east one,
+     at the rim beyond the cotton, is 22px whatever the width. */
   const TUFT_GAPS = [0, 11.2, 20.2, 33.8, 43.1, 54.2, 74.5, 85.2];
   function trimGrass() {
     const footer = footerNow();
     const width = footer?.querySelector<SVGElement>('.scarp')?.getBoundingClientRect().width;
     if (!footer || !width) return;
-    for (const [side, share] of [['west', 166], ['east', 170]] as const) {
-      const over = ((share / 1440) * width) % 96;
+    for (const [side, natural] of [['west', (166 / 1440) * width], ['east', 22]] as const) {
+      const over = natural % 96;
       const gap = TUFT_GAPS.filter((g) => g <= over).pop() ?? 0;
       footer.style.setProperty(`--trim-${side}`, `${(over - gap).toFixed(1)}px`);
     }
@@ -2195,6 +2277,7 @@ const runPath =
       cottonwood: `${get('--cottonwood')}, leaf ${get('--cottonwood-leaf')}`,
       grass: `${get('--grass-dark')} and ${get('--grass-light')}`,
       pivot: `${footer.dataset.pivot ?? '(not set)'}, drawdown ${get('--draw')}`,
+      cotton: footer.dataset.cotton ?? '(not set)',
     });
   }
 
@@ -2262,6 +2345,23 @@ const runPath =
     });
   }
 
+  /* THE COTTON'S YEAR, by day of the year, as irrigated cotton is grown
+     round Lubbock: planted in the second half of May, squaring (setting
+     flower buds) from mid June, in bloom from mid July (the flowers open
+     cream and turn pink the next day), green bolls from late August,
+     the bolls open from late September and stripped through November,
+     and the stalks standing over the winter until the ground is listed
+     into beds again for spring. Each entry is the last day of a stage. */
+  const COTTON_YEAR: [number, string][] = [
+    [31, 'stalks'], [135, 'fallow'], [160, 'seedling'], [190, 'squaring'],
+    [232, 'bloom'], [268, 'bolls'], [329, 'open'], [366, 'stalks'],
+  ];
+  function cottonStage(): string {
+    const now = footerToday();
+    const day = (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 86400000;
+    return (COTTON_YEAR.find(([last]) => day <= last) ?? COTTON_YEAR[0])[1];
+  }
+
   let weatherKey = '';
   function readHeader() {
     const footer = footerNow();
@@ -2282,7 +2382,8 @@ const runPath =
 
     const green = greenness(playa);
     const pivot = pivotSeason(playa);
-    const key = [lean.toFixed(1), gust.toFixed(2), weed, roll.toFixed(1), playa.toFixed(2), green.toFixed(2), pivot.on, pivot.draw.toFixed(2)].join('|');
+    const cotton = cottonStage();
+    const key = [lean.toFixed(1), gust.toFixed(2), weed, roll.toFixed(1), playa.toFixed(2), green.toFixed(2), pivot.on, pivot.draw.toFixed(2), cotton].join('|');
     if (key === weatherKey && footer.dataset.playa) return;
     weatherKey = key;
     // skewX leans to the left for a positive angle, hence the minus
@@ -2296,6 +2397,7 @@ const runPath =
     footer.dataset.weed = weed ? 'on' : 'off';
     footer.style.setProperty('--draw', pivot.draw.toFixed(2));
     footer.dataset.pivot = pivot.on ? 'on' : 'off';
+    footer.dataset.cotton = cotton;
   }
 
   /* THE TUMBLEWEED'S ROAD, at the drawing's real size. The road is kept

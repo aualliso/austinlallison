@@ -1,0 +1,68 @@
+---
+// src/components/publications/Plate.astro
+//
+// One image on /publications. Every image there is named by its /public
+// path (/images/<dir>/<file>), because that is where the article pages read
+// them from. If the same file also exists under
+// src/assets/publications/<dir>/<file> - the other location FigureSet
+// already supports - it goes through Astro's image pipeline and is served
+// as resized WebP at the widths the layout needs. Otherwise the /public
+// original is served as-is.
+//
+// So the page works today with every image still in /public, and gets
+// faster one `git mv` at a time. Move the big ones first: the Lipscomb
+// courthouse original is ~7000 px wide.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import type { ResolvedImage } from '../../data/publications/index';
+
+interface Props {
+  img: ResolvedImage;
+  /** The sizes attribute: how wide this image renders at each breakpoint. */
+  sizes: string;
+  widths?: number[];
+  class?: string;
+  loading?: 'lazy' | 'eager';
+}
+
+const {
+  img,
+  sizes,
+  widths = [480, 800, 1200, 1600, 2200],
+  class: cls = '',
+  loading = 'lazy',
+} = Astro.props;
+
+const assets = import.meta.glob<{ default: ImageMetadata }>(
+  '/src/assets/publications/**/*.{jpg,jpeg,png,webp}',
+  { eager: true }
+);
+const key = img.src.replace(/^\/images\//, '/src/assets/publications/');
+const meta = assets[key]?.default;
+
+// Never ask the pipeline to upscale a small original.
+const usable = meta ? widths.filter((w) => w <= meta.width) : [];
+const style = img.position ? `object-position: ${img.position}` : undefined;
+---
+
+{meta ? (
+  <Image
+    src={meta}
+    alt={img.alt}
+    widths={usable.length ? usable : [meta.width]}
+    sizes={sizes}
+    loading={loading}
+    decoding="async"
+    class:list={['unmatted', cls]}
+    style={style}
+  />
+) : (
+  <img
+    src={img.src}
+    alt={img.alt}
+    loading={loading}
+    decoding="async"
+    class:list={['unmatted', cls]}
+    style={style}
+  />
+)}
