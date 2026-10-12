@@ -1,4 +1,73 @@
 {
+  "allison-family/allison-grizzle-group-1.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-grizzle-group-1-a037584ca5",
+    "width": 5175,
+    "height": 4338,
+    "sizes": [
+      {
+        "width": 324,
+        "height": 272
+      },
+      {
+        "width": 340,
+        "height": 285
+      },
+      {
+        "width": 680,
+        "height": 570
+      },
+      {
+        "width": 800,
+        "height": 671
+      },
+      {
+        "width": 1200,
+        "height": 1006
+      },
+      {
+        "width": 1900,
+        "height": 1593
+      },
+      {
+        "width": 2600,
+        "height": 2179
+      },
+      {
+        "width": 5000,
+        "height": 4191
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "a037584ca5332a4657fc3ffab355040b04096e9cf34b3a4c4ba795eb15ee2746",
+    "download": {
+      "full": {
+        "file": "allison-grizzle-group-1.jpg",
+        "width": 5175,
+        "height": 4338,
+        "bytes": 2718996
+      },
+      "share": {
+        "file": "allison-grizzle-group-1-2600px.jpg",
+        "width": 2600,
+        "height": 2179,
+        "bytes": 740769
+      }
+    },
+    "store": "private"
+  },
   "allison-family/allison-grizzle-military-newspaper.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-grizzle-military-newspaper-0cda9068db",
@@ -533,6 +602,75 @@
         "bytes": 892900
       }
     }
+  },
+  "allison-family/allison-harold-jean-nancy-wyndi.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-nancy-wyndi-4c00fdd952",
+    "width": 5110,
+    "height": 4348,
+    "sizes": [
+      {
+        "width": 320,
+        "height": 272
+      },
+      {
+        "width": 340,
+        "height": 289
+      },
+      {
+        "width": 680,
+        "height": 579
+      },
+      {
+        "width": 800,
+        "height": 681
+      },
+      {
+        "width": 1200,
+        "height": 1021
+      },
+      {
+        "width": 1900,
+        "height": 1617
+      },
+      {
+        "width": 2600,
+        "height": 2212
+      },
+      {
+        "width": 5000,
+        "height": 4254
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "4c00fdd95289d0bba491aa9a79e8f897346d3c9bcec646f529b3231152d41947",
+    "download": {
+      "full": {
+        "file": "allison-harold-jean-nancy-wyndi.jpg",
+        "width": 5110,
+        "height": 4348,
+        "bytes": 3367495
+      },
+      "share": {
+        "file": "allison-harold-jean-nancy-wyndi-2600px.jpg",
+        "width": 2600,
+        "height": 2212,
+        "bytes": 956468
+      }
+    },
+    "store": "private"
   },
   "allison-family/allison-harold-jean-snapshot-recto.jpg": {
     "v": 2,
@@ -1202,6 +1340,74 @@
         "width": 2600,
         "height": 2209,
         "bytes": 757336
+      }
+    }
+  },
+  "allison-family/allison-harold-unknown-man.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-unknown-man-0a7f432ca7",
+    "width": 5370,
+    "height": 4341,
+    "sizes": [
+      {
+        "width": 336,
+        "height": 272
+      },
+      {
+        "width": 340,
+        "height": 275
+      },
+      {
+        "width": 680,
+        "height": 550
+      },
+      {
+        "width": 800,
+        "height": 647
+      },
+      {
+        "width": 1200,
+        "height": 970
+      },
+      {
+        "width": 1900,
+        "height": 1536
+      },
+      {
+        "width": 2600,
+        "height": 2102
+      },
+      {
+        "width": 5000,
+        "height": 4042
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "0a7f432ca736b8cd7dda22457f8fe5b7eabd2a5eba333e8fb0d444d94b56ecc8",
+    "download": {
+      "full": {
+        "file": "allison-harold-unknown-man.jpg",
+        "width": 5370,
+        "height": 4341,
+        "bytes": 3488045
+      },
+      "share": {
+        "file": "allison-harold-unknown-man-2600px.jpg",
+        "width": 2600,
+        "height": 2102,
+        "bytes": 835613
       }
     }
   },

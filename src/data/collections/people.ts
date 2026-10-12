@@ -1333,6 +1333,52 @@ export const PEOPLE: Person[] = [
     ]
   },
   {
+    id: 'ludwikowski-wyndolyn-michelle-allison',
+    living: true,
+    authorized: 'Ludwikowski, Wyndolyn Michelle Allison',
+    surname: 'Ludwikowski',
+    given: 'Wyndolyn Michelle Allison',
+    birth: '1985',
+    variants: ['Wyndi Allison', 'Wyndi Ludwikowski', 'Allison, Wyndolyn', 'Ludwikwoski, Wyndi'],
+    status: 'established',
+    scopeNote:
+      'Wyndi Ludwikowski is the first child of Jim and Nancy Allison.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '' },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-james-wiley', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-nancy-ann-webster', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-austin-lamar', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-austin-lamar',
+    living: true,
+    authorized: 'Allison, Austin Lamar',
+    surname: 'Allison',
+    given: 'Austin Lamar',
+    birth: '1989',
+    variants: ['Austin Allison', 'Austin Lamar Allison', 'Allison, Austin', 'Allison, Austin'],
+    status: 'established',
+    scopeNote:
+      'Austin Allison is the second child of Jim and Nancy Allison.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { findagrave: '' },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-james-wiley', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-nancy-ann-webster', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'ludwikowski-wyndolyn-michelle-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
     id: 'osborn-mildred-adeline-mckinstry',
     authorized: 'Osborn, Mildred Adeline McKinstry',
     surname: 'Osborn',
@@ -2905,6 +2951,7 @@ export const PEOPLE: Person[] = [
       'Family Search ID: L87Z-ZDR.',
     ],
     relations: [
+      { type: 'spouse', person: 'andreas-floyd-adolf', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-wiley', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', half: true, person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
@@ -2913,6 +2960,25 @@ export const PEOPLE: Person[] = [
       { type: 'sibling', person: 'grizzle-wiley-jr', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'didlake-ollie-mae-grizzle', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'grizzle-james', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'andreas-floyd-adolf',
+    authorized: 'Andreas, Floyd Adolf (F.A.)',
+    surname: 'Andreas',
+    given: 'Floyd Adolf',
+    birth: '1928',
+    death: '2014',
+    variants: ['Floyd Andreas', 'Andreas, Floyd', 'F.A. Andreas', 'Andreas, F.A.'],
+    status: 'established',
+    scopeNote:
+      '',
+    identifiers: { familysearch: 'GS68-KTK' },
+    sources: [
+      'Family Search ID: GS68-KTK.',
+    ],
+    relations: [
+      { type: 'spouse', person: 'andreas-mary-lorene-grizzle', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {

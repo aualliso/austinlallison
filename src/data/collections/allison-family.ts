@@ -2122,5 +2122,194 @@ export const COLLECTION: Collection = {
         
       ],
     },
+    {
+      slug: 'allison-harold-unknown-man',
+      title: '[Harold Allison talking to an unknown man]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'e.1.27',
+      date: {
+        display: '[1979]',
+        earliest: 1979,
+        latest: 1979,
+        basis: ['1979 is an estimated date'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-unknown-man.jpg',
+      },
+      description:
+        'This photograph depicts Harold Allison talking to an unknown man. Verona Grizzle and Jean Allison are in the background.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 53.8, y: 37.3, w: 17.8, h: 23.1 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 1.7, y: 43.8, w: 7.7, h: 11.7 },
+        },
+        {
+          person: 'grizzle-verona-jo-warner',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 71.8, y: 45.7, w: 8.9, h: 14.5 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-jean-nancy-wyndi',
+      title: '[Harold, Jean, Nancy, and Wyndi Allison sitting in an unknown backyard]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'e.1.29',
+      date: {
+        display: '[1986-1987]',
+        earliest: 1986,
+        latest: 1987,
+        basis: ['Wyndi appears to be between one and two years old here, which places this photograph in 1986 or 1987.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-jean-nancy-wyndi.jpg',
+      },
+      description:
+        'This photograph depicts Harold, Jean, Nancy, and Wyndi Allison. They are sitting in the fenced backyard of an unknown house.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 13.3, y: 38.8, w: 10.6, h: 14 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 62.3, y: 39.4, w: 10.6, h: 14.9 },
+        },
+        {
+          person: 'allison-nancy-ann-webster',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 66.4, y: 67.9, w: 14.8, h: 19.2 },
+        },
+        {
+          person: 'ludwikowski-wyndolyn-michelle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 52.5, y: 45.6, w: 9.5, h: 15.3 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-grizzle-group-1',
+      title: '[Group of Allison and Grizzle men]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'e.1.30',
+      date: {
+        display: '[1990]',
+        earliest: 1990,
+        latest: 1990,
+        basis: ['Austin appears to be less than one year old here, which places this photograph in 1990.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-grizzle-group-1.jpg',
+      },
+      description:
+        'This photograph depicts a group of Allison and Grizzle men. This includes F.A. Andreas, George Didlake, Austin Allison, Jim Allison, Harold Allison, Jim Grizzle, Winston Allison, and Sam Allison.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 36.1, y: 38.7, w: 8.4, h: 13.6 },
+        },
+        {
+          person: 'andreas-floyd-adolf',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 20, y: 7.9, w: 9.8, h: 16.6 },
+        },
+        {
+          person: 'didlake-george-howard',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 64.3, y: 22.8, w: 7.7, h: 11.3 },
+        },
+        {
+          person: 'grizzle-james',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 51.6, y: 35, w: 9.5, h: 14 },
+        },
+        {
+          person: 'allison-winston-irvin',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 71.3, y: 30.6, w: 9.1, h: 14.5 },
+        },
+        {
+          person: 'allison-sam-oscar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 71.3, y: 46.3, w: 10.7, h: 15.1 },
+        },
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 24, y: 46.5, w: 9.5, h: 14.7 },
+        },
+        {
+          person: 'allison-austin-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 18.2, y: 60.6, w: 8.8, h: 13 },
+        },
+      ],
+    },
   ]
 }

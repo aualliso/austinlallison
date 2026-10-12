@@ -90,12 +90,13 @@
  * THE HOUR lies over the rock as two flat washes, the low sun's colour
  * at dawn and dusk and a dark blue at night, both from the header.
  *
- * THE WELL is the one thing here that moves. A bore runs from the plain
- * down to the water table and water rises in it, at a pace taken from
- * the header's windmill: the header turns its wheel by Lubbock's real
- * wind, and this draws water as fast as that wheel is turning. Where
- * the water table meets the face it comes out as a seep, as it does
- * along the real escarpment.
+ * THE WELL is an irrigation well, feeding a center pivot that reaches
+ * west across the plain. What it takes shows in the water table: while
+ * the pivot runs, the water table around the well is drawn down into a
+ * cone, which deepens through the irrigation season and recovers, never
+ * all the way, through the winter, as the water levels the district
+ * measures each winter do. Where the water table meets the face it comes
+ * out as a seep, as it does along the real escarpment.
  *
  * THE WEATHER reaches down here too, from the same reading the header
  * takes for Lubbock:
@@ -125,6 +126,10 @@
  *               the mesquite yellow for a fortnight in November, and
  *               bare again by December. The junipers are evergreen.
  *               (dressTrees() in the script.)
+ *   the pivot   runs through the irrigation season, late May to mid
+ *               September, and is shut off after a soaking rain, as a
+ *               farmer would. While it runs, water climbs the well and
+ *               sprays from the span. (THE IRRIGATION WELL, below.)
  *   the mill    the wheel of the windmill at the Rock House turns at
  *               the pace of the header's.
  *   the weed    in a strong west wind a tumbleweed comes across the
@@ -283,6 +288,15 @@ const WATER = 74; //          the Ogallala's water table
 const OGALLALA_BASE = 96; //  where the sands rest on the beds below
 const WELL_X = 468; //        on the level plain, clear of the playa
 
+// THE CONE OF DEPRESSION: the water table drawn down around the well,
+// drawn at its deepest (10.5 units, to the pump's intake) and scaled
+// toward flat by the script as the season allows (--draw). The level
+// line is broken where the cone takes over, 110 units either side.
+const waterLevel = `M0,${WATER} H${WELL_X - 110} M${WELL_X + 110},${WATER} H1440`;
+const coneWater =
+  `M${WELL_X - 110},${WATER} C${WELL_X - 50},${WATER} ${WELL_X - 16},${WATER + 2.8} ${WELL_X - 3.5},${WATER + 10.5} ` +
+  `M${WELL_X + 3.5},${WATER + 10.5} C${WELL_X + 16},${WATER + 2.8} ${WELL_X + 50},${WATER} ${WELL_X + 110},${WATER}`;
+
 // THE PLAYA: the dip in the plain between x = 232 and 360, 6 units deep.
 const playaWater = 'M244,28.3 L348,28.3 C340,31.5 322,32 296,32 C270,32 252,31.5 244,28.3 Z';
 const playaCracks = 'M262,30.6 l5,-2.2 M281,31.7 l-4,-2.6 M300,32 l4,-2.6 M318,31.5 l-4,-2.2 M332,30.4 l4,-1.8';
@@ -437,6 +451,44 @@ const COTTONWOODS: Tree[] = [
   { x: 1114, w: 17, show: 'wide' },
 ];
 const ROCK_HOUSE = { x: 972, w: 38 }; // on the level top of the rise, so its wall sits flat
+
+// THE PIVOT, in pixels like the trees, since it has to keep its shape:
+// a box 150 x 22 with the well at x = 138 and the plain at its foot.
+// The pivot point stands 10px west of the well and the span runs west
+// from it, its towers PIVOT_TOWERS px further on. Each span between two
+// supports is drawn level; the script tips it so that both its ends
+// stand on the ground, which dips under the playa (see seatPivot()).
+// PIVOT_GROUND is the height of the plain every 4 units from 0 to 600,
+// for the script to read the ground with.
+const PIVOT_FOOT = 138;
+const PIVOT_POINT = 128;
+const PIVOT_TOWERS = [88, 48, 8];
+const PIVOT_GROUND = Array.from({ length: 151 }, (_, i) => groundAt(i * 4).toFixed(2)).join(' ');
+const pivotSpans = [PIVOT_POINT, ...PIVOT_TOWERS].slice(1).map((west, k) => {
+  const east = k === 0 ? PIVOT_POINT : PIVOT_TOWERS[k - 1];
+  const mid = (east + west) / 2;
+  const last = k === PIVOT_TOWERS.length - 1;
+  // the pipe, arched a little; the truss rods hung under it in a V, with
+  // three struts; the drops every 6px; the spray under each drop
+  const pipe = `M${east},9.8 Q${mid},8.6 ${west},9.8` + (last ? ` L${west - 6.5},10.3` : '');
+  const truss =
+    `M${east},9.8 L${mid},13.8 L${west},9.8 ` +
+    [0.25, 0.5, 0.75]
+      .map((f) => {
+        const x = east + (west - east) * f;
+        return `M${x.toFixed(1)},${(9.8 - 4.8 * f * (1 - f)).toFixed(2)} V${(9.8 + 4 * (1 - Math.abs(2 * f - 1))).toFixed(2)}`;
+      })
+      .join(' ');
+  const dropXs: number[] = [];
+  for (let x = east - 4; x > west - (last ? 6 : 1); x -= 6) dropXs.push(x);
+  const drops = dropXs.map((x) => `M${x},9.6 V16.6`).join(' ');
+  const SPRAY_A = [[-0.7, 0.6], [0.6, 1.4], [-0.3, 2.6]];
+  const SPRAY_B = [[0.5, 0.4], [-0.6, 1.8], [0.4, 3.1]];
+  const spray = (pts: number[][]) =>
+    dropXs.flatMap((x) => pts.map(([dx, dy]) => `M${(x + dx).toFixed(1)},${(17.4 + dy).toFixed(1)} h0.01`)).join(' ');
+  return { east, west, pipe, truss, drops, sprayA: spray(SPRAY_A), sprayB: spray(SPRAY_B) };
+});
+const pivotLegs = (x: number) => `M${x},9.8 L${x - 3.4},20.2 M${x},9.8 L${x + 3.4},20.2 M${x - 2.3},16 H${x + 2.3}`;
 const treeClass = (kind: string, t: Tree) => ['flora', `flora--${kind}`, t.show && `flora--${t.show}`];
 
 // THE SEEP: where the water table (74) reaches the slope, and its run
@@ -482,12 +534,11 @@ const runPath =
         <!-- the hour's light on the rock: the low sun's colour, then the night -->
         <rect class="wash wash--warm" x="0" y="0" width="1440" height="180"></rect>
         <rect class="wash wash--night" x="0" y="0" width="1440" height="180"></rect>
-        <path class="water" d={`M0,${WATER} H1440`}></path>
+        <path class="water" d={waterLevel}></path>
+        <!-- the water table drawn down round the irrigation well -->
+        <path class="water water--cone" d={coneWater}></path>
         <!-- rain that the playa held, on its way down -->
         <path class="recharge" d={rechargePath}></path>
-        <!-- the well: its bore, and the water rising in it -->
-        <path class="bore" d={`M${WELL_X},${SURFACE} V${WATER + 9}`}></path>
-        <path class="lift" d={`M${WELL_X},${WATER} V${SURFACE + 2}`}></path>
       </g>
 
       <path class="surface" d={surfacePath}></path>
@@ -508,7 +559,6 @@ const runPath =
       <path class="turf" d={PLATEAU}></path>
       <path class="playa-water" d={playaWater}></path>
       <path class="playa-cracks" d={playaCracks}></path>
-      <path class="wellhead" d={`M${WELL_X - 6},${SURFACE} H${WELL_X + 6}`}></path>
     </svg>
 
     <!-- the grass on the level plain, either side of the playa. These and
@@ -517,6 +567,58 @@ const runPath =
          stretched with it. -->
     <div class="grass grass--west" style={`--blades-dark:${GRASS_DARK};--blades-light:${GRASS_LIGHT}`}></div>
     <div class="grass grass--east" style={`--blades-dark:${GRASS_DARK};--blades-light:${GRASS_LIGHT}`}></div>
+
+    <!-- THE IRRIGATION WELL. Below ground, in the drawing's own height:
+         the casing, the water standing in it (as low as the cone), the
+         water climbing the column while the pump runs, and the pump's
+         bowls at the foot. Above ground, in pixels: the pump head and
+         its motor, the pivot point, and the span on its towers, which a
+         phone does not show. -->
+    <svg class="well-shaft" viewBox="0 0 10 70" preserveAspectRatio="none" aria-hidden="true">
+      <path class="hole" d="M2.8,0 H7.2 V68 H2.8 Z"></path>
+      <path class="in-water" d="M2.8,48 H7.2 V68 H2.8 Z"></path>
+      <path class="casing" d="M2.8,0 V68 M7.2,0 V68"></path>
+      <path class="lift" d="M5,62 V1"></path>
+      <path class="bowls" d="M3.6,60 H6.4 V67 H3.6 Z"></path>
+    </svg>
+    <svg
+      class="pivot"
+      viewBox="0 0 150 22"
+      data-ground={PIVOT_GROUND}
+      data-well={WELL_X}
+      data-offsets={[PIVOT_FOOT - PIVOT_POINT, ...PIVOT_TOWERS.map((x) => PIVOT_FOOT - x)].join(' ')}
+      aria-hidden="true"
+    >
+      <g class="pivot-span-all">
+        {pivotSpans.map((s, k) => (
+          <g class="span" style={`transform-origin:${s.east}px 0;--from:var(--d${k});--to:var(--d${k + 1});--len:${s.east - s.west}px`}>
+            <path class="spray spray--a" d={s.sprayA}></path>
+            <path class="spray spray--b" d={s.sprayB}></path>
+            <path class="drops" d={s.drops}></path>
+            <path class="truss" d={s.truss}></path>
+            <path class="pipe" d={s.pipe}></path>
+          </g>
+        ))}
+        {PIVOT_TOWERS.map((x, k) => (
+          <g class="tower" style={`--drop:var(--d${k + 1})`}>
+            <path class="steel" d={pivotLegs(x)}></path>
+            <circle class="tyre" cx={x - 3.4} cy="20.4" r="1.5"></circle>
+            <circle class="tyre" cx={x + 3.4} cy="20.4" r="1.5"></circle>
+          </g>
+        ))}
+        <g class="tower" style="--drop:var(--d0)">
+          <path class="steel" d={`M${PIVOT_POINT - 3.4},22 L${PIVOT_POINT - 0.6},9.8 M${PIVOT_POINT + 3.4},22 L${PIVOT_POINT + 0.6},9.8 M${PIVOT_POINT - 2.4},17.4 H${PIVOT_POINT + 2.4} M${PIVOT_POINT - 1.4},13.4 H${PIVOT_POINT + 1.4} M${PIVOT_POINT - 2.4},17.4 L${PIVOT_POINT + 1.4},13.4 M${PIVOT_POINT + 2.4},17.4 L${PIVOT_POINT - 1.4},13.4`}></path>
+          <path class="pipe" d={`M${PIVOT_POINT},21.4 V9.8`}></path>
+        </g>
+      </g>
+      <!-- the pump head: discharge head, motor and its cap, and the pipe
+           across to the pivot -->
+      <path class="pipe" d={`M${PIVOT_FOOT - 2.4},19.6 H${PIVOT_POINT + 0.6}`}></path>
+      <path class="pad" d={`M${PIVOT_FOOT - 5},21.3 H${PIVOT_FOOT + 5} V22.2 H${PIVOT_FOOT - 5} Z`}></path>
+      <path class="galv" d={`M${PIVOT_FOOT - 2.6},17.2 H${PIVOT_FOOT + 2.6} V21.4 H${PIVOT_FOOT - 2.6} Z`}></path>
+      <path class="galv" d={`M${PIVOT_FOOT - 1.8},12.4 H${PIVOT_FOOT + 1.8} V17.2 H${PIVOT_FOOT - 1.8} Z`}></path>
+      <path class="cap" d={`M${PIVOT_FOOT - 2.1},11.6 H${PIVOT_FOOT + 2.1} V12.5 H${PIVOT_FOOT - 2.1} Z`}></path>
+    </svg>
 
     <!-- a survey corner on the plain: a mound of rock and its stake. A
          box in pixels like the grass, so that it keeps its shape. -->
@@ -941,32 +1043,150 @@ const runPath =
     stroke: rgba(40, 24, 14, 0.62);
     stroke-width: 1;
   }
-  .bore {
-    stroke: var(--rock-ink);
-    stroke-width: 3;
-    opacity: 0.55;
+  /* ── THE IRRIGATION WELL ──
+     A well on the plain, cased to the bottom of the sands, with a turbine
+     pump whose bowls hang below the water table, and a center pivot
+     that it feeds. Its season is set by the script (see THE PIVOT'S
+     SEASON there), which writes two things on the footer:
+
+       data-pivot   'on' while the pivot runs: late May to mid September,
+                    unless there has been a soaking rain
+       --draw       how far the water table is drawn down round the well,
+                    0 to 1: deepening while the pivot runs, recovering
+                    after, never all the way, through the winter
+
+     The cone in the drawing is drawn at its deepest and scaled from the
+     water table toward flat by --draw; the water standing in the casing
+     follows it down. While the pump runs, short dashes climb the column
+     and the span sprays. To have it still, delete the two animation
+     lines (.well-shaft .lift and .pivot .spray). */
+  .scarp .water--cone {
+    transform-box: fill-box;
+    transform-origin: 50% 0;
+    transform: scaleY(max(0.02, var(--draw, 0.3)));
   }
-  /* THE WATER IN THE BORE. Short dashes climbing from the water table to
-     the well head, one dash-and-gap every --pump seconds. --pump comes
-     from the header's windmill (see pumpCaprock() below): a quarter of
-     the time its wheel takes to turn once, so a stiff wind lifts water
-     briskly and a calm day barely moves it. To have a still footer,
-     delete the animation line. */
-  .lift {
+  .well-shaft {
+    position: absolute;
+    left: calc(468 / 1440 * 100% - 5px);
+    top: calc(26 / 180 * 100%);
+    width: 10px;
+    height: calc(70 / 180 * 100%);
+    overflow: visible;
+    pointer-events: none;
+  }
+  .well-shaft path {
+    fill: none;
+    vector-effect: non-scaling-stroke;
+  }
+  .well-shaft .hole {
+    fill: rgba(24, 16, 10, 0.22);
+  }
+  /* the water standing in the casing: as high as the water table when
+     the cone is flat, as low as the pump's intake at its deepest */
+  .well-shaft .in-water {
+    fill: var(--water);
+    opacity: 0.85;
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    transform: scaleY(calc(1 - var(--draw, 0.3) * 0.525));
+  }
+  .well-shaft .casing {
+    stroke: rgba(34, 24, 16, 0.6);
+    stroke-width: 1;
+  }
+  .well-shaft .bowls {
+    fill: #3a312a;
+  }
+  .well-shaft .lift {
     stroke: var(--water-lift);
-    stroke-width: 1.5;
+    stroke-width: 1.4;
     stroke-dasharray: 2 6;
-    animation: caprock-lift var(--pump, 6s) linear infinite;
+    opacity: 0;
+    animation: caprock-lift 1.6s linear infinite;
+  }
+  .caprock[data-pivot='on'] .well-shaft .lift {
+    opacity: 1;
   }
   @keyframes caprock-lift {
     to {
       stroke-dashoffset: -8;
     }
   }
-  .wellhead {
-    stroke: var(--rock-ink);
-    stroke-width: 3;
-    stroke-linecap: square;
+
+  .pivot {
+    position: absolute;
+    left: calc(468 / 1440 * 100% - 138px);
+    top: calc(26 / 180 * 100% - 21.4px);
+    width: 150px;
+    height: 22px;
+    overflow: visible;
+    pointer-events: none;
+    transform-origin: 138px 100%;
+  }
+  .pivot path {
+    fill: none;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .pivot .steel,
+  .pivot .truss,
+  .pivot .drops {
+    stroke: color-mix(in srgb, #3f3a35, #0b101d calc(var(--night) * 60%));
+    stroke-width: 0.6;
+  }
+  .pivot .truss {
+    stroke-width: 0.35;
+  }
+  .pivot .drops {
+    stroke-width: 0.3;
+  }
+  .pivot .pipe {
+    stroke: color-mix(in srgb, color-mix(in srgb, #b4b5ae, var(--grazing) calc(var(--graze) * 30%)), #0b101d calc(var(--night) * 62%));
+    stroke-width: 0.9;
+  }
+  .pivot .galv {
+    fill: color-mix(in srgb, color-mix(in srgb, #b4b5ae, var(--grazing) calc(var(--graze) * 30%)), #0b101d calc(var(--night) * 62%));
+    stroke: rgba(40, 30, 22, 0.6);
+    stroke-width: 0.45;
+  }
+  .pivot .cap,
+  .pivot .tyre {
+    fill: color-mix(in srgb, #3f3a35, #0b101d calc(var(--night) * 60%));
+  }
+  .pivot .pad {
+    fill: color-mix(in srgb, #cfc6b4, #0b101d calc(var(--night) * 60%));
+  }
+  /* THE SPAN ON THE GROUND. The script writes --d0 to --d3, how far
+     below the plain's level the ground is under the pivot point and
+     each tower, in pixels. A tower drops by its own; a span between two
+     supports drops by its east end's and is sheared, so that its west
+     end meets the next tower down. Vertical lines stay vertical under a
+     shear, so the drops still hang straight. */
+  .pivot .tower {
+    transform: translateY(var(--drop, 0px));
+  }
+  .pivot .span {
+    transform-box: view-box;
+    transform: translateY(var(--from, 0px)) skewY(atan2(calc(var(--from, 0px) - var(--to, 0px)), var(--len)));
+  }
+  /* the spray: dots of water under the drops, in two sets that take
+     turns, so that it flickers as it falls. Only while the pivot runs. */
+  .pivot .spray {
+    stroke: color-mix(in srgb, #8fb9cf, #0b101d calc(var(--night) * 55%));
+    stroke-width: 1.2;
+    opacity: 0;
+  }
+  .caprock[data-pivot='on'] .pivot .spray {
+    opacity: 0.9;
+    animation: caprock-spray 0.9s steps(1) infinite;
+  }
+  .caprock[data-pivot='on'] .pivot .spray--b {
+    animation-delay: -0.45s;
+  }
+  @keyframes caprock-spray {
+    50% {
+      opacity: 0.25;
+    }
   }
   .seep {
     stroke: var(--water);
@@ -1221,8 +1441,8 @@ const runPath =
   /* THE ROCK HOUSE. Stone, roof, the pale woodwork of the gallery, the
      shade under it, and the windmill. One window keeps a lamp, which
      comes up as the night does. The mill's wheel turns once in the time
-     the header's does: --pump is a quarter of that (see THE WATER IN
-     THE BORE), so four of them. To have it still, delete the animation
+     the header's does: --pump is a quarter of that (see pumpCaprock()
+     in the script), so four of them. To have it still, delete the animation
      line. */
   .house .stonework {
     fill: color-mix(in srgb,
@@ -1659,6 +1879,12 @@ const runPath =
     .flora {
       transform: scale(0.75);
     }
+    .pivot {
+      transform: scale(0.75);
+    }
+    .pivot .pivot-span-all {
+      display: none;
+    }
     .corner {
       left: calc(524 / 1440 * 100% - 6px);
       top: calc(26 / 180 * 100% - 10.2px);
@@ -1686,6 +1912,7 @@ const runPath =
 
   @media (prefers-reduced-motion: reduce) {
     .lift,
+    .pivot .spray,
     .recharge,
     .fall,
     .grass,
@@ -1759,12 +1986,12 @@ const runPath =
     watcher.observe(footer);
   }
 
-  /* THE WELL KEEPS TIME WITH THE WINDMILL. The header turns its windmill
-     by Lubbock's wind and records how long one turn of the wheel takes as
-     --windmill-speed on #windmill (13s in a gale, about 26s in a calm).
-     The water in the footer's bore climbs one step in a quarter of that.
-     With no header on the page, or before the wind has been read, the
-     stylesheet's 6s stands. */
+  /* THE ROCK HOUSE'S MILL KEEPS TIME WITH THE HEADER'S. The header turns
+     its windmill by Lubbock's wind and records how long one turn of the
+     wheel takes as --windmill-speed on #windmill (13s in a gale, about
+     26s in a calm). --pump is a quarter of that, and the mill at the
+     Rock House turns once in four of them. With no header on the page,
+     or before the wind has been read, the stylesheet's 6s stands. */
   function pumpCaprock() {
     const turn = parseFloat(document.getElementById('windmill')?.style.getPropertyValue('--windmill-speed') ?? '');
     const footer = footerNow();
@@ -1967,6 +2194,71 @@ const runPath =
       mesquite: `${get('--mesquite')}, leaf ${get('--mesquite-leaf')}`,
       cottonwood: `${get('--cottonwood')}, leaf ${get('--cottonwood-leaf')}`,
       grass: `${get('--grass-dark')} and ${get('--grass-light')}`,
+      pivot: `${footer.dataset.pivot ?? '(not set)'}, drawdown ${get('--draw')}`,
+    });
+  }
+
+  /* THE PIVOT'S SEASON. On the South Plains the cotton is irrigated
+     from about late May to mid September, so that is when the pivot
+     runs, and it is shut off after a soaking rain (--playa 0.3 and up,
+     the same rain that fills the playa and runs the falls).
+
+     DRAWDOWN is how far the water table round the well is drawn down,
+     0 to 1, by day of the year: deepening from the start of pumping to
+     its end, recovering quickly for a month after and slowly through
+     the winter, but never all the way. That is why the water levels on
+     the High Plains are measured in winter, after the recovery, and why
+     they fall from one winter to the next. */
+  const PIVOT_RUNS: [number, number] = [142, 258];
+  const DRAWDOWN: [number, number][] = [
+    [0, 0.33], [142, 0.25], [258, 1], [290, 0.5], [366, 0.33],
+  ];
+  function pivotSeason(playa: number): { on: boolean; draw: number } {
+    const now = footerToday();
+    const day = (Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()) - Date.UTC(now.getFullYear(), 0, 0)) / 86400000;
+    let draw = DRAWDOWN[0][1];
+    for (let i = 1; i < DRAWDOWN.length; i++) {
+      const [d0, v0] = DRAWDOWN[i - 1];
+      const [d1, v1] = DRAWDOWN[i];
+      if (day <= d1) {
+        draw = v0 + ((v1 - v0) * (day - d0)) / (d1 - d0);
+        break;
+      }
+    }
+    return { on: day >= PIVOT_RUNS[0] && day <= PIVOT_RUNS[1] && playa < 0.3, draw };
+  }
+
+  /* THE PIVOT ON THE GROUND. The pivot is drawn in pixels, so where its
+     towers stand on the drawing depends on the page's width: on a wide
+     page they are all on the level plain, on a narrower one the span
+     reaches back over the playa's dip. For the pivot point and each
+     tower this finds the plain's height under it (from the heights the
+     page carries every 4 units, data-ground) and writes how far below
+     the level that is, in pixels, as --d0 to --d3. The stylesheet does
+     the rest (THE SPAN ON THE GROUND). Redone whenever the box changes
+     size. */
+  function seatPivot() {
+    const footer = footerNow();
+    const pivot = footer?.querySelector<SVGElement>('.pivot');
+    const scarp = footer?.querySelector<SVGElement>('.scarp');
+    if (!pivot || !scarp) return;
+    const box = scarp.getBoundingClientRect();
+    if (!box.width) return;
+    const ground = (pivot.dataset.ground ?? '').split(' ').map(Number);
+    const well = Number(pivot.dataset.well);
+    const offsets = (pivot.dataset.offsets ?? '').split(' ').map(Number);
+    if (ground.length < 2 || !Number.isFinite(well)) return;
+    const level = ground[Math.round(well / 4)];
+    const at = (x: number) => {
+      const f = Math.max(0, Math.min(ground.length - 1.001, x / 4));
+      const i = Math.floor(f);
+      return ground[i] + (ground[i + 1] - ground[i]) * (f - i);
+    };
+    const sx = 1440 / box.width;
+    const sy = box.height / 180;
+    offsets.forEach((dx, k) => {
+      const drop = (at(well - dx * sx) - level) * sy;
+      pivot.style.setProperty(`--d${k}`, `${Math.max(0, drop).toFixed(2)}px`);
     });
   }
 
@@ -1989,7 +2281,8 @@ const runPath =
     const roll = Math.max(11, 32 - mph * 0.45);
 
     const green = greenness(playa);
-    const key = [lean.toFixed(1), gust.toFixed(2), weed, roll.toFixed(1), playa.toFixed(2), green.toFixed(2)].join('|');
+    const pivot = pivotSeason(playa);
+    const key = [lean.toFixed(1), gust.toFixed(2), weed, roll.toFixed(1), playa.toFixed(2), green.toFixed(2), pivot.on, pivot.draw.toFixed(2)].join('|');
     if (key === weatherKey && footer.dataset.playa) return;
     weatherKey = key;
     // skewX leans to the left for a positive angle, hence the minus
@@ -2001,6 +2294,8 @@ const runPath =
     footer.style.setProperty('--grass-light', coat(COATS.light, green));
     footer.dataset.playa = playa >= 0.15 ? 'wet' : 'dry';
     footer.dataset.weed = weed ? 'on' : 'off';
+    footer.style.setProperty('--draw', pivot.draw.toFixed(2));
+    footer.dataset.pivot = pivot.on ? 'on' : 'off';
   }
 
   /* THE TUMBLEWEED'S ROAD, at the drawing's real size. The road is kept
@@ -2049,6 +2344,7 @@ const runPath =
     readHeader();
     dressTrees();
     layWeedRoad();
+    seatPivot();
     if (import.meta.env.DEV) reportSeason();
   }
 
@@ -2057,6 +2353,7 @@ const runPath =
       fitCaprock();
       trimGrass();
       layWeedRoad();
+      seatPivot();
     }).observe(document.documentElement);
   }
   // The header writes the weather when its reading arrives and again
