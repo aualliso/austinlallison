@@ -58,6 +58,18 @@ export type Form = 'feature' | 'newspaper' | 'magazine' | 'archive' | 'book';
 export type Layout = 'portrait' | 'shelf' | 'panorama';
 
 /**
+ * What kind of physical object an image shows, so the page can present it as
+ * that object rather than as one more shadowed rectangle:
+ *   'print'     a photographic print - white border, lies flat
+ *   'clipping'  newsprint or a printed advertisement - flat, no border
+ *   'pamphlet'  a bound cover - spine edge, sits up off the page
+ *   'document'  a manuscript or archival sheet - in a clear mylar sleeve
+ *   'notebook'  a bound notebook page - held by photo corners
+ *   'plate'     a modern photograph reproduced edge to edge (the default)
+ */
+export type ObjectKind = 'print' | 'clipping' | 'pamphlet' | 'document' | 'notebook' | 'plate';
+
+/**
  * One image to show. Name it by `file` - the same file name used in the
  * article's FIGURES - and its caption, credit and alt come from there.
  * Use `src` instead (a path under /public) only for an image the article's
@@ -74,6 +86,11 @@ export type ShowImage = {
   label?: string;
   /** CSS object-position for cropped frames, e.g. '40% 50%'. */
   position?: string;
+  /** What the image is a picture of. Defaults to 'plate'. */
+  object?: ObjectKind;
+  /** 'whole' shows the entire image, never cropped, on a white ground -
+      for wide title art whose lettering a crop would cut. Default 'cover'. */
+  fit?: 'cover' | 'whole';
 };
 
 export type Show = {
@@ -85,6 +102,11 @@ export type Show = {
   /** The piece's opening line, verbatim from the printed text. */
   lead?: string;
   images?: ShowImage[];
+  /**
+   * Figure files to leave out of the full image spread - e.g. a grey scan
+   * of the same page a colour image above already shows.
+   */
+  exclude?: string[];
 };
 
 export type Extra = {
@@ -107,6 +129,8 @@ const EXTRAS: Record<string, Extra> = {
       form: 'feature',
       order: 1,
       layout: 'portrait',
+      // The grey scan of the same notebook page the colour image shows.
+      exclude: ['02-wiley-field-notes-p1.png'],
       lead:
         'During the closing years of the 1870s, vast areas of public lands owned by the State of Texas remained underutilized and their value unrealized as the state exited the Reconstruction period.',
       images: [
@@ -117,10 +141,12 @@ const EXTRAS: Record<string, Extra> = {
           alt: "The first page of H. A. Wiley's field notes, handwritten in ink on a worn, stained notebook page.",
           caption: 'Page one of field notes of work done by H. A. Wiley, compass man for J.T. Munson.',
           credit: 'Courtesy of the Texas State Library and Archives Commission',
+          object: 'notebook',
         },
         {
           file: '03-munson-portrait.png',
           alt: 'Studio portrait of J.T. Munson, bearded, in a dark coat and bow tie.',
+          object: 'print',
         },
       ],
     },
@@ -135,10 +161,10 @@ const EXTRAS: Record<string, Extra> = {
       lead:
         'The settlement of the Llano Estacado during the closing decades of the 1800s and first decades of the 1900s entails the narrative of many facets of contemporary American life.',
       images: [
-        { file: 'vaughan_land_company_ad_1911.jpg' },
-        { file: 'texas_steer_pamphlet_1907.jpg' },
-        { file: 'monument_lake_ranch_ad_1908.jpg' },
-        { file: 'vaughan_cars_portales.jpg' },
+        { file: 'vaughan_land_company_ad_1911.jpg', object: 'clipping' },
+        { file: 'texas_steer_pamphlet_1907.jpg', object: 'pamphlet' },
+        { file: 'monument_lake_ranch_ad_1908.jpg', object: 'clipping' },
+        { file: 'vaughan_cars_portales.jpg', object: 'print' },
       ],
     },
   },
@@ -155,7 +181,7 @@ const EXTRAS: Record<string, Extra> = {
         'North America\u2019s longest river emanates from an elevated canyon nestled in the Centennial Mountains and Centennial Valley of southwestern Montana and meanders through miles of mountains, forests, and plains to discharge ultimately into the Gulf of Mexico more than 3,700 miles downstream.',
       images: [
         { file: 'utmost_spring_closeup.jpg' },
-        { file: 'brower_hole_in_mountains.jpg' },
+        { file: 'brower_hole_in_mountains.jpg', object: 'print' },
       ],
     },
   },
@@ -168,7 +194,7 @@ const EXTRAS: Record<string, Extra> = {
       form: 'newspaper',
       order: 1,
       lead: 'Precisely locating the 1877 battle of Yellow House Canyon remains a puzzle.',
-      images: [{ file: 'cook_image.jpg' }],
+      images: [{ file: 'cook_image.jpg', object: 'clipping' }],
     },
   },
   albert_pike: {
@@ -178,7 +204,7 @@ const EXTRAS: Record<string, Extra> = {
       form: 'newspaper',
       order: 2,
       lead: 'Pre-Civil War depictions of the Llano Estacado are rare, with pre-Texas Revolution versions even more scarce.',
-      images: [{ file: 'albert_pike.jpg', position: '50% 20%' }],
+      images: [{ file: 'albert_pike.jpg', position: '50% 20%', object: 'clipping' }],
     },
   },
   sharps_rifle: {
@@ -189,7 +215,7 @@ const EXTRAS: Record<string, Extra> = {
       order: 3,
       lead:
         'Dating to 1848, the Sharps rifle and its patented breech-loading, falling block design was a go-to firearm for snipers and long-distance shooters due to its accuracy and ease of use.',
-      images: [{ file: 'judia_buffalo_stand.jpg' }],
+      images: [{ file: 'judia_buffalo_stand.jpg', object: 'clipping' }],
     },
   },
 
@@ -226,8 +252,17 @@ const EXTRAS: Record<string, Extra> = {
   tumbleweed_smith: {
     thumb: '/images/tumbleweed_smith.jpg',
     alt: 'Tumbleweed Smith recording audio in Texas',
-    // Set in type alone: its only image is the programme's emblem.
-    show: { form: 'magazine', order: 4, images: [] },
+    show: {
+      form: 'magazine',
+      order: 4,
+      // The article's title art: wide, lettered in an arc, so it is shown
+      // whole rather than cropped.
+      images: [{
+        src: '/images/tumbleweed_smith.jpg',
+        alt: 'The title art of the article: Tumbleweed Smith and the Sounds of Texas, lettered in an arc beneath sound waves',
+        fit: 'whole',
+      }],
+    },
   },
 
   /* ---- From the archive ------------------------------------------- */
@@ -237,7 +272,7 @@ const EXTRAS: Record<string, Extra> = {
     show: {
       form: 'archive',
       order: 1,
-      images: [{ file: 'der_texas.jpg', label: 'German-Texas Civil War newspaper, 1864' }],
+      images: [{ file: 'der_texas.jpg', label: 'German-Texas Civil War newspaper, 1864', object: 'document' }],
     },
   },
   ja_cattle_company: {
@@ -248,6 +283,7 @@ const EXTRAS: Record<string, Extra> = {
         {
           file: 'ja_deed_p1.jpg',
           label: 'Warranty deed, Charles Goodnight to Cornelia Adair, 1886',
+          object: 'document',
         },
       ],
     },
@@ -258,7 +294,7 @@ const EXTRAS: Record<string, Extra> = {
     show: {
       form: 'archive',
       order: 3,
-      images: [{ file: 'unusual_annotations1.png' }],
+      images: [{ file: 'unusual_annotations1.png', object: 'document' }],
     },
   },
   newspapers_oil_and_railroad_land: {
@@ -269,6 +305,7 @@ const EXTRAS: Record<string, Extra> = {
         {
           file: 'high_bridge_pecos_canon.jpg',
           label: 'High Bridge, Pecos Ca\u00f1on, Texas, Sunset Route',
+          object: 'document',
         },
       ],
     },
@@ -339,6 +376,8 @@ export type ResolvedImage = {
   credit?: string;
   label?: string;
   position?: string;
+  object: ObjectKind;
+  fit?: 'cover' | 'whole';
 };
 
 const pathFor = (dir: string, file: string) => `/images/${dir ? `${dir}/` : ''}${file}`;
@@ -352,6 +391,8 @@ const resolveImage = (slug: string, spec: ShowImage, figs?: FigureSet): Resolved
       credit: spec.credit,
       label: spec.label,
       position: spec.position,
+      object: spec.object ?? 'plate',
+      fit: spec.fit,
     };
   }
   if (!spec.file) {
@@ -367,6 +408,8 @@ const resolveImage = (slug: string, spec: ShowImage, figs?: FigureSet): Resolved
         credit: spec.credit ?? entry.credit,
         label: spec.label,
         position: spec.position,
+        object: spec.object ?? 'plate',
+        fit: spec.fit,
       };
     }
   }
@@ -374,6 +417,20 @@ const resolveImage = (slug: string, spec: ShowImage, figs?: FigureSet): Resolved
     `The SHOW block for "${slug}" names ${spec.file}, but ${slug}.ts has no ` +
       `figure with that file. Check the spelling, or give a src with alt and caption.`
   );
+};
+
+/** The SHOW images, then every other figure plate in register order. */
+const galleryOf = (slug: string, specs: ShowImage[], figs: FigureSet | undefined, exclude: string[]): ResolvedImage[] => {
+  const shown = new Set(specs.map((s) => s.file).filter(Boolean));
+  const rest: ShowImage[] = [];
+  for (const entry of figs?.entries ?? []) {
+    for (const plate of entry.plates) {
+      if (shown.has(plate.file) || exclude.includes(plate.file)) continue;
+      shown.add(plate.file);
+      rest.push({ file: plate.file });
+    }
+  }
+  return [...specs, ...rest].map((s) => resolveImage(slug, s, figs));
 };
 
 /** First plate of the first figure: the default image for an entry with no SHOW. */
@@ -400,6 +457,12 @@ export type Entry = {
   layout?: Layout;
   lead?: string;
   images: ResolvedImage[];
+  /**
+   * Every image the piece has: the SHOW images first, then the rest of the
+   * article's FIGURES in register order, minus anything in `exclude`.
+   * Captions and credits come from the register, as for `images`.
+   */
+  gallery: ResolvedImage[];
   /** Length of the article's NOTES, if it has endnotes. */
   noteCount?: number;
 };
@@ -443,6 +506,7 @@ for (const [path, mod] of Object.entries(modules)) {
     layout: show?.layout,
     lead: show?.lead,
     images: specs.map((s) => resolveImage(slug, s, mod.FIGURES)),
+    gallery: galleryOf(slug, specs, mod.FIGURES, show?.exclude ?? []),
     noteCount: Array.isArray(mod.NOTES) && mod.NOTES.length ? mod.NOTES.length : undefined,
   });
 }

@@ -48,6 +48,10 @@
  *                    a railed gallery along its side, a windmill beside
  *                    it and a dry-laid rock wall in front. Wide screens
  *                    only (see THE PLAINS in the stylesheet)
+ *   the cross        on the highest swell of the Rolling Plains, a
+ *                    plain cedar cross with a few stones at its foot.
+ *                    It is a link (the faith prop), as is the small
+ *                    cross in the basement line beside the copyright
  *   the red beds     Triassic mudstone: reddish brown, with a little
  *                    red-purple and gray-green. It is also what the
  *                    Rolling Plains stand on, and the footer's words
@@ -187,6 +191,11 @@ interface Props {
   /** Survey marks lettered in the rock, under the plain and under the basin */
   plateauMark?: string;
   basinMark?: string;
+  /** Where the cross and the basement's cross mark lead. null leaves
+   *  both drawn but not linked (until the page exists, say). */
+  faith?: string | null;
+  /** Set after the tagline, in italic */
+  motto?: string;
 }
 
 const {
@@ -208,6 +217,8 @@ const {
   location = 'Lubbock, Texas',
   plateauMark = 'Llano Estacado — 3,241 ft',
   basinMark = 'Rolling Plains — 2,410 ft',
+  faith = '/faith',
+  motto = 'Soli Deo gloria.',
 } = Astro.props;
 
 const year = new Date().getFullYear();
@@ -441,7 +452,6 @@ const JUNIPERS: Tree[] = [
 const MESQUITES: Tree[] = [
   { x: 808, w: 19, show: 'wide' },
   { x: 842, w: 24, flip: true },
-  { x: 912, w: 17, show: 'mid' },
   { x: 1130, w: 21, show: 'mid' },
   { x: 1166, w: 17, flip: true, show: 'wide' },
   { x: 1240, w: 25 },
@@ -455,6 +465,11 @@ const COTTONWOODS: Tree[] = [
   { x: 1114, w: 17, show: 'wide' },
 ];
 const ROCK_HOUSE = { x: 972, w: 38 }; // on the level top of the rise, so its wall sits flat
+// THE CROSS, on the top of the swell, where it stands against the sky.
+// A link when there is somewhere to go (the faith prop), so it is an
+// <a> then and a <span> otherwise; shown on every screen.
+const CROSS = { x: 925, w: 10 };
+const Faith = faith ? 'a' : 'span';
 
 // THE PIVOT, in pixels like the trees, since it has to keep its shape:
 // a box 150 x 22 with the well at x = 138 and the plain at its foot.
@@ -742,6 +757,25 @@ const runPath =
       <path class="courses" d="M1.7,22 V23.3 M4.3,22.3 V23.6 M8.2,21.9 V23.2 M12.7,22.3 V23.6 M17.3,22.7 V24 M21.7,22.1 V23.4 M25.2,22.1 V23.4 M30.1,22.5 V23.8 M33.8,21.9 V23.2 M38,22.4 V23.7 M42.4,22 V23.3 M2.9,23.4 V25 M6.3,23.4 V25 M10.4,23.4 V25 M14.6,23.4 V25 M19.3,23.4 V25 M23.4,23.4 V25 M27.4,23.4 V25 M32.2,23.4 V25 M36.4,23.4 V25 M40.6,23.4 V25 M0,23.4 H44"></path>
     </svg>
 
+    <!-- the cross on the swell, a link to the faith page -->
+    <Faith
+      class="flora cross"
+      href={faith ?? undefined}
+      style={stand(CROSS.x, CROSS.w, 20 / 12, 1.2)}
+      aria-label={faith ? 'Faith' : undefined}
+      title={faith ? 'Faith' : undefined}
+      aria-hidden={faith ? undefined : 'true'}
+    >
+      <svg viewBox="0 0 12 20" aria-hidden="true">
+        <path class="post" d="M5.2,18.6 L5.05,1.2 L6.85,1 L6.95,18.6 Z"></path>
+        <path class="post" d="M1.1,5.6 L10.9,5.2 L11,6.9 L1.2,7.2 Z"></path>
+        <path class="grain" d="M5.9,2.2 V17.6 M2.4,6.3 H10"></path>
+        <path class="stone" d="M2.6,20 L3.4,18 L6,17.6 L6.6,20 Z"></path>
+        <path class="stone stone--shade" d="M5.8,20 L6.6,17.8 L9,17.9 L9.8,20 Z"></path>
+        <path class="stone" d="M4.2,18.4 L5,16.9 L7.4,16.8 L7.9,18.3 Z"></path>
+      </svg>
+    </Faith>
+
     <div class="weed" data-road={weedRoad}>
       <div class="weed-hop">
         <svg class="weed-ball" viewBox="0 0 40 40" fill="none" stroke-linecap="round">
@@ -771,7 +805,7 @@ const runPath =
       <div class="lede">
         <a class="name" href="/">{name}</a>
         <p class="roles">{roles.join(' · ')}</p>
-        <p class="tagline">{tagline}</p>
+        <p class="tagline">{tagline}{motto && <> <span class="motto">{motto}</span></>}</p>
       </div>
 
       <div class="cols">
@@ -808,6 +842,9 @@ const runPath =
   <div class="basement">
     <div class="wrap">
       <span>© {year} {name}</span>
+      <Faith class="mark-cross" href={faith ?? undefined} aria-label={faith ? 'Faith' : undefined} title={faith ? 'Faith' : undefined}>
+        <svg viewBox="0 0 9 12" aria-hidden="true"><path d="M3.8,0 H5.2 V3.4 H8.4 V4.8 H5.2 V12 H3.8 V4.8 H0.6 V3.4 H3.8 Z"></path></svg>
+      </Faith>
       <span>{location}</span>
       <span>All Rights Reserved</span>
     </div>
@@ -844,6 +881,7 @@ const runPath =
     --ink-soft: rgba(240, 232, 216, 0.9);
     --ink-faint: rgba(240, 232, 216, 0.82);
     --rule: rgba(232, 225, 209, 0.16);
+    --gild: #c9a26b; /*            the cross mark in the basement line */
 
     /* THE HOUR'S TWO WASHES, laid flat over the rock wherever it shows:
        --wash-warm is the low sun's colour at dawn and dusk, --wash-night
@@ -1032,7 +1070,8 @@ const runPath =
      the ledge's gray-brown, or the caprock's pale caliche. The survey
      corner's rocks (further down) are coloured the same way. */
   .caprock .blocks,
-  .corner .stone {
+  .corner .stone,
+  .cross .stone {
     --stone: var(--sandstone);
     fill: color-mix(in srgb,
       color-mix(in srgb, var(--stone), var(--grazing) calc(var(--graze) * 27%)),
@@ -1542,6 +1581,45 @@ const runPath =
     }
   }
 
+  /* THE CROSS. Weathered cedar, darkening with the night like the trees,
+     on a few stones of caliche. It is the one thing in the drawing that
+     can be clicked, so it takes the pointer back (.flora gives it up)
+     and has a hit area larger than itself; the wood warms on hover. */
+  .cross {
+    pointer-events: auto;
+  }
+  .cross::before {
+    content: '';
+    position: absolute;
+    inset: -6px -9px -2px;
+  }
+  .cross svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .cross .post {
+    fill: color-mix(in srgb,
+      color-mix(in srgb, #4a3524, var(--grazing) calc(var(--graze) * 20%)),
+      #0b101d calc(var(--night) * 60%));
+    transition: fill 0.3s ease;
+  }
+  .cross .grain {
+    fill: none;
+    stroke: rgba(20, 12, 6, 0.35);
+    stroke-width: 0.3;
+  }
+  a.cross:hover .post,
+  a.cross:focus-visible .post {
+    fill: color-mix(in srgb, #8a5a34, #0b101d calc(var(--night) * 35%));
+  }
+  a.cross:focus-visible {
+    outline: 1.5px solid var(--ink);
+    outline-offset: 3px;
+    border-radius: 1px;
+  }
+
   /* ── THE COTTON ──
      The pivot's field. It covers the circle the pivot waters, so in
      section it runs both ways from the well: under the span to the
@@ -1601,11 +1679,13 @@ const runPath =
     overflow: visible;
     pointer-events: none;
   }
-  .corner .stone {
+  .corner .stone,
+  .cross .stone {
     --stone: var(--caliche);
     stroke-width: 0.5;
   }
-  .corner .stone--shade {
+  .corner .stone--shade,
+  .cross .stone--shade {
     --stone: color-mix(in srgb, var(--caliche), #6b5a48 28%);
   }
   .corner .stake {
@@ -1815,6 +1895,10 @@ const runPath =
     max-width: 30rem;
     margin: 0.85rem 0 0;
   }
+  .motto {
+    font-style: italic;
+    white-space: nowrap;
+  }
 
   .cols {
     display: flex;
@@ -1896,6 +1980,27 @@ const runPath =
     text-transform: uppercase;
     color: rgba(232, 225, 209, 0.62);
     font-variant-numeric: tabular-nums;
+  }
+  /* the cross mark beside the copyright: a link to the faith page */
+  .mark-cross {
+    display: inline-flex;
+    padding: 2px 4px;
+    margin: -2px -4px;
+  }
+  .mark-cross svg {
+    width: 9px;
+    height: 12px;
+    fill: var(--gild);
+    transition: fill 0.3s ease;
+  }
+  a.mark-cross:hover svg,
+  a.mark-cross:focus-visible svg {
+    fill: var(--ink);
+  }
+  a.mark-cross:focus-visible {
+    outline: 2px solid var(--ink);
+    outline-offset: 2px;
+    border-radius: 1px;
   }
 
   /* ── responsive ───────────────────────────────────────────── */
@@ -2009,7 +2114,9 @@ const runPath =
     .grass::before,
     .grass::after,
     .turf,
-    .mark {
+    .mark,
+    .cross .post,
+    .mark-cross svg {
       transition: none;
     }
     .col a::after {
