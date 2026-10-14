@@ -7,33 +7,158 @@
  *
  * THE PAGE, from the top:
  *
- *   the cross      a plain Latin cross in gilt, the footer's cedar cross
- *                  made precious: the same proportions, a struck line down
- *                  the middle of each bar, and the cover signature's dusty
- *                  gilt with a dark keyline, as on the favicon.
- *   the creeds     the Apostles' and the Nicene, side by side on a wide
- *                  screen and one after the other on a narrow one. Each is
- *                  kept exactly as it is written below, line breaks and
- *                  indents and all (the stylesheet sets them pre-wrap).
- *   my faith       a short personal statement. The paragraphs in MY_FAITH
- *                  are placeholders: replace them, add or remove as many as
- *                  you like. Each string is one paragraph.
+ *   the cross      a jewelled cross (crux gemmata) in a starry heaven,
+ *                  after the apse of Sant'Apollinare in Classe at Ravenna:
+ *                  the page's Latin cross in gold, set with rubies,
+ *                  sapphires and emeralds and edged with pearls, on a
+ *                  mosaic disc of blue sky and gold stars ringed in gold
+ *                  and red. It is lit by the real sun: the header's sun,
+ *                  read off it as the footer reads it. A glint crosses the
+ *                  gold through the day, from the right in the morning to
+ *                  the left at evening (the site looks north, as the
+ *                  footer does), warming as the sun gets low; after dark
+ *                  the gold and the sky dim and a candle's light rises
+ *                  from the foot. Without the header it rests at
+ *                  mid-morning.
+ *   the creeds     the Apostles' and the Nicene, set as a prayer book sets
+ *                  them: rubrics (the numeral, the Latin name, the closing
+ *                  Amen) in red, an illuminated initial, and the rest of
+ *                  the first line in small capitals. Side by side on a
+ *                  wide screen, one after the other on a narrower one.
+ *                  Each line keeps its line break and indent as written.
+ *   the margin     beside the lines, the passages of Scripture they rest
+ *                  on. Each reference opens the verse beneath the line, in
+ *                  the King James Version (whose English the Apostles'
+ *                  Creed here shares: "sitteth", "the quick and the
+ *                  dead"), with a link to read it in context.
+ *   my faith       a register: dated entries, one row each, in the order
+ *                  they happened. Add an entry to REGISTER for each.
+ *   the ribbon     a silk marker hanging from the top of the page, in the
+ *                  colour of the church year's season today: violet,
+ *                  white, red or green. The season is reckoned in
+ *                  src/data/church-year.ts, when the page is built and
+ *                  again in the browser, so it changes on its own; the
+ *                  header's ?debugTime= override moves it too. Its name
+ *                  shows on hover, or on a tap.
+ *   the note       on the texts, at the foot: where each creed comes from,
+ *                  and the Bible the margin quotes. Edit it in TEXT_NOTE.
+ *   in print       the creeds alone in black and red on white, the
+ *                  references kept as plain text, each creed on its page.
+ *   the leaf       the page is a leaf of vellum hanging from the foot of
+ *                  the header: a warm skin (a baked tile, public/images/
+ *                  faith/vellum.webp), stains and browned edges, and the
+ *                  scribe's double margin rules in red
+ *                  down both sides. (No ruled lines across: lines that
+ *                  did not fall exactly under the text would look wrong,
+ *                  and the creeds' lines are of several sizes.)
+ *   the window     sunlight through a Venetian window falls across the top
+ *                  of the leaf: a bifora, two round-arched lights side by
+ *                  side under one arch, with a quatrefoil in the
+ *                  tympanum. Each light is jewel glass in the season's
+ *                  colour with a gold cross, Alpha in one and Omega in
+ *                  the other ("I am Alpha and Omega, the beginning and the
+ *                  ending", Rev. 1:8). Its arches keep its light from
+ *                  echoing the round heaven of the cross. It is
+ *                  drawn once (WINDOW, below) and coloured by the
+ *                  stylesheet, so the season recolours it; the sun moves
+ *                  it, long from the right in the morning, short at noon,
+ *                  long to the left at evening, and it fades at dusk.
+ *   the mosaic     after St Mark's in Venice, the leaf stands in gold
+ *                  mosaic: a gold lintel over it and, on a wide screen, a
+ *                  gold pillar either side, each with a vine rising from
+ *                  a chalice past three early Christian panels (the dove
+ *                  with an olive branch, after the Domitilla catacomb; the
+ *                  Good Shepherd; the fish bearing the basket of loaves,
+ *                  after San Callisto). One border frames all of it, a
+ *                  white rule, a red band set with gold diamonds and a
+ *                  blue rule, with a red block at every corner. The
+ *                  mosaic frames the leaf and stays out of it: between the
+ *                  head of the page and the creeds there is only a scribe's
+ *                  rubric, Credo, between two rules. All of it is baked to
+ *                  small images in public/images/faith/, so it costs
+ *                  nothing to draw; on a phone the pillars give way to the
+ *                  leaf.
+ *   the gilding    each creed's initial is gilded the first time it
+ *                  scrolls into view: the gold is laid across red bole,
+ *                  the clay gilders lay under leaf, and catches the light
+ *                  once. With no script, or reduced motion, it is simply
+ *                  gold. The initials stand raised, like leaf on the skin.
  *
  * TO EDIT A CREED, edit its text below. A blank line starts a new stanza;
- * leading spaces indent a line. "Amen." is set in the accent colour
- * wherever it appears.
+ * leading spaces indent a line. "Amen." is set as a rubric wherever it
+ * appears. A margin note names a line by its exact words (without the
+ * indent); if a line is edited so that a note no longer finds it, or
+ * finds it twice, the build stops and says which.
  */
 import RootLayout from '../layouts/RootLayout.astro';
+import { seasonOn } from '../data/church-year';
 
+/* ── THE SCRIPTURES ────────────────────────────────────────────
+   King James Version. `label` is what the margin shows, `search` is
+   what Bible Gateway is asked for. Each key is used by the notes on the
+   creeds below, and may be used by more than one. */
+interface Verse {
+  label: string;
+  search: string;
+  text: string;
+}
+const VERSES: Record<string, Verse> = {
+  gen1_1: { label: 'Gen. 1:1', search: 'Genesis 1:1', text: 'In the beginning God created the heaven and the earth.' },
+  deut6_4: { label: 'Deut. 6:4', search: 'Deuteronomy 6:4', text: 'Hear, O Israel: The LORD our God is one LORD:' },
+  matt1_23: { label: 'Matt. 1:23', search: 'Matthew 1:23', text: 'Behold, a virgin shall be with child, and shall bring forth a son, and they shall call his name Emmanuel, which being interpreted is, God with us.' },
+  matt16_18: { label: 'Matt. 16:18', search: 'Matthew 16:18', text: 'And I say also unto thee, That thou art Peter, and upon this rock I will build my church; and the gates of hell shall not prevail against it.' },
+  matt25_31: { label: 'Matt. 25:31', search: 'Matthew 25:31', text: 'When the Son of man shall come in his glory, and all the holy angels with him, then shall he sit upon the throne of his glory:' },
+  matt27_2: { label: 'Matt. 27:2', search: 'Matthew 27:2', text: 'And when they had bound him, they led him away, and delivered him to Pontius Pilate the governor.' },
+  matt28_19: { label: 'Matt. 28:19', search: 'Matthew 28:19', text: 'Go ye therefore, and teach all nations, baptizing them in the name of the Father, and of the Son, and of the Holy Ghost:' },
+  mark15_15: { label: 'Mark 15:15', search: 'Mark 15:15', text: 'And so Pilate, willing to content the people, released Barabbas unto them, and delivered Jesus, when he had scourged him, to be crucified.' },
+  mark16_19: { label: 'Mark 16:19', search: 'Mark 16:19', text: 'So then after the Lord had spoken unto them, he was received up into heaven, and sat on the right hand of God.' },
+  luke1_33: { label: 'Luke 1:33', search: 'Luke 1:33', text: 'And he shall reign over the house of Jacob for ever; and of his kingdom there shall be no end.' },
+  luke1_35: { label: 'Luke 1:35', search: 'Luke 1:35', text: 'And the angel answered and said unto her, The Holy Ghost shall come upon thee, and the power of the Highest shall overshadow thee: therefore also that holy thing which shall be born of thee shall be called the Son of God.' },
+  john1_3: { label: 'John 1:3', search: 'John 1:3', text: 'All things were made by him; and without him was not any thing made that was made.' },
+  john1_14: { label: 'John 1:14', search: 'John 1:14', text: 'And the Word was made flesh, and dwelt among us, (and we beheld his glory, the glory as of the only begotten of the Father,) full of grace and truth.' },
+  john3_16: { label: 'John 3:16', search: 'John 3:16', text: 'For God so loved the world, that he gave his only begotten Son, that whosoever believeth in him should not perish, but have everlasting life.' },
+  john6_38: { label: 'John 6:38', search: 'John 6:38', text: 'For I came down from heaven, not to do mine own will, but the will of him that sent me.' },
+  john8_12: { label: 'John 8:12', search: 'John 8:12', text: 'Then spake Jesus again unto them, saying, I am the light of the world: he that followeth me shall not walk in darkness, but shall have the light of life.' },
+  john10_28: { label: 'John 10:28', search: 'John 10:28', text: 'And I give unto them eternal life; and they shall never perish, neither shall any man pluck them out of my hand.' },
+  john10_30: { label: 'John 10:30', search: 'John 10:30', text: 'I and my Father are one.' },
+  john14_26: { label: 'John 14:26', search: 'John 14:26', text: 'But the Comforter, which is the Holy Ghost, whom the Father will send in my name, he shall teach you all things, and bring all things to your remembrance, whatsoever I have said unto you.' },
+  john15_26: { label: 'John 15:26', search: 'John 15:26', text: 'But when the Comforter is come, whom I will send unto you from the Father, even the Spirit of truth, which proceedeth from the Father, he shall testify of me:' },
+  john19_30: { label: 'John 19:30', search: 'John 19:30', text: 'When Jesus therefore had received the vinegar, he said, It is finished: and he bowed his head, and gave up the ghost.' },
+  acts1_9: { label: 'Acts 1:9', search: 'Acts 1:9', text: 'And when he had spoken these things, while they beheld, he was taken up; and a cloud received him out of their sight.' },
+  acts2_38: { label: 'Acts 2:38', search: 'Acts 2:38', text: 'Then Peter said unto them, Repent, and be baptized every one of you in the name of Jesus Christ for the remission of sins, and ye shall receive the gift of the Holy Ghost.' },
+  cor1_8_6: { label: '1 Cor. 8:6', search: '1 Corinthians 8:6', text: 'But to us there is but one God, the Father, of whom are all things, and we in him; and one Lord Jesus Christ, by whom are all things, and we by him.' },
+  cor1_15_3: { label: '1 Cor. 15:3–4', search: '1 Corinthians 15:3-4', text: 'For I delivered unto you first of all that which I also received, how that Christ died for our sins according to the scriptures; and that he was buried, and that he rose again the third day according to the scriptures:' },
+  cor1_15_42: { label: '1 Cor. 15:42', search: '1 Corinthians 15:42', text: 'So also is the resurrection of the dead. It is sown in corruption; it is raised in incorruption:' },
+  cor2_3_6: { label: '2 Cor. 3:6', search: '2 Corinthians 3:6', text: 'Who also hath made us able ministers of the new testament; not of the letter, but of the spirit: for the letter killeth, but the spirit giveth life.' },
+  eph1_7: { label: 'Eph. 1:7', search: 'Ephesians 1:7', text: 'In whom we have redemption through his blood, the forgiveness of sins, according to the riches of his grace;' },
+  eph2_20: { label: 'Eph. 2:20', search: 'Ephesians 2:20', text: 'And are built upon the foundation of the apostles and prophets, Jesus Christ himself being the chief corner stone;' },
+  eph4_5: { label: 'Eph. 4:5', search: 'Ephesians 4:5', text: 'One Lord, one faith, one baptism,' },
+  phil2_7: { label: 'Phil. 2:7', search: 'Philippians 2:7', text: 'But made himself of no reputation, and took upon him the form of a servant, and was made in the likeness of men:' },
+  col1_16: { label: 'Col. 1:16', search: 'Colossians 1:16', text: 'For by him were all things created, that are in heaven, and that are in earth, visible and invisible, whether they be thrones, or dominions, or principalities, or powers: all things were created by him, and for him:' },
+  thess1_4_16: { label: '1 Thess. 4:16', search: '1 Thessalonians 4:16', text: 'For the Lord himself shall descend from heaven with a shout, with the voice of the archangel, and with the trump of God: and the dead in Christ shall rise first:' },
+  tim2_4_1: { label: '2 Tim. 4:1', search: '2 Timothy 4:1', text: 'I charge thee therefore before God, and the Lord Jesus Christ, who shall judge the quick and the dead at his appearing and his kingdom;' },
+  heb1_3: { label: 'Heb. 1:3', search: 'Hebrews 1:3', text: 'Who being the brightness of his glory, and the express image of his person, and upholding all things by the word of his power, when he had by himself purged our sins, sat down on the right hand of the Majesty on high;' },
+  heb12_1: { label: 'Heb. 12:1', search: 'Hebrews 12:1', text: 'Wherefore seeing we also are compassed about with so great a cloud of witnesses, let us lay aside every weight, and the sin which doth so easily beset us, and let us run with patience the race that is set before us,' },
+  pet2_1_21: { label: '2 Pet. 1:21', search: '2 Peter 1:21', text: 'For the prophecy came not in old time by the will of man: but holy men of God spake as they were moved by the Holy Ghost.' },
+  rev21_1: { label: 'Rev. 21:1', search: 'Revelation 21:1', text: 'And I saw a new heaven and a new earth: for the first heaven and the first earth were passed away; and there was no more sea.' },
+};
+
+/* ── THE CREEDS ────────────────────────────────────────────────
+   `latin` is the creed's name as the old books give it, set as the rubric
+   over the English title. `notes` pairs a line, by its exact words, with
+   the key of a verse above. */
 interface Creed {
   numeral: string;
+  latin: string;
   title: string;
   text: string;
+  notes: [line: string, verse: keyof typeof VERSES][];
 }
 
 const CREEDS: Creed[] = [
   {
     numeral: 'I',
+    latin: 'Symbolum Apostolorum',
     title: "The Apostles' Creed",
     text: `I believe in God, the Father Almighty,
 maker of heaven and earth;
@@ -56,9 +181,28 @@ the resurrection of the body,
 and the life everlasting.
 
 Amen.`,
+    notes: [
+      ['maker of heaven and earth;', 'gen1_1'],
+      ['And in Jesus Christ his only Son, our Lord;', 'john3_16'],
+      ['who was conceived by the Holy Spirit,', 'luke1_35'],
+      ['born of the Virgin Mary,', 'matt1_23'],
+      ['suffered under Pontius Pilate,', 'matt27_2'],
+      ['was crucified, dead, and buried;', 'john19_30'],
+      ['the third day he rose from the dead;', 'cor1_15_3'],
+      ['he ascended into heaven,', 'acts1_9'],
+      ['and sitteth at the right hand of God the Father Almighty;', 'heb1_3'],
+      ['from thence he shall come to judge the quick and the dead.', 'tim2_4_1'],
+      ['I believe in the Holy Spirit,', 'john14_26'],
+      ['the holy catholic church,', 'matt16_18'],
+      ['the communion of saints,', 'heb12_1'],
+      ['the forgiveness of sins,', 'eph1_7'],
+      ['the resurrection of the body,', 'cor1_15_42'],
+      ['and the life everlasting.', 'john10_28'],
+    ],
   },
   {
     numeral: 'II',
+    latin: 'Symbolum Nicaenum',
     title: 'The Nicene Creed',
     text: `I believe in one God,
   the Father, the Almighty,
@@ -124,67 +268,477 @@ I look for the resurrection
   of the dead,
   and the life of the
   world to come.  Amen.`,
+    notes: [
+      ['I believe in one God,', 'deut6_4'],
+      ['of all that is, seen and unseen.', 'col1_16'],
+      ['I believe in one Lord,', 'cor1_8_6'],
+      ['eternally begotten of the Father,', 'john1_14'],
+      ['Light from Light.', 'john8_12'],
+      ['of one Being with the Father;', 'john10_30'],
+      ['through him all things', 'john1_3'],
+      ['he came down from heaven,', 'john6_38'],
+      ['and became truly human.', 'phil2_7'],
+      ['For my sake he was crucified', 'mark15_15'],
+      ['On the third day he rose again', 'cor1_15_3'],
+      ['and is seated at the right', 'mark16_19'],
+      ['He will come again in glory', 'matt25_31'],
+      ['have no end.', 'luke1_33'],
+      ['the Lord, the giver of life,', 'cor2_3_6'],
+      ['who proceeds from the Father', 'john15_26'],
+      ['is worshiped and glorified,', 'matt28_19'],
+      ['through the prophets.', 'pet2_1_21'],
+      ['apostolic church.', 'eph2_20'],
+      ['I acknowledge one baptism', 'eph4_5'],
+      ['for the forgiveness of sins.', 'acts2_38'],
+      ['of the dead,', 'thess1_4_16'],
+      ['world to come.  Amen.', 'rev21_1'],
+    ],
   },
 ];
 
-// PLACEHOLDER: replace with your own words. One string per paragraph.
-const MY_FAITH: string[] = [
-  'These statements profess my faith, but more about my faith will appear later.',
-  '',
-  '',
+/* ── MY FAITH: THE REGISTER ────────────────────────────────────
+   One entry per row, in the order things happened (the earliest first).
+   `date` is what the date column shows, written however suits the entry
+   ("Sept. 2026", "Summer 1998", "Childhood"); `datetime` is the same date
+   for machines, when there is one ("2026-09", "1998"). Each string in
+   `text` is a paragraph. Blank paragraphs are skipped, and so is an
+   entry with nothing in it, so a half-written entry can wait here.
+
+   An entry looks like this:
+     { date: 'Summer 1998', datetime: '1998', text: ['…', '…'] },
+*/
+interface Entry {
+  date: string;
+  datetime?: string;
+  text: string[];
+}
+const REGISTER: Entry[] = [
+  {
+    date: 'Sept. 2026',
+    datetime: '2026-09',
+    text: ['I gave my life to Jesus Christ in September 2026, but the roots of my faith go further and deeper.'],
+  },
 ];
 const MOTTO = 'Soli Deo gloria.';
 
-/** A creed as stanzas, each stanza as runs of plain text and "Amen." */
-const stanzas = (text: string) =>
-  text
+/* ── A NOTE ON THE TEXTS ───────────────────────────────────────
+   At the foot of the page, after the register. One string per paragraph;
+   a blank string is skipped. WORDING is for a word on the creeds as you
+   say them, if you want one: the Nicene here has "I", "me" and "my"
+   where the councils' text has "we", "us" and "our". Left blank, nothing
+   is printed for it. */
+const WORDING = '';
+const TEXT_NOTE: string[] = [
+  "The Apostles’ Creed grew out of the confession made at baptism by the church at Rome, the Old Roman Creed of the second and third centuries, and took the form given here in the Latin West by the eighth century. It was not written by the apostles, but it was long held to set down what they taught.",
+  "The Nicene Creed was set out by the Council of Nicaea in 325 and enlarged by the Council of Constantinople in 381. It is the creed held in common by the Roman Catholic, Orthodox and most Protestant churches. The words “and the Son,” on the procession of the Holy Spirit, were added in the Latin West and are not said in the Eastern churches.",
+  WORDING,
+  "The Scriptures in the margin are from the King James Version of 1611, in its standard text of 1769. They show where each line of the creeds stands in the Bible; they are a reader’s guide to the sources, not a complete list of them.",
+].filter((para) => para.trim());
+const DESCRIBED = 'Described by the creator, October 2026.';
+
+// THE SEASON when the page is built; the script brings it up to today
+const SEASON = seasonOn(new Date());
+
+/* ── BUILDING IT ───────────────────────────────────────────────── */
+const gateway = (search: string) =>
+  `https://www.biblegateway.com/passage/?search=${encodeURIComponent(search)}&version=KJV`;
+
+interface Line {
+  id: string;
+  indent: number;
+  parts: { run: string; amen: boolean }[];
+  initial?: string;
+  lead?: string;
+  verse?: Verse;
+}
+
+const creeds = CREEDS.map((creed, ci) => {
+  const stanzas = creed.text
     .replace(/\r\n/g, '\n')
     .split(/\n\s*\n/)
-    .map((stanza) =>
+    .map((stanza, si) =>
       stanza
         .replace(/\s+$/, '')
-        .split(/(Amen\.)/)
-        .filter(Boolean)
-        .map((run) => ({ run, amen: run === 'Amen.' }))
+        .split('\n')
+        .map((raw, li): Line => {
+          const words = raw.replace(/\s+$/, '');
+          const lead = words.match(/^ */)![0].length;
+          const text = words.slice(lead);
+          return {
+            id: `verse-${ci}-${si}-${li}`,
+            indent: lead > 0 ? 1 : 0,
+            parts: text
+              .split(/(Amen\.)/)
+              .filter(Boolean)
+              .map((run) => ({ run, amen: run === 'Amen.' })),
+          };
+        })
     );
+
+  // the margin: each note must find exactly one line
+  const all = stanzas.flat();
+  const plain = (l: Line) => l.parts.map((p) => p.run).join('');
+  for (const [words, key] of creed.notes) {
+    const verse = VERSES[key];
+    if (!verse) throw new Error(`faith.astro: ${creed.title}: no verse "${key}" in VERSES`);
+    const found = all.filter((l) => plain(l) === words);
+    if (found.length !== 1) {
+      throw new Error(
+        `faith.astro: ${creed.title}: the margin note for "${words}" finds ${found.length} lines; it must find one`
+      );
+    }
+    found[0].verse = verse;
+  }
+
+  // the illuminated initial and the small capitals after it
+  const first = all[0];
+  const opening = plain(first);
+  first.initial = opening.charAt(0);
+  first.lead = opening.slice(1).trimStart();
+
+  return { ...creed, stanzas };
+});
+
+const register = REGISTER.map((e) => ({ ...e, text: e.text.map((p) => p.trim()).filter(Boolean) })).filter(
+  (e) => e.text.length > 0
+);
 
 // THE CROSS, in a 120 x 172 box: a shaft 14 wide from top to foot and a
 // bar 14 deep crossing it a third of the way down. CROSS is its outline,
-// STRUCK the line down the middle of each bar.
+// used for the small crosses through the page.
 const CROSS = 'M53,8 H67 V46 H106 V60 H67 V164 H53 V60 H14 V46 H53 Z';
-const STRUCK = 'M60,13 V159 M19,53 H101';
+
+/* THE JEWELLED CROSS at the head of the page, in the same 120 x 172 box:
+   a little broader than CROSS, so it can carry its stones. GEMS are its
+   stones (x, y, rx, ry, kind), PEARLS the pearls between them, STARS the
+   gold stars of the sky it stands in. */
+const GEM_CROSS = 'M49,4 H71 V42 H110 V64 H71 V164 H49 V64 H10 V42 H49 Z';
+const GEM_INNER = 'M52.5,7.5 H67.5 V45.5 H106.5 V60.5 H67.5 V160.5 H52.5 V60.5 H13.5 V45.5 H52.5 Z';
+const GEMS: [number, number, number, number, 'ruby' | 'sapphire' | 'emerald'][] = [
+  [60, 53, 8, 8, 'ruby'],
+  [60, 20, 4.5, 6, 'sapphire'],
+  [60, 88, 4.5, 6, 'emerald'],
+  [60, 118, 4.5, 6, 'sapphire'],
+  [60, 146, 4.5, 6, 'ruby'],
+  [26, 53, 6, 4.5, 'emerald'],
+  [94, 53, 6, 4.5, 'emerald'],
+];
+const PEARLS: [number, number][] = [
+  [60, 9], [60, 34], [60, 72], [60, 103], [60, 132], [60, 158], [15, 53], [40, 53], [80, 53], [105, 53],
+];
+const star = (x: number, y: number, r: number) =>
+  `M${x},${y - r} l${r * 0.36},${r * 0.64} l${r * 0.64},${r * 0.36} l-${r * 0.64},${r * 0.36} l-${r * 0.36},${r * 0.64} l-${r * 0.36},-${r * 0.64} l-${r * 0.64},-${r * 0.36} l${r * 0.64},-${r * 0.36} Z`;
+const STARS = [
+  [0, 34, 5], [120, 30, 5], [-6, 124, 5], [126, 128, 5], [22, 162, 4], [98, 164, 4],
+  [30, 8, 4], [90, 6, 4], [-22, 80, 4], [142, 84, 4], [-14, 40, 3], [134, 44, 3],
+  [8, 148, 3], [112, 150, 3], [-24, 110, 3], [144, 112, 3],
+].map(([x, y, rad]) => star(x, y, rad));
+
+/* ── THE WINDOW ────────────────────────────────────────────────
+   A Venetian bifora, 150 wide and 300 tall: two round-arched lights,
+   each 56 wide, either side of a colonnette, under one round arch whose
+   tympanum holds a quatrefoil. Each light has a border of jewel glass, a
+   field of the season's colour laid in diamond quarries, a gold cross,
+   and over it Alpha (the left) or Omega (the right). The season's glass
+   carries classes the stylesheet colours; the rest keeps its own. The
+   lead is drawn in the leaf's colour: on the page it is where no light
+   falls. */
+const r1 = (n: number) => +n.toFixed(1);
+/** A round-headed opening: straight sides, a semicircle on top. */
+const roundArch = (x: number, w: number, spring: number, foot: number) =>
+  `M${x},${foot} V${spring} A${w / 2},${w / 2} 0 0 1 ${x + w},${spring} V${foot} Z`;
+
+/** One light of the window. */
+function venetianLight(x: number, glyph: string): string {
+  const w = 56;
+  const b = 5;
+  const spring = 90;
+  const foot = 292;
+  const cx = x + w / 2;
+  let h = `<path class="g-gold" d="${roundArch(x, w, spring, foot)}"/>`;
+  // the border: jewels down both sides and along the foot
+  const jewels = ['g-ruby', 'g-blue', 'g-gold', 'g-blue'];
+  let i = 0;
+  for (let y = spring - 2; y < foot - 2; y += 9) {
+    const c = jewels[i++ % 4];
+    h += `<rect class="${c}" x="${x}" y="${y}" width="${b}" height="7.6"/><rect class="${c}" x="${x + w - b}" y="${y}" width="${b}" height="7.6"/>`;
+  }
+  for (let xx = x + b; xx < x + w - b - 1; xx += 8) h += `<rect class="${jewels[i++ % 4]}" x="${xx}" y="${foot - b}" width="6.8" height="${b}"/>`;
+  // the field and its quarries
+  h += `<path class="g-field" d="${roundArch(x + b, w - 2 * b, spring, foot - b)}"/>`;
+  for (let qy = spring - 24; qy < foot - 24; qy += 26) {
+    h += `<path class="g-deep" d="M${cx},${qy} L${x + w - b},${qy + 13} L${cx},${qy + 26} L${x + b},${qy + 13} Z"/>`;
+  }
+  // Alpha or Omega, then the cross with a white glory at its crossing
+  h += `<text class="g-letter" x="${cx}" y="${spring + 8}">${glyph}</text>`;
+  const top = spring + 30;
+  const cross = `M${cx - 3.4},${top} H${cx + 3.4} V${top + 30} H${cx + 13} V${top + 37} H${cx + 3.4} V${foot - 30} H${cx - 3.4} V${top + 37} H${cx - 13} V${top + 30} H${cx - 3.4} Z`;
+  h += `<circle class="g-white" cx="${cx}" cy="${top + 33.5}" r="12"/>`;
+  h += `<path class="g-gold" d="${cross}"/>`;
+  h += `<circle class="g-ruby" cx="${cx}" cy="${foot - 20}" r="5"/>`;
+  // the lead
+  h += `<g class="g-lead"><path d="${roundArch(x + b, w - 2 * b, spring, foot - b)}"/><path d="M${x + b},${spring + 70} H${x + w - b} M${x + b},${spring + 140} H${x + w - b}"/></g>`;
+  h += `<path class="g-lead g-lead--fine" d="${cross}"/>`;
+  return h;
+}
+
+/** The quatrefoil in the tympanum, with a cross at its heart. */
+function quatrefoil(): string {
+  const cx = 75;
+  const cy = 44;
+  let h = `<circle class="g-gold" cx="${cx}" cy="${cy}" r="22"/>`;
+  ['g-ruby', 'g-blue', 'g-ruby', 'g-blue'].forEach((c, i) => {
+    const a = (i * Math.PI) / 2 - Math.PI / 2;
+    h += `<circle class="${c}" cx="${r1(cx + Math.cos(a) * 8.5)}" cy="${r1(cy + Math.sin(a) * 8.5)}" r="9"/>`;
+  });
+  h += `<circle class="g-field" cx="${cx}" cy="${cy}" r="6"/>`;
+  h += `<path class="g-gold" d="M${cx - 1.4},${cy - 5} h2.8 v3.6 h3.6 v2.8 h-3.6 v3.6 h-2.8 v-3.6 h-3.6 v-2.8 h3.6 Z"/>`;
+  h += `<g class="g-lead"><circle cx="${cx}" cy="${cy}" r="22"/><circle cx="${cx}" cy="${cy}" r="6"/></g>`;
+  return h;
+}
+
+const WINDOW = quatrefoil() + venetianLight(10, '\u0391') + venetianLight(84, '\u03A9');
 ---
 
-<RootLayout title="Faith" description="Statements of faith: the Apostles' Creed and the Nicene Creed.">
-  <article class="faith">
-    <header class="faith-head">
-      <svg class="cross" viewBox="0 0 120 172" role="img" aria-labelledby="faith-cross-title">
-        <title id="faith-cross-title">A cross</title>
+<RootLayout
+  title="Faith"
+  description="Statements of faith: the Apostles' Creed and the Nicene Creed, with the Scriptures they rest on."
+  image="/images/og/faith.png"
+>
+  <div class="nave">
+    <div class="nave-gold" aria-hidden="true">
+      <span class="b b--top"></span>
+      <span class="b b--bottom"></span>
+      <span class="b b--outer-left"></span>
+      <span class="b b--outer-right"></span>
+      <span class="b b--inner-top"></span>
+      <span class="b b--inner-left"></span>
+      <span class="b b--inner-right"></span>
+      <span class="c c--tl"></span>
+      <span class="c c--tr"></span>
+      <span class="c c--bl"></span>
+      <span class="c c--br"></span>
+      <span class="c c--itl"></span>
+      <span class="c c--itr"></span>
+      <span class="c c--ibl"></span>
+      <span class="c c--ibr"></span>
+      {['left', 'right'].map((side) => (
+        <div class={`pillar pillar--${side}`}>
+          <img class="panel panel--dove" src="/images/faith/mosaic-dove.webp" alt="" width="66" height="66" loading="lazy" decoding="async" />
+          <img class="panel panel--shepherd" src="/images/faith/mosaic-shepherd.webp" alt="" width="66" height="90" loading="lazy" decoding="async" />
+          <img class="panel panel--fish" src="/images/faith/mosaic-fish.webp" alt="" width="66" height="66" loading="lazy" decoding="async" />
+          <img class="panel panel--chalice" src="/images/faith/mosaic-chalice.webp" alt="" width="40" height="38" loading="lazy" decoding="async" />
+        </div>
+      ))}
+    </div>
+  <article class="faith" data-season={SEASON.colour}>
+    <svg class="window-light" viewBox="0 0 1000 900" aria-hidden="true">
+      <g class="glass-light" set:html={WINDOW}></g>
+    </svg>
+
+    <div
+      class="ribbon"
+      data-colour={SEASON.colour}
+      role="img"
+      tabindex="0"
+      aria-label={`The season of the church year: ${SEASON.name}`}
+    >
+      <svg viewBox="0 0 28 150" aria-hidden="true">
         <defs>
-          <linearGradient id="faith-gilt" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="172">
+          <!-- the silk's sheen, across the ribbon -->
+          <linearGradient id="faith-silk" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#000" stop-opacity="0.22"></stop>
+            <stop offset="0.28" stop-color="#fff" stop-opacity="0.16"></stop>
+            <stop offset="0.5" stop-color="#fff" stop-opacity="0"></stop>
+            <stop offset="0.78" stop-color="#000" stop-opacity="0.06"></stop>
+            <stop offset="1" stop-color="#000" stop-opacity="0.26"></stop>
+          </linearGradient>
+        </defs>
+        <path class="ribbon-silk" d="M0,0 H28 V150 L14,137 L0,150 Z"></path>
+        <path d="M0,0 H28 V150 L14,137 L0,150 Z" fill="url(#faith-silk)"></path>
+      </svg>
+      <span class="ribbon-name">{SEASON.name}</span>
+    </div>
+
+    <header class="faith-head">
+      <svg class="cross" viewBox="-40 -24 200 220" role="img" aria-labelledby="faith-cross-title">
+        <title id="faith-cross-title">A jewelled cross in a starry sky</title>
+        <defs>
+          <!-- the dusty gilt of the initials -->
+          <linearGradient id="faith-gilt-fit" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0" stop-color="#efe7d2"></stop>
             <stop offset="0.3" stop-color="#cdbc90"></stop>
             <stop offset="0.65" stop-color="#a8996c"></stop>
             <stop offset="1" stop-color="#877a56"></stop>
           </linearGradient>
+          <!-- the cross's gold, the warm gold of the mosaics -->
+          <linearGradient id="faith-gold" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="172">
+            <stop offset="0" stop-color="#f6e7b4"></stop>
+            <stop offset="0.3" stop-color="#e2bf62"></stop>
+            <stop offset="0.65" stop-color="#c49a3a"></stop>
+            <stop offset="1" stop-color="#8f6a24"></stop>
+          </linearGradient>
+          <!-- the stones, lit from the upper left -->
+          <radialGradient id="faith-ruby" cx="0.35" cy="0.3" r="0.8">
+            <stop offset="0" stop-color="#ff8a80"></stop>
+            <stop offset="0.5" stop-color="#b3202a"></stop>
+            <stop offset="1" stop-color="#5a0d12"></stop>
+          </radialGradient>
+          <radialGradient id="faith-sapphire" cx="0.35" cy="0.3" r="0.8">
+            <stop offset="0" stop-color="#9cc4ff"></stop>
+            <stop offset="0.5" stop-color="#1f4fb0"></stop>
+            <stop offset="1" stop-color="#0c2257"></stop>
+          </radialGradient>
+          <radialGradient id="faith-emerald" cx="0.35" cy="0.3" r="0.8">
+            <stop offset="0" stop-color="#9ef0b8"></stop>
+            <stop offset="0.5" stop-color="#1f8a48"></stop>
+            <stop offset="1" stop-color="#0b3d20"></stop>
+          </radialGradient>
+          <radialGradient id="faith-pearl" cx="0.35" cy="0.3" r="0.8">
+            <stop offset="0" stop-color="#ffffff"></stop>
+            <stop offset="1" stop-color="#cfc6b0"></stop>
+          </radialGradient>
+          <!-- the sky, the gold ring and the red ring, in tesserae -->
+          <pattern id="faith-tess-sky" width="3.4" height="3.4" patternUnits="userSpaceOnUse">
+            <rect width="3.4" height="3.4" fill="#0b1630"></rect>
+            <rect x="0.28" y="0.28" width="2.84" height="2.84" fill="#1a3a82"></rect>
+          </pattern>
+          <pattern id="faith-tess-gold" width="3.4" height="3.4" patternUnits="userSpaceOnUse">
+            <rect width="3.4" height="3.4" fill="#8a6a2a"></rect>
+            <rect x="0.28" y="0.28" width="2.84" height="2.84" fill="#e2bf62"></rect>
+          </pattern>
+          <pattern id="faith-tess-red" width="3.4" height="3.4" patternUnits="userSpaceOnUse">
+            <rect width="3.4" height="3.4" fill="#4a1a10"></rect>
+            <rect x="0.28" y="0.28" width="2.84" height="2.84" fill="#a3222a"></rect>
+          </pattern>
+          <!-- the sun's glint: a soft band, coloured in the stylesheet -->
+          <linearGradient id="faith-glint" x1="0" y1="0" x2="1" y2="0">
+            <stop class="glint-edge" offset="0"></stop>
+            <stop class="glint-core" offset="0.5"></stop>
+            <stop class="glint-edge" offset="1"></stop>
+          </linearGradient>
+          <!-- the night: dim at the head, candle-warm at the foot -->
+          <linearGradient id="faith-night" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="172">
+            <stop offset="0" stop-color="#140e0a" stop-opacity="0.62"></stop>
+            <stop offset="0.6" stop-color="#3a2416" stop-opacity="0.35"></stop>
+            <stop offset="1" stop-color="#f6cf86" stop-opacity="0.38"></stop>
+          </linearGradient>
+          <radialGradient id="faith-candle" gradientUnits="userSpaceOnUse" cx="60" cy="164" r="68">
+            <stop offset="0" stop-color="#ffcf8a" stop-opacity="0.5"></stop>
+            <stop offset="0.45" stop-color="#ffb866" stop-opacity="0.16"></stop>
+            <stop offset="1" stop-color="#ffb866" stop-opacity="0"></stop>
+          </radialGradient>
+          <clipPath id="faith-cross-clip"><path d={GEM_CROSS}></path></clipPath>
         </defs>
-        <path class="cross-body" d={CROSS}></path>
-        <path class="cross-struck" d={STRUCK}></path>
+        <!-- the heaven: red ring, gold ring, blue sky and its stars -->
+        <circle cx="60" cy="86" r="98" fill="url(#faith-tess-red)"></circle>
+        <circle cx="60" cy="86" r="93" fill="url(#faith-tess-gold)"></circle>
+        <circle cx="60" cy="86" r="88" fill="url(#faith-tess-sky)"></circle>
+        {STARS.map((d) => <path class="sky-star" d={d}></path>)}
+        <circle class="sky-night" cx="60" cy="86" r="98"></circle>
+        <circle class="cross-candle" cx="60" cy="164" r="68" fill="url(#faith-candle)"></circle>
+        <!-- the cross, its gold, the glint, the night -->
+        <path class="cross-body" d={GEM_CROSS}></path>
+        <path class="cross-bevel" d={GEM_INNER}></path>
+        <g clip-path="url(#faith-cross-clip)">
+          <rect class="cross-glint" x="-22" y="-12" width="44" height="200" fill="url(#faith-glint)"></rect>
+        </g>
+        <!-- its stones and pearls -->
+        {GEMS.map(([x, y, rx, ry, kind]) => (
+          <ellipse class="gem" cx={x} cy={y} rx={rx} ry={ry} fill={`url(#faith-${kind})`}></ellipse>
+        ))}
+        {PEARLS.map(([x, y]) => <circle cx={x} cy={y} r="2.2" fill="url(#faith-pearl)"></circle>)}
+        <path class="cross-night" d={GEM_CROSS} fill="url(#faith-night)"></path>
+        <path class="cross-key" d={GEM_CROSS}></path>
       </svg>
       <p class="eyebrow">Faith</p>
       <h1 class="title">Statements of faith</h1>
-      <p class="dek">What I know to be true, in the words professed by those who precede us.</p>
+      <p class="dek">What I know to be true, in the words professed by those who preceded us.</p>
     </header>
 
+    <div class="divider divider--credo" aria-hidden="true">
+      <span class="rule"></span>
+      <span class="credo">Credo</span>
+      <span class="rule"></span>
+    </div>
+
     <div class="creeds">
-      {CREEDS.map((creed, i) => (
-        <section class="creed" aria-labelledby={`creed-${i}`}>
-          <p class="eyebrow">{creed.numeral}</p>
-          <h2 class="creed-title" id={`creed-${i}`}>{creed.title}</h2>
-          {stanzas(creed.text).map((stanza) => (
-            <p class="stanza">
-              {stanza.map((part) => (part.amen ? <span class="amen">{part.run}</span> : part.run))}
-            </p>
+      {creeds.map((creed, ci) => (
+        <section class="creed" aria-labelledby={`creed-${ci}`}>
+          <p class="rubric">{creed.numeral} · {creed.latin}</p>
+          <h2 class="creed-title" id={`creed-${ci}`}>{creed.title}</h2>
+          {creed.stanzas.map((stanza, si) => (
+            <div class={si === 0 ? 'stanza stanza--first' : 'stanza'}>
+              {si === 0 && (
+                <svg class="initial" viewBox="0 0 60 68" aria-hidden="true">
+                  <defs>
+                    <!-- how much of the letter the gold covers; the script
+                         lays it, and with no script it covers all -->
+                    <clipPath id={`gild-${ci}`}>
+                      <rect class="gild-reach" x="-30" y="0" width="110" height="80" transform="skewX(-18)"></rect>
+                    </clipPath>
+                    <clipPath id={`gild-letter-${ci}`}>
+                      <text class="initial-glyph" x="30" y="50.5">{stanza[0].initial}</text>
+                    </clipPath>
+                  </defs>
+                  <rect class="initial-field" x="1" y="1" width="58" height="66"></rect>
+                  <rect class="initial-key" x="4.5" y="4.5" width="51" height="59"></rect>
+                  <path class="initial-vine" d="M11,14 C17,23 17,45 11,54 M49,14 C43,23 43,45 49,54"></path>
+                  <circle class="initial-pearl" cx="30" cy="10.5" r="2"></circle>
+                  <circle class="initial-pearl" cx="30" cy="57.5" r="2"></circle>
+                  <!-- raised: a light edge above and left, a shadow below and right -->
+                  <text class="initial-glyph initial-lift" x="29.3" y="49.8">{stanza[0].initial}</text>
+                  <text class="initial-glyph initial-shade" x="30.9" y="51.4">{stanza[0].initial}</text>
+                  <text class="initial-glyph initial-bole" x="30" y="50.5">{stanza[0].initial}</text>
+                  <text class="initial-glyph initial-letter" x="30" y="50.5" clip-path={`url(#gild-${ci})`}>{stanza[0].initial}</text>
+                  <g clip-path={`url(#gild-letter-${ci})`}>
+                    <rect class="initial-sheen" x="-40" y="0" width="22" height="80" transform="skewX(-18)" fill="url(#faith-glint)"></rect>
+                  </g>
+                </svg>
+              )}
+              <div class="lines">
+                {stanza.map((line) => (
+                  <>
+                    <div class="row">
+                      <span class="line" style={`--in:${line.indent}`}>
+                        {line.initial ? (
+                          <><span class="visually-hidden">{line.initial}</span><span class="lead">{line.lead}</span></>
+                        ) : (
+                          line.parts.map((part) =>
+                            part.amen ? (
+                              <span class="amen">
+                                <svg class="amen-cross" viewBox="0 0 120 172" aria-hidden="true">
+                                  <path d={CROSS}></path>
+                                </svg>
+                                {part.run}
+                              </span>
+                            ) : (
+                              part.run
+                            )
+                          )
+                        )}
+                      </span>
+                      {line.verse ? (
+                        <button type="button" class="ref" aria-expanded="false" aria-controls={line.id}>
+                          {line.verse.label}
+                        </button>
+                      ) : (
+                        <span></span>
+                      )}
+                    </div>
+                    {line.verse && (
+                      <blockquote class="verse" id={line.id} hidden>
+                        <p class="verse-ref">{line.verse.label} · King James Version</p>
+                        <p class="verse-text">{line.verse.text}</p>
+                        <a class="verse-link" href={gateway(line.verse.search)} target="_blank" rel="noopener">
+                          Read in context<span aria-hidden="true"> ↗</span>
+                        </a>
+                      </blockquote>
+                    )}
+                  </>
+                ))}
+              </div>
+            </div>
           ))}
         </section>
       ))}
@@ -199,12 +753,39 @@ const STRUCK = 'M60,13 V159 M19,53 H101';
     </div>
 
     <section class="mine" aria-labelledby="my-faith">
-      <p class="eyebrow">III</p>
+      <p class="rubric">III</p>
       <h2 class="creed-title" id="my-faith">My faith</h2>
-      {MY_FAITH.map((para) => <p>{para}</p>)}
-      <p class="motto">{MOTTO}</p>
+      <div class="register-head" aria-hidden="true">
+        <span>Date</span>
+        <span>Entry</span>
+      </div>
+      <ol class="register">
+        {register.map((entry) => (
+          <li>
+            {entry.datetime ? (
+              <time class="register-date" datetime={entry.datetime}>{entry.date}</time>
+            ) : (
+              <span class="register-date">{entry.date}</span>
+            )}
+            <div class="register-entry">
+              {entry.text.map((para) => <p>{para}</p>)}
+            </div>
+          </li>
+        ))}
+      </ol>
+      <p class="motto">
+        {MOTTO}
+        <svg class="motto-cross" viewBox="0 0 120 172" aria-hidden="true"><path d={CROSS}></path></svg>
+      </p>
     </section>
+
+    <aside class="note" aria-labelledby="faith-note">
+      <h2 class="rubric" id="faith-note">A note on the texts</h2>
+      {TEXT_NOTE.map((para) => <p>{para}</p>)}
+      <p class="described">{DESCRIBED}</p>
+    </aside>
   </article>
+  </div>
 </RootLayout>
 
 <style>
@@ -212,18 +793,277 @@ const STRUCK = 'M60,13 V159 M19,53 H101';
     /* the page's own colours; each reads a site token where there is one */
     --ink: var(--color-ink, #2b211a);
     --ink-soft: #5a4a3d;
-    --ink-faint: #7a6a5c;
-    --accent: var(--color-caprock, #9c5b3f);
-    --rule: rgba(156, 91, 63, 0.35);
+    --ink-faint: #6e5e50;
+    /* THE RUBRIC: the red of the old books, and the page's one accent.
+       Oxblood, as the stamp on the home page's Ex Libris leaf. */
+    --rubric: #8c2f24;
+    --rule: rgba(140, 47, 36, 0.32);
     --keyline: #3b2a1c;
     --serif: cormorant-garamond, 'Cormorant Garamond', Garamond, serif;
     --mono: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace);
+    /* the margin beside the creeds, where the references stand */
+    --margin: 6.5rem;
 
-    max-width: 64rem;
-    margin: 0 auto;
+    /* THE SUN, written here by the script from the header's own values;
+       these are the resting values without it (mid-morning, full day):
+         --sun-p    where the glint stands, 1 at the right (the east, in
+                    the morning) to 0 at the left (the west, at evening)
+         --night    0 by day, 1 in full dark
+         --graze    how low and warm the light is, 0 to 1
+         --grazing  the colour of that low light */
+    --sun-p: 0.7;
+    --night: 0;
+    --graze: 0;
+    --grazing: #ffd9a0;
+
+    position: relative;
+    isolation: isolate;
+    min-width: 0;
+    /* THE LEAF: vellum. The skin itself is a baked tile (mottling, a
+       little fibre, the pits of the follicles), so it costs nothing to
+       draw; over it, stains that do not repeat, a pale bloom at the head
+       and edges browned by handling. */
+    --leaf: #efe5cf;
+    background-color: var(--leaf);
+    background-image:
+      radial-gradient(ellipse 34% 22% at 14% 9%, rgba(150, 108, 52, 0.16), transparent 70%),
+      radial-gradient(ellipse 22% 16% at 91% 31%, rgba(140, 96, 44, 0.14), transparent 70%),
+      radial-gradient(ellipse 30% 14% at 30% 58%, rgba(150, 110, 55, 0.10), transparent 70%),
+      radial-gradient(ellipse 18% 12% at 76% 78%, rgba(130, 88, 40, 0.15), transparent 70%),
+      radial-gradient(ellipse 45% 18% at 50% 99%, rgba(150, 108, 52, 0.16), transparent 70%),
+      radial-gradient(ellipse 40% 22% at 58% 3%, rgba(255, 252, 240, 0.45), transparent 70%),
+      url('/images/faith/vellum.webp');
+    background-size: auto, auto, auto, auto, auto, auto, 720px 720px;
+    box-shadow:
+      inset 0 0 70px rgba(140, 98, 44, 0.2),
+      inset 0 0 14px rgba(120, 84, 38, 0.18);
     padding: clamp(2.5rem, 6vw, 4.5rem) clamp(1.25rem, 4vw, 3rem) clamp(3rem, 7vw, 5.5rem);
     color: var(--ink);
     font-family: var(--serif);
+  }
+  /* ── THE NAVE: the gold mosaic the leaf stands in ───────────────
+     Measures: --b the border (white 5, red 12, blue 5), --g the gold of
+     a pillar, --lintel the gold over the leaf, --p a whole pillar. The
+     nave is gold all over (a seamless tile of tesserae); the leaf covers
+     the middle, and the borders, corner blocks and pillars are laid on
+     the gold by position. The nave hangs from the foot of the header,
+     across the space the layout leaves under it: the script measures
+     that space into --leaf-lift (see hangLeaf). */
+  .nave {
+    --b: 22px;
+    --g: 76px;
+    --lintel: 52px;
+    --p: calc(2 * var(--b) + var(--g));
+    position: relative;
+    display: grid;
+    max-width: calc(76rem + 2 * var(--p));
+    margin: calc(-1 * var(--leaf-lift, 0px)) auto clamp(2rem, 5vw, 4rem);
+    padding: calc(2 * var(--b) + var(--lintel)) var(--p) var(--b);
+    background: #c9a23d url('/images/faith/mosaic-gold.webp') 0 0 / 216px 216px;
+    box-shadow:
+      0 1px 2px rgba(43, 33, 26, 0.14),
+      0 12px 32px -14px rgba(43, 33, 26, 0.35);
+  }
+  .nave-gold {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+  }
+  .nave-gold .b,
+  .nave-gold .c {
+    position: absolute;
+  }
+  /* the border runs along x with its white on top, and along y with its
+     white on the left; turned over wherever the white must face the gold */
+  .b--top,
+  .b--bottom,
+  .b--inner-top {
+    height: var(--b);
+    background: url('/images/faith/mosaic-border-h.webp') 0 0 / 20px 22px repeat-x;
+  }
+  .b--outer-left,
+  .b--outer-right,
+  .b--inner-left,
+  .b--inner-right {
+    width: var(--b);
+    background: url('/images/faith/mosaic-border-v.webp') 0 0 / 22px 20px repeat-y;
+  }
+  .b--top { top: 0; left: var(--b); right: var(--b); transform: scaleY(-1); }
+  .b--bottom { bottom: 0; left: var(--b); right: var(--b); }
+  .b--outer-left { left: 0; top: var(--b); bottom: var(--b); transform: scaleX(-1); }
+  .b--outer-right { right: 0; top: var(--b); bottom: var(--b); }
+  .b--inner-top { top: calc(var(--b) + var(--lintel)); left: var(--p); right: var(--p); }
+  .b--inner-left { left: calc(var(--b) + var(--g)); top: calc(2 * var(--b) + var(--lintel)); bottom: var(--b); }
+  .b--inner-right { right: calc(var(--b) + var(--g)); top: calc(2 * var(--b) + var(--lintel)); bottom: var(--b); transform: scaleX(-1); }
+  /* a red block with a gold cross wherever two borders meet */
+  .c {
+    width: var(--b);
+    height: var(--b);
+    background: url('/images/faith/mosaic-corner.webp') 0 0 / 100% 100%;
+  }
+  .c--tl { top: 0; left: 0; }
+  .c--tr { top: 0; right: 0; }
+  .c--bl { bottom: 0; left: 0; }
+  .c--br { bottom: 0; right: 0; }
+  .c--itl { top: calc(var(--b) + var(--lintel)); left: calc(var(--b) + var(--g)); }
+  .c--itr { top: calc(var(--b) + var(--lintel)); right: calc(var(--b) + var(--g)); }
+  .c--ibl { bottom: 0; left: calc(var(--b) + var(--g)); }
+  .c--ibr { bottom: 0; right: calc(var(--b) + var(--g)); }
+  /* THE PILLARS: a vine rising from a chalice at the foot, past the
+     three panels; the right pillar is the left one turned over */
+  .pillar {
+    position: absolute;
+    top: calc(2 * var(--b) + var(--lintel));
+    bottom: var(--b);
+    left: var(--b);
+    width: var(--g);
+    background: url('/images/faith/mosaic-vine.webp') 50% 0 / 76px 140px repeat-y;
+  }
+  .pillar--right {
+    left: auto;
+    right: var(--b);
+    transform: scaleX(-1);
+  }
+  .panel {
+    position: absolute;
+    left: 50%;
+    width: 66px;
+    height: auto;
+    transform: translateX(-50%);
+  }
+  /* set at fixed depths, not fractions of the pillar: a verse opening in
+     the margin lengthens the page, and fractions would slide the panels
+     down with it */
+  .panel--dove { top: 9rem; }
+  .panel--shepherd { top: 40rem; }
+  .panel--fish { top: 72rem; }
+  .panel--chalice {
+    top: auto;
+    bottom: 6px;
+    width: 40px;
+  }
+  /* on a narrower screen the pillars give way to the leaf; the lintel
+     and the borders across the top and foot stay */
+  @media (max-width: 63.99rem) {
+    .nave {
+      --p: 0px;
+    }
+    .b--outer-left,
+    .b--outer-right,
+    .b--inner-left,
+    .b--inner-right,
+    .c--itl,
+    .c--itr,
+    .c--ibl,
+    .c--ibr,
+    .pillar {
+      display: none;
+    }
+  }
+  @media (max-width: 40rem) {
+    .nave {
+      --lintel: 30px;
+    }
+  }
+
+  /* between the head of the page and the creeds: a rubric, Credo
+     ("I believe", the word both creeds open with), between two rules */
+  .divider--credo {
+    max-width: 24rem;
+    margin: 0 auto clamp(2.5rem, 5vw, 3.5rem);
+  }
+  .credo {
+    font-family: var(--serif);
+    font-size: clamp(1.25rem, 2vw, 1.5rem);
+    font-style: italic;
+    letter-spacing: 0.06em;
+    color: var(--rubric);
+  }
+
+  /* the scribe's double margin rules, in red, down both sides */
+  .faith::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: clamp(0.45rem, 2vw, 1.5rem);
+    right: clamp(0.45rem, 2vw, 1.5rem);
+    border-left: 3px double rgba(140, 47, 36, 0.26);
+    border-right: 3px double rgba(140, 47, 36, 0.26);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  /* ── THE WINDOW'S LIGHT ──────────────────────────────────────
+     The glass, laid on the top of the leaf as the sun throws it: placed
+     and leaned by where the sun stands (--sun-p, 1 morning at the right
+     to 0 evening at the left) and lengthened as it gets low (--graze).
+     Behind the words (the page is its own stacking context, so -1 is
+     above the leaf and below the text), faint, and gone at night. It is
+     sized by the leaf's width, so it is never stretched, and on a phone
+     falls over the head of the page. At noon it lies just right of the
+     cross rather than behind it. */
+  .window-light {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1000 / 900;
+    z-index: -1;
+    pointer-events: none;
+    opacity: calc((1 - var(--night)) * var(--glass-strength, 0.36));
+    filter: blur(1.5px);
+    transition: opacity 2s ease;
+  }
+  .glass-light {
+    transform: translate(calc(var(--sun-p) * 470px + 350px), 18px)
+      skewX(calc((var(--sun-p) - 0.5) * -100deg)) scale(1.45, calc(0.72 + 0.82 * var(--graze)));
+    transition: transform 2s ease;
+  }
+  /* THE GLASS. Jewel colours that stay, and the season's own: the field
+     of each lancet, its quarries and its border. */
+  .faith {
+    --g-gold: #f2c43c;
+    --g-white: #fbf4dc;
+    --g-ruby: #c0202c;
+    --g-blue: #1f56c0;
+  }
+  .faith[data-season='green'] {
+    --g-field: #1f8a48; --g-deep: #156237;
+  }
+  .faith[data-season='violet'] {
+    --g-field: #5d34a8; --g-deep: #41237c;
+  }
+  .faith[data-season='white'] {
+    --g-field: #f3e3a2; --g-deep: #e7cd76;
+  }
+  .faith[data-season='red'] {
+    --g-field: #c42a2a; --g-deep: #8e1a1e;
+  }
+  .window-light :global(.g-gold) { fill: var(--g-gold); }
+  .window-light :global(.g-white) { fill: var(--g-white); }
+  .window-light :global(.g-ruby) { fill: var(--g-ruby); }
+  .window-light :global(.g-blue) { fill: var(--g-blue); }
+  .window-light :global(.g-field) { fill: var(--g-field, #1f8a48); }
+  .window-light :global(.g-deep) { fill: var(--g-deep, #156237); opacity: 0.42; }
+  .window-light :global(.g-letter) { font-family: var(--serif); font-size: 22px; font-weight: 500; text-anchor: middle; fill: var(--g-gold); }
+  .window-light :global(.g-lead) { fill: none; stroke: var(--leaf); stroke-width: 1.6; }
+  .window-light :global(.g-lead--fine) { stroke-width: 1; }
+  @media (max-width: 40rem) {
+    .window-light {
+      --glass-strength: 0.28;
+      filter: none;
+    }
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
   }
 
   /* ── the head ─────────────────────────────────────────────── */
@@ -233,21 +1073,67 @@ const STRUCK = 'M60,13 V159 M19,53 H101';
   }
   .cross {
     display: block;
-    width: clamp(6.5rem, 14vw, 8.75rem);
+    /* the cross itself is 120 of the 200 across, so it stands about as
+       large as the plain cross did, in its heaven */
+    width: clamp(10.5rem, 23vw, 14.5rem);
     height: auto;
     margin: 0 auto clamp(1.5rem, 3vw, 2rem);
     overflow: visible;
   }
+  .sky-star {
+    fill: #e2bf62;
+  }
+  /* the sky darkens with the night, under the candle */
+  .sky-night {
+    fill: #070d1c;
+    opacity: calc(var(--night) * 0.42);
+    transition: opacity 2s ease;
+  }
+  .cross-bevel {
+    fill: none;
+    stroke: #fff3c4;
+    stroke-width: 0.8;
+    opacity: 0.7;
+  }
+  .gem {
+    stroke: #8a6a24;
+    stroke-width: 1.1;
+  }
   .cross-body {
-    fill: url(#faith-gilt);
-    stroke: var(--keyline);
+    fill: url(#faith-gold);
+  }
+  .cross-key {
+    fill: none;
+    stroke: #5a3e12;
     stroke-width: 1.3;
     stroke-linejoin: miter;
   }
-  .cross-struck {
-    fill: none;
-    stroke: rgba(59, 42, 28, 0.35);
-    stroke-width: 0.9;
+  /* THE GLINT. A soft band of light, leaning like the light through a
+     window, carried across the gilt by the sun: right in the morning,
+     left at evening. It warms toward the low sun's colour as the sun
+     gets low, and is gone after dark. Where the band crosses the arms
+     it stands at 10 (evening) to 110 (morning) of the drawing's 120;
+     CSS lengths in an SVG transform are the drawing's own units. */
+  .cross-glint {
+    transform: translateX(calc(var(--sun-p) * 100px + 34px)) skewX(-22deg);
+    opacity: calc((1 - var(--night)) * 0.8);
+    transition: transform 2s ease, opacity 2s ease;
+  }
+  .glint-edge {
+    stop-color: color-mix(in srgb, #fffaf0, var(--grazing) calc(var(--graze) * 70%));
+    stop-opacity: 0;
+  }
+  .glint-core {
+    stop-color: color-mix(in srgb, #fffaf0, var(--grazing) calc(var(--graze) * 70%));
+    stop-opacity: 0.9;
+  }
+  /* THE NIGHT. The gilt dims from the head down and a candle's light
+     rises from the foot, in step with the dark: the footer's floodlit
+     cross, indoors. */
+  .cross-night,
+  .cross-candle {
+    opacity: var(--night);
+    transition: opacity 2s ease;
   }
 
   .eyebrow {
@@ -277,31 +1163,198 @@ const STRUCK = 'M60,13 V159 M19,53 H101';
     display: grid;
     grid-template-columns: minmax(0, 1fr);
     gap: clamp(2.5rem, 5vw, 3.5rem);
+    max-width: 44rem;
+    margin: 0 auto;
   }
-  @media (min-width: 52rem) {
+  @media (min-width: 72rem) {
     .creeds {
       grid-template-columns: repeat(2, minmax(0, 1fr));
+      max-width: none;
     }
+  }
+  /* THE RUBRICS, in red: the numeral and the creed's Latin name */
+  .rubric {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rubric);
+    margin: 0;
   }
   .creed-title {
     font-family: var(--serif);
     font-weight: 500;
     font-size: clamp(1.5rem, 2.6vw, 1.85rem);
     line-height: 1.15;
-    margin: 0.25rem 0 1.1rem;
+    margin: 0.3rem 0 1.15rem;
     padding-bottom: 0.55rem;
     border-bottom: 1px solid var(--rule);
   }
-  /* each stanza keeps its line breaks and indents exactly as written */
   .stanza {
-    white-space: pre-wrap;
     font-size: clamp(1.0625rem, 1.5vw, 1.15rem);
     line-height: 1.55;
     margin: 0 0 1.05em;
   }
+  /* THE INITIAL: gilt on a red field, standing beside the first stanza */
+  .stanza--first {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 0.7rem;
+    align-items: start;
+  }
+  .initial {
+    width: 3.35em;
+    height: auto;
+    margin-top: 0.2em;
+  }
+  .initial-field {
+    fill: var(--rubric);
+  }
+  .initial-key {
+    fill: none;
+    stroke: #cdbc90;
+    stroke-width: 1.2;
+  }
+  .initial-vine {
+    fill: none;
+    stroke: #cdbc90;
+    stroke-width: 0.8;
+    opacity: 0.7;
+  }
+  .initial-pearl {
+    fill: #cdbc90;
+  }
+  .initial-glyph {
+    font-family: var(--serif);
+    font-size: 48px;
+    font-weight: 500;
+    text-anchor: middle;
+  }
+  .initial-letter {
+    fill: url(#faith-gilt-fit);
+  }
+  /* raised like leaf on the skin, lit from the upper left */
+  .initial-lift {
+    fill: #fff3d6;
+    opacity: 0.8;
+  }
+  .initial-shade {
+    fill: #3a1a10;
+    opacity: 0.7;
+  }
+  /* the bole: the red clay laid under gold leaf, seen until the gold is
+     laid over it */
+  .initial-bole {
+    fill: #b5523b;
+    stroke: #6e2a1c;
+    stroke-width: 0.4;
+  }
+  .initial-sheen {
+    opacity: 0;
+  }
+  /* the rest of the first line, in small capitals */
+  .lead {
+    font-variant-caps: small-caps;
+    letter-spacing: 0.04em;
+  }
+
+  /* each line is a row: the words, and the margin beside them */
+  .row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--margin);
+    column-gap: 1rem;
+    align-items: baseline;
+  }
+  .line {
+    /* indented as written, and a wrapped line hangs under its start */
+    padding-left: calc(var(--in, 0) * 1.5em + 1.25em);
+    text-indent: -1.25em;
+    white-space: pre-wrap;
+  }
   .amen {
     font-style: italic;
-    color: var(--accent);
+    color: var(--rubric);
+    white-space: nowrap;
+  }
+  .amen-cross {
+    width: 0.5em;
+    height: auto;
+    margin-right: 0.3em;
+    fill: var(--rubric);
+    vertical-align: -0.02em;
+  }
+
+  /* THE MARGIN. A reference opens its verse beneath the line. */
+  .ref {
+    justify-self: start;
+    min-height: 1.5rem;
+    padding: 0;
+    border: 0;
+    background: none;
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.03em;
+    line-height: 1.3;
+    text-align: left;
+    white-space: nowrap;
+    color: var(--ink-faint);
+    text-decoration: underline dotted rgba(110, 94, 80, 0.6);
+    text-underline-offset: 3px;
+    cursor: pointer;
+  }
+  .ref:hover,
+  .ref[aria-expanded='true'] {
+    color: var(--rubric);
+    text-decoration: underline solid var(--rubric);
+  }
+  .ref:focus-visible {
+    outline: 2px solid var(--rubric);
+    outline-offset: 2px;
+    border-radius: 1px;
+  }
+  .verse {
+    margin: 0.35rem calc(var(--margin) + 1rem) 0.8rem 1.25em;
+    max-width: 34rem;
+    padding: 0.6rem 0.9rem 0.7rem;
+    border-left: 2px solid var(--rubric);
+    background: rgba(140, 47, 36, 0.05);
+    font-size: 0.94em;
+    line-height: 1.5;
+  }
+  .verse-ref {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+    margin: 0 0 0.25rem;
+  }
+  .verse-text {
+    font-style: italic;
+    margin: 0 0 0.35rem;
+  }
+  .verse-link {
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.06em;
+    color: var(--rubric);
+    text-underline-offset: 3px;
+  }
+
+  /* on a phone the margin is as wide as each reference, and the
+     references stand against the right edge so they still line up */
+  @media (max-width: 30rem) {
+    .faith {
+      --margin: max-content;
+    }
+    .row {
+      column-gap: 0.6rem;
+    }
+    .ref {
+      justify-self: end;
+    }
+    .verse {
+      margin: 0.35rem 0 0.8rem 1.25em;
+    }
   }
 
   /* ── between the creeds and my own words ──────────────────── */
@@ -321,24 +1374,450 @@ const STRUCK = 'M60,13 V159 M19,53 H101';
   .divider-cross {
     width: 1.1rem;
     height: auto;
-    fill: var(--accent);
+    fill: var(--rubric);
     overflow: visible;
   }
 
-  /* ── my faith ─────────────────────────────────────────────── */
+  /* ── my faith: the register ───────────────────────────────── */
   .mine {
-    max-width: 36rem;
+    max-width: 40rem;
     margin: 0 auto;
   }
-  .mine p:not(.eyebrow) {
+  .register-head,
+  .register li {
+    display: grid;
+    grid-template-columns: 7.5rem minmax(0, 1fr);
+  }
+  .register-head {
+    border-top: 1.5px solid var(--ink);
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .register-head span {
+    padding: 0.45rem 0;
+    border-bottom: 1px solid rgba(43, 33, 26, 0.25);
+  }
+  .register-head span + span,
+  .register-entry {
+    padding-left: 0.9rem;
+    border-left: 1px solid var(--rule);
+  }
+  .register {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid rgba(43, 33, 26, 0.35);
+  }
+  .register li + li {
+    border-top: 1px solid rgba(43, 33, 26, 0.14);
+  }
+  .register-date {
+    padding: 0.7rem 0.75rem 0.7rem 0;
+    font-size: clamp(1.0625rem, 1.6vw, 1.15rem);
+    line-height: 1.5;
+  }
+  .register-entry {
+    padding-top: 0.7rem;
+    padding-bottom: 0.7rem;
+  }
+  .register-entry p {
     font-size: clamp(1.125rem, 1.7vw, 1.25rem);
     line-height: 1.65;
-    margin: 0 0 1em;
+    margin: 0 0 0.85em;
   }
-  .mine .motto {
-    text-align: right;
+  .register-entry p:last-child {
+    margin-bottom: 0;
+  }
+  /* on a phone the date stands over its entry */
+  @media (max-width: 30rem) {
+    .register-head {
+      display: none;
+    }
+    .register {
+      border-top: 1.5px solid var(--ink);
+    }
+    .register li {
+      grid-template-columns: minmax(0, 1fr);
+    }
+    .register-date {
+      padding-bottom: 0;
+      font-family: var(--mono);
+      font-size: 0.6875rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-faint);
+    }
+    .register-entry {
+      padding-left: 0;
+      border-left: 0;
+      padding-top: 0.3rem;
+    }
+  }
+  .motto {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.6rem;
     font-style: italic;
+    font-size: clamp(1.125rem, 1.7vw, 1.25rem);
     color: var(--ink-soft);
-    margin-top: 1.5rem;
+    margin: 1.1rem 0 0;
+  }
+  .motto-cross {
+    width: 0.75rem;
+    height: auto;
+    fill: var(--rubric);
+  }
+
+  /* ── the ribbon ───────────────────────────────────────────── */
+  /* A silk marker hanging from the top of the page, as the ledger's
+     does on the home page, in the colour of the season. The colours are
+     dyed-silk colours rather than flat ones, and white is an ivory silk
+     with an edge, so it still shows on the page. */
+  /* Hung from the top of the leaf, which hangs from the header. */
+  .ribbon {
+    position: absolute;
+    top: 0;
+    right: clamp(1.25rem, 7vw, 6rem);
+    width: clamp(1.35rem, 2.4vw, 1.75rem);
+    outline: none;
+    z-index: 1;
+  }
+  .ribbon[data-colour='violet'] { --silk: #5b3b7a; }
+  .ribbon[data-colour='white'] { --silk: #ece5d3; }
+  .ribbon[data-colour='red'] { --silk: #9a2a22; }
+  .ribbon[data-colour='green'] { --silk: #3d6a3c; }
+  .ribbon svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    filter: drop-shadow(1px 2px 1.5px rgba(43, 33, 26, 0.28));
+  }
+  .ribbon-silk {
+    fill: var(--silk, #3d6a3c);
+  }
+  .ribbon[data-colour='white'] .ribbon-silk {
+    stroke: rgba(43, 33, 26, 0.22);
+    stroke-width: 0.8;
+  }
+  .ribbon-name {
+    position: absolute;
+    top: calc(100% + 0.4rem);
+    right: 0;
+    white-space: nowrap;
+    font-family: var(--mono);
+    font-size: 0.6875rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    opacity: 0;
+    transform: translateY(-0.2rem);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+    pointer-events: none;
+  }
+  .ribbon:hover .ribbon-name,
+  .ribbon:focus-visible .ribbon-name,
+  .ribbon:focus .ribbon-name {
+    opacity: 1;
+    transform: none;
+  }
+  .ribbon:focus-visible svg {
+    outline: 2px solid var(--rubric);
+    outline-offset: 2px;
+  }
+  @media (max-width: 40rem) {
+    .ribbon {
+      right: 1rem;
+      width: 1.15rem;
+    }
+  }
+
+  /* ── a note on the texts ──────────────────────────────────── */
+  .note {
+    max-width: 40rem;
+    margin: clamp(3rem, 7vw, 4.5rem) auto 0;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--rule);
+  }
+  .note .rubric {
+    font-weight: 400;
+    margin-bottom: 0.75rem;
+  }
+  .note p:not(.rubric) {
+    font-size: clamp(1rem, 1.4vw, 1.0625rem);
+    line-height: 1.6;
+    color: var(--ink-soft);
+    margin: 0 0 0.8em;
+  }
+  .note .described {
+    font-style: italic;
+    margin-top: 1.1em;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .cross-glint,
+    .cross-night,
+    .cross-candle,
+    .ribbon-name,
+    .window-light,
+    .glass-light {
+      transition: none;
+    }
+  }
+
+  /* ── IN PRINT ─────────────────────────────────────────────────
+     The creeds alone, in black and red on white, as a prayer card: no
+     header or footer, no ribbon, the cross plain gilt with no light on
+     it, the references kept as plain text and the verses left out, and
+     each creed on its own page. */
+  @media print {
+    :global(#horizon-header),
+    :global(.caprock) {
+      display: none !important;
+    }
+    :global(body) {
+      background: #fff !important;
+    }
+    .faith {
+      --ink: #000;
+      --ink-soft: #222;
+      --ink-faint: #444;
+      max-width: none;
+      padding: 0;
+      font-size: 11.5pt;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+    .faith {
+      background: none;
+      box-shadow: none;
+    }
+    .nave {
+      display: block;
+      max-width: none;
+      margin: 0;
+      padding: 0;
+      background: none;
+      box-shadow: none;
+    }
+    .nave-gold {
+      display: none !important;
+    }
+    /* the gold laid, whether or not it has scrolled into view yet */
+    .initial-letter {
+      clip-path: none;
+    }
+    .faith::before,
+    .window-light,
+    .ribbon,
+    .cross-glint,
+    .cross-night,
+    .cross-candle,
+    .verse,
+    .divider {
+      display: none !important;
+    }
+    .cross {
+      width: 0.7in;
+      margin-bottom: 0.12in;
+    }
+    .faith-head {
+      margin-bottom: 0.2in;
+    }
+    /* the Amen stays on the page with the creed it closes */
+    .creed .stanza:last-child {
+      break-before: avoid;
+    }
+    /* a block, not a grid, in print: a page break inside a grid can
+       leave a blank page before it */
+    .creeds {
+      display: block;
+      max-width: none;
+    }
+    .stanza {
+      font-size: 12pt;
+    }
+    .register-entry p,
+    .register-date {
+      font-size: 12pt;
+    }
+    .note p:not(.rubric) {
+      font-size: 10.5pt;
+    }
+    .creed + .creed,
+    .mine {
+      break-before: page;
+    }
+    .stanza,
+    .register li,
+    .note p {
+      break-inside: avoid;
+    }
+    .creed-title {
+      break-after: avoid;
+    }
+    .ref {
+      text-decoration: none;
+      color: #555;
+    }
+  }
+  @page {
+    margin: 0.75in;
   }
 </style>
+
+<script>
+  import { seasonOn } from '../data/church-year';
+
+  /* THE RIBBON: today's season, in the visitor's own calendar. The
+     header's ?debugTime= override, used to stage the site's clock, moves
+     it too. */
+  function markSeason(page: HTMLElement) {
+    const ribbon = page.querySelector<HTMLElement>('.ribbon');
+    if (!ribbon) return;
+    const staged = new URLSearchParams(location.search).get('debugTime');
+    const when = staged && !Number.isNaN(Date.parse(staged)) ? new Date(staged) : new Date();
+    const season = seasonOn(when);
+    ribbon.dataset.colour = season.colour;
+    page.dataset.season = season.colour; // the window's glass
+    ribbon.setAttribute('aria-label', `The season of the church year: ${season.name}`);
+    const name = ribbon.querySelector('.ribbon-name');
+    if (name) name.textContent = season.name;
+  }
+
+  /* THE MARGIN: a reference opens and closes its verse. */
+  function openVerses(page: HTMLElement) {
+    page.querySelectorAll<HTMLButtonElement>('button.ref').forEach((button) => {
+      button.addEventListener('click', () => {
+        const verse = document.getElementById(button.getAttribute('aria-controls') ?? '');
+        if (!verse) return;
+        const open = button.getAttribute('aria-expanded') !== 'true';
+        button.setAttribute('aria-expanded', String(open));
+        verse.hidden = !open;
+      });
+    });
+  }
+
+  /* THE SUN, read off the header as the footer reads it: how dark it is,
+     how low and what colour the light is, and where the sun stands. The
+     header writes these on itself, and again each minute with the sky,
+     so it is watched. The site looks north, so the morning sun (azimuth
+     90, the east) is at the right and the evening sun at the left. */
+  let sunWatch: MutationObserver | null = null;
+  function followSun(page: HTMLElement) {
+    sunWatch?.disconnect();
+    sunWatch = null;
+    const header = document.getElementById('horizon-header');
+    if (!header) return;
+    const read = () => {
+      const get = (name: string) => header.style.getPropertyValue(name).trim();
+      const night = parseFloat(get('--night'));
+      const graze = parseFloat(get('--grazing-light'));
+      const azimuth = parseFloat(get('--sun-azimuth-deg'));
+      const colour = get('--grazing-color');
+      if (Number.isFinite(night)) page.style.setProperty('--night', night.toFixed(3));
+      if (Number.isFinite(graze)) page.style.setProperty('--graze', graze.toFixed(3));
+      if (colour) page.style.setProperty('--grazing', colour);
+      if (Number.isFinite(azimuth)) {
+        const p = Math.min(1, Math.max(0, (270 - azimuth) / 180));
+        page.style.setProperty('--sun-p', p.toFixed(3));
+      }
+    };
+    read();
+    sunWatch = new MutationObserver(read);
+    sunWatch.observe(header, { attributes: true, attributeFilter: ['style'] });
+  }
+
+  /* THE LEAF'S HANG: lifted by the space the layout leaves between the
+     header's foot and the page, so the vellum (and the ribbon on it)
+     starts where the header ends. The lift already applied is added back
+     before measuring, so the measure does not chase itself. Measured
+     again whenever the page or the header changes size. */
+  let hangWatch: ResizeObserver | null = null;
+  function hangLeaf(page: HTMLElement) {
+    hangWatch?.disconnect();
+    hangWatch = null;
+    const header = document.getElementById('horizon-header');
+    if (!header) return;
+    // the gold nave the leaf stands in, which is what hangs
+    const nave = page.closest<HTMLElement>('.nave') ?? page;
+    const hang = () => {
+      const applied = parseFloat(nave.style.getPropertyValue('--leaf-lift')) || 0;
+      const gap = nave.getBoundingClientRect().top - header.getBoundingClientRect().bottom + applied;
+      const lift = `${Math.max(0, gap).toFixed(1)}px`;
+      if (nave.style.getPropertyValue('--leaf-lift') !== lift) nave.style.setProperty('--leaf-lift', lift);
+    };
+    hang();
+    if ('ResizeObserver' in window) {
+      hangWatch = new ResizeObserver(hang);
+      hangWatch.observe(document.documentElement);
+      hangWatch.observe(header);
+    }
+  }
+
+  /* THE GILDING. Each creed's initial is gilded the first time it comes
+     well into view: the gold is laid across the red bole in a second and
+     a half, then catches the light once. Not again on this visit. With
+     reduced motion, or no IntersectionObserver, the gold is simply there. */
+  let gildWatch: IntersectionObserver | null = null;
+  function layGold(initial: SVGSVGElement) {
+    const reach = initial.querySelector<SVGRectElement>('.gild-reach');
+    const sheen = initial.querySelector<SVGRectElement>('.initial-sheen');
+    if (!reach) return;
+    const start = performance.now() + 250;
+    const LAY = 1500;
+    const SHINE = 700;
+    const frame = (now: number) => {
+      const t = (now - start) / LAY;
+      if (t < 0) return requestAnimationFrame(frame);
+      const eased = t >= 1 ? 1 : 1 - Math.pow(1 - t, 3);
+      reach.setAttribute('width', (eased * 110).toFixed(1));
+      if (t < 1) return requestAnimationFrame(frame);
+      const u = (now - start - LAY) / SHINE;
+      if (sheen && u < 1) {
+        sheen.style.opacity = Math.sin(Math.PI * u).toFixed(2);
+        sheen.setAttribute('x', (-40 + u * 95).toFixed(1));
+        return requestAnimationFrame(frame);
+      }
+      if (sheen) sheen.style.opacity = '0';
+    };
+    requestAnimationFrame(frame);
+  }
+  function gildInitials(page: HTMLElement) {
+    gildWatch?.disconnect();
+    gildWatch = null;
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!('IntersectionObserver' in window)) return;
+    const initials = page.querySelectorAll<SVGSVGElement>('svg.initial');
+    initials.forEach((initial) => initial.querySelector('.gild-reach')?.setAttribute('width', '0'));
+    gildWatch = new IntersectionObserver(
+      (entries, watch) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          watch.unobserve(entry.target);
+          layGold(entry.target as SVGSVGElement);
+        });
+      },
+      { threshold: 0.9 }
+    );
+    initials.forEach((initial) => gildWatch!.observe(initial));
+  }
+
+  function initFaith() {
+    const page = document.querySelector<HTMLElement>('.faith');
+    if (!page || page.dataset.ready) return;
+    page.dataset.ready = 'true';
+    markSeason(page);
+    hangLeaf(page);
+    gildInitials(page);
+    openVerses(page);
+    followSun(page);
+  }
+
+  initFaith();
+  // again after client-side navigation, when the page is a new element
+  document.addEventListener('astro:page-load', initFaith);
+</script>
