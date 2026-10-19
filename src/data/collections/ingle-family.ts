@@ -62,7 +62,7 @@ export const COLLECTION: Collection = {
           region: { face: 'recto', x: 58.8, y: 20.7, w: 21.5, h: 19 },
           },
           {
-          as: 'Gladys Ingle',
+          person: 'patterson-mary-gladys-ingle',
           confidence: 'certain',
           basis:
             'Identified on verso',

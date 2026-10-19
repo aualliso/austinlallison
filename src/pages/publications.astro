@@ -13,6 +13,12 @@
 //    (or ?light=dawn, noon, dusk, fullmoon, newmoon) previews another hour.
 //    Phones keep a plain table.
 //
+//    THE WATER. Every named stream, draw, canyon, lake, reservoir, spring
+//    and fall on the land, from the USGS place-names register
+//    (public/ground/water.json, drawn by src/lib/water.ts). Point at one and
+//    it is drawn in a fine line and named; "View the land" draws the larger
+//    ones faintly and names them where the names fit.
+//
 // 1. THE TABLE. Every publication as a card, dealt at random across one
 //    screen - the room left under the site header - and sized by rank: the
 //    three peer-reviewed articles largest, Authentic Texas next, Caprock
@@ -289,6 +295,7 @@ const sequence = [...PUBLICATIONS].sort((a, b) => dateKey(b.citation) - dateKey(
 <script>
   import { scatter, type CardSpec, type Scatter } from '../lib/scatter';
   import { Ground, lightAt, makeView, moonAt, moonFraction, sunAt, type Light, type View } from '../lib/ground';
+  import { Water, type Box } from '../lib/water';
 
   const narrow = window.matchMedia('(max-width: 900px)');
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -394,6 +401,9 @@ const sequence = [...PUBLICATIONS].sort((a, b) => dateKey(b.citation) - dateKey(
     s.setProperty('--sa', alpha.toFixed(2));
     s.setProperty('--sc', col);
     table.dataset.light = light.phase === 'day' ? 'day' : light.ambientI > 0.4 ? 'dusk' : 'night';
+    // lettering on the land: dark ink on the sunlit plain, pale once it goes
+    // dark (the same rule as the land's own name in ground.ts)
+    table.dataset.ink = light.phase !== 'day' || light.altitude < (12 * Math.PI) / 180 ? 'pale' : 'dark';
   };
 
   const paintGround = async () => {
@@ -406,6 +416,26 @@ const sequence = [...PUBLICATIONS].sort((a, b) => dateKey(b.citation) - dateKey(
     // always reaches the window's sides - never stretched past the edge of
     // the elevation data, which would leave a bare strip.
     await ground.render(makeView(table.clientWidth, table.clientHeight, 0.004), light);
+    layWater();
+  };
+
+  /* ---- the water on the land: named on hover (src/lib/water.ts) ---- */
+  const WATER_URL = '/ground/water.json?v=gnis-559';
+  let water: Water | null = null;
+  /** Lays the water over the land as drawn now, keeping its names off the
+      page's title and the land's own name. */
+  const layWater = () => {
+    const table = document.querySelector<HTMLElement>('.pc-table');
+    const label = document.querySelector<HTMLElement>('.pc-label');
+    if (!table || !water || !water.ready || narrow.matches) return;
+    const tr = table.getBoundingClientRect();
+    const fixed: Box[] = [];
+    if (label) {
+      const r = label.getBoundingClientRect();
+      fixed.push({ x0: r.left - tr.left - 10, y0: r.top - tr.top - 10, x1: r.right - tr.left + 10, y1: r.bottom - tr.top + 10 });
+    }
+    if (ground?.nameBox) fixed.push(ground.nameBox);
+    water.layout(makeView(table.clientWidth, table.clientHeight, 0.004), fixed);
   };
 
   /* ---- the table: deal the cards ---- */
@@ -518,6 +548,7 @@ const sequence = [...PUBLICATIONS].sort((a, b) => dateKey(b.citation) - dateKey(
     });
     window.setTimeout(() => cards.forEach((c) => (c.style.transitionDelay = '')), cards.length * 18 + 600);
     table.classList.toggle('pc-bare', bare);
+    water?.setAll(bare);
     btn.setAttribute('aria-pressed', String(bare));
     btn.querySelector('[data-pc-view-text]')!.textContent = bare ? 'Show the publications' : 'View the land';
   };
@@ -902,8 +933,21 @@ const sequence = [...PUBLICATIONS].sort((a, b) => dateKey(b.citation) - dateKey(
       if (canvas && !canvas.dataset.bound) {
         canvas.dataset.bound = '1';
         ground = new Ground(canvas);
+        water = null;
         readLightParam();
         landIn = ground.load().then(() => paintGround()).then(() => canvas.classList.add('is-in')).catch(() => undefined);
+        // the water comes once the land is up (desktop only)
+        const table = canvas.closest<HTMLElement>('.pc-table');
+        if (table && !narrow.matches) {
+          landIn.then(() => {
+            const w = new Water(table);
+            return w.load(WATER_URL).then(() => {
+              water = w;
+              layWater();
+              if (table.classList.contains('pc-bare')) w.setAll(true);
+            });
+          }).catch(() => undefined);
+        }
         window.setInterval(() => { if (!lightAt_) paintGround(); }, 10 * 60 * 1000);
       }
       if (entering) {
@@ -1019,7 +1063,8 @@ const sequence = [...PUBLICATIONS].sort((a, b) => dateKey(b.citation) - dateKey(
     --title-glow: 0 1px 0 rgb(255 250 240 / .65), 0 0 14px rgb(250 240 220 / .95), 0 0 28px rgb(250 240 220 / .7);
   }
   .pc-table[data-light="dusk"] .pc-label,
-  .pc-table[data-light="night"] .pc-label {
+  .pc-table[data-light="night"] .pc-label,
+  .pc-table[data-ink="pale"] .pc-label {
     --title-ink: #f1eadc;
     --title-glow: 0 1px 2px rgb(0 0 0 / .55), 0 0 16px rgb(0 0 0 / .55);
   }
@@ -1057,6 +1102,31 @@ const sequence = [...PUBLICATIONS].sort((a, b) => dateKey(b.citation) - dateKey(
   .pc-view svg { fill: none; stroke: currentColor; stroke-width: 1.4; overflow: visible; filter: none; }
   .pc-view svg circle { fill: currentColor; stroke: none; }
   .pc-view[aria-pressed="true"] svg circle { fill: none; stroke: currentColor; }
+
+  /* THE WATER, named on hover (src/lib/water.ts): a fine slate-blue line,
+     italic names as on a map, in pale ink once the land goes dark. Between
+     the land and the cards; it never takes the pointer itself. */
+  .pc-water { position: absolute; left: 0; top: 0; overflow: visible; pointer-events: none; }
+  .pc-water .wf { opacity: 0; transition: opacity 220ms ease; }
+  .pc-water .wf.is-faint { opacity: .5; }
+  .pc-water .wf.is-on { opacity: 1; }
+  .pc-water .wf-halo { fill: none; stroke: rgb(250 246 236 / .4); stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+  .pc-water .wf-ink { fill: none; stroke: #36627d; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+  .pc-water .wf-t1 .wf-ink { stroke-width: 1.9; }
+  .pc-water .wf-t3 .wf-ink { stroke-width: 1.1; }
+  .pc-water .wf-a .wf-ink { fill: rgb(86 138 168 / .38); stroke-width: 1.1; }
+  .pc-water .wf-a .wf-halo { fill: none; }
+  .pc-water .wf-p .wf-ink { fill: rgb(86 138 168 / .75); stroke-width: 1; }
+  .pc-water .wf-s .wf-ink, .pc-water .wf-f .wf-ink { fill: rgb(250 246 236 / .9); stroke-width: 1.3; }
+  .pc-water .wf-name { font-family: var(--serif); font-style: italic; font-size: 14px; letter-spacing: .03em; fill: #2a4f66; paint-order: stroke; stroke: rgb(250 246 236 / .8); stroke-width: 3px; stroke-linejoin: round; }
+  .pc-water .wf-name-1 { font-size: 15px; }
+  .pc-water .wf-name-3 { font-size: 13px; }
+  .pc-table[data-ink="pale"] .pc-water .wf-halo { stroke: rgb(20 16 12 / .26); }
+  .pc-table[data-ink="pale"] .pc-water .wf-ink { stroke: #a9cbe0; }
+  .pc-table[data-ink="pale"] .pc-water .wf-a .wf-ink { fill: rgb(150 190 215 / .3); }
+  .pc-table[data-ink="pale"] .pc-water .wf-p .wf-ink { fill: rgb(169 203 224 / .8); }
+  .pc-table[data-ink="pale"] .pc-water .wf-s .wf-ink, .pc-table[data-ink="pale"] .pc-water .wf-f .wf-ink { fill: rgb(20 16 12 / .5); }
+  .pc-table[data-ink="pale"] .pc-water .wf-name { fill: #e8f1f6; stroke: rgb(20 16 12 / .42); stroke-width: 2.6px; }
 
   /* the entrance: cards wait above the land, then are laid down on it */
   .pc-felt.pc-hold .pc-card {
@@ -1249,13 +1319,13 @@ const sequence = [...PUBLICATIONS].sort((a, b) => dateKey(b.citation) - dateKey(
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .pc-card, .pc-felt[data-dealt] .pc-card, .pc-card-img img, .pc-title a, .pc-ground, .pc-btn { transition: none; }
+    .pc-card, .pc-felt[data-dealt] .pc-card, .pc-card-img img, .pc-title a, .pc-ground, .pc-btn, .pc-water .wf { transition: none; }
   }
 
   /* ================= phones and small tablets ================= */
   @media (max-width: 900px) {
     .pc-table { min-height: 0; padding: 18px 16px 26px; }
-    .pc-land { display: none; }
+    .pc-land, .pc-water { display: none; }
     .pc-felt { height: auto !important; display: grid; grid-template-columns: 1fr 1fr; gap: 14px; align-items: start; }
     .pc-label { position: static; width: auto; grid-column: 1 / -1; }
     .pc-label-h1 { font-size: 44px; }

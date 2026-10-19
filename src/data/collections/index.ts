@@ -1837,6 +1837,11 @@ export const livingNamedInPublic = (): { person: string; where: string; found: s
  * exact life dates. It can be right - a post-mortem portrait, a copy of an
  * older photograph - so the build carries on; but it is far more often a
  * mistyped year or a wrong identification, and worth a second look.
+ *
+ * "After they died" applies only to PICTURES of someone. A person who is
+ * NAMED in a document (an obituary, a news clipping, a letter, a probate
+ * record) can be named long after their death, so `mentions` never trigger
+ * that warning. "Before they were born" still applies to both.
  * ------------------------------------------------------------------ */
 {
   const year = (v?: string) => (v && /^\d{3,4}$/.test(v.trim()) ? Number(v) : undefined);
@@ -1852,7 +1857,7 @@ export const livingNamedInPublic = (): { person: string; where: string; found: s
       if (born !== undefined && s.to < born) {
         console.warn(`[collections] ${a.item.slug}: dated ${s.from}-${s.to}, before ${p.id} was born (${born}).`);
       }
-      if (died !== undefined && s.from > died) {
+      if (!a.named && died !== undefined && s.from > died) {
         console.warn(`[collections] ${a.item.slug}: dated ${s.from}-${s.to}, after ${p.id} died (${died}).`);
       }
     }

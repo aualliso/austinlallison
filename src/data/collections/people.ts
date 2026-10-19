@@ -2602,15 +2602,40 @@ export const PEOPLE: Person[] = [
       'Ollie Blanche Ingle Allison Grizzle lived from 1892 to 1976. She married Oscar Simmon Allison in 1911. He died in 1920 and she remarried Wiley Grizzle in 1923.',
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
-    identifiers: { findagrave: '132669875' },
+    identifiers: { findagrave: '132669875', familysearch: 'L67W-J12' },
     sources: [
       'Find a Grave memorial 132669875.',
     ],
     relations: [
+      { type: 'parent', person: 'ingle-james', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'ingle-minnie-joan-coleman', basis: 'Established relationship', confidence: 'certain' },
       { type: 'spouse', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'allison-oscar-ingle', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'patterson-mary-gladys-ingle',
+    authorized: 'Patterson, Mary Gladys Ingle',
+    surname: 'Patterson',
+    given: 'Mary Gladys Ingle',
+    birth: '1895',
+    death: '1982',
+    variants: ['Gladys Ingle', 'Mary Ingle', 'Mary Patterson', 'Gladys Patterson', 'Ingle, Mary Gladys'],
+    status: 'established',
+    scopeNote:
+      'Mary Gladys Ingle Patterson was the second child of James and Minnie Ingle.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: { familysearch: 'L6QW-49H' },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'parent', person: 'ingle-james', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'ingle-minnie-joan-coleman', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -2631,6 +2656,7 @@ export const PEOPLE: Person[] = [
     relations: [
       { type: 'spouse', person: 'ingle-james', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'patterson-mary-gladys-ingle', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -2651,6 +2677,7 @@ export const PEOPLE: Person[] = [
     relations: [
       { type: 'spouse', person: 'ingle-minnie-joan-coleman', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'patterson-mary-gladys-ingle', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -2700,6 +2727,8 @@ export const PEOPLE: Person[] = [
       { type: 'child', person: 'allison-james-oscar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'allison-winston-irvin', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'bainbridge-sherry-lynn-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-larry-dale', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-robert-carroll', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'allison-oscar-simmon', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
@@ -2732,6 +2761,8 @@ export const PEOPLE: Person[] = [
       { type: 'child', person: 'allison-james-oscar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'allison-winston-irvin', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'bainbridge-sherry-lynn-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-larry-dale', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-robert-carroll', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -2753,6 +2784,8 @@ export const PEOPLE: Person[] = [
       { type: 'parent', person: 'allison-lanora-ethel-wells', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-winston-irvin', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'bainbridge-sherry-lynn-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-larry-dale', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-robert-carroll', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -2775,6 +2808,8 @@ export const PEOPLE: Person[] = [
       { type: 'parent', person: 'allison-lanora-ethel-wells', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-james-oscar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'bainbridge-sherry-lynn-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-larry-dale', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-robert-carroll', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -2797,6 +2832,54 @@ export const PEOPLE: Person[] = [
       { type: 'parent', person: 'allison-lanora-ethel-wells', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-james-oscar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-winston-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-larry-dale', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-robert-carroll', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-larry-dale',
+    authorized: 'Allison, Larry Dale',
+    surname: 'Allison',
+    given: 'Larry Dale',
+    birth: '1945',
+    variants: ['Larry Allison', 'Larry Dale Allison'],
+    status: 'established',
+    scopeNote:
+      'Larry Dale Allison was born in 1945',
+    identifiers: {  },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-lanora-ethel-wells', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-james-oscar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-winston-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'bainbridge-sherry-lynn-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-robert-carroll', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-robert-carroll',
+    authorized: 'Allison, Robert Carroll',
+    surname: 'Allison',
+    given: 'Robert Carroll',
+    birth: '1950',
+    variants: ['Robert Allison', 'Bobby Allison'],
+    status: 'established',
+    scopeNote:
+      'Bobby Allison was born in 1950',
+    identifiers: {  },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'parent', person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-lanora-ethel-wells', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-james-oscar', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-winston-irvin', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'bainbridge-sherry-lynn-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-larry-dale', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {

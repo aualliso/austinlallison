@@ -527,7 +527,7 @@ export const COLLECTION: Collection = {
         { location: 'verso',
           medium: 'ink',
           text: 'Sam McKinstry',
-          hand: 'Austin Allison',
+          hand: '',
         },
       ],
       depicts: [
@@ -7195,7 +7195,7 @@ export const COLLECTION: Collection = {
       date: {
         display: '1943',
         basis: [
-          'A date of 1943 is assigned on the verso. Nothing here objects to it. Austin Allison has a postcard sent from Frank Lajdziak to Jean McKinstry in 1943, so this date is consistent with that.',
+          'A date of 1943 is assigned on the verso. Nothing here objects to it. This website\'s creator has a postcard sent from Frank Lajdziak to Jean McKinstry in 1943, so this date is consistent with that.',
         ],
         confidence: 'certain',
       },
@@ -7333,6 +7333,74 @@ export const COLLECTION: Collection = {
       ],
       mentions: [
         {person: 'allison-veta-jean-mckinstry', basis: 'mentioned in text', confidence: 'certain'}
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-jean-junior-valentine-1',
+      title: '[Valentine\'s Day card from Jean McKinstry to Wiley Grizzle, Jr.]',
+      controlNumber: 'h.1.1',
+      titleSource: 'supplied',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1930-1935]',
+        basis: [
+          'This date is assumed',
+        ],
+        confidence: 'probable',
+      },
+      format: 'letter',
+      recto: { file: 'mckinstry-jean-junior-valentine-1-recto.jpg' },
+      verso: { file: 'mckinstry-jean-junior-valentine-1-verso.jpg'},
+      description: 'An undated Valentine\'s Day card from Jean McKinstry to Wiley Grizzle, Jr.',
+      related: [
+
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        
+      ],
+      mentions: [
+        {person: 'allison-veta-jean-mckinstry', basis: 'mentioned in text', confidence: 'certain'},
+        {person: 'grizzle-wiley-jr', basis: 'mentioned in text', confidence: 'certain'}
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-jean-junior-valentine-2',
+      title: '[Valentine\'s Day card from Jean McKinstry to Wiley Grizzle, Jr.]',
+      controlNumber: 'h.1.16.2',
+      titleSource: 'supplied',
+      place: 'Hagerman, New Mexico',
+      date: {
+        display: '[1930-1935]',
+        basis: [
+          'This date is assumed',
+        ],
+        confidence: 'probable',
+      },
+      format: 'letter',
+      recto: { file: 'mckinstry-jean-junior-valentine-2-recto.jpg' },
+      verso: { file: 'mckinstry-jean-junior-valentine-2-verso.jpg'},
+      description: 'An undated Valentine\'s Day card from Jean McKinstry to Wiley Grizzle, Jr.',
+      related: [
+        
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        
+      ],
+      mentions: [
+        {person: 'allison-veta-jean-mckinstry', basis: 'mentioned in text', confidence: 'certain'},
+        {person: 'grizzle-wiley-jr', basis: 'mentioned in text', confidence: 'certain'}
       ],
       rights: {
         status: 'public-domain',
@@ -8612,7 +8680,7 @@ export const COLLECTION: Collection = {
       mentions: [
       ],
       // TODO: how the volume reached you, if different from the collection's.
-      provenance: 'This photograph album was in the collection of Jean Allison before it was passed on to her grandson, Austin Allison.',
+      provenance: 'This photograph album was in the collection of Jean Allison before it was passed on to her grandson.',
     },
   ],
 };

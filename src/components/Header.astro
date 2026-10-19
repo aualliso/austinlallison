@@ -56,7 +56,7 @@
 //      grazing-light color shift. Orion's Belt and the Big Dipper are in
 //      the catalog as real stars, not a special-cased overlay — when
 //      they're actually up and well-placed, an attentive repeat visitor
-//      might notice the shape, same spirit as the crane marker below; no
+//      might notice the shape; no
 //      extra code path needed for that. Rendered as small circular divs
 //      with a fixed pixel diameter rather than SVG circles in a stretched
 //      viewBox, so they stay round regardless of the header's actual
@@ -91,10 +91,9 @@
 //      color/flatten, which is a function of elevation alone), and now
 //      eases with a lingering hold right at the horizon rather than a
 //      straight linear fade — see grazing-light easing note below.
-//   7. A SEASONAL MARKER — a small sandhill-crane flock silhouette appears
-//      only during the real fall migration window through the Llano
-//      Estacado (mid-Oct-mid-Dec). Static, not animated; a detail for a
-//      repeat visitor, invisible the rest of the year.
+//   7. (Removed 2026-10-15.) A sandhill-crane flock used to appear during
+//      the fall migration window (mid-Oct to mid-Dec). Cut because it
+//      didn't read as intended.
 //   8. REAL SOLAR AZIMUTH (2026-08-05) — the sun moves HORIZONTALLY across
 //      the header as well as vertically. Until then `#sun-wrap` was pinned
 //      at `left: calc(50% - 6px)` and only its `bottom` varied, so the sun
@@ -866,48 +865,6 @@ const isDev = import.meta.env.DEV;
       </svg>
       <div id="horizon-sun"></div>
     </div>
-
-    <!-- A SEASONAL MARKER — sandhill cranes, fall migration only.
-         Static silhouette; visibility toggled by real calendar date.
-         2026-08-02 rework: each bird is now a shallow curved gull-wing
-         (quadratic Bézier, not two straight line segments meeting in a
-         sharp point) plus a short extended neck and trailing legs — the
-         actual silhouette cue that reads as "crane in flight" rather than
-         a generic bird or, per feedback, "a bottomless triangle." Each of
-         the 4 birds is scaled/placed slightly differently so the flock
-         doesn't read as one glyph stamped four times. Spread widened the
-         same day at his request — a loose, irregular scatter reads more
-         like a real migrating flock than a tight cluster. Widening this
-         pushes its right edge closer to the windmill on narrow phones
-         (the ORIGINAL width already slightly overlapped it there too —
-         see the narrow-viewport rule under #crane-flock in the stylesheet
-         for the fix covering both). -->
-    <svg
-      id="crane-flock"
-      aria-hidden="true"
-      class="absolute pointer-events-none"
-      width="60" height="18" viewBox="0 0 60 18"
-      style="display:none"
-    >
-      <g stroke="currentColor" fill="none" stroke-linecap="round" opacity="0.5">
-        <g transform="translate(0,4) scale(0.9)">
-          <path d="M0,5 Q3,0 6,3.2 Q9,0 12,5" stroke-width="1" />
-          <path d="M6,3.2 L8.3,4.6 M6,3.2 L3.4,5.2" stroke-width="0.6" opacity="0.8" />
-        </g>
-        <g transform="translate(16,8) scale(0.75)">
-          <path d="M0,5 Q3,0 6,3.2 Q9,0 12,5" stroke-width="1" />
-          <path d="M6,3.2 L8.3,4.6 M6,3.2 L3.4,5.2" stroke-width="0.6" opacity="0.8" />
-        </g>
-        <g transform="translate(30,1) scale(1.1)">
-          <path d="M0,5 Q3,0 6,3.2 Q9,0 12,5" stroke-width="1" />
-          <path d="M6,3.2 L8.3,4.6 M6,3.2 L3.4,5.2" stroke-width="0.6" opacity="0.8" />
-        </g>
-        <g transform="translate(45,9) scale(0.65)">
-          <path d="M0,5 Q3,0 6,3.2 Q9,0 12,5" stroke-width="1" />
-          <path d="M6,3.2 L8.3,4.6 M6,3.2 L3.4,5.2" stroke-width="0.6" opacity="0.8" />
-        </g>
-      </g>
-    </svg>
 
     <!-- THE WINDMILL - one object in the middle distance, feet on the line.
          Painted AFTER #sun-wrap in DOM order, which is what lets the sun
@@ -3131,24 +3088,6 @@ const isDev = import.meta.env.DEV;
     }
   };
 
-  /* ---- seasonal marker: fall sandhill-crane migration --------------------
-     Real window (roughly mid-Oct through mid-Dec) through the Llano
-     Estacado. Static silhouette, visibility only — no motion added. */
-  function inFallMigrationWindow(date: Date) {
-    const month = date.getMonth();
-    const day = date.getDate();
-    if (month === 9 && day >= 15) return true;  // Oct 15–31
-    if (month === 10) return true;              // Nov
-    if (month === 11 && day <= 15) return true; // Dec 1–15
-    return false;
-  }
-
-  const applySeasonalMarker = () => {
-    const flock = document.getElementById('crane-flock') as HTMLElement | null;
-    if (!flock) return;
-    flock.style.display = inFallMigrationWindow(getNow()) ? '' : 'none';
-  };
-
   /* ---- per-page geography ----------------------------------------------- */
   let horizonSvg = document.getElementById('the-horizon');   // rebind() re-points it
   const silhouettes = horizonSvg?.dataset.silhouettes
@@ -3524,7 +3463,6 @@ const isDev = import.meta.env.DEV;
   applyPhase();
   applyMoon();
   applyStars();
-  applySeasonalMarker();
   refreshActive();
   initMenu();         // must follow refreshActive: it reads the active row's label
   bindMenu();         // ONCE, and only here — see the note on bindMenu above
@@ -3599,7 +3537,6 @@ const isDev = import.meta.env.DEV;
     applyPhase();
     applyMoon();
     applyStars();
-    applySeasonalMarker();
     refreshActive();
     /* Was setMenu(false), on the assumption that the header — and so the
        panel — always persists across the swap and only needs closing. A
@@ -4348,27 +4285,6 @@ const isDev = import.meta.env.DEV;
     background: #FFFFFF;
     transform: translate(-50%, 50%);
     pointer-events: none;
-  }
-
-  #crane-flock {
-    left: 30%;
-    bottom: 30%;
-    color: var(--color-iron, #1A1919);
-  }
-
-  /* On narrow phones, 30% left + the flock's own width already sits closer
-     to the windmill (at 38% left) than is comfortable — true even before
-     this spread was widened. Shifting left and scaling down keeps a real
-     gap on the widths that actually matter. 820px (not a smaller phone-only
-     breakpoint) because the overlap persists up to about there — a
-     narrower cutoff left a real gap unfixed between roughly 600-800px
-     (small tablets, laptops in a narrower window). */
-  @media (max-width: 820px) {
-    #crane-flock {
-      left: 20%;
-      transform: scale(0.72);
-      transform-origin: left bottom;
-    }
   }
 
   /* Sits at a fixed 38%, which used to be simply "left of the sun." Now
@@ -5265,8 +5181,7 @@ const isDev = import.meta.env.DEV;
   html[data-arrived] #horizon-menu-btn,
   html[data-arrived] #sun-wrap,
   html[data-arrived] #night-sky,
-  html[data-arrived] #windmill,
-  html[data-arrived] #crane-flock {
+  html[data-arrived] #windmill {
     animation: none;
   }
   /* ======================================================================== */
@@ -5326,10 +5241,6 @@ const isDev = import.meta.env.DEV;
 
   #windmill {
     animation: rise-in 0.6s cubic-bezier(0.25, 1, 0.5, 1) 0.9s both;
-  }
-
-  #crane-flock {
-    animation: fade-in 1.2s ease-out 1.3s both;
   }
 
   /* ======================================================================== */
@@ -5398,7 +5309,7 @@ const isDev = import.meta.env.DEV;
     #horizon-header, #sky-base, #sun-wrap, #horizon-sun,
     #sun-rays, #sun-bloom, #horizon-rim-light, #haze-warm-overlay, #belt-of-venus,
     #windmill-head, #windmill-tail, #windmill-hub, #windmill-sail-plane,
-    #night-sky, #horizon-moon, .star-point, #windmill, #windmill-rotor, #crane-flock,
+    #night-sky, #horizon-moon, .star-point, #windmill, #windmill-rotor,
     #horizon-haze, #the-horizon, .horizon-path, .horizon-ground, .far-plane,
     .signature-img, .landmark-name, .landmark, .station-plate, .station-meta,
     .marker, .marker-label, .marker-tick, .elev-shell, .elev-divs, .elevator,

@@ -1,0 +1,674 @@
+---
+// src/components/HomePage.astro
+// Everything on the home page. src/pages/index.astro shows it with the photo panels; src/pages/preview.astro
+// shows the same page with the arrowhead photograph opening, so the two can be compared side by side.
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PlainsHero from './PlainsHero.astro';
+
+interface Props {
+  /** 'panels' = the three photo panels (the live home page); 'plains' = the arrowhead photograph with the title behind it */
+  hero?: 'panels' | 'plains';
+  /** true on the preview page: kept out of search engines */
+  preview?: boolean;
+}
+const { hero = 'panels', preview = false } = Astro.props;
+import arrows from '../data/arrows.json';
+import plainstrailcounties from '../data/plainstrailcounties.json';
+import { photo } from '../lib/arrowImages';
+
+// ---- Data handed to the map script (public/js/overview-map-init.js) ----
+// The map only reads a handful of fields, so only those are sent. County outlines are
+// rounded to 4 decimal places (about 10 m), which is invisible on this map but much smaller.
+const round = (n: number) => Math.round(n * 1e4) / 1e4;
+const roundCoords = (c: any): any =>
+  Array.isArray(c) ? (typeof c[0] === 'number' ? c.map(round) : c.map(roundCoords)) : c;
+
+const countyFeatures = ((plainstrailcounties as any)?.features ?? []).map((f: any) => ({
+  type: 'Feature',
+  properties: {
+    name: f.properties?.name,
+    namelsad: f.properties?.namelsad,
+    description: f.properties?.description,
+  },
+  geometry:
+    f.geometry && f.geometry.coordinates
+      ? { type: f.geometry.type, coordinates: roundCoords(f.geometry.coordinates) }
+      : f.geometry,
+}));
+
+const mapArrows = arrows.map((a) => ({
+  arrowNumber: a.arrowNumber,
+  arrowName: a.arrowName,
+  countyName: a.countyName,
+  location: a.location,
+  address: a.address,
+  dateInstalled: a.dateInstalled,
+  dateDedicated: a.dateDedicated,
+  markerText: a.markerText,
+  lat: a.lat,
+  lon: a.lon,
+}));
+
+// JSON inside an inline <script>: escape "<" so text like "</script>" can never end the tag early.
+const toScriptJson = (v: unknown) => JSON.stringify(v ?? []).replace(/</g, '\\u003c');
+const countyFeaturesJson = toScriptJson(countyFeatures);
+const arrowDataJson = toScriptJson(mapArrows);
+
+// ---- Numbers shown on the page ----
+const arrowCount = arrows.length;      // updates itself as arrows are added to arrows.json
+// Counted from the data, so it updates itself when an arrow goes up in a new county
+const participatingCounties = new Set(
+  arrows.map((a) => String(a.countyName ?? '').replace(/\bcounty\b/i, '').trim().toLowerCase()).filter(Boolean),
+).size;
+
+// ---- Arrow of the day ----
+// Only arrows with a photo can be featured. The page picks one per calendar day in the visitor's browser,
+// so the card changes daily without rebuilding the site. The first one is written into the page for
+// visitors without JavaScript.
+const trimText = (t: unknown, max = 230) => {
+  const s = String(t ?? '').replace(/\s+/g, ' ').trim();
+  if (s.length < 20) return '';
+  if (s.length <= max) return s;
+  return s.slice(0, max).replace(/\s+\S*$/, '') + '…';
+};
+const spotlightPool = (
+  await Promise.all(
+    arrows
+      .filter((a: any) => a.mainImage)
+      .sort((a: any, b: any) => Number(a.arrowNumber) - Number(b.arrowNumber))
+      .map(async (a: any) => {
+        const img = await photo(a.mainImage, [480, 800]);
+        return {
+          n: Number(a.arrowNumber),
+          name: String(a.arrowName ?? '').trim() || 'Quanah Parker Trail Arrow',
+          county: String(a.countyName ?? '').trim(),
+          where: String(a.location ?? '').trim(),
+          text: trimText(a.markerText),
+          src: img.src,
+          srcset: img.srcset ?? '',
+        };
+      }),
+  )
+);
+const spotlightFirst = spotlightPool[0];
+
+// ---- Plan a drive: starting points ----
+// One choice per arrow, sorted by town. Towns with more than one arrow get the arrow number added.
+const nameCount: Record<string, number> = {};
+arrows.forEach((a: any) => { const k = String(a.arrowName ?? '').trim(); nameCount[k] = (nameCount[k] || 0) + 1; });
+const tripStarts = arrows
+  .filter((a: any) => Number.isFinite(parseFloat(a.lat)) && Number.isFinite(parseFloat(a.lon)))
+  .map((a: any) => {
+    const name = String(a.arrowName ?? '').trim();
+    const county = String(a.countyName ?? '').trim();
+    const label = `${name}${nameCount[name] > 1 ? ` (Arrow ${a.arrowNumber})` : ''}${county ? ` — ${county} County` : ''}`;
+    return { n: Number(a.arrowNumber), label };
+  })
+  .sort((a, b) => a.label.localeCompare(b.label));
+const spotlightJson = toScriptJson(spotlightPool);
+
+// ---- Quanah Parker Day ----
+// Set to true once the text below is written and the button points to a real page.
+const showQuanahParkerDay = false;
+---
+<BaseLayout
+    title="Quanah Parker Trail - Arrow Markers Across the Texas Plains"
+    noindex={preview}
+    bodyClass={preview ? 'page-home' : ''}
+    jsonLd={{
+        '@context': 'https://schema.org',
+        '@type': 'WebSite',
+        name: 'Quanah Parker Trail',
+        url: 'https://quanahparkertrail.com/',
+    }}
+>
+    <!-- Decides before the page paints whether the map pins and grows as the visitor scrolls.
+         Visitors who ask for reduced motion get the plain map instead. -->
+    <script is:inline>
+        (function () {
+            var r = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            if (!r && window.CSS && CSS.supports('position', 'sticky')) document.documentElement.classList.add('qpt-scrolly');
+        })();
+    </script>
+
+    {hero === 'plains' && <PlainsHero arrowCount={arrowCount} countyCount={participatingCounties} />}
+
+    <!-- Photo panels opening. data-hero tells the header which element is the opening. -->
+    {hero === 'panels' && (
+    <div class="panel-container" data-hero>
+        <!-- Title, one line on what the trail is, and the two things most visitors come for -->
+        <div class="hero-intro">
+            <h1 class="main-title">Quanah Parker Trail</h1>
+            <p class="hero-tagline">{arrowCount} giant steel arrows mark places tied to Quanah Parker and the Comanche people across the Texas Plains.</p>
+            <p class="hero-actions">
+                <a class="hero-btn hero-btn--primary" href="#trip">Plan a drive</a>
+                <a class="hero-btn" href="/?near#map-section" data-near-me>Find arrows near me</a>
+            </p>
+        </div>
+        <a href="/story.html" class="image-panel">
+            <img alt="Historical scenes and landscapes of the Comancheria">
+            <noscript><img class="ns-img" src="/img/theme_story/story1.jpg" alt="Historical scenes and landscapes of the Comancheria"></noscript>
+            <span class="panel-text">The Story</span>
+        </a>
+        <a href="/arrows.html" class="image-panel">
+            <img alt="22-foot steel Quanah Parker Trail arrow monument">
+            <noscript><img class="ns-img" src="/img/theme_arrows/arrows1.jpg" alt="22-foot steel Quanah Parker Trail arrow monument"></noscript>
+            <span class="panel-text">The Arrows</span>
+        </a>
+        <a href="/people.html#people-section" class="image-panel">
+            <img alt="Quanah Parker, the Comanche Nation, and trail founders">
+            <noscript><img class="ns-img" src="/img/theme_people/people1.jpg" alt="Quanah Parker, the Comanche Nation, and trail founders"></noscript>
+            <span class="panel-text">The People</span>
+        </a>
+        <a class="scroll-hint" href="#map-section">
+            <span>Scroll to explore the trail</span>
+            <span class="arrow" aria-hidden="true">↓</span>
+        </a>
+    </div>
+    )}
+
+    <section id="map-section">
+        <h2>Map of the Quanah Parker Trail Arrows</h2>
+        <p>Explore the locations of arrow markers across the 52-county Texas Plains Trail Region. Scroll to watch the trail grow, arrow by arrow, in the order the arrows were raised. Click on a county to see that county's arrows. Click on an arrow to view information about that arrow and follow the links to learn more.</p>
+        <p class="btn-row">
+            <a class="button" href="/list/">Browse the full list</a>
+            <a class="button" href="/map.html">Open the full map</a>
+        </p>
+        <!-- With JavaScript and motion allowed, .scrolly is a tall track and .scrolly-stage stays pinned
+             while the visitor scrolls through it; trail-growth.js adds arrows as the track passes.
+             Otherwise it is just the map. -->
+        <div class="scrolly" id="scrolly">
+            <div class="scrolly-stage">
+                <div id="overview-map"></div>
+                <div class="hud" id="scrolly-hud" aria-hidden="true" hidden>
+                    <p class="hud-count"><strong id="hud-count">0</strong><span id="hud-of"> of {arrowCount} arrows</span></p>
+                    <p class="hud-date" id="hud-date"></p>
+                    <p class="hud-counties" id="hud-counties"></p>
+                    <span class="hud-bar"><i id="hud-bar"></i></span>
+                    <p class="hud-hint" id="hud-hint">Keep scrolling</p>
+                </div>
+            </div>
+        </div>
+        <p class="sr-only">As you scroll past the map, arrows appear on it in the order they were installed. The controls below the map do the same thing, and the list page has every arrow in text form.</p>
+
+        <!-- Revealed by trail-growth.js once the map is ready; hidden if JavaScript is off -->
+        <div class="trail-tools" id="trail-tools" hidden>
+            <div class="growth">
+                <button type="button" class="button" id="growth-play" aria-pressed="false">Watch the trail grow</button>
+                <input type="range" id="growth-range" min="0" max="1" value="1" aria-label="Arrows in the order they were installed">
+                <output id="growth-label" role="status" aria-live="polite"></output>
+            </div>
+            <div class="near">
+                <button type="button" class="button" id="near-btn">Find arrows near me</button>
+                <p id="near-msg" role="status"></p>
+            </div>
+        </div>
+        <ol id="near-list" class="nearby" aria-label="Arrows closest to you" hidden></ol>
+    </section>
+
+    <section class="trip" id="trip" aria-labelledby="trip-h">
+        <div class="wrap">
+            <h2 id="trip-h">Plan a drive</h2>
+            <p class="trip-lede">Pick a starting point and how much time you have, and we'll put together a route through as many arrows as fit, ready to open in Google Maps.</p>
+
+            <!-- Revealed by trip-planner.js; the planner needs JavaScript -->
+            <form class="trip-form" id="trip-form" hidden>
+                <div class="trip-field trip-start">
+                    <label for="trip-from">Start from</label>
+                    <div class="trip-start-row">
+                        <select id="trip-from" name="from">
+                            <option value="">Choose a town…</option>
+                            {tripStarts.map((t) => <option value={t.n}>{t.label}</option>)}
+                        </select>
+                        <button type="button" class="link-btn" id="trip-locate">or use my location</button>
+                    </div>
+                </div>
+                <fieldset class="trip-field trip-time">
+                    <legend>How much time do you have?</legend>
+                    <div class="trip-chips">
+                        <label><input type="radio" name="trip-time" value="few"><span>A few hours</span></label>
+                        <label><input type="radio" name="trip-time" value="day" checked><span>A full day</span></label>
+                        <label><input type="radio" name="trip-time" value="weekend"><span>A weekend</span></label>
+                    </div>
+                </fieldset>
+                <div class="trip-field trip-go">
+                    <label class="trip-check"><input type="checkbox" id="trip-loop" checked> End where I started</label>
+                    <button type="submit" class="button">Plan my drive</button>
+                </div>
+            </form>
+            <noscript><p class="trip-lede">The planner needs JavaScript. You can still <a href="/list/">browse every arrow by county</a> or <a href="/map.html">open the full map</a>.</p></noscript>
+
+            <p class="trip-msg" id="trip-msg" role="status" aria-live="polite"></p>
+            <div class="trip-result" id="trip-result" hidden></div>
+        </div>
+    </section>
+
+    {spotlightFirst && (
+        <section class="spotlight" id="spotlight" aria-labelledby="spotlight-h">
+            <div class="wrap">
+                <h2 id="spotlight-h">Arrow of the day</h2>
+                <article class="spot-card">
+                    <a class="spot-photo" id="spot-photo" href={`/arrows/${spotlightFirst.n}.html`} tabindex="-1" aria-hidden="true">
+                        <img id="spot-img" src={spotlightFirst.src} srcset={spotlightFirst.srcset || undefined} sizes="(max-width: 760px) 92vw, 480px" alt="" loading="lazy" decoding="async">
+                    </a>
+                    <div class="spot-body">
+                        <p class="spot-kicker" id="spot-kicker">Arrow {spotlightFirst.n}{spotlightFirst.county ? ` · ${spotlightFirst.county} County` : ''}</p>
+                        <h3 id="spot-name">{spotlightFirst.name}</h3>
+                        <p class="spot-where" id="spot-where">{spotlightFirst.where}</p>
+                        <p class="spot-text" id="spot-text">{spotlightFirst.text}</p>
+                        <p class="btn-row">
+                            <a class="button" id="spot-link" href={`/arrows/${spotlightFirst.n}.html`}>Visit this arrow<span class="sr-only" id="spot-link-sr">: {spotlightFirst.name}</span></a>
+                        </p>
+                    </div>
+                </article>
+            </div>
+        </section>
+    )}
+
+    <section class="about" id="about">
+        <div class="wrap">
+            <h2>About the Quanah Parker Trail</h2>
+
+            <div class="facts" aria-label="The trail at a glance">
+                <div class="fact"><strong data-count={participatingCounties}>{participatingCounties}</strong><span>Participating counties</span></div>
+                <div class="fact"><strong data-count={arrowCount}>{arrowCount}</strong><span>Arrows in the directory</span></div>
+                <div class="fact"><strong>22 ft</strong><span>Typical arrow height</span></div>
+            </div>
+
+            <div class="copy">
+                <p>
+                    The Quanah Parker Trail is a heritage tourism initiative established in 2010 to map the history of the Native American presence in the Texas Panhandle and South Plains. Covering {participatingCounties} counties of the 52-county <a href="https://texastimetravel.com/regions/plains-trail/" target="_blank" rel="noopener">Texas Plains Trail Region</a>, the project does not follow a single linear route; rather, it connects specific landmarks, museums, and historical sites to mark the region historically known as the Comancheria. This area is recognized as the "Last Frontier" in the 48 contiguous United States where the Comanche people roamed freely before the reservation era.
+                </p>
+                <p>
+                    The trail is dedicated to the legacy of the Comanche people and Quanah Parker, the last Chief of the Quahadi Comanche. The son of Comanche leader Peta Nocona and Anglo captive Cynthia Ann Parker, Quanah Parker is a central figure in Texas history who transitioned from a warrior defending his territory to a statesman, rancher, and diplomat. The trail highlights authenticated locations associated with his life, ranging from sites of military conflicts, such as the Red River War, to communities he visited peacefully in the early 20th century to hunt or conduct business.
+                </p>
+                <p>
+                    The defining features of the trail are the giant steel arrows installed in participating counties. Sculpted by New Home, Texas, artist and cotton farmer Charles A. Smith, these monuments stand approximately 22 feet tall. Most arrows are accompanied by a granite marker explaining why that arrow was placed at that location. <a href="/arrows.html">See how the arrows are built and raised.</a>
+                </p>
+                <p>
+                    The Quanah Parker Trail represents a collaborative effort between regional historians, the Comanche Nation, and the Parker family. Descendants of the chief and other members of the Comanche Nation have been integral to the installation process, frequently attending dedication ceremonies to perform traditional cedar smoke blessings. The project aims to foster cultural exchange and education, serving as a permanent physical reminder of the region's indigenous history.
+                </p>
+            </div>
+
+            <p class="btn-row">
+                <a class="button" href="/story.html">Read the story</a>
+                <a class="button" href="/arrows.html">The Arrows</a>
+                <a class="button" href="/people.html#people-section">The People</a>
+            </p>
+        </div>
+    </section>
+
+    {showQuanahParkerDay && (
+        <section id="qp-day-section" class="qpday">
+            <div class="wrap">
+                <h2>Quanah Parker Day 2026</h2>
+                <div class="copy">
+                    <p>
+                        Quanah Parker Day Text1
+                    </p>
+                    <p>
+                        Quanah Parker Day Text2
+                    </p>
+                </div>
+                <p class="btn-row">
+                    <a href="/" class="button navigation-button">More Information</a>
+                </p>
+            </div>
+        </section>
+    )}
+
+    <!-- Space above the site footer, which is positioned absolutely -->
+    <div class="end-space"></div>
+
+    <div id="map-tooltip"></div>
+
+    <!-- Pass data to global window scope for overview-map-init.js -->
+    <script is:inline set:html={`
+        const allCountyFeatures = ${countyFeaturesJson};
+        const allArrowData = ${arrowDataJson};
+        const baseCountyPageUrl = "/";
+        const baseArrowDetailPageUrl = "/arrows/";
+        const ELEVENTY_IMG_ARROW_URL = "/img/arrow-logo.png";
+        const ELEVENTY_IMG_ARROW_SHADOW_URL = "/img/arrow-logo-shadow.png";
+        const qptSpotlight = ${spotlightJson};
+    `} />
+
+    {hero === 'panels' && <script is:inline src="/js/rotate-themed-images.js"></script>}
+    <script is:inline src="/js/map-interactivity.js"></script>
+    <script is:inline src="/js/overview-map-init.js"></script>
+    <script is:inline src="/js/trail-growth.js"></script>
+    <script is:inline src="/js/home-extras.js"></script>
+    <script is:inline src="/js/trip-planner.js"></script>
+</BaseLayout>
+
+<style>
+    /* Fixes the little jump when the header appears.
+       style.css adds a header-height of padding to the whole page at the moment the header fades in, which
+       shoves everything down 90px mid-scroll. The header is fixed, so the page doesn't need that padding.
+       Instead the map section always starts with enough room at its top to sit clear of the header. */
+    :global(html body.page-home.header-visible) { padding-block-start: 0; }
+    #map-section { padding-top: 110px; }
+
+    /* ================= Hero: photos first ================= */
+    .panel-container .image-panel {
+        background: #2a2118;
+    }
+    /* ---- Title block ---- */
+    .hero-intro {
+        position: absolute; z-index: var(--z-floating-ui); inset-block-start: 46px; inset-inline: 0;
+        display: flex; flex-direction: column; align-items: center; gap: 0.9rem;
+        padding-inline: 20px; text-align: center; pointer-events: none; /* the panels underneath stay clickable */
+    }
+    .hero-intro > * { pointer-events: auto; }
+    /* style.css positions .main-title on its own; inside this block it just sits in line */
+    .hero-intro .main-title { position: static; transform: none; inline-size: auto; margin: 0; line-height: 1.05; }
+    .hero-tagline {
+        max-inline-size: 28rem; margin: 0; padding: 0.55rem 1.1rem; border-radius: 10px;
+        font-family: 'Montserrat', 'Inter', sans-serif; font-size: clamp(0.95rem, 0.6vw + 0.75rem, 1.15rem); font-weight: 600; line-height: 1.5;
+        color: var(--color-text-main); background: rgb(255 255 255 / 0.84); backdrop-filter: blur(6px);
+        box-shadow: 0 4px 14px rgb(0 0 0 / 0.15); text-wrap: balance;
+    }
+    .hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.6rem; margin: 0; }
+    .hero-btn {
+        display: inline-block; padding: 0.7rem 1.25rem; border-radius: 999px;
+        font-family: 'Montserrat', 'Inter', sans-serif; font-size: 0.95rem; font-weight: 700; text-decoration: none;
+        color: var(--color-primary); background: rgb(255 255 255 / 0.92); border: 2px solid var(--color-primary);
+        box-shadow: 0 4px 14px rgb(0 0 0 / 0.18); transition: background-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .hero-btn:hover { background: var(--color-bg-tan); transform: translateY(-1px); }
+    .hero-btn--primary { color: #fff; background: var(--color-primary); }
+    .hero-btn--primary:hover { color: #fff; background: #8c1c1c; }
+    .hero-btn:focus-visible { outline: 3px solid var(--color-accent-gold); outline-offset: 3px; }
+
+    /* ---- A soft dark fade at the foot of each photo, so the gold labels read on any picture ---- */
+    .panel-container .image-panel::after {
+        content: ''; position: absolute; inset: auto 0 0 0; block-size: 48%; pointer-events: none; z-index: 1;
+        background: linear-gradient(to bottom, rgb(0 0 0 / 0), rgb(0 0 0 / 0.62));
+    }
+    .panel-container .image-panel :global(.panel-text) { z-index: 2; }
+
+    /* ---- Scroll cue: bigger, and readable over any photo ---- */
+    .panel-container .scroll-hint {
+        z-index: 3; gap: 0.15rem; padding: 0.55rem 1.1rem 0.4rem; border-radius: 999px;
+        font-family: 'Montserrat', 'Inter', sans-serif; font-size: 0.95rem; font-weight: 700; letter-spacing: 0.02em;
+        color: #fff; text-decoration: none; text-shadow: none; opacity: 1;
+        background: rgb(0 0 0 / 0.45); backdrop-filter: blur(6px);
+    }
+    .panel-container .scroll-hint .arrow { font-size: 1.4rem; line-height: 1; }
+    .panel-container .scroll-hint:hover { background: rgb(0 0 0 / 0.6); }
+    .panel-container .scroll-hint:focus-visible { outline: 3px solid var(--color-accent-gold); outline-offset: 3px; }
+
+    @media (max-width: 868px) {
+        .hero-intro { inset-block-start: 110px; }
+        /* the panel labels move to the bottom corner here, where the cue would cover the middle one */
+        .panel-container .scroll-hint { display: none; }
+    }
+    /* Phones: panels stack, so the title block sits above them on the page instead of over a photo */
+    @media (max-width: 768px) {
+        .hero-intro { position: static; order: -1; padding: 0 6px 0.5rem; gap: 0.75rem; }
+        .hero-tagline { padding: 0; background: none; box-shadow: none; backdrop-filter: none; }
+        .panel-container .scroll-hint { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) { .hero-btn { transition: none; } .hero-btn:hover { transform: none; } }
+
+    /* Before a photo is chosen the empty image stays out of the way; with JavaScript off the plain photo in <noscript> shows instead */
+    .image-panel img:not([src]) { display: none; }
+    .image-panel .ns-img { display: block; }
+
+    /* The photos drift slower than the page as it scrolls away, and the hint fades. Browsers without scroll-driven animation skip this. */
+    @supports (animation-timeline: scroll()) {
+        @media (prefers-reduced-motion: no-preference) {
+            .panel-container .image-panel img {
+                scale: 1.14;
+                animation: heroDrift linear both;
+                animation-timeline: scroll(root block);
+                animation-range: 0 100vh;
+            }
+            .scroll-hint { animation: heroHint linear both; animation-timeline: scroll(root block); animation-range: 0 22vh; }
+        }
+        @keyframes heroDrift { to { translate: 0 9vh; } }
+        @keyframes heroHint { to { opacity: 0; } }
+    }
+
+    /* ================= Map that grows as you scroll ================= */
+    .scrolly-stage { position: relative; inline-size: 97%; max-inline-size: 1400px; margin-inline: auto; }
+    .scrolly-stage :global(#overview-map) { inline-size: 100%; max-inline-size: none; margin: 10px 0; }
+
+    /* A pinned page needs the body not to be its own scroller (style.css sets overflow on it, which would stop sticky working) */
+    :global(html.qpt-scrolly body) { overflow: visible; }
+
+    :global(html.qpt-scrolly) .scrolly { block-size: 380vh; }
+    :global(html.qpt-scrolly) .scrolly-stage {
+        position: sticky;
+        inset-block-start: var(--header-height, 90px);
+        block-size: calc(100vh - var(--header-height, 90px));
+        block-size: calc(100dvh - var(--header-height, 90px));
+        isolation: isolate;
+    }
+    :global(html.qpt-scrolly) .scrolly-stage :global(#overview-map) { block-size: calc(100% - 20px); border-radius: 12px; }
+    /* The pin hides these two behind the stage's own scrolling, so the jump targets are the track instead */
+    :global(html.qpt-scrolly) #overview-map { scroll-margin-top: 0; }
+
+    .hud { display: none; }
+    :global(html.qpt-scrolly) .hud:not([hidden]) {
+        display: block; position: absolute; z-index: 1000; inset-block-end: 34px; inset-inline-start: 16px;
+        inline-size: min(300px, calc(100% - 32px)); padding: 0.9rem 1.1rem 1rem; text-align: start; pointer-events: none;
+        font-family: 'Montserrat', 'Inter', sans-serif; color: var(--color-text-main);
+        background: rgb(255 255 255 / 0.92); backdrop-filter: blur(6px);
+        border-radius: 12px; border-inline-start: 4px solid var(--color-primary);
+        box-shadow: 0 6px 20px rgb(0 0 0 / 0.18);
+    }
+    .hud p { margin: 0; }
+    .hud-count { display: flex; align-items: baseline; gap: 0.45rem; }
+    .hud-count strong { font-size: 3rem; line-height: 1; font-weight: 800; color: var(--color-primary); font-variant-numeric: tabular-nums; min-inline-size: 2ch; }
+    .hud-count span { font-size: 0.85rem; font-weight: 600; }
+    .hud-date { margin-block-start: 0.35rem !important; font-size: 1rem; font-weight: 700; }
+    .hud-counties { margin-block-start: 0.15rem !important; font-size: 0.8rem; color: #5d6b75; }
+    .hud-bar { display: block; block-size: 5px; margin-block-start: 0.7rem; border-radius: 3px; background: #e4dccb; overflow: hidden; }
+    .hud-bar i { display: block; block-size: 100%; inline-size: 0; background: var(--color-primary); }
+    .hud-hint { margin-block-start: 0.6rem !important; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--color-tptr); }
+    /* On a mouse, scrolling over the map just scrolls the page, so the "use ctrl + scroll" reminder is left out */
+    @media (hover: hover) { :global(html.qpt-scrolly .leaflet-gesture-handling-scroll-warning:after) { opacity: 0 !important; } }
+
+    @media (max-width: 700px) {
+        :global(html.qpt-scrolly) .scrolly { block-size: 320vh; }
+        :global(html.qpt-scrolly) .hud:not([hidden]) { inline-size: min(210px, calc(100% - 20px)); padding: 0.55rem 0.8rem 0.65rem; inset-block-end: 40px; inset-inline-start: 10px; }
+        .hud-count strong { font-size: 2rem; }
+        .hud-counties, .hud-hint { display: none; }
+    }
+
+    /* ================= Plan a drive ================= */
+    .trip { scroll-margin-top: 90px; }
+    .trip-lede { max-width: 760px; margin: 0 0 1.25rem; font-size: 1.04rem; line-height: 1.7; }
+    .trip-form[hidden] { display: none; }
+    .trip-form {
+        display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1.3fr) auto; gap: 1.25rem 1.75rem; align-items: end;
+        padding: 1.3rem 1.5rem; background: var(--tan); border-radius: 14px; border-top: 3px solid var(--red);
+    }
+    .trip-field { margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: 0.45rem; }
+    .trip-field > label:not(.trip-check), .trip-field legend { padding: 0; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-soft); }
+    .trip-field legend { margin-bottom: 0.45rem; }
+    .trip-start-row { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.9rem; }
+    .trip-start select {
+        flex: 1 1 220px; min-width: 0; padding: 0.6rem 0.75rem; font: inherit; font-size: 0.95rem; color: var(--ink);
+        background: #fff; border: 1px solid #cfc5b0; border-radius: 8px;
+    }
+    .trip-start select:focus-visible { outline: 2px solid var(--red); outline-offset: 2px; }
+    .link-btn, .trip :global(.link-btn) {
+        padding: 0; font: inherit; font-size: 0.9rem; font-weight: 600; color: var(--blue); background: none; border: 0;
+        text-decoration: underline; text-underline-offset: 3px; cursor: pointer;
+    }
+    .link-btn:hover, .trip :global(.link-btn:hover) { color: var(--red); }
+    .link-btn:focus-visible, .trip :global(.link-btn:focus-visible) { outline: 2px solid var(--red); outline-offset: 3px; border-radius: 3px; }
+    .link-btn[disabled] { opacity: 0.6; cursor: wait; }
+
+    .trip-chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+    .trip-chips label { position: relative; cursor: pointer; }
+    .trip-chips input { position: absolute; opacity: 0; inset: 0; margin: 0; cursor: pointer; }
+    .trip-chips span {
+        display: inline-block; padding: 0.55rem 0.95rem; font-size: 0.9rem; font-weight: 600; color: var(--ink);
+        background: #fff; border: 1px solid #cfc5b0; border-radius: 999px; transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+    }
+    .trip-chips input:checked + span { color: #fff; background: var(--blue); border-color: var(--blue); }
+    .trip-chips input:focus-visible + span { outline: 2px solid var(--red); outline-offset: 2px; }
+    .trip-chips label:hover input:not(:checked) + span { border-color: var(--blue); }
+
+    .trip-go { align-items: flex-start; }
+    .trip-check { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+    .trip-check input { inline-size: 1.05rem; block-size: 1.05rem; accent-color: var(--blue); margin: 0; }
+
+    .trip-msg { margin: 1rem 0 0; font-size: 1rem; font-weight: 600; color: var(--ink); }
+    .trip-msg:empty { display: none; }
+
+    .trip-result[hidden] { display: none; }
+    .trip-result { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); gap: 1.5rem; margin-top: 1.1rem; align-items: start; }
+    .trip :global(.trip-map) {
+        position: sticky; top: calc(var(--header-height, 90px) + 1rem);
+        block-size: min(560px, 70vh); border-radius: 12px; overflow: hidden; border: 1px solid #ddd5c4; z-index: 0;
+    }
+    .trip :global(.trip-day + .trip-day) { margin-top: 1.5rem; }
+    .trip :global(.trip-day-h) { margin: 0 0 0.6rem; font-size: 1.15rem; }
+    .trip :global(.trip-day-h span) { font-size: 0.9rem; font-weight: 600; color: var(--ink-soft); }
+    .trip :global(.trip-stops) { list-style: none; margin: 0; padding: 0; }
+    .trip :global(.trip-stop) { position: relative; display: flex; gap: 0.85rem; padding: 0 0 1rem; }
+    /* the line joining the stops */
+    .trip :global(.trip-stop:not(:last-child))::before {
+        content: ''; position: absolute; inset-block: 30px 0; inset-inline-start: 13px; border-inline-start: 2px dashed #cfc5b0;
+    }
+    .trip :global(.trip-num) {
+        flex: none; display: grid; place-items: center; inline-size: 28px; block-size: 28px; border-radius: 50%;
+        font-size: 0.8rem; font-weight: 800; color: #fff; background: var(--red);
+    }
+    .trip :global(.trip-num.is-start) { background: var(--blue); }
+    .trip :global(.trip-body) { display: flex; flex-direction: column; gap: 0.15rem; min-width: 0; padding-top: 0.2rem; }
+    .trip :global(.trip-body strong) { font-size: 0.98rem; line-height: 1.35; }
+    .trip :global(.trip-body strong a) { color: var(--ink); text-decoration: none; }
+    .trip :global(.trip-body strong a:hover) { color: var(--red); text-decoration: underline; }
+    .trip :global(.trip-meta) { font-size: 0.84rem; color: var(--ink-soft); }
+    .trip :global(.trip-leg) { order: -1; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: var(--blue); }
+    .trip :global(.trip-actions) { display: flex; flex-wrap: wrap; gap: 0.6rem; margin: 0.3rem 0 0; }
+    .trip :global(.trip-note) { margin: 0.4rem 0 0.6rem; font-size: 0.85rem; color: var(--ink-soft); }
+    .trip :global(.trip-tools) { display: flex; flex-wrap: wrap; gap: 1.25rem; margin: 1.4rem 0 0; }
+    .trip :global(.trip-fine) { margin: 0.9rem 0 0; font-size: 0.8rem; line-height: 1.6; color: var(--ink-soft); }
+
+    /* Numbered pins on the trip map */
+    :global(.trip-pin) { background: none; border: 0; }
+    :global(.trip-pin span) {
+        display: grid; place-items: center; inline-size: 28px; block-size: 28px; border-radius: 50%;
+        font: 800 0.8rem/1 'Montserrat', sans-serif; color: #fff; background: #A92323; border: 2px solid #fff;
+        box-shadow: 0 2px 6px rgb(0 0 0 / 0.35);
+    }
+    :global(.trip-pin.is-start span) { background: #004E89; }
+
+    @media (max-width: 900px) {
+        .trip-form { grid-template-columns: 1fr; }
+        .trip-result { grid-template-columns: 1fr; }
+        .trip :global(.trip-map) { position: relative; top: 0; block-size: 340px; }
+    }
+
+    /* Printing a drive: just the plan */
+    @media print {
+        :global(body.page-home) :global(.panel-container),
+        :global(body.page-home) #map-section, :global(body.page-home) .spotlight, :global(body.page-home) .about,
+        :global(body.page-home) .trip-form, :global(body.page-home) .trip :global(.trip-tools),
+        :global(body.page-home) .trip :global(.trip-actions), :global(body.page-home) .trip :global(.trip-map),
+        :global(.site-main-header), :global(.site-footer), :global(.skip-link) { display: none !important; }
+        .trip-result { display: block; }
+        .trip { padding-top: 0; }
+    }
+
+    /* ================= Arrow of the day ================= */
+    .spotlight { padding-block-end: 0.5rem; }
+    .spot-card { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); background: var(--tan); border-radius: 14px; border-top: 3px solid var(--red); overflow: hidden; }
+    .spot-photo { display: block; overflow: hidden; background: #2a2118; }
+    .spot-photo img { display: block; inline-size: 100%; block-size: 100%; min-block-size: 260px; aspect-ratio: 4 / 3; object-fit: cover; object-position: center 35%; transition: transform 0.6s ease; }
+    .spot-photo:hover img { transform: scale(1.04); }
+    .spot-body { padding: 1.6rem 1.8rem; display: flex; flex-direction: column; justify-content: center; gap: 0.5rem; }
+    .spot-kicker { margin: 0; font-size: 0.78rem; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--red); }
+    .spot-body h3 { margin: 0; font-size: 1.5rem; line-height: 1.2; }
+    .spot-where { margin: 0; font-size: 0.9rem; color: var(--ink-soft); }
+    .spot-where:empty, .spot-text:empty { display: none; }
+    .spot-text { margin: 0.3rem 0 0; font-size: 1rem; line-height: 1.7; }
+    .spot-body .btn-row { margin-block-start: 0.8rem; }
+    @media (max-width: 760px) {
+        .spot-card { grid-template-columns: 1fr; }
+        .spot-photo img { min-block-size: 0; }
+        .spot-body { padding: 1.2rem 1.2rem 1.4rem; }
+    }
+
+    /* Map section keeps its global styles (#map-section in style.css); only the buttons are added here */
+    #map-section .btn-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem; margin-block: 0 1.5rem; }
+
+    /* Map tools (trail-growth.js) */
+    .trail-tools { max-width: 900px; margin: 0 auto 1.25rem; padding: 0 20px; font-family: 'Montserrat', 'Inter', sans-serif; }
+    .trail-tools[hidden], .trail-tools [hidden] { display: none; }
+    .trail-tools .growth { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.75rem 1rem; }
+    .trail-tools #growth-range { flex: 1 1 220px; min-width: 180px; max-width: 420px; accent-color: var(--color-tptr); }
+    .trail-tools #growth-label { flex: 1 1 100%; text-align: center; font-size: 0.9rem; font-weight: 600; color: var(--color-text-main); font-variant-numeric: tabular-nums; }
+    .trail-tools .near { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 0.5rem 1rem; margin-top: 0.75rem; }
+    #map-section .trail-tools .near p { margin: 0; font-size: 0.85rem; line-height: 1.5; color: #5d6b75; }
+    .trail-tools .near p:empty { display: none; }
+    .trail-tools .button[disabled] { opacity: 0.6; cursor: wait; }
+    .nearby { list-style: none; max-width: 900px; margin: 1.25rem auto 0; padding: 0 20px; display: grid; gap: 0.6rem; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); font-family: 'Montserrat', 'Inter', sans-serif; }
+    .nearby[hidden] { display: none; }
+    /* Everything below is created by trail-growth.js, so it needs :global */
+    .nearby :global(li) { background: var(--color-bg-tan); border-radius: 10px; border-top: 3px solid var(--color-primary); padding: 0.8rem 1rem; display: flex; flex-direction: column; gap: 0.5rem; }
+    .nearby :global(.near-item) { all: unset; cursor: pointer; display: flex; flex-direction: column; gap: 0.2rem; }
+    .nearby :global(.near-item strong) { font-size: 0.95rem; color: var(--color-text-main); }
+    .nearby :global(.near-item span) { font-size: 0.82rem; color: #5d6b75; }
+    .nearby :global(.near-item:hover strong) { color: var(--color-primary); }
+    .nearby :global(.near-item:focus-visible), .nearby :global(.near-links a:focus-visible) { outline: 2px solid var(--color-primary); outline-offset: 3px; border-radius: 3px; }
+    .nearby :global(.near-links) { display: flex; gap: 1rem; font-size: 0.85rem; font-weight: 600; }
+    .nearby :global(.near-links a) { color: var(--color-tptr); }
+    .nearby :global(.near-links a:hover) { color: var(--color-primary); }
+
+    /* When a link jumps here, stop short of the fixed header */
+    #trail-tools, #overview-map { scroll-margin-top: 105px; }
+    .trail-tools { margin-top: 1.25rem; }
+
+    /* Arrow markers dropping onto the map. "translate" adds to Leaflet's own transform instead of replacing it. */
+    :global(.qpt-pop) { animation: qptDrop 0.45s ease-out; }
+    @keyframes qptDrop { from { opacity: 0; translate: 0 -26px; } to { opacity: 1; translate: 0 0; } }
+    @media (prefers-reduced-motion: reduce) { :global(.qpt-pop) { animation: none; } }
+
+    .about, .qpday, .spotlight, .trip {
+        --ink: var(--color-text-main);
+        --ink-soft: #5d6b75;
+        --tan: var(--color-bg-tan);
+        --rule: #ddd5c4;
+        --red: var(--color-primary);
+        --blue: var(--color-tptr);
+        --gold: var(--color-accent-gold);
+        font-family: 'Montserrat', 'Inter', sans-serif;
+        color: var(--ink);
+        padding: 3rem 20px 0;
+    }
+    .wrap { max-width: 1100px; margin: 0 auto; }
+    .about a, .qpday a , .spotlight a , .trip a { color: var(--blue); }
+    .about a:hover, .qpday a:hover , .spotlight a:hover , .trip a:hover { color: var(--red); }
+    .about a:focus-visible, .qpday a:focus-visible , .spotlight a:focus-visible , .trip a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; border-radius: 3px; }
+    .about .button, .qpday .button , .spotlight .button , .trip .button { color: var(--color-white) !important; }
+
+    .about h2, .qpday h2 , .spotlight h2 , .trip h2 {
+        position: relative; margin: 0 0 1.5rem; padding-top: 1.1rem; border-top: 1px solid var(--rule);
+        font-size: 1.6rem; font-weight: 700; color: var(--ink);
+    }
+    .about h2::before, .qpday h2::before , .spotlight h2::before , .trip h2::before {
+        content: ''; position: absolute; top: -2px; left: 0; width: 3rem; height: 3px; background: var(--red);
+    }
+
+    .facts { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 2.25rem; }
+    .fact { background: var(--tan); border-radius: 10px; padding: 1.1rem 1.3rem; display: flex; flex-direction: column; gap: 0.3rem; border-top: 3px solid var(--red); }
+    .fact strong { font-size: 1.6rem; font-weight: 700; line-height: 1.1; font-variant-numeric: tabular-nums; }
+    .fact span { font-size: 0.82rem; line-height: 1.45; color: var(--ink-soft); }
+
+    .copy { max-width: 760px; }
+    .copy p { font-size: 1.04rem; line-height: 1.85; margin: 0 0 1.25em; text-wrap: pretty; }
+    .btn-row { display: flex; flex-wrap: wrap; gap: 0.75rem; margin: 0.5rem 0 0; }
+
+    .end-space { height: 5rem; }
+
+    @media (max-width: 700px) {
+        .copy p { font-size: 1rem; }
+    }
+</style>

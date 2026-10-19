@@ -193,7 +193,7 @@ export const COLLECTION: Collection = {
       recto: { file: 'allison-redmon-family-recto.jpg' },
       verso: { file: 'allison-redmon-family-verso.jpg' },
       description:
-        'This photograph depicts the family of Redmon and Betty Allison around the year 1917. A taped on note on the verso lists each person. This photograph is framed and in the possession of Austin Allison.',
+        'This photograph depicts the family of Redmon and Betty Allison around the year 1917. A taped on note on the verso lists each person. This photograph is framed and in the possession of this website\'s creator.',
       inscriptions: [
         {
           location: 'verso',
@@ -415,6 +415,7 @@ export const COLLECTION: Collection = {
       titleSource: 'supplied',
       format: 'real photo postcard',
       place: 'Hagerman, New Mexico',
+      controlNumber: 'J.1.14',
       date: {
         display: '[1910-1914]',
         earliest: 1910,
@@ -2308,6 +2309,1657 @@ export const COLLECTION: Collection = {
           basis:
             'Known identity',
           region: { face: 'recto', x: 18.2, y: 60.6, w: 8.8, h: 13 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-carolyn-1955-outside-house',
+      title: '[Carolyn Allison standing outside her house, circa 1955]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'h.1.24.4',
+      date: {
+        display: '[1955]',
+        earliest: 1955,
+        latest: 1955,
+        basis: ['The photo is dated 1955, but this could be the print date. Carolyn does appear to be about 7 years old, which makes 1955 probable'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-carolyn-1955-outside-house-recto.jpg',
+      },
+      description:
+        'This photograph depicts Carolyn Allison standing outside of her house in Lamb County between Muleshoe and Earth.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 50.2, y: 38.7, w: 8.4, h: 11.4 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'allison-fred-jack-outside-house',
+      title: '[Fred and Jack Allison standing outside their house, circa 1955]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'h.1.23.3',
+      date: {
+        display: '[1955]',
+        earliest: 1955,
+        latest: 1955,
+        basis: ['The photo is dated 1955, but this could be the print date. Fred appears to be 5 years old here.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-fred-jack-outside-house-recto.jpg',
+      },
+      description:
+        'This photograph depicts Fred and Jack Allison standing outside of their house in Lamb County between Muleshoe and Earth.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+                    region: { face: 'recto', x: 49.6, y: 29.6, w: 13.4, h: 18.1 },
+        },
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 32.2, y: 45.7, w: 13.4, h: 16.5 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-fred-school-picture-1',
+      title: '[Fred Allison, circa 1958-1960]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Muleshoe, Texas',
+      controlNumber: 'h.1.24.3',
+      date: {
+        display: '[1958-1960]',
+        earliest: 1958,
+        latest: 1960,
+        basis: ['Fred appears to be 8 to 10 years old here'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-fred-school-picture-1-recto.jpg',
+      },
+      description:
+        'This is a school portrait of Fred Allison from between 1958 and 1960.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 25, y: 13.9, w: 55.2, h: 50.4 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'allison-jack-jim-eddie-mitch-john',
+      title: '[Jack and Jim Allison with Eddie and Mitch Black]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'h.1.23.2',
+      date: {
+        display: '[1973]',
+        earliest: 1973,
+        latest: 1973,
+        basis: ['This photograph is dated 1973 on the verso of another print. That photograph says this is the "last of Jack" before he died in June 1973.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jack-jim-eddie-mitch-john-recto.jpg',
+      },
+      description:
+        'This photograph depicts Jack and Jim Allison and Eddie and Mitch Black. Jack is holding John Skogland, III.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 44.6, y: 22.1, w: 13.1, h: 15.6 },
+        },
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 69.7, y: 36, w: 15, h: 17.4 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jim-school-picture-1',
+      title: '[Jim Allison, circa 1967-1968]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Muleshoe, Texas',
+      controlNumber: 'h.1.24.1',
+      date: {
+        display: '[1967-1968]',
+        earliest: 1967,
+        latest: 1968,
+        basis: ['Jim appears to be 10 or 11 here.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jim-school-picture-1-recto.jpg',
+      },
+      description:
+        'This is a school portrait of Jim Allison from between 1967 and 1968.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 31.1, y: 14.3, w: 50.6, h: 45.5 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'allison-sam-jack-jemima',
+      title: '[Sam and Jack Allison with black labrador Jemima]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'h.1.21.4',
+      date: {
+        display: '[1970-1971]',
+        earliest: 1970,
+        latest: 1971,
+        basis: ['Jack appears to be around his senior year of high school, which places this photograph in 1970 or 1971.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-sam-jack-jemima-recto.jpg',
+      },
+      description:
+        'This photograph depicts Sam and Jack Allison sitting on the ground eating foot at the home of Harold and Jean Allison. Black labrador Jemima is next to Jack.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 39.9, y: 56.4, w: 11, h: 11.2 },
+        },
+        {
+          person: 'allison-sam-oscar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 54.3, y: 62.4, w: 13.2, h: 12.8 },
+        },
+      ],
+    },
+    {
+      slug: 'grizzle-ollie-blanche-funeral-1',
+      title: '[Family photograph at the funeral of Ollie Grizzle]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Fort Sumner, New Mexico',
+      controlNumber: 'h.1.19.1',
+      date: {
+        display: '1976',
+        earliest: 1976,
+        latest: 1976,
+        basis: ['This funeral was in 1976'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'grizzle-ollie-blanche-funeral-1-recto.jpg',
+      },
+      description:
+        'This photograph depicts several members of the Allison and Grizzle family at the funeral of Ollie Blanche Grizzle in December 1976. The man on the left is family friend Sidney Redfield.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      related: [
+          { slug: 'grizzle-ollie-blanche-funeral-2', relation: ''},
+          { slug: 'grizzle-ollie-blanche-funeral-3', relation: ''},
+          { slug: 'grizzle-ollie-blanche-funeral-4', relation: ''},
+      ],
+      depicts: [
+        {
+          as: 'Sidney Redfield',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 29.6, y: 34.4, w: 8.1, h: 13.4 },
+        },
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 37.4, y: 34.5, w: 6.7, h: 12.6 },
+        },
+        {
+          person: 'didlake-ollie-mae-grizzle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 47.9, y: 33.8, w: 7.5, h: 13.4 },
+        },
+        {
+          person: 'didlake-george-howard',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 54, y: 28, w: 6.6, h: 9.8 },
+        },
+        {
+          person: 'allison-lanora-ethel-wells',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 55.2, y: 35.9, w: 7.2, h: 12.7 },
+        },
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 64.4, y: 31.6, w: 8.3, h: 13.9 },
+        },
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 72.5, y: 31.6, w: 7.4, h: 12.6 },
+        },
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 77.5, y: 37.5, w: 8, h: 15 },
+        },
+        {
+          person: 'osborn-mildred-adeline-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 83.1, y: 33.6, w: 6.3, h: 13.5 },
+        },
+        {
+          person: 'osborn-kenneth',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 87, y: 29.6, w: 9, h: 17.8 },
+        },
+      ],
+    },
+    {
+      slug: 'grizzle-ollie-blanche-funeral-2',
+      title: '[Casket of Ollie Blanche Grizzle at her 1976 funeral]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Fort Sumner, New Mexico',
+      controlNumber: 'h.1.19.4',
+      date: {
+        display: '1976',
+        earliest: 1976,
+        latest: 1976,
+        basis: ['This funeral was in 1976'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'grizzle-ollie-blanche-funeral-2-recto.jpg',
+      },
+      description:
+        'This photograph depicts the casket of Ollie Blanche Ingle Allison Grizzle at her December 1976 funeral.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      related: [
+          { slug: 'grizzle-ollie-blanche-funeral-1', relation: ''},
+          { slug: 'grizzle-ollie-blanche-funeral-3', relation: ''},
+          { slug: 'grizzle-ollie-blanche-funeral-4', relation: ''},
+      ],
+      depicts: [
+        
+      ],
+    },
+    {
+      slug: 'grizzle-ollie-blanche-funeral-3',
+      title: '[Family photograph at the funeral of Ollie Grizzle]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Fort Sumner, New Mexico',
+      controlNumber: 'h.1.20.1',
+      date: {
+        display: '1976',
+        earliest: 1976,
+        latest: 1976,
+        basis: ['This funeral was in 1976'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'grizzle-ollie-blanche-funeral-3-recto.jpg',
+      },
+      description:
+        'This photograph depicts several members of the Allison and Grizzle family at the funeral of Ollie Blanche Grizzle in December 1976. The man on the left is family friend Sidney Redfield. Each of these individuals are grandchildren of Ollie Grizzle.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      related: [
+          { slug: 'grizzle-ollie-blanche-funeral-1', relation: ''},
+          { slug: 'grizzle-ollie-blanche-funeral-2', relation: ''},
+          { slug: 'grizzle-ollie-blanche-funeral-4', relation: ''},
+      ],
+      depicts: [
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 43, y: 32.9, w: 7.2, h: 12.4 },
+        },
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 52.6, y: 36.5, w: 5.5, h: 7.9 },
+        },
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 53.9, y: 41.2, w: 5.3, h: 9.8 },
+        },
+        {
+          as: 'Georga Didlake',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 64.1, y: 34.3, w: 6.8, h: 11.6 },
+        },
+        {
+          person: 'allison-robert-carroll',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 77.2, y: 32.7, w: 6.2, h: 9.7 },
+        },
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 79.8, y: 40.5, w: 5.7, h: 10 },
+        },
+        {
+          person: 'allison-sam-oscar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 88.7, y: 36, w: 6.9, h: 11.4 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'grizzle-ollie-blanche-funeral-4',
+      title: '[Family photograph at the funeral of Ollie Grizzle]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Fort Sumner, New Mexico',
+      controlNumber: 'h.1.20.3',
+      date: {
+        display: '1976',
+        earliest: 1976,
+        latest: 1976,
+        basis: ['This funeral was in 1976'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'grizzle-ollie-blanche-funeral-4-recto.jpg',
+      },
+      description:
+        'This photograph depicts several members of the Allison and Grizzle family at the funeral of Ollie Blanche Grizzle in December 1976. The man on the left is family friend Sidney Redfield.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      related: [
+          { slug: 'grizzle-ollie-blanche-funeral-1', relation: ''},
+          { slug: 'grizzle-ollie-blanche-funeral-2', relation: ''},
+          { slug: 'grizzle-ollie-blanche-funeral-3', relation: ''},
+      ],
+      depicts: [
+        {
+          as: 'Sidney Redfield',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 19.2, y: 41.8, w: 5.7, h: 9.3 },
+        },
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 31.2, y: 41.4, w: 5.7, h: 7.6 },
+        },
+        {
+          person: 'didlake-ollie-mae-grizzle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 51.7, y: 41.2, w: 5.5, h: 10.1 },
+        },
+        {
+          person: 'didlake-george-howard',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 47.5, y: 35.6, w: 5, h: 9.4 },
+        },
+        {
+          person: 'allison-lanora-ethel-wells',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 35.3, y: 42.5, w: 6, h: 9.5 },
+        },
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 66.8, y: 39.4, w: 6.9, h: 10 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 44, y: 43, w: 5.3, h: 9.4 },
+        },
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 60.3, y: 43.8, w: 6.2, h: 8.8 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'allison-veta-1955-outside-house',
+      title: '[Veta Allison standing outside her house, circa 1955]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'h.1.24.2',
+      date: {
+        display: '[1955]',
+        earliest: 1955,
+        latest: 1955,
+        basis: ['The photo is dated 1955, but this could be the print date. Veta does appear to be about 9 years old, which makes 1955 probable'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-veta-1955-outside-house-recto.jpg',
+      },
+      description:
+        'This photograph depicts Veta Allison standing outside of her house in Lamb County between Muleshoe and Earth.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 47.5, y: 41.5, w: 10.3, h: 12.5 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'grizzle-ollie-susan-mary',
+      title: '[Ollie Grizzle standing with Susan Black and Mary Andreas]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'h.1.20.4',
+      date: {
+        display: '[1970-1971]',
+        earliest: 1970,
+        latest: 1971,
+        basis: ['No date is available for this photograph, but it appears it may be from 1970 or 1971.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-ollie-susan-mary-recto.jpg',
+      },
+      description:
+        'This photograph depicts Ollie Grizzle standing with Susan Black and Mary Andreas at the home of Harold and Jean Allison.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'grizzle-ollie-blanche-ingle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 21.1, y: 40.6, w: 12.3, h: 14.2 },
+        },
+        {
+          person: 'black-susan-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 69.3, y: 36.2, w: 12, h: 13.5 },
+        },
+        {
+          person: 'andreas-mary-lorene-grizzle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 29.8, y: 39.4, w: 11.8, h: 13.1 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-jean-family-1955',
+      title: '[Harold and Jean Allison family, circa 1955]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'h.1.23.4',
+      date: {
+        display: '[1955-1956]',
+        earliest: 1955,
+        latest: 1956,
+        basis: ['This photograph is undated, but it is likely from 1955 or 1956. Jack appears to be 2 or 3 years old here.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-jean-family-1955-recto.jpg',
+      },
+      description:
+        'This photograph depicts Harold, Jean, Veta, Carolyn, Fred, and Jack Allison standing outside their home in Lamb County between Muleshoe and Earth.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 39.7, y: 18.1, w: 10.9, h: 13.1 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 64.8, y: 22.6, w: 10.4, h: 13.3 },
+        },
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 25.4, y: 37.1, w: 12, h: 14.7 },
+        },
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 44.1, y: 40.6, w: 9.4, h: 12.5 },
+        },
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 59.8, y: 46.9, w: 10.7, h: 13.5 },
+        },
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 29.8, y: 19.6, w: 9.7, h: 12.6 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-gerald-harold-oscar-1921',
+      title: '[Gerald, Harold, and Oscar Allison, circa 1921]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'h.1.25.2',
+      date: {
+        display: '[1921]',
+        earliest: 1921,
+        latest: 1921,
+        basis: ['The verso identifies a likely date of 1921.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-gerald-oscar-1921-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-gerald-oscar-1921-recto.jpg',
+      },
+      description:
+        'This photograph depicts Gerald, Harold, and Oscar Allison standing in a line side-by-side.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'allison-gerald-parker',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 22.2, y: 23.7, w: 11, h: 10.1 },
+        },
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 38.5, y: 36.8, w: 8.8, h: 8.4 },
+        },
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 52.1, y: 42.9, w: 10.1, h: 8.5 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'grizzle-ollie-sister-gladys',
+      title: '[Ollie Grizzle and her sister Mary Gladys Ingle Patterson]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'h.1.22.4',
+      date: {
+        display: '[1960]',
+        earliest: 1960,
+        latest: 1960,
+        basis: ['A date of 1960 is printed on the edge of the photo. This may be a print date, but a 1960 date seems probable.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-ollie-sister-gladys-recto.jpg',
+      },
+      
+      description:
+        'This photograph depicts Ollie Blanche Ingle Grizzle and her sister Mary Glady Ingle Patterson.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'grizzle-ollie-blanche-ingle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 48.8, y: 33, w: 7.4, h: 12.6 },
+        },
+        {
+          person: 'patterson-mary-gladys-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 35.6, y: 34, w: 8, h: 15.3 },
+        },
+        
+        
+      ],
+    },
+    {
+      slug: 'grizzle-ollie-blanche-funeral-program',
+      title: '[Funeral program of Ollie Blanche Grizzle]',
+      titleSource: 'supplied',
+      format: 'document',
+      place: 'New Mexico',
+      controlNumber: 'h.1.2',
+      date: {
+        display: '1976',
+        earliest: 1976,
+        latest: 1976,
+        basis: ['Ollie Blanche Grizzle died in 1976.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'grizzle-ollie-blanche-funeral-program-recto.jpg',
+      },
+      verso: {
+        file: 'grizzle-ollie-blanche-funeral-program-verso.jpg',
+      },
+      description:
+        'This is the funeral program for Ollie Blanche Grizzle from 1976.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+        { person: 'grizzle-ollie-blanche-ingle-allison', basis: 'mentioned in article', confidence: 'certain',}
+      ],
+      depicts: [         
+      ],
+    },
+    {
+      slug: 'allison-harold-war-savings-bond',
+      title: '[1944 War Savings Bond purchased by Harold Allison for Oscar Allison]',
+      titleSource: 'supplied',
+      format: 'document',
+      place: 'New Mexico',
+      controlNumber: 'h.1.7',
+      date: {
+        display: '1944',
+        earliest: 1944,
+        latest: 1944,
+        basis: ['This document has a 1944 date.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-harold-war-savings-bond-recto.jpg',
+      },
+      
+      description:
+        'This is a War Saving Bond purchased by Harold Allison in April 1944. It is possible that Harold purchased this shortly after Oscar became a prisoner of war just a month prior.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+        { person: 'allison-harold-lamar', basis: 'mentioned in article', confidence: 'certain',},
+        { person: 'allison-oscar-ingle', basis: 'mentioned in article', confidence: 'certain',}
+      ],
+      depicts: [         
+      ],
+    },
+    {
+      slug: 'allison-mckinstry-wedding-announcement',
+      title: '[Harold Allison and Jean McKinstry wedding announcement]',
+      titleSource: 'supplied',
+      format: 'document',
+      place: 'New Mexico',
+      controlNumber: 'h.1.9',
+      date: {
+        display: '1944',
+        earliest: 1944,
+        latest: 1944,
+        basis: ['This document has a 1944 date.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-mckinstry-wedding-announcement-recto.jpg',
+      },
+      
+      description:
+        'This is the wedding announcement of Harold Allison and Jean McKinstry',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+        { person: 'allison-harold-lamar', basis: 'mentioned in article', confidence: 'certain',},
+        { person: 'allison-veta-jean-mckinstry', basis: 'mentioned in article', confidence: 'certain',}
+      ],
+      depicts: [         
+      ],
+    },
+    {
+      slug: 'grizzle-wiley-funeral-newspaper',
+      title: 'Funeral rites for Wiley Grizzle to Be Held Here Sunday',
+      titleSource: 'supplied',
+      format: 'document',
+      place: 'New Mexico',
+      controlNumber: 'h.1.10',
+      date: {
+        display: '1949',
+        earliest: 1949,
+        latest: 1949,
+        basis: ['There is no date on this newspaper clipping, but it is likely from 1949 when the reburial service occurred. The newspaper says "Mr. and Mrs. Wiley Grizzle, now in Muleshoe, Tex.", which suggests a 1949 date. A 1946 date is possible, too. A similar article appeared in the June 9th, 1949 issue of the Muleshoe Journal.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-wiley-funeral-newspaper-recto.jpg',
+      },
+      
+      description:
+        'This is a newspaper clipping likely from the Roswell Daily Record detailing the funeral service for Wiley Grizzle, Jr.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+        { person: 'grizzle-wiley-jr', basis: 'mentioned in article', confidence: 'certain',},
+      ],
+      depicts: [         
+      ],
+    },
+    {
+      slug: 'grizzle-wiley-letter-1945-january',
+      title: '[Letter from Wiley Grizzle, Jr. to Ollie Grizzle, January 1945]',
+      titleSource: 'supplied',
+      format: 'document',
+      place: 'England',
+      controlNumber: 'h.1.11',
+      date: {
+        display: '1945',
+        earliest: 1945,
+        latest: 1945,
+        basis: ['The envelope is postmarked January 1945.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-wiley-letter-1945-january.jpg',
+      },
+      
+      description:
+        'This is a letter written from Wiley Grizzle, Jr. to his mother, Ollie Grizzle. The envelope is postmarked with a January 1945 date. The letter is a photostatic copy.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+        { person: 'grizzle-wiley-jr', basis: 'mentioned in article', confidence: 'certain',},
+        { person: 'grizzle-ollie-blanche-ingle-allison', basis: 'mentioned in article', confidence: 'certain',},
+      ],
+      depicts: [         
+      ],
+    },
+    {
+      slug: 'grizzle-wiley-portrait-1',
+      title: '[Portrait of Wiley Grizzle, Jr.]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'h.1.12.2',
+      date: {
+        display: '[1944]',
+        earliest: 1944,
+        latest: 1944,
+        basis: ['This photograph is likely from Wiley Jr.\'s time at Garden City Army Air Field in 1944.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-wiley-portrait-1.jpg',
+      },
+      
+      description:
+        'This portrait depicts Wiley Grizzle, Jr. in an airman uniform. This was likely taken during Wiley\'s time in Garden City during training.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'grizzle-wiley-jr',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 31.1, y: 9.8, w: 43.6, h: 44.2 },
+        },
+      ],
+    },
+    {
+      slug: 'raydon-airplanes',
+      title: '[P-51s over Raydon]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Raydon, England',
+      controlNumber: 'h.1.13.1',
+      date: {
+        display: '[1944-1945]',
+        earliest: 1944,
+        latest: 1945,
+        basis: ['This photograph is undated, but likely taken between 1944 and 1945.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'raydon-airplanes.jpg',
+      },
+      
+      description:
+        'This is a souvenir photograph of P-51 Mustangs over Raydon Air Base in England.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        
+      ],
+    },
+    {
+      slug: 'grizzle-wiley-funeral-program',
+      title: '[Wiley Grizzle, Jr. funeral program]',
+      titleSource: 'supplied',
+      format: 'document',
+      place: 'England',
+      controlNumber: 'h.1.13.2',
+      date: {
+        display: '[1946-1949]',
+        earliest: 1946,
+        latest: 1949,
+        basis: ['The date of this funeral program is unclear, but it is likely from either a 1946 funeral or the 1949 reburial of Junior\'s remains.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-wiley-funeral-program-recto.jpg',
+      },
+      verso: {
+        file: 'grizzle-wiley-funeral-program-verso.jpg',
+      },
+      description:
+        'This is a funeral program for Wiley Grizzle, Jr. The date of the program is unknown, but it is likely from either 1946 or 1949.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+        { person: 'grizzle-wiley-jr', basis: 'mentioned in article', confidence: 'certain',},
+        
+      ],
+      depicts: [         
+      ],
+    },
+    {
+      slug: 'grizzle-wiley-killed-in-action-newspaper',
+      title: 'Lt. Wiley Grizzle Listed as Killed In European Action',
+      titleSource: 'supplied',
+      format: 'document',
+      place: 'New Mexico',
+      controlNumber: 'h.1.14.2',
+      date: {
+        display: '1946',
+        earliest: 1946,
+        latest: 1946,
+        basis: ['This newspaper clipping is undated, but it is likely from March 1946 when the Grizzles were notified that Junior had been killed rather than missing in action.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-wiley-killed-in-action-newspaper-recto.jpg',
+      },
+      verso: {
+        file: 'grizzle-wiley-killed-in-action-newspaper-verso.jpg',
+      },
+      description:
+        'This is a newspaper from the Roswell Daily Record showing that Wiley Grizzle, Jr. had been killed in action. He had previously been reported as missing in action.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+        { person: 'grizzle-wiley-jr', basis: 'mentioned in article', confidence: 'certain',},
+      ],
+      depicts: [         
+      ],
+    },
+    {
+      slug: 'grizzle-wiley-otu-class',
+      title: 'O.T.U. Class of Dec. and Jan.',
+      titleSource: 'inscribed',
+      format: 'snapshot',
+      place: 'Raydon, England',
+      controlNumber: 'h.1.14.3',
+      date: {
+        display: '[1944-1945]',
+        earliest: 1944,
+        latest: 1945,
+        basis: ['This photograph is undated, but likely taken between 1944 and 1945. Wiley Grizzle, Jr. went through this program in December 1944 and January 1945.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-wiley-otu-class-recto.jpg',
+      },
+      verso: {
+        file: 'grizzle-wiley-otu-class-verso.jpg',
+      },
+      description:
+        'This photograph depicts the Operational Training Unit (OTU) Class of Decemeber 1944 and January 1945 at Raydon Air Base in England. Wiley Grizzle, Jr. is on the bottom row third from the left. Others are identified on the verso.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'grizzle-wiley-jr',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 58.4, y: 59.5, w: 6.9, h: 10.2 },
+        },
+      ],
+    },
+    {
+      slug: 'grizzle-wiley-grave-1',
+      title: '[Grave of Wiley Grizzle, Jr. at Roswell, New Mexico cemetery]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Roswell, New Mexico',
+      controlNumber: 'h.1.14.4',
+      date: {
+        display: '[1949]',
+        earliest: 1949,
+        latest: 1949,
+        basis: ['This photograph is undated, but it appears to be from the reburial service that occurred in 1949.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-wiley-grave-1-recto.jpg',
+      },
+      verso: {
+        file: 'grizzle-wiley-grave-1-verso.jpg',
+      },
+      description:
+        'This photograph depicts the grave of Wiley Grizzle Jr. It was likely taken at the reburial service that occurred on June 5, 1949 at Roswell, New Mexico.',
+      inscriptions: [        
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+      ],
+      related: [
+        { slug: 'grizzle-wiley-grave-2', relation: 'Another view' }
+      ]
+    },
+    {
+      slug: 'grizzle-wiley-grave-2',
+      title: '[Grave of Wiley Grizzle, Jr. at Roswell, New Mexico cemetery]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Roswell, New Mexico',
+      controlNumber: 'h.1.15.4',
+      date: {
+        display: '[1949]',
+        earliest: 1949,
+        latest: 1949,
+        basis: ['This photograph is undated, but it appears to be from the reburial service that occurred in 1949.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-wiley-grave-2-recto.jpg',
+      },
+      verso: {
+        file: 'grizzle-wiley-grave-2-verso.jpg',
+      },
+      description:
+        'This photograph depicts the grave of Wiley Grizzle Jr. It was likely taken at the reburial service that occurred on June 5, 1949 at Roswell, New Mexico.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        
+      ],
+      related: [
+        { slug: 'grizzle-wiley-grave-1', relation: 'Another view' }
+      ]
+    },
+    {
+      slug: 'grizzle-wiley-card',
+      title: '[Wiley Grizzle, Jr. Lieutenant Air Corps card]',
+      titleSource: 'supplied',
+      format: 'document',
+      place: 'New Mexico',
+      controlNumber: 'h.1.15.2',
+      date: {
+        display: '[1944-1945]',
+        earliest: 1944,
+        latest: 1945,
+        basis: ['This card is undated, but it is probable that it dates from 1944 or 1945.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-wiley-card-recto.jpg',
+      },
+      verso: {
+        file: 'grizzle-wiley-card-verso.jpg',
+      },
+      description:
+        'This is a business card of Wiley Grizzle, Jr., Lieutenant Air Corps, Army of the United States.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+        { person: 'grizzle-wiley-jr', basis: 'mentioned in article', confidence: 'certain',},
+      ],
+      depicts: [         
+      ],
+    },
+    {
+      slug: 'grizzle-wiley-aafas-card',
+      title: '[2nd Lt. Wiley Grizzle Army Air Forces Aid Society card]',
+      titleSource: 'supplied',
+      format: 'document',
+      place: 'New Mexico',
+      controlNumber: 'h.1.15.3',
+      date: {
+        display: '1944',
+        earliest: 1944,
+        latest: 1944,
+        basis: ['This card is dated 1 May 1944.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'grizzle-wiley-aafas-card-recto.jpg',
+      },
+      verso: {
+        file: 'grizzle-wiley-aafas-card-verso.jpg',
+      },
+      description:
+        'This is a membership card for the Army Air Forces Aid Society that belonged to 2nd Lt. Wiley Grizzle. The card dates to May 1st, 1944. This card was in the personal effects of Wiley Grizzle, Jr.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+        { person: 'grizzle-wiley-jr', basis: 'mentioned in article', confidence: 'certain',},
+      ],
+      depicts: [         
+      ],
+    },
+    {
+      slug: 'grizzle-wiley-portrait-2',
+      title: '[Portrait of Wiley Grizzle, Jr.]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'h.1.17.2',
+      date: {
+        display: '[1944-1945]',
+        earliest: 1944,
+        latest: 1945,
+        basis: ['This photograph is undated. It is likely from Junior\'s time in England, but that cannot be corroborated.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-wiley-portrait-2-recto.jpg',
+      },
+      
+      description:
+        'This portrait depicts Wiley Grizzle, Jr. in civilian clothing. The photograph is undated, but Junior is sporting a mustache that is similar to the one he wore in his OTU class photograph.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+
+      ],
+      depicts: [
+        {
+          person: 'grizzle-wiley-jr',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 24, y: 15.4, w: 52.7, h: 65.4 },
+        },
+      ],
+    },
+    {
+      slug: 'grizzle-ollie-blanche-obituary',
+      title: 'Grizzle Rites Held Tuesday',
+      titleSource: 'inscribed',
+      format: 'document',
+      place: 'New Mexico',
+      controlNumber: 'h.1.18.1',
+      date: {
+        display: '1976',
+        earliest: 1976,
+        latest: 1976,
+        basis: ['The newspaper is dated December 16, 1976'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'grizzle-ollie-blanche-obituary-recto.jpg',
+      },
+      verso: {
+        file: 'grizzle-ollie-blanche-obituary-verso.jpg',
+      },
+      description:
+        'This is the obituary of Ollie Blanche Ingle Allison Grizzle. It appeared in the December 16, 1976 issue of the De Baca County News',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+        { person: 'grizzle-ollie-blanche-ingle-allison', basis: 'mentioned in article', confidence: 'certain',},
+      ],
+      depicts: [         
+      ],
+    },
+    {
+      slug: 'grizzle-wiley-sammy-jim-allison',
+      title: '[Wiley Grizzle, Sammy Allison, Jim Allison, and Eddie Black]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'h.1.19.2',
+      date: {
+        display: '[1970-1971]',
+        earliest: 1970,
+        latest: 1971,
+        basis: ['This photograph is undated, but it appears to be from 1970 or 1971. Jim appears to be 13 or 14 years old here.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-wiley-sammy-jim-allison-recto.jpg',
+      },
+      description:
+        'This photograph depicts Wiley Grizzle, Sammy Allison, Jim Allison, and Eddie Black at an event at the home of Harold and Jean Allison.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'grizzle-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 43.7, y: 44.9, w: 16.5, h: 21.2 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 29.6, y: 22.7, w: 14.2, h: 19.3 },
+        },
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 63.2, y: 33.5, w: 12.2, h: 14.7 },
+        },
+      ],
+    },
+    {
+      slug: 'grizzle-ollie-harold-allison-2',
+      title: '[Harold Allison and his mother Ollie Grizzle]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'h.1.19.3',
+      date: {
+        display: '[1970-1971]',
+        earliest: 1970,
+        latest: 1971,
+        basis: ['This photograph is undated, but it appears to be from 1970 or 1971. Other photos from this event suggest such a date.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-ollie-harold-allison-2-recto.jpg',
+      },
+      description:
+        'This photograph depicts Harold Allison standing next to his mother Ollie Grizzle. The photograph was taken at the home of Harold and Jean Allison. Both are holding cups.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 28, y: 33.8, w: 22.4, h: 18 },
+        },
+        {
+          person: 'grizzle-ollie-blanche-ingle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 59.5, y: 36, w: 20.3, h: 19.3 },
+        },
+      ],
+    },
+    {
+      slug: 'unknown-house',
+      title: '[Unknown house, possibly the early home of the Allisons or Grizzles]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'h.1.20.2',
+      date: {
+        display: '[1970-1980]',
+        earliest: 1970,
+        latest: 1980,
+        basis: ['This photograph is undated, but it appears to be of the same era as the photographs from Ollie Grizzle\'s funeral.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'unknown-house.jpg',
+      },
+      description:
+        'This photograph depicts an unknown rural house. It is presumed that this may be one of the houses that the Allisons or Grizzles occupied in New Mexico, since this photograph was with items from the Grizzle/Allison family.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+      ],
+    },
+    {
+      slug: 'grizzle-ollie-garden',
+      title: '[Ollie Grizzle standing next to flowers in a garden]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Fort Sumner, New Mexico',
+      controlNumber: 'h.1.21.1',
+      date: {
+        display: '[1960-1970]',
+        earliest: 1960,
+        latest: 1970,
+        basis: ['This photograph is undated, but it is likely from between 1960 and 1970 based on the age of Ollie here.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-ollie-garden-recto.jpg',
+      },
+      description:
+        'This photograph depicts Ollie Grizzle standing next to flowers in a garden. It is presumed that this photograph is from her home in Fort Sumner, New Mexico. Her obituary states that she was an avid gardener.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'grizzle-ollie-blanche-ingle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 41.3, y: 21.9, w: 18.6, h: 22.9 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-oscar-ollie-gerald',
+      title: '[Oscar, Ollie, and Gerald Allison near a horse-driven buggy]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'h.1.21.2',
+      date: {
+        display: '[1915-1917]',
+        earliest: 1915,
+        latest: 1917,
+        basis: ['This photograph is undated, but a 1915 to 1917 date is probable based on the age of Gerald here.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-oscar-ollie-gerald.jpg',
+      },
+      description:
+        'This photograph depicts Oscar, Ollie, and Gerald Allison near a horse-driven buggy. Oscar and Ollie are standing behind the buggy while a young Gerald sits in the driver\'s seat. The location of this photograph cannot be determined, but it is presumed that this may have been taken in Eastland County while they visited family there. The trees suggest that this was not in New Mexico.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-oscar-simmon',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 19.3, y: 41.4, w: 4.2, h: 7 },
+        },
+        {
+          person: 'grizzle-ollie-blanche-ingle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 27.7, y: 45.5, w: 4.3, h: 6.1 },
+        },
+        {
+          person: 'allison-gerald-parker',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 34.3, y: 46, w: 3.3, h: 5.4 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-grizzle-picnic-1',
+      title: '[Allison - Grizzle picnic in New Mexico]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'h.1.21.3',
+      date: {
+        display: '[1952-1953]',
+        earliest: 1952,
+        latest: 1953,
+        basis: ['This photograph is undated, but it appears that Fred is two or three years old here. That places the photograph in 1952 or 1953.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-grizzle-picnic-1.jpg',
+      },
+      description:
+        'This photograph depicts a Allison-Grizzle family picnic. Several newspapers throughout the years mention that the Allisons from Texas would visit the Grizzles in New Mexico for such picnics.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 15.3, y: 31.1, w: 7, h: 8.8 },
+        },
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 24.9, y: 33.6, w: 6.8, h: 8.6 },
+        },
+        {
+          person: 'grizzle-ollie-blanche-ingle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 52.8, y: 33.1, w: 6.4, h: 7.6 },
+        },
+        {
+          person: 'didlake-ollie-mae-grizzle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 42.8, y: 46.3, w: 5.2, h: 5.7 },
+        },
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 76, y: 51.4, w: 5.2, h: 6.3 },
+        },
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 87.6, y: 52.6, w: 4.2, h: 5.1 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-gerald-harold-young',
+      title: '[Gerald and Harold Allison, circa 1919-1920]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'h.1.22.1',
+      date: {
+        display: '[1919-1920]',
+        earliest: 1919,
+        latest: 1920,
+        basis: ['Harold appears to be two or three years old here, which places this photograph in 1919 or 1920.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-gerald-harold-young.jpg',
+      },
+      description:
+        'This photograph depicts Gerald and Harold Allison standing next to a tree or bush or some kind. Each of them is holding a hat.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 49.3, y: 47.7, w: 10.7, h: 15.9 },
+        },
+        {
+          person: 'allison-gerald-parker',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 33.4, y: 29.3, w: 10.3, h: 16.1 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-oscar-young',
+      title: '[Harold and Oscar Allison, circa 1921]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'h.1.22.2',
+      date: {
+        display: '[1921]',
+        earliest: 1921,
+        latest: 1921,
+        basis: ['Another photograph from this set has a 1921 date on the verso.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-oscar-young.jpg',
+      },
+      description:
+        'This photograph depicts Harold and Oscar Allison in beanie hats likely during cold weather.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 33.9, y: 42.9, w: 11.5, h: 12.7 },
+        },
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 57.4, y: 50.9, w: 9.5, h: 9.9 },
         },
       ],
     },

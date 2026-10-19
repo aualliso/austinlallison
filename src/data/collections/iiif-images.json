@@ -1,4 +1,269 @@
 {
+  "allison-family/allison-carolyn-1955-outside-house-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-1955-outside-house-recto-9373a007ab",
+    "width": 4576,
+    "height": 4568,
+    "sizes": [
+      {
+        "width": 286,
+        "height": 286
+      },
+      {
+        "width": 340,
+        "height": 339
+      },
+      {
+        "width": 680,
+        "height": 679
+      },
+      {
+        "width": 800,
+        "height": 799
+      },
+      {
+        "width": 1200,
+        "height": 1198
+      },
+      {
+        "width": 1900,
+        "height": 1897
+      },
+      {
+        "width": 2600,
+        "height": 2595
+      },
+      {
+        "width": 4576,
+        "height": 4568
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4576
+    },
+    "hash": "9373a007abbb2c9d8c5a5ae3fc315f214e817d7ee67d0ef33daf39b9a6304770",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-1955-outside-house-recto.jpg",
+        "width": 4576,
+        "height": 4568,
+        "bytes": 1816586
+      },
+      "share": {
+        "file": "allison-carolyn-1955-outside-house-recto-2600px.jpg",
+        "width": 2600,
+        "height": 2595,
+        "bytes": 647192
+      }
+    }
+  },
+  "allison-family/allison-fred-jack-outside-house-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-fred-jack-outside-house-recto-42502c6c8d",
+    "width": 4449,
+    "height": 4449,
+    "sizes": [
+      {
+        "width": 279,
+        "height": 279
+      },
+      {
+        "width": 340,
+        "height": 340
+      },
+      {
+        "width": 680,
+        "height": 680
+      },
+      {
+        "width": 800,
+        "height": 800
+      },
+      {
+        "width": 1200,
+        "height": 1200
+      },
+      {
+        "width": 1900,
+        "height": 1900
+      },
+      {
+        "width": 2600,
+        "height": 2600
+      },
+      {
+        "width": 4449,
+        "height": 4449
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4449
+    },
+    "hash": "42502c6c8dafadb7e07217bfe2970a4d6716d3a74108a36112b84b6215249361",
+    "download": {
+      "full": {
+        "file": "allison-fred-jack-outside-house-recto.jpg",
+        "width": 4449,
+        "height": 4449,
+        "bytes": 1212679
+      },
+      "share": {
+        "file": "allison-fred-jack-outside-house-recto-2600px.jpg",
+        "width": 2600,
+        "height": 2600,
+        "bytes": 442925
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-fred-school-picture-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-fred-school-picture-1-recto-8f4d2fc06d",
+    "width": 4615,
+    "height": 6344,
+    "sizes": [
+      {
+        "width": 289,
+        "height": 397
+      },
+      {
+        "width": 340,
+        "height": 467
+      },
+      {
+        "width": 680,
+        "height": 935
+      },
+      {
+        "width": 800,
+        "height": 1100
+      },
+      {
+        "width": 1200,
+        "height": 1650
+      },
+      {
+        "width": 1891,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2612
+      },
+      {
+        "width": 3637,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1891,
+      "study": 3637
+    },
+    "hash": "8f4d2fc06df46a18def8dccc127dbfb10bde02634f202600d14464f77f6bd89e",
+    "download": {
+      "full": {
+        "file": "allison-fred-school-picture-1-recto.jpg",
+        "width": 4615,
+        "height": 6344,
+        "bytes": 2653452
+      },
+      "share": {
+        "file": "allison-fred-school-picture-1-recto-2600px.jpg",
+        "width": 1891,
+        "height": 2600,
+        "bytes": 543837
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-gerald-harold-young.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-gerald-harold-young-52099355fb",
+    "width": 3276,
+    "height": 2838,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 295
+      },
+      {
+        "width": 410,
+        "height": 355
+      },
+      {
+        "width": 680,
+        "height": 589
+      },
+      {
+        "width": 800,
+        "height": 693
+      },
+      {
+        "width": 1200,
+        "height": 1040
+      },
+      {
+        "width": 1900,
+        "height": 1646
+      },
+      {
+        "width": 2600,
+        "height": 2252
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": null
+    },
+    "hash": "52099355fba1e0a784f44bfabf6d930f66052f01ba74a320348a25baa049f6c5",
+    "download": {
+      "full": {
+        "file": "allison-gerald-harold-young.jpg",
+        "width": 3276,
+        "height": 2838,
+        "bytes": 1034902
+      },
+      "share": null
+    }
+  },
   "allison-family/allison-grizzle-group-1.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-grizzle-group-1-a037584ca5",
@@ -136,6 +401,74 @@
       }
     }
   },
+  "allison-family/allison-grizzle-picnic-1.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-grizzle-picnic-1-b242d436e6",
+    "width": 4461,
+    "height": 4571,
+    "sizes": [
+      {
+        "width": 279,
+        "height": 286
+      },
+      {
+        "width": 340,
+        "height": 348
+      },
+      {
+        "width": 680,
+        "height": 697
+      },
+      {
+        "width": 800,
+        "height": 820
+      },
+      {
+        "width": 1200,
+        "height": 1230
+      },
+      {
+        "width": 1900,
+        "height": 1947
+      },
+      {
+        "width": 2537,
+        "height": 2600
+      },
+      {
+        "width": 4461,
+        "height": 4571
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2537,
+      "study": 4461
+    },
+    "hash": "b242d436e65868376ea4d5078003cf13881592d80dfbb66de86fddfb78b91087",
+    "download": {
+      "full": {
+        "file": "allison-grizzle-picnic-1.jpg",
+        "width": 4461,
+        "height": 4571,
+        "bytes": 1893093
+      },
+      "share": {
+        "file": "allison-grizzle-picnic-1-2600px.jpg",
+        "width": 2537,
+        "height": 2600,
+        "bytes": 696053
+      }
+    }
+  },
   "allison-family/allison-harold-discharged-1945-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-discharged-1945-recto-0fc4184e79",
@@ -270,6 +603,129 @@
         "height": 2600,
         "bytes": 465134
       }
+    }
+  },
+  "allison-family/allison-harold-gerald-oscar-1921-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-gerald-oscar-1921-recto-db2bac303f",
+    "width": 3222,
+    "height": 4422,
+    "sizes": [
+      {
+        "width": 202,
+        "height": 277
+      },
+      {
+        "width": 340,
+        "height": 467
+      },
+      {
+        "width": 680,
+        "height": 933
+      },
+      {
+        "width": 800,
+        "height": 1098
+      },
+      {
+        "width": 1200,
+        "height": 1647
+      },
+      {
+        "width": 1894,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2608
+      },
+      {
+        "width": 3222,
+        "height": 4422
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1894,
+      "study": 3222
+    },
+    "hash": "db2bac303fe573e782ae8535a499aa59670df6c3e3a3cf09085056c4ea935806",
+    "download": {
+      "full": {
+        "file": "allison-harold-gerald-oscar-1921-recto.jpg",
+        "width": 3222,
+        "height": 4422,
+        "bytes": 1576038
+      },
+      "share": {
+        "file": "allison-harold-gerald-oscar-1921-recto-2600px.jpg",
+        "width": 1894,
+        "height": 2600,
+        "bytes": 601806
+      }
+    }
+  },
+  "allison-family/allison-harold-gerald-oscar-1921-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-gerald-oscar-1921-verso-6f7949340a",
+    "width": 1704,
+    "height": 2276,
+    "sizes": [
+      {
+        "width": 213,
+        "height": 285
+      },
+      {
+        "width": 340,
+        "height": 454
+      },
+      {
+        "width": 680,
+        "height": 908
+      },
+      {
+        "width": 800,
+        "height": 1069
+      },
+      {
+        "width": 1200,
+        "height": 1603
+      },
+      {
+        "width": 1704,
+        "height": 2276
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1704
+      ],
+      "detail": 1704,
+      "study": null
+    },
+    "hash": "6f7949340a164b831fe35faa1c616987b40827d1f89b4ad23d4aa85629047d0b",
+    "download": {
+      "full": {
+        "file": "allison-harold-gerald-oscar-1921-verso.jpg",
+        "width": 1704,
+        "height": 2276,
+        "bytes": 527568
+      },
+      "share": null
     }
   },
   "allison-family/allison-harold-jean-1945-recto.jpg": {
@@ -466,6 +922,75 @@
         "bytes": 438074
       }
     }
+  },
+  "allison-family/allison-harold-jean-family-1955-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-family-1955-recto-5d7e9016d3",
+    "width": 4480,
+    "height": 4488,
+    "sizes": [
+      {
+        "width": 280,
+        "height": 281
+      },
+      {
+        "width": 340,
+        "height": 341
+      },
+      {
+        "width": 680,
+        "height": 681
+      },
+      {
+        "width": 800,
+        "height": 801
+      },
+      {
+        "width": 1200,
+        "height": 1202
+      },
+      {
+        "width": 1900,
+        "height": 1903
+      },
+      {
+        "width": 2595,
+        "height": 2600
+      },
+      {
+        "width": 4480,
+        "height": 4488
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2595,
+      "study": 4480
+    },
+    "hash": "5d7e9016d383c5a86b8291e5235be7f9c2d8f3b9d8f8d8365c6fd235e73a5b52",
+    "download": {
+      "full": {
+        "file": "allison-harold-jean-family-1955-recto.jpg",
+        "width": 4480,
+        "height": 4488,
+        "bytes": 1286561
+      },
+      "share": {
+        "file": "allison-harold-jean-family-1955-recto-2600px.jpg",
+        "width": 2595,
+        "height": 2600,
+        "bytes": 461548
+      }
+    },
+    "store": "private"
   },
   "allison-family/allison-harold-jean-loveta-mckinstry-camellia-room-recto.jpg": {
     "v": 2,
@@ -1207,6 +1732,74 @@
       }
     }
   },
+  "allison-family/allison-harold-oscar-young.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-oscar-young-c4ac681e31",
+    "width": 3300,
+    "height": 4424,
+    "sizes": [
+      {
+        "width": 207,
+        "height": 277
+      },
+      {
+        "width": 340,
+        "height": 456
+      },
+      {
+        "width": 680,
+        "height": 912
+      },
+      {
+        "width": 800,
+        "height": 1072
+      },
+      {
+        "width": 1200,
+        "height": 1609
+      },
+      {
+        "width": 1900,
+        "height": 2547
+      },
+      {
+        "width": 1939,
+        "height": 2599
+      },
+      {
+        "width": 3300,
+        "height": 4424
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1939,
+      "study": 3300
+    },
+    "hash": "c4ac681e31479e9fa364baf2caabc27eaae5a0718411fcc57e344cc118d2b8e9",
+    "download": {
+      "full": {
+        "file": "allison-harold-oscar-young.jpg",
+        "width": 3300,
+        "height": 4424,
+        "bytes": 1655162
+      },
+      "share": {
+        "file": "allison-harold-oscar-young-2600px.jpg",
+        "width": 1939,
+        "height": 2600,
+        "bytes": 626006
+      }
+    }
+  },
   "allison-family/allison-harold-san-antonio-1-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-san-antonio-1-recto-cdb93e6bdf",
@@ -1479,6 +2072,74 @@
       }
     }
   },
+  "allison-family/allison-harold-war-savings-bond-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-war-savings-bond-recto-c1ac0e876d",
+    "width": 9956,
+    "height": 6209,
+    "sizes": [
+      {
+        "width": 312,
+        "height": 195
+      },
+      {
+        "width": 340,
+        "height": 212
+      },
+      {
+        "width": 680,
+        "height": 424
+      },
+      {
+        "width": 800,
+        "height": 499
+      },
+      {
+        "width": 1200,
+        "height": 748
+      },
+      {
+        "width": 1900,
+        "height": 1185
+      },
+      {
+        "width": 2600,
+        "height": 1621
+      },
+      {
+        "width": 5000,
+        "height": 3118
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "c1ac0e876d16073ddcd2ab2896d05fbc6e9270c5a4d3b8041a920085274a6f43",
+    "download": {
+      "full": {
+        "file": "allison-harold-war-savings-bond-recto.jpg",
+        "width": 9956,
+        "height": 6209,
+        "bytes": 10254127
+      },
+      "share": {
+        "file": "allison-harold-war-savings-bond-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1621,
+        "bytes": 816446
+      }
+    }
+  },
   "allison-family/allison-home-construction.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-home-construction-2e2246e906",
@@ -1682,6 +2343,75 @@
         "bytes": 821050
       }
     }
+  },
+  "allison-family/allison-jack-jim-eddie-mitch-john-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jack-jim-eddie-mitch-john-recto-a74f7dcfd0",
+    "width": 4246,
+    "height": 4453,
+    "sizes": [
+      {
+        "width": 266,
+        "height": 279
+      },
+      {
+        "width": 340,
+        "height": 357
+      },
+      {
+        "width": 680,
+        "height": 713
+      },
+      {
+        "width": 800,
+        "height": 839
+      },
+      {
+        "width": 1200,
+        "height": 1259
+      },
+      {
+        "width": 1900,
+        "height": 1993
+      },
+      {
+        "width": 2479,
+        "height": 2600
+      },
+      {
+        "width": 4246,
+        "height": 4453
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2479,
+      "study": 4246
+    },
+    "hash": "a74f7dcfd0c0ea9422256ae1d23f4fbc31359340d6a5ad715279df961668a5d3",
+    "download": {
+      "full": {
+        "file": "allison-jack-jim-eddie-mitch-john-recto.jpg",
+        "width": 4246,
+        "height": 4453,
+        "bytes": 1707834
+      },
+      "share": {
+        "file": "allison-jack-jim-eddie-mitch-john-recto-2600px.jpg",
+        "width": 2479,
+        "height": 2600,
+        "bytes": 602832
+      }
+    },
+    "store": "private"
   },
   "allison-family/allison-jack-letterman-jacket-1.jpg": {
     "v": 2,
@@ -2289,6 +3019,75 @@
     },
     "store": "private"
   },
+  "allison-family/allison-jim-school-picture-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jim-school-picture-1-recto-b41e42ca4a",
+    "width": 3166,
+    "height": 4179,
+    "sizes": [
+      {
+        "width": 198,
+        "height": 262
+      },
+      {
+        "width": 340,
+        "height": 449
+      },
+      {
+        "width": 680,
+        "height": 898
+      },
+      {
+        "width": 800,
+        "height": 1056
+      },
+      {
+        "width": 1200,
+        "height": 1584
+      },
+      {
+        "width": 1900,
+        "height": 2508
+      },
+      {
+        "width": 1970,
+        "height": 2600
+      },
+      {
+        "width": 3166,
+        "height": 4179
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1970,
+      "study": 3166
+    },
+    "hash": "b41e42ca4a4f045d5e9e3f07d974f0905d5cb502e7dfc5b3c24a613eba3cd051",
+    "download": {
+      "full": {
+        "file": "allison-jim-school-picture-1-recto.jpg",
+        "width": 3166,
+        "height": 4179,
+        "bytes": 1125170
+      },
+      "share": {
+        "file": "allison-jim-school-picture-1-recto-2600px.jpg",
+        "width": 1970,
+        "height": 2600,
+        "bytes": 469404
+      }
+    },
+    "store": "private"
+  },
   "allison-family/allison-joseph-carroll-ned-hogan-1-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-joseph-carroll-ned-hogan-1-recto-fb36aa049c",
@@ -2697,6 +3496,74 @@
       }
     }
   },
+  "allison-family/allison-mckinstry-wedding-announcement-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-mckinstry-wedding-announcement-recto-f02c777fae",
+    "width": 6791,
+    "height": 9350,
+    "sizes": [
+      {
+        "width": 213,
+        "height": 293
+      },
+      {
+        "width": 340,
+        "height": 468
+      },
+      {
+        "width": 680,
+        "height": 936
+      },
+      {
+        "width": 800,
+        "height": 1101
+      },
+      {
+        "width": 1200,
+        "height": 1652
+      },
+      {
+        "width": 1888,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2616
+      },
+      {
+        "width": 3632,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1888,
+      "study": 3632
+    },
+    "hash": "f02c777fae499cd25ed891e95b222e6c41f6944505a01db4a4dccc1b3a6144ae",
+    "download": {
+      "full": {
+        "file": "allison-mckinstry-wedding-announcement-recto.jpg",
+        "width": 6791,
+        "height": 9350,
+        "bytes": 6917508
+      },
+      "share": {
+        "file": "allison-mckinstry-wedding-announcement-recto-2600px.jpg",
+        "width": 1888,
+        "height": 2600,
+        "bytes": 461909
+      }
+    }
+  },
   "allison-family/allison-oscar-and-ollie-grizzle-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-and-ollie-grizzle-recto-5290f38fd0",
@@ -3034,6 +3901,74 @@
         "width": 1750,
         "height": 2600,
         "bytes": 884114
+      }
+    }
+  },
+  "allison-family/allison-oscar-ollie-gerald.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-ollie-gerald-07f1543869",
+    "width": 5307,
+    "height": 4269,
+    "sizes": [
+      {
+        "width": 332,
+        "height": 267
+      },
+      {
+        "width": 340,
+        "height": 273
+      },
+      {
+        "width": 680,
+        "height": 547
+      },
+      {
+        "width": 800,
+        "height": 644
+      },
+      {
+        "width": 1200,
+        "height": 965
+      },
+      {
+        "width": 1900,
+        "height": 1528
+      },
+      {
+        "width": 2600,
+        "height": 2091
+      },
+      {
+        "width": 5000,
+        "height": 4022
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "07f1543869f7a6e7e5b5ccf14fa527cb270c1c30e31a87eabcfa5d78719cea3c",
+    "download": {
+      "full": {
+        "file": "allison-oscar-ollie-gerald.jpg",
+        "width": 5307,
+        "height": 4269,
+        "bytes": 2195123
+      },
+      "share": {
+        "file": "allison-oscar-ollie-gerald-2600px.jpg",
+        "width": 2600,
+        "height": 2091,
+        "bytes": 677836
       }
     }
   },
@@ -3763,6 +4698,1102 @@
       }
     }
   },
+  "allison-family/allison-sam-jack-jemima-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-sam-jack-jemima-recto-db44754f6c",
+    "width": 4368,
+    "height": 4357,
+    "sizes": [
+      {
+        "width": 273,
+        "height": 273
+      },
+      {
+        "width": 340,
+        "height": 339
+      },
+      {
+        "width": 680,
+        "height": 678
+      },
+      {
+        "width": 800,
+        "height": 798
+      },
+      {
+        "width": 1200,
+        "height": 1197
+      },
+      {
+        "width": 1900,
+        "height": 1895
+      },
+      {
+        "width": 2600,
+        "height": 2593
+      },
+      {
+        "width": 4368,
+        "height": 4357
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4368
+    },
+    "hash": "db44754f6c36993cfff53dbcca340a522b88567bf39ea0af8a381d9a75d8c80d",
+    "download": {
+      "full": {
+        "file": "allison-sam-jack-jemima-recto.jpg",
+        "width": 4368,
+        "height": 4357,
+        "bytes": 1355002
+      },
+      "share": {
+        "file": "allison-sam-jack-jemima-recto-2600px.jpg",
+        "width": 2600,
+        "height": 2593,
+        "bytes": 527779
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-veta-1955-outside-house-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-veta-1955-outside-house-recto-a4772e166e",
+    "width": 4524,
+    "height": 4600,
+    "sizes": [
+      {
+        "width": 283,
+        "height": 288
+      },
+      {
+        "width": 340,
+        "height": 346
+      },
+      {
+        "width": 680,
+        "height": 691
+      },
+      {
+        "width": 800,
+        "height": 813
+      },
+      {
+        "width": 1200,
+        "height": 1220
+      },
+      {
+        "width": 1900,
+        "height": 1932
+      },
+      {
+        "width": 2557,
+        "height": 2600
+      },
+      {
+        "width": 4524,
+        "height": 4600
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2557,
+      "study": 4524
+    },
+    "hash": "a4772e166ebe4c6448eb26caf52b61b61b7d9d8bbdf1927ac47b332907eae7fa",
+    "download": {
+      "full": {
+        "file": "allison-veta-1955-outside-house-recto.jpg",
+        "width": 4524,
+        "height": 4600,
+        "bytes": 1831547
+      },
+      "share": {
+        "file": "allison-veta-1955-outside-house-recto-2600px.jpg",
+        "width": 2557,
+        "height": 2600,
+        "bytes": 654862
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/grizzle-ollie-blanche-funeral-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-blanche-funeral-1-recto-1c57431e48",
+    "width": 6229,
+    "height": 4464,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 244
+      },
+      {
+        "width": 390,
+        "height": 279
+      },
+      {
+        "width": 680,
+        "height": 487
+      },
+      {
+        "width": 800,
+        "height": 573
+      },
+      {
+        "width": 1200,
+        "height": 860
+      },
+      {
+        "width": 1900,
+        "height": 1362
+      },
+      {
+        "width": 2600,
+        "height": 1863
+      },
+      {
+        "width": 5000,
+        "height": 3583
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "1c57431e48d5cc9454414f8b48fca0500f9c9a2bfdbb3c3e36489714516dc2fe",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-blanche-funeral-1-recto.jpg",
+        "width": 6229,
+        "height": 4464,
+        "bytes": 2745299
+      },
+      "share": {
+        "file": "grizzle-ollie-blanche-funeral-1-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1863,
+        "bytes": 546958
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/grizzle-ollie-blanche-funeral-2-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-blanche-funeral-2-recto-48692154c1",
+    "width": 6160,
+    "height": 4448,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 246
+      },
+      {
+        "width": 385,
+        "height": 278
+      },
+      {
+        "width": 680,
+        "height": 491
+      },
+      {
+        "width": 800,
+        "height": 578
+      },
+      {
+        "width": 1200,
+        "height": 866
+      },
+      {
+        "width": 1900,
+        "height": 1372
+      },
+      {
+        "width": 2600,
+        "height": 1877
+      },
+      {
+        "width": 5000,
+        "height": 3610
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "48692154c1124bafeec1e0add91f3cdf1f25ee0a7dd25d4a7c3a80674ff1dc65",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-blanche-funeral-2-recto.jpg",
+        "width": 6160,
+        "height": 4448,
+        "bytes": 3047333
+      },
+      "share": {
+        "file": "grizzle-ollie-blanche-funeral-2-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1877,
+        "bytes": 676981
+      }
+    }
+  },
+  "allison-family/grizzle-ollie-blanche-funeral-3-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-blanche-funeral-3-recto-60042d8038",
+    "width": 6184,
+    "height": 4424,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 243
+      },
+      {
+        "width": 387,
+        "height": 277
+      },
+      {
+        "width": 680,
+        "height": 486
+      },
+      {
+        "width": 800,
+        "height": 572
+      },
+      {
+        "width": 1200,
+        "height": 858
+      },
+      {
+        "width": 1900,
+        "height": 1359
+      },
+      {
+        "width": 2600,
+        "height": 1860
+      },
+      {
+        "width": 5000,
+        "height": 3577
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "60042d80382905ada9596156bb775a0ecb8468a879a54847d28ff77e3a159776",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-blanche-funeral-3-recto.jpg",
+        "width": 6184,
+        "height": 4424,
+        "bytes": 2483838
+      },
+      "share": {
+        "file": "grizzle-ollie-blanche-funeral-3-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1860,
+        "bytes": 524447
+      }
+    },
+    "store": "private",
+    "publicCopy": true
+  },
+  "allison-family/grizzle-ollie-blanche-funeral-4-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-blanche-funeral-4-recto-5f97fbdcf3",
+    "width": 6166,
+    "height": 4420,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 244
+      },
+      {
+        "width": 386,
+        "height": 277
+      },
+      {
+        "width": 680,
+        "height": 487
+      },
+      {
+        "width": 800,
+        "height": 573
+      },
+      {
+        "width": 1200,
+        "height": 860
+      },
+      {
+        "width": 1900,
+        "height": 1362
+      },
+      {
+        "width": 2600,
+        "height": 1864
+      },
+      {
+        "width": 5000,
+        "height": 3584
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "5f97fbdcf34f7eacf43a36bbfefa6d6ff4f5d690ff1f4f7c1a06cbd7384a7143",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-blanche-funeral-4-recto.jpg",
+        "width": 6166,
+        "height": 4420,
+        "bytes": 2716568
+      },
+      "share": {
+        "file": "grizzle-ollie-blanche-funeral-4-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1864,
+        "bytes": 607259
+      }
+    },
+    "store": "private",
+    "publicCopy": true
+  },
+  "allison-family/grizzle-ollie-blanche-funeral-program-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-blanche-funeral-program-recto-45cb1d5eea",
+    "width": 4695,
+    "height": 8000,
+    "sizes": [
+      {
+        "width": 294,
+        "height": 500
+      },
+      {
+        "width": 340,
+        "height": 579
+      },
+      {
+        "width": 680,
+        "height": 1159
+      },
+      {
+        "width": 800,
+        "height": 1363
+      },
+      {
+        "width": 1200,
+        "height": 2045
+      },
+      {
+        "width": 1526,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 3237
+      },
+      {
+        "width": 2934,
+        "height": 4999
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1526,
+      "study": 2934
+    },
+    "hash": "45cb1d5eea93a07ef975b897d085796c9cf5065b01700253251f22b0c720a306",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-blanche-funeral-program-recto.jpg",
+        "width": 4695,
+        "height": 8000,
+        "bytes": 6678909
+      },
+      "share": {
+        "file": "grizzle-ollie-blanche-funeral-program-recto-2600px.jpg",
+        "width": 1526,
+        "height": 2600,
+        "bytes": 681020
+      }
+    }
+  },
+  "allison-family/grizzle-ollie-blanche-funeral-program-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-blanche-funeral-program-verso-f2da62f56d",
+    "width": 8252,
+    "height": 7835,
+    "sizes": [
+      {
+        "width": 258,
+        "height": 245
+      },
+      {
+        "width": 340,
+        "height": 323
+      },
+      {
+        "width": 680,
+        "height": 646
+      },
+      {
+        "width": 800,
+        "height": 760
+      },
+      {
+        "width": 1200,
+        "height": 1139
+      },
+      {
+        "width": 1900,
+        "height": 1804
+      },
+      {
+        "width": 2600,
+        "height": 2469
+      },
+      {
+        "width": 5000,
+        "height": 4747
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "f2da62f56d312326f8533fbf5b2cab6876c67d060413f40869a4f69ed4b1824a",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-blanche-funeral-program-verso.jpg",
+        "width": 8252,
+        "height": 7835,
+        "bytes": 10098921
+      },
+      "share": {
+        "file": "grizzle-ollie-blanche-funeral-program-verso-2600px.jpg",
+        "width": 2600,
+        "height": 2469,
+        "bytes": 1144054
+      }
+    }
+  },
+  "allison-family/grizzle-ollie-blanche-obituary-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-blanche-obituary-recto-e6c44601c0",
+    "width": 5788,
+    "height": 11616,
+    "sizes": [
+      {
+        "width": 181,
+        "height": 363
+      },
+      {
+        "width": 340,
+        "height": 682
+      },
+      {
+        "width": 680,
+        "height": 1365
+      },
+      {
+        "width": 800,
+        "height": 1606
+      },
+      {
+        "width": 1200,
+        "height": 2408
+      },
+      {
+        "width": 1296,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 3813
+      },
+      {
+        "width": 2491,
+        "height": 4999
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1296,
+      "study": 2491
+    },
+    "hash": "e6c44601c0231699f45f38dec6ee0102f54ecc5882eda7c750133467c041f7e0",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-blanche-obituary-recto.jpg",
+        "width": 5788,
+        "height": 11616,
+        "bytes": 8077418
+      },
+      "share": {
+        "file": "grizzle-ollie-blanche-obituary-recto-2600px.jpg",
+        "width": 1296,
+        "height": 2600,
+        "bytes": 565316
+      }
+    }
+  },
+  "allison-family/grizzle-ollie-blanche-obituary-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-blanche-obituary-verso-4777969271",
+    "width": 12000,
+    "height": 2382,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 67
+      },
+      {
+        "width": 375,
+        "height": 75
+      },
+      {
+        "width": 680,
+        "height": 135
+      },
+      {
+        "width": 800,
+        "height": 159
+      },
+      {
+        "width": 1200,
+        "height": 238
+      },
+      {
+        "width": 1900,
+        "height": 377
+      },
+      {
+        "width": 2600,
+        "height": 516
+      },
+      {
+        "width": 5000,
+        "height": 993
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "4777969271fa004d1aa748471b2dba9802107b7263b6107e61db4777e83d9a26",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-blanche-obituary-verso.jpg",
+        "width": 12000,
+        "height": 2382,
+        "bytes": 4008060
+      },
+      "share": {
+        "file": "grizzle-ollie-blanche-obituary-verso-2600px.jpg",
+        "width": 2600,
+        "height": 516,
+        "bytes": 238140
+      }
+    }
+  },
+  "allison-family/grizzle-ollie-garden-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-garden-recto-d3458b6076",
+    "width": 4409,
+    "height": 4336,
+    "sizes": [
+      {
+        "width": 276,
+        "height": 271
+      },
+      {
+        "width": 340,
+        "height": 334
+      },
+      {
+        "width": 680,
+        "height": 669
+      },
+      {
+        "width": 800,
+        "height": 787
+      },
+      {
+        "width": 1200,
+        "height": 1180
+      },
+      {
+        "width": 1900,
+        "height": 1869
+      },
+      {
+        "width": 2600,
+        "height": 2557
+      },
+      {
+        "width": 4409,
+        "height": 4336
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4409
+    },
+    "hash": "d3458b60763175a79ff8d3f1edc2f83b0b77b5f80afd4948f65671f84bdb3a28",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-garden-recto.jpg",
+        "width": 4409,
+        "height": 4336,
+        "bytes": 1404523
+      },
+      "share": {
+        "file": "grizzle-ollie-garden-recto-2600px.jpg",
+        "width": 2600,
+        "height": 2557,
+        "bytes": 534207
+      }
+    }
+  },
+  "allison-family/grizzle-ollie-harold-allison-2-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-harold-allison-2-recto-54fe1dd43e",
+    "width": 3257,
+    "height": 4303,
+    "sizes": [
+      {
+        "width": 204,
+        "height": 269
+      },
+      {
+        "width": 340,
+        "height": 449
+      },
+      {
+        "width": 680,
+        "height": 898
+      },
+      {
+        "width": 800,
+        "height": 1057
+      },
+      {
+        "width": 1200,
+        "height": 1585
+      },
+      {
+        "width": 1900,
+        "height": 2510
+      },
+      {
+        "width": 1968,
+        "height": 2600
+      },
+      {
+        "width": 3257,
+        "height": 4303
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1968,
+      "study": 3257
+    },
+    "hash": "54fe1dd43e7f6953811cc6f3db729a363ad71a9fc7fbcb39d5f0e2d6eaff7368",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-harold-allison-2-recto.jpg",
+        "width": 3257,
+        "height": 4303,
+        "bytes": 1014252
+      },
+      "share": {
+        "file": "grizzle-ollie-harold-allison-2-recto-2600px.jpg",
+        "width": 1968,
+        "height": 2600,
+        "bytes": 404388
+      }
+    }
+  },
+  "allison-family/grizzle-ollie-sister-gladys-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-sister-gladys-recto-aba3c8819e",
+    "width": 6223,
+    "height": 4453,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 243
+      },
+      {
+        "width": 389,
+        "height": 279
+      },
+      {
+        "width": 680,
+        "height": 487
+      },
+      {
+        "width": 800,
+        "height": 572
+      },
+      {
+        "width": 1200,
+        "height": 859
+      },
+      {
+        "width": 1900,
+        "height": 1360
+      },
+      {
+        "width": 2600,
+        "height": 1860
+      },
+      {
+        "width": 5000,
+        "height": 3578
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "aba3c8819e3117d29066f787c92a037205f17f8c25850df07b7886eb1a5653f9",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-sister-gladys-recto.jpg",
+        "width": 6223,
+        "height": 4453,
+        "bytes": 2533601
+      },
+      "share": {
+        "file": "grizzle-ollie-sister-gladys-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1860,
+        "bytes": 573069
+      }
+    }
+  },
+  "allison-family/grizzle-ollie-susan-mary-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-susan-mary-recto-0603d53df5",
+    "width": 4335,
+    "height": 4342,
+    "sizes": [
+      {
+        "width": 271,
+        "height": 272
+      },
+      {
+        "width": 340,
+        "height": 341
+      },
+      {
+        "width": 680,
+        "height": 681
+      },
+      {
+        "width": 800,
+        "height": 801
+      },
+      {
+        "width": 1200,
+        "height": 1202
+      },
+      {
+        "width": 1900,
+        "height": 1903
+      },
+      {
+        "width": 2596,
+        "height": 2600
+      },
+      {
+        "width": 4335,
+        "height": 4342
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2596,
+      "study": 4335
+    },
+    "hash": "0603d53df5e0429796d590b7093bb5e68fe8e0eb4d0b5c57784048ee0d766709",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-susan-mary-recto.jpg",
+        "width": 4335,
+        "height": 4342,
+        "bytes": 1473712
+      },
+      "share": {
+        "file": "grizzle-ollie-susan-mary-recto-2600px.jpg",
+        "width": 2596,
+        "height": 2600,
+        "bytes": 578574
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/grizzle-wiley-aafas-card-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-aafas-card-recto-e8b74f1724",
+    "width": 5160,
+    "height": 3559,
+    "sizes": [
+      {
+        "width": 323,
+        "height": 223
+      },
+      {
+        "width": 340,
+        "height": 235
+      },
+      {
+        "width": 680,
+        "height": 469
+      },
+      {
+        "width": 800,
+        "height": 552
+      },
+      {
+        "width": 1200,
+        "height": 828
+      },
+      {
+        "width": 1900,
+        "height": 1310
+      },
+      {
+        "width": 2600,
+        "height": 1793
+      },
+      {
+        "width": 5000,
+        "height": 3449
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "e8b74f17244d5684f9148b53a41abdcc7c6df91d2b878e039962e62797d75858",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-aafas-card-recto.jpg",
+        "width": 5160,
+        "height": 3559,
+        "bytes": 2212273
+      },
+      "share": {
+        "file": "grizzle-wiley-aafas-card-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1793,
+        "bytes": 633368
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-aafas-card-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-aafas-card-verso-441722295a",
+    "width": 5134,
+    "height": 3379,
+    "sizes": [
+      {
+        "width": 321,
+        "height": 212
+      },
+      {
+        "width": 340,
+        "height": 224
+      },
+      {
+        "width": 680,
+        "height": 448
+      },
+      {
+        "width": 800,
+        "height": 527
+      },
+      {
+        "width": 1200,
+        "height": 790
+      },
+      {
+        "width": 1900,
+        "height": 1251
+      },
+      {
+        "width": 2600,
+        "height": 1711
+      },
+      {
+        "width": 5000,
+        "height": 3291
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "441722295aacb580f2512a9fafff1fcdf1d30a78f60e68ff42c71e6105d8c44c",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-aafas-card-verso.jpg",
+        "width": 5134,
+        "height": 3379,
+        "bytes": 1900494
+      },
+      "share": {
+        "file": "grizzle-wiley-aafas-card-verso-2600px.jpg",
+        "width": 2600,
+        "height": 1711,
+        "bytes": 480651
+      }
+    }
+  },
   "allison-family/grizzle-wiley-car-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-car-recto-c1ddf27527",
@@ -3828,6 +5859,1153 @@
         "width": 2600,
         "height": 1769,
         "bytes": 625771
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-card-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-card-recto-0b1b5d0ad8",
+    "width": 4260,
+    "height": 2417,
+    "sizes": [
+      {
+        "width": 267,
+        "height": 152
+      },
+      {
+        "width": 340,
+        "height": 193
+      },
+      {
+        "width": 680,
+        "height": 386
+      },
+      {
+        "width": 800,
+        "height": 454
+      },
+      {
+        "width": 1200,
+        "height": 681
+      },
+      {
+        "width": 1900,
+        "height": 1078
+      },
+      {
+        "width": 2600,
+        "height": 1475
+      },
+      {
+        "width": 4260,
+        "height": 2417
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4260
+    },
+    "hash": "0b1b5d0ad8cdc3cfcdef06f597f0e55f91f81da6a880e89884b4e9b704db5dc2",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-card-recto.jpg",
+        "width": 4260,
+        "height": 2417,
+        "bytes": 1083600
+      },
+      "share": {
+        "file": "grizzle-wiley-card-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1475,
+        "bytes": 412104
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-card-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-card-verso-5059054d25",
+    "width": 4159,
+    "height": 2314,
+    "sizes": [
+      {
+        "width": 260,
+        "height": 145
+      },
+      {
+        "width": 340,
+        "height": 189
+      },
+      {
+        "width": 680,
+        "height": 378
+      },
+      {
+        "width": 800,
+        "height": 445
+      },
+      {
+        "width": 1200,
+        "height": 668
+      },
+      {
+        "width": 1900,
+        "height": 1057
+      },
+      {
+        "width": 2600,
+        "height": 1447
+      },
+      {
+        "width": 4159,
+        "height": 2314
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4159
+    },
+    "hash": "5059054d25fec4671baef98b050a86078e276e6ee4781fd031d4e26417ffeaba",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-card-verso.jpg",
+        "width": 4159,
+        "height": 2314,
+        "bytes": 1082778
+      },
+      "share": {
+        "file": "grizzle-wiley-card-verso-2600px.jpg",
+        "width": 2600,
+        "height": 1447,
+        "bytes": 415733
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-funeral-newspaper-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-funeral-newspaper-recto-0ac8b0cd55",
+    "width": 3306,
+    "height": 11784,
+    "sizes": [
+      {
+        "width": 104,
+        "height": 369
+      },
+      {
+        "width": 340,
+        "height": 1212
+      },
+      {
+        "width": 680,
+        "height": 2424
+      },
+      {
+        "width": 729,
+        "height": 2598
+      },
+      {
+        "width": 800,
+        "height": 2852
+      },
+      {
+        "width": 1200,
+        "height": 4277
+      },
+      {
+        "width": 1403,
+        "height": 5001
+      },
+      {
+        "width": 1900,
+        "height": 6772
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 729,
+      "study": 1403
+    },
+    "hash": "0ac8b0cd55ac6f7b3f555a6af72d31da38ca360503edbaef43bbe45414c82117",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-funeral-newspaper-recto.jpg",
+        "width": 3306,
+        "height": 11784,
+        "bytes": 7640796
+      },
+      "share": {
+        "file": "grizzle-wiley-funeral-newspaper-recto-2600px.jpg",
+        "width": 729,
+        "height": 2600,
+        "bytes": 535216
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-funeral-program-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-funeral-program-recto-34c29622cf",
+    "width": 7614,
+    "height": 5880,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 263
+      },
+      {
+        "width": 476,
+        "height": 368
+      },
+      {
+        "width": 680,
+        "height": 525
+      },
+      {
+        "width": 800,
+        "height": 618
+      },
+      {
+        "width": 1200,
+        "height": 927
+      },
+      {
+        "width": 1900,
+        "height": 1467
+      },
+      {
+        "width": 2600,
+        "height": 2008
+      },
+      {
+        "width": 5000,
+        "height": 3861
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "34c29622cfbee6eca3ecd2244c3a34c791eaa310e6b47c8a730f25c3ad6c6ae9",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-funeral-program-recto.jpg",
+        "width": 7614,
+        "height": 5880,
+        "bytes": 6082749
+      },
+      "share": {
+        "file": "grizzle-wiley-funeral-program-recto-2600px.jpg",
+        "width": 2600,
+        "height": 2008,
+        "bytes": 756234
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-funeral-program-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-funeral-program-verso-a548c26cc2",
+    "width": 7621,
+    "height": 5815,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 259
+      },
+      {
+        "width": 477,
+        "height": 364
+      },
+      {
+        "width": 680,
+        "height": 519
+      },
+      {
+        "width": 800,
+        "height": 610
+      },
+      {
+        "width": 1200,
+        "height": 916
+      },
+      {
+        "width": 1900,
+        "height": 1450
+      },
+      {
+        "width": 2600,
+        "height": 1984
+      },
+      {
+        "width": 5000,
+        "height": 3815
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "a548c26cc2a1edb48c32c0f91913232a8de5abc04ce48e6005299a63cf422e44",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-funeral-program-verso.jpg",
+        "width": 7621,
+        "height": 5815,
+        "bytes": 5331931
+      },
+      "share": {
+        "file": "grizzle-wiley-funeral-program-verso-2600px.jpg",
+        "width": 2600,
+        "height": 1984,
+        "bytes": 649091
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-grave-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-grave-1-recto-0ebf1629e5",
+    "width": 4397,
+    "height": 5637,
+    "sizes": [
+      {
+        "width": 275,
+        "height": 353
+      },
+      {
+        "width": 340,
+        "height": 436
+      },
+      {
+        "width": 680,
+        "height": 872
+      },
+      {
+        "width": 800,
+        "height": 1026
+      },
+      {
+        "width": 1200,
+        "height": 1538
+      },
+      {
+        "width": 1900,
+        "height": 2436
+      },
+      {
+        "width": 2028,
+        "height": 2600
+      },
+      {
+        "width": 3900,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2028,
+      "study": 3900
+    },
+    "hash": "0ebf1629e539853e6fb8683f6962a7635db535b53a0bab8c90dfd6286717b05c",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-grave-1-recto.jpg",
+        "width": 4397,
+        "height": 5637,
+        "bytes": 1680201
+      },
+      "share": {
+        "file": "grizzle-wiley-grave-1-recto-2600px.jpg",
+        "width": 2028,
+        "height": 2600,
+        "bytes": 426079
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-grave-1-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-grave-1-verso-b8a05a2186",
+    "width": 4330,
+    "height": 5710,
+    "sizes": [
+      {
+        "width": 271,
+        "height": 357
+      },
+      {
+        "width": 340,
+        "height": 448
+      },
+      {
+        "width": 680,
+        "height": 897
+      },
+      {
+        "width": 800,
+        "height": 1055
+      },
+      {
+        "width": 1200,
+        "height": 1582
+      },
+      {
+        "width": 1900,
+        "height": 2506
+      },
+      {
+        "width": 1972,
+        "height": 2600
+      },
+      {
+        "width": 3792,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1972,
+      "study": 3792
+    },
+    "hash": "b8a05a2186966161ad89729f253a5d24e0559a10aa4db3d46a1322d62a25305f",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-grave-1-verso.jpg",
+        "width": 4330,
+        "height": 5710,
+        "bytes": 2475046
+      },
+      "share": {
+        "file": "grizzle-wiley-grave-1-verso-2600px.jpg",
+        "width": 1972,
+        "height": 2600,
+        "bytes": 483930
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-grave-2-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-grave-2-recto-5fc7d5ae83",
+    "width": 6392,
+    "height": 4614,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 245
+      },
+      {
+        "width": 400,
+        "height": 289
+      },
+      {
+        "width": 680,
+        "height": 491
+      },
+      {
+        "width": 800,
+        "height": 577
+      },
+      {
+        "width": 1200,
+        "height": 866
+      },
+      {
+        "width": 1900,
+        "height": 1371
+      },
+      {
+        "width": 2600,
+        "height": 1877
+      },
+      {
+        "width": 5000,
+        "height": 3609
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "5fc7d5ae83807120ecf772a5be621aff7432232dde7eeb4bc35d853914998b53",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-grave-2-recto.jpg",
+        "width": 6392,
+        "height": 4614,
+        "bytes": 3116963
+      },
+      "share": {
+        "file": "grizzle-wiley-grave-2-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1877,
+        "bytes": 732766
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-grave-2-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-grave-2-verso-08ea7f0235",
+    "width": 6554,
+    "height": 4715,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 245
+      },
+      {
+        "width": 410,
+        "height": 295
+      },
+      {
+        "width": 680,
+        "height": 489
+      },
+      {
+        "width": 800,
+        "height": 576
+      },
+      {
+        "width": 1200,
+        "height": 863
+      },
+      {
+        "width": 1900,
+        "height": 1367
+      },
+      {
+        "width": 2600,
+        "height": 1870
+      },
+      {
+        "width": 5000,
+        "height": 3597
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "08ea7f02352fbce7668a4364c01a7c2571cd51490e27962a223010c581e6dbc6",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-grave-2-verso.jpg",
+        "width": 6554,
+        "height": 4715,
+        "bytes": 2978305
+      },
+      "share": {
+        "file": "grizzle-wiley-grave-2-verso-2600px.jpg",
+        "width": 2600,
+        "height": 1870,
+        "bytes": 448429
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-killed-in-action-newspaper-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-killed-in-action-newspaper-recto-6ed3b1e5e6",
+    "width": 3319,
+    "height": 4418,
+    "sizes": [
+      {
+        "width": 208,
+        "height": 277
+      },
+      {
+        "width": 340,
+        "height": 453
+      },
+      {
+        "width": 680,
+        "height": 905
+      },
+      {
+        "width": 800,
+        "height": 1065
+      },
+      {
+        "width": 1200,
+        "height": 1597
+      },
+      {
+        "width": 1900,
+        "height": 2529
+      },
+      {
+        "width": 1953,
+        "height": 2600
+      },
+      {
+        "width": 3319,
+        "height": 4418
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1953,
+      "study": 3319
+    },
+    "hash": "6ed3b1e5e6e3e73e0f3b5508a6e91d99a36faa7a96368650481fc5df527755dd",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-killed-in-action-newspaper-recto.jpg",
+        "width": 3319,
+        "height": 4418,
+        "bytes": 2228372
+      },
+      "share": {
+        "file": "grizzle-wiley-killed-in-action-newspaper-recto-2600px.jpg",
+        "width": 1953,
+        "height": 2600,
+        "bytes": 832370
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-killed-in-action-newspaper-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-killed-in-action-newspaper-verso-12ee7d5a6d",
+    "width": 3296,
+    "height": 4499,
+    "sizes": [
+      {
+        "width": 206,
+        "height": 282
+      },
+      {
+        "width": 340,
+        "height": 464
+      },
+      {
+        "width": 680,
+        "height": 928
+      },
+      {
+        "width": 800,
+        "height": 1092
+      },
+      {
+        "width": 1200,
+        "height": 1638
+      },
+      {
+        "width": 1900,
+        "height": 2593
+      },
+      {
+        "width": 1905,
+        "height": 2600
+      },
+      {
+        "width": 3296,
+        "height": 4499
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1905,
+      "study": 3296
+    },
+    "hash": "12ee7d5a6d0b62ac41e4f80e263c6c15005ac4c8e51b77ae0c3a1d55b2a1047c",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-killed-in-action-newspaper-verso.jpg",
+        "width": 3296,
+        "height": 4499,
+        "bytes": 2228159
+      },
+      "share": {
+        "file": "grizzle-wiley-killed-in-action-newspaper-verso-2600px.jpg",
+        "width": 1905,
+        "height": 2600,
+        "bytes": 777833
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-letter-1945-january.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-letter-1945-january-99dfa6aec2",
+    "width": 5406,
+    "height": 6355,
+    "sizes": [
+      {
+        "width": 338,
+        "height": 398
+      },
+      {
+        "width": 340,
+        "height": 400
+      },
+      {
+        "width": 680,
+        "height": 799
+      },
+      {
+        "width": 800,
+        "height": 940
+      },
+      {
+        "width": 1200,
+        "height": 1411
+      },
+      {
+        "width": 1900,
+        "height": 2234
+      },
+      {
+        "width": 2212,
+        "height": 2600
+      },
+      {
+        "width": 4253,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2212,
+      "study": 4253
+    },
+    "hash": "99dfa6aec2b65aa54933efc18ad0240f279e8b863fb662640b13078951f252a4",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-letter-1945-january.jpg",
+        "width": 5406,
+        "height": 6355,
+        "bytes": 4513124
+      },
+      "share": {
+        "file": "grizzle-wiley-letter-1945-january-2600px.jpg",
+        "width": 2212,
+        "height": 2600,
+        "bytes": 842582
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-otu-class-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-otu-class-recto-2c914c2b57",
+    "width": 6360,
+    "height": 5137,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 275
+      },
+      {
+        "width": 398,
+        "height": 322
+      },
+      {
+        "width": 680,
+        "height": 549
+      },
+      {
+        "width": 800,
+        "height": 646
+      },
+      {
+        "width": 1200,
+        "height": 969
+      },
+      {
+        "width": 1900,
+        "height": 1535
+      },
+      {
+        "width": 2600,
+        "height": 2100
+      },
+      {
+        "width": 5000,
+        "height": 4039
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "2c914c2b57dd6640afe60146ee636749a876e84201dadb0f4ff76971a1c1ce18",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-otu-class-recto.jpg",
+        "width": 6360,
+        "height": 5137,
+        "bytes": 2278158
+      },
+      "share": {
+        "file": "grizzle-wiley-otu-class-recto-2600px.jpg",
+        "width": 2600,
+        "height": 2100,
+        "bytes": 473197
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-otu-class-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-otu-class-verso-6d40a5b57d",
+    "width": 6175,
+    "height": 5135,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 283
+      },
+      {
+        "width": 386,
+        "height": 321
+      },
+      {
+        "width": 680,
+        "height": 565
+      },
+      {
+        "width": 800,
+        "height": 665
+      },
+      {
+        "width": 1200,
+        "height": 998
+      },
+      {
+        "width": 1900,
+        "height": 1580
+      },
+      {
+        "width": 2600,
+        "height": 2162
+      },
+      {
+        "width": 5000,
+        "height": 4158
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "6d40a5b57dca2f6370407ce2dc06b63948f7ece66627701bf4dadc8035f78a8b",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-otu-class-verso.jpg",
+        "width": 6175,
+        "height": 5135,
+        "bytes": 2662282
+      },
+      "share": {
+        "file": "grizzle-wiley-otu-class-verso-2600px.jpg",
+        "width": 2600,
+        "height": 2162,
+        "bytes": 514758
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-portrait-1.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-portrait-1-382076ee4f",
+    "width": 6289,
+    "height": 8658,
+    "sizes": [
+      {
+        "width": 197,
+        "height": 271
+      },
+      {
+        "width": 340,
+        "height": 468
+      },
+      {
+        "width": 680,
+        "height": 936
+      },
+      {
+        "width": 800,
+        "height": 1101
+      },
+      {
+        "width": 1200,
+        "height": 1652
+      },
+      {
+        "width": 1889,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 2616
+      },
+      {
+        "width": 3632,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1889,
+      "study": 3632
+    },
+    "hash": "382076ee4f346f442eab2e90ecdbc96bd4eea43feee0bb549d5d0e46f72fd551",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-portrait-1.jpg",
+        "width": 6289,
+        "height": 8658,
+        "bytes": 7932493
+      },
+      "share": {
+        "file": "grizzle-wiley-portrait-1-2600px.jpg",
+        "width": 1889,
+        "height": 2600,
+        "bytes": 711842
+      }
+    }
+  },
+  "allison-family/grizzle-wiley-portrait-2-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-portrait-2-recto-647f6d9848",
+    "width": 2099,
+    "height": 2089,
+    "sizes": [
+      {
+        "width": 263,
+        "height": 262
+      },
+      {
+        "width": 340,
+        "height": 338
+      },
+      {
+        "width": 680,
+        "height": 677
+      },
+      {
+        "width": 800,
+        "height": 796
+      },
+      {
+        "width": 1200,
+        "height": 1194
+      },
+      {
+        "width": 1900,
+        "height": 1891
+      },
+      {
+        "width": 2099,
+        "height": 2089
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2099,
+      "study": null
+    },
+    "hash": "647f6d984886a070bd0b0d3a36764901414ee90601c4fe18d5b6c23b413ee1a8",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-portrait-2-recto.jpg",
+        "width": 2099,
+        "height": 2089,
+        "bytes": 291200
+      },
+      "share": null
+    }
+  },
+  "allison-family/grizzle-wiley-sammy-jim-allison-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-wiley-sammy-jim-allison-recto-1b2d92b730",
+    "width": 4336,
+    "height": 4374,
+    "sizes": [
+      {
+        "width": 271,
+        "height": 274
+      },
+      {
+        "width": 340,
+        "height": 343
+      },
+      {
+        "width": 680,
+        "height": 686
+      },
+      {
+        "width": 800,
+        "height": 807
+      },
+      {
+        "width": 1200,
+        "height": 1211
+      },
+      {
+        "width": 1900,
+        "height": 1917
+      },
+      {
+        "width": 2577,
+        "height": 2600
+      },
+      {
+        "width": 4336,
+        "height": 4374
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2577,
+      "study": 4336
+    },
+    "hash": "1b2d92b730226ca8a539dbf8bf81aec760313b01815ca8411e151324de6fe05f",
+    "download": {
+      "full": {
+        "file": "grizzle-wiley-sammy-jim-allison-recto.jpg",
+        "width": 4336,
+        "height": 4374,
+        "bytes": 1534417
+      },
+      "share": {
+        "file": "grizzle-wiley-sammy-jim-allison-recto-2600px.jpg",
+        "width": 2577,
+        "height": 2600,
+        "bytes": 589843
       }
     }
   },
@@ -4308,6 +7486,142 @@
       }
     }
   },
+  "allison-family/raydon-airplanes.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/raydon-airplanes-d5ab3249c7",
+    "width": 6530,
+    "height": 5357,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 279
+      },
+      {
+        "width": 409,
+        "height": 335
+      },
+      {
+        "width": 680,
+        "height": 558
+      },
+      {
+        "width": 800,
+        "height": 656
+      },
+      {
+        "width": 1200,
+        "height": 984
+      },
+      {
+        "width": 1900,
+        "height": 1559
+      },
+      {
+        "width": 2600,
+        "height": 2133
+      },
+      {
+        "width": 5000,
+        "height": 4102
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "d5ab3249c79ec8190631028a2f6011ec383369e68cf87600d9e470f194d9a744",
+    "download": {
+      "full": {
+        "file": "raydon-airplanes.jpg",
+        "width": 6530,
+        "height": 5357,
+        "bytes": 2459353
+      },
+      "share": {
+        "file": "raydon-airplanes-2600px.jpg",
+        "width": 2600,
+        "height": 2133,
+        "bytes": 463178
+      }
+    }
+  },
+  "allison-family/unknown-house.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/unknown-house-f8a39488e6",
+    "width": 6180,
+    "height": 4441,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 244
+      },
+      {
+        "width": 387,
+        "height": 278
+      },
+      {
+        "width": 680,
+        "height": 489
+      },
+      {
+        "width": 800,
+        "height": 575
+      },
+      {
+        "width": 1200,
+        "height": 862
+      },
+      {
+        "width": 1900,
+        "height": 1365
+      },
+      {
+        "width": 2600,
+        "height": 1868
+      },
+      {
+        "width": 5000,
+        "height": 3593
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "f8a39488e6d7e2969c9ff9f598e58b71f5acf26f354780470c75318974271c95",
+    "download": {
+      "full": {
+        "file": "unknown-house.jpg",
+        "width": 6180,
+        "height": 4441,
+        "bytes": 2770499
+      },
+      "share": {
+        "file": "unknown-house-2600px.jpg",
+        "width": 2600,
+        "height": 1868,
+        "bytes": 596975
+      }
+    }
+  },
   "ingle-family/ingle-minnie-ollie-portrait-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/ingle-family/ingle-minnie-ollie-portrait-recto-0ad7228bba",
@@ -4577,6 +7891,74 @@
         "width": 1822,
         "height": 2600,
         "bytes": 1581253
+      }
+    }
+  },
+  "mckinstry-family/allison-carolyn-1955-outside-house-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/allison-carolyn-1955-outside-house-recto-9373a007ab",
+    "width": 4576,
+    "height": 4568,
+    "sizes": [
+      {
+        "width": 286,
+        "height": 286
+      },
+      {
+        "width": 340,
+        "height": 339
+      },
+      {
+        "width": 680,
+        "height": 679
+      },
+      {
+        "width": 800,
+        "height": 799
+      },
+      {
+        "width": 1200,
+        "height": 1198
+      },
+      {
+        "width": 1900,
+        "height": 1897
+      },
+      {
+        "width": 2600,
+        "height": 2595
+      },
+      {
+        "width": 4576,
+        "height": 4568
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4576
+    },
+    "hash": "9373a007abbb2c9d8c5a5ae3fc315f214e817d7ee67d0ef33daf39b9a6304770",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-1955-outside-house-recto.jpg",
+        "width": 4576,
+        "height": 4568,
+        "bytes": 1816588
+      },
+      "share": {
+        "file": "allison-carolyn-1955-outside-house-recto-2600px.jpg",
+        "width": 2600,
+        "height": 2595,
+        "bytes": 647194
       }
     }
   },
@@ -19999,6 +23381,278 @@
         "width": 2084,
         "height": 2600,
         "bytes": 397835
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-jean-junior-valentine-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-junior-valentine-1-recto-c7820deaf1",
+    "width": 6696,
+    "height": 4871,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 247
+      },
+      {
+        "width": 419,
+        "height": 305
+      },
+      {
+        "width": 680,
+        "height": 495
+      },
+      {
+        "width": 800,
+        "height": 582
+      },
+      {
+        "width": 1200,
+        "height": 873
+      },
+      {
+        "width": 1900,
+        "height": 1382
+      },
+      {
+        "width": 2600,
+        "height": 1891
+      },
+      {
+        "width": 5000,
+        "height": 3637
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "c7820deaf162cb45bc713b87188b22be1111b0e835c67cfd1411b58f3d8482bd",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-junior-valentine-1-recto.jpg",
+        "width": 6696,
+        "height": 4871,
+        "bytes": 3706493
+      },
+      "share": {
+        "file": "mckinstry-jean-junior-valentine-1-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1891,
+        "bytes": 605025
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-jean-junior-valentine-1-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-junior-valentine-1-verso-0fe4b37378",
+    "width": 6720,
+    "height": 4932,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 250
+      },
+      {
+        "width": 420,
+        "height": 309
+      },
+      {
+        "width": 680,
+        "height": 499
+      },
+      {
+        "width": 800,
+        "height": 587
+      },
+      {
+        "width": 1200,
+        "height": 881
+      },
+      {
+        "width": 1900,
+        "height": 1394
+      },
+      {
+        "width": 2600,
+        "height": 1908
+      },
+      {
+        "width": 5000,
+        "height": 3670
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "0fe4b3737842cb8a6b04632d00d82cabcdd6f811facf196559fc708f318be2ee",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-junior-valentine-1-verso.jpg",
+        "width": 6720,
+        "height": 4932,
+        "bytes": 7805664
+      },
+      "share": {
+        "file": "mckinstry-jean-junior-valentine-1-verso-2600px.jpg",
+        "width": 2600,
+        "height": 1908,
+        "bytes": 1391391
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-jean-junior-valentine-2-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-junior-valentine-2-recto-b37eb84fef",
+    "width": 4337,
+    "height": 4509,
+    "sizes": [
+      {
+        "width": 272,
+        "height": 282
+      },
+      {
+        "width": 340,
+        "height": 353
+      },
+      {
+        "width": 680,
+        "height": 707
+      },
+      {
+        "width": 800,
+        "height": 832
+      },
+      {
+        "width": 1200,
+        "height": 1248
+      },
+      {
+        "width": 1900,
+        "height": 1975
+      },
+      {
+        "width": 2501,
+        "height": 2600
+      },
+      {
+        "width": 4337,
+        "height": 4509
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2501,
+      "study": 4337
+    },
+    "hash": "b37eb84fef0e45cba2cba38783320f27ffa023050565a34e2d57fc453c986299",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-junior-valentine-2-recto.jpg",
+        "width": 4337,
+        "height": 4509,
+        "bytes": 2704377
+      },
+      "share": {
+        "file": "mckinstry-jean-junior-valentine-2-recto-2600px.jpg",
+        "width": 2501,
+        "height": 2600,
+        "bytes": 1010017
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-jean-junior-valentine-2-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-junior-valentine-2-verso-f72ae7ed3d",
+    "width": 4593,
+    "height": 4473,
+    "sizes": [
+      {
+        "width": 288,
+        "height": 280
+      },
+      {
+        "width": 340,
+        "height": 331
+      },
+      {
+        "width": 680,
+        "height": 662
+      },
+      {
+        "width": 800,
+        "height": 779
+      },
+      {
+        "width": 1200,
+        "height": 1169
+      },
+      {
+        "width": 1900,
+        "height": 1850
+      },
+      {
+        "width": 2600,
+        "height": 2532
+      },
+      {
+        "width": 4593,
+        "height": 4473
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4593
+    },
+    "hash": "f72ae7ed3d433bf4efa96d361d70a342b218e7b47a0b38c59b44479925f8f6fa",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-junior-valentine-2-verso.jpg",
+        "width": 4593,
+        "height": 4473,
+        "bytes": 3274983
+      },
+      "share": {
+        "file": "mckinstry-jean-junior-valentine-2-verso-2600px.jpg",
+        "width": 2600,
+        "height": 2532,
+        "bytes": 1147448
       }
     }
   },

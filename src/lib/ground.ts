@@ -230,6 +230,8 @@ export class Ground {
   private worker: Worker | null = null;
   private jobId = 0;
   private waiting = new Map<number, (px: Uint8ClampedArray) => void>();
+  /** The box the land's name occupies on the table, px; set by each render. */
+  nameBox: { x0: number; y0: number; x1: number; y1: number } | null = null;
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
   }
@@ -376,7 +378,16 @@ export class Ground {
     const gap = NAME.size * NAME.spacing;
     const chars = [...NAME.text];
     const widths = chars.map((ch) => ctx.measureText(ch).width);
-    let cx = -(widths.reduce((sum, w) => sum + w, 0) + gap * (chars.length - 1)) / 2;
+    const total = widths.reduce((sum, w) => sum + w, 0) + gap * (chars.length - 1);
+    // where the lettering lies on the table, so other lettering keeps off it
+    const hw = total / 2 + 6;
+    const hh = NAME.size * 0.6 + 6;
+    const c = Math.abs(Math.cos(NAME.rot * RAD));
+    const s = Math.abs(Math.sin(NAME.rot * RAD));
+    const ex = hw * c + hh * s;
+    const ey = hw * s + hh * c;
+    this.nameBox = { x0: p.x - ex, y0: p.y - ey, x1: p.x + ex, y1: p.y + ey };
+    let cx = -total / 2;
     chars.forEach((ch, k) => {
       ctx.fillText(ch, cx + widths[k] / 2, 0);
       cx += widths[k] + gap;

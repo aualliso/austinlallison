@@ -46,23 +46,9 @@
  *                  references kept as plain text, each creed on its page.
  *   the leaf       the page is a leaf of vellum hanging from the foot of
  *                  the header: a warm skin (a baked tile, public/images/
- *                  faith/vellum.webp), stains and browned edges, and the
- *                  scribe's double margin rules in red
- *                  down both sides. (No ruled lines across: lines that
- *                  did not fall exactly under the text would look wrong,
- *                  and the creeds' lines are of several sizes.)
- *   the window     sunlight through a Venetian window falls across the top
- *                  of the leaf: a bifora, two round-arched lights side by
- *                  side under one arch, with a quatrefoil in the
- *                  tympanum. Each light is jewel glass in the season's
- *                  colour with a gold cross, Alpha in one and Omega in
- *                  the other ("I am Alpha and Omega, the beginning and the
- *                  ending", Rev. 1:8). Its arches keep its light from
- *                  echoing the round heaven of the cross. It is
- *                  drawn once (WINDOW, below) and coloured by the
- *                  stylesheet, so the season recolours it; the sun moves
- *                  it, long from the right in the morning, short at noon,
- *                  long to the left at evening, and it fades at dusk.
+ *                  faith/vellum.webp), stains and browned edges. The
+ *                  mosaic's border frames it, so it carries no rules of
+ *                  its own.
  *   the mosaic     after St Mark's in Venice, the leaf stands in gold
  *                  mosaic: a gold lintel over it and, on a wide screen, a
  *                  gold pillar either side, each with a vine rising from
@@ -76,8 +62,8 @@
  *                  head of the page and the creeds there is only a scribe's
  *                  rubric, Credo, between two rules. All of it is baked to
  *                  small images in public/images/faith/, so it costs
- *                  nothing to draw; on a phone the pillars give way to the
- *                  leaf.
+ *                  nothing to draw; on a narrower screen the pillars give
+ *                  way to the leaf and a slim border runs down its sides.
  *   the gilding    each creed's initial is gilded the first time it
  *                  scrolls into view: the gold is laid across red bole,
  *                  the clay gilders lay under leaf, and catches the light
@@ -434,70 +420,6 @@ const STARS = [
   [8, 148, 3], [112, 150, 3], [-24, 110, 3], [144, 112, 3],
 ].map(([x, y, rad]) => star(x, y, rad));
 
-/* ── THE WINDOW ────────────────────────────────────────────────
-   A Venetian bifora, 150 wide and 300 tall: two round-arched lights,
-   each 56 wide, either side of a colonnette, under one round arch whose
-   tympanum holds a quatrefoil. Each light has a border of jewel glass, a
-   field of the season's colour laid in diamond quarries, a gold cross,
-   and over it Alpha (the left) or Omega (the right). The season's glass
-   carries classes the stylesheet colours; the rest keeps its own. The
-   lead is drawn in the leaf's colour: on the page it is where no light
-   falls. */
-const r1 = (n: number) => +n.toFixed(1);
-/** A round-headed opening: straight sides, a semicircle on top. */
-const roundArch = (x: number, w: number, spring: number, foot: number) =>
-  `M${x},${foot} V${spring} A${w / 2},${w / 2} 0 0 1 ${x + w},${spring} V${foot} Z`;
-
-/** One light of the window. */
-function venetianLight(x: number, glyph: string): string {
-  const w = 56;
-  const b = 5;
-  const spring = 90;
-  const foot = 292;
-  const cx = x + w / 2;
-  let h = `<path class="g-gold" d="${roundArch(x, w, spring, foot)}"/>`;
-  // the border: jewels down both sides and along the foot
-  const jewels = ['g-ruby', 'g-blue', 'g-gold', 'g-blue'];
-  let i = 0;
-  for (let y = spring - 2; y < foot - 2; y += 9) {
-    const c = jewels[i++ % 4];
-    h += `<rect class="${c}" x="${x}" y="${y}" width="${b}" height="7.6"/><rect class="${c}" x="${x + w - b}" y="${y}" width="${b}" height="7.6"/>`;
-  }
-  for (let xx = x + b; xx < x + w - b - 1; xx += 8) h += `<rect class="${jewels[i++ % 4]}" x="${xx}" y="${foot - b}" width="6.8" height="${b}"/>`;
-  // the field and its quarries
-  h += `<path class="g-field" d="${roundArch(x + b, w - 2 * b, spring, foot - b)}"/>`;
-  for (let qy = spring - 24; qy < foot - 24; qy += 26) {
-    h += `<path class="g-deep" d="M${cx},${qy} L${x + w - b},${qy + 13} L${cx},${qy + 26} L${x + b},${qy + 13} Z"/>`;
-  }
-  // Alpha or Omega, then the cross with a white glory at its crossing
-  h += `<text class="g-letter" x="${cx}" y="${spring + 8}">${glyph}</text>`;
-  const top = spring + 30;
-  const cross = `M${cx - 3.4},${top} H${cx + 3.4} V${top + 30} H${cx + 13} V${top + 37} H${cx + 3.4} V${foot - 30} H${cx - 3.4} V${top + 37} H${cx - 13} V${top + 30} H${cx - 3.4} Z`;
-  h += `<circle class="g-white" cx="${cx}" cy="${top + 33.5}" r="12"/>`;
-  h += `<path class="g-gold" d="${cross}"/>`;
-  h += `<circle class="g-ruby" cx="${cx}" cy="${foot - 20}" r="5"/>`;
-  // the lead
-  h += `<g class="g-lead"><path d="${roundArch(x + b, w - 2 * b, spring, foot - b)}"/><path d="M${x + b},${spring + 70} H${x + w - b} M${x + b},${spring + 140} H${x + w - b}"/></g>`;
-  h += `<path class="g-lead g-lead--fine" d="${cross}"/>`;
-  return h;
-}
-
-/** The quatrefoil in the tympanum, with a cross at its heart. */
-function quatrefoil(): string {
-  const cx = 75;
-  const cy = 44;
-  let h = `<circle class="g-gold" cx="${cx}" cy="${cy}" r="22"/>`;
-  ['g-ruby', 'g-blue', 'g-ruby', 'g-blue'].forEach((c, i) => {
-    const a = (i * Math.PI) / 2 - Math.PI / 2;
-    h += `<circle class="${c}" cx="${r1(cx + Math.cos(a) * 8.5)}" cy="${r1(cy + Math.sin(a) * 8.5)}" r="9"/>`;
-  });
-  h += `<circle class="g-field" cx="${cx}" cy="${cy}" r="6"/>`;
-  h += `<path class="g-gold" d="M${cx - 1.4},${cy - 5} h2.8 v3.6 h3.6 v2.8 h-3.6 v3.6 h-2.8 v-3.6 h-3.6 v-2.8 h3.6 Z"/>`;
-  h += `<g class="g-lead"><circle cx="${cx}" cy="${cy}" r="22"/><circle cx="${cx}" cy="${cy}" r="6"/></g>`;
-  return h;
-}
-
-const WINDOW = quatrefoil() + venetianLight(10, '\u0391') + venetianLight(84, '\u03A9');
 ---
 
 <RootLayout
@@ -531,10 +453,7 @@ const WINDOW = quatrefoil() + venetianLight(10, '\u0391') + venetianLight(84, '\
         </div>
       ))}
     </div>
-  <article class="faith" data-season={SEASON.colour}>
-    <svg class="window-light" viewBox="0 0 1000 900" aria-hidden="true">
-      <g class="glass-light" set:html={WINDOW}></g>
-    </svg>
+  <article class="faith">
 
     <div
       class="ribbon"
@@ -879,14 +798,14 @@ const WINDOW = quatrefoil() + venetianLight(10, '\u0391') + venetianLight(84, '\
   .b--bottom,
   .b--inner-top {
     height: var(--b);
-    background: url('/images/faith/mosaic-border-h.webp') 0 0 / 20px 22px repeat-x;
+    background: url('/images/faith/mosaic-border-h.webp') 0 0 / calc(var(--b) * 20 / 22) var(--b) repeat-x;
   }
   .b--outer-left,
   .b--outer-right,
   .b--inner-left,
   .b--inner-right {
     width: var(--b);
-    background: url('/images/faith/mosaic-border-v.webp') 0 0 / 22px 20px repeat-y;
+    background: url('/images/faith/mosaic-border-v.webp') 0 0 / var(--b) calc(var(--b) * 20 / 22) repeat-y;
   }
   .b--top { top: 0; left: var(--b); right: var(--b); transform: scaleY(-1); }
   .b--bottom { bottom: 0; left: var(--b); right: var(--b); }
@@ -942,26 +861,32 @@ const WINDOW = quatrefoil() + venetianLight(10, '\u0391') + venetianLight(84, '\
     bottom: 6px;
     width: 40px;
   }
-  /* on a narrower screen the pillars give way to the leaf; the lintel
-     and the borders across the top and foot stay */
+  /* on a narrower screen the pillars give way to the leaf, but the frame
+     stays: the outer border runs down both sides of the leaf itself, a
+     little slimmer, and a corner block turns it where the border under
+     the lintel meets it */
   @media (max-width: 63.99rem) {
     .nave {
-      --p: 0px;
+      --b: 16px;
+      --p: var(--b);
     }
-    .b--outer-left,
-    .b--outer-right,
     .b--inner-left,
     .b--inner-right,
-    .c--itl,
-    .c--itr,
     .c--ibl,
     .c--ibr,
     .pillar {
       display: none;
     }
+    .c--itl {
+      left: 0;
+    }
+    .c--itr {
+      right: 0;
+    }
   }
   @media (max-width: 40rem) {
     .nave {
+      --b: 12px;
       --lintel: 30px;
     }
   }
@@ -978,83 +903,6 @@ const WINDOW = quatrefoil() + venetianLight(10, '\u0391') + venetianLight(84, '\
     font-style: italic;
     letter-spacing: 0.06em;
     color: var(--rubric);
-  }
-
-  /* the scribe's double margin rules, in red, down both sides */
-  .faith::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: clamp(0.45rem, 2vw, 1.5rem);
-    right: clamp(0.45rem, 2vw, 1.5rem);
-    border-left: 3px double rgba(140, 47, 36, 0.26);
-    border-right: 3px double rgba(140, 47, 36, 0.26);
-    z-index: -1;
-    pointer-events: none;
-  }
-
-  /* ── THE WINDOW'S LIGHT ──────────────────────────────────────
-     The glass, laid on the top of the leaf as the sun throws it: placed
-     and leaned by where the sun stands (--sun-p, 1 morning at the right
-     to 0 evening at the left) and lengthened as it gets low (--graze).
-     Behind the words (the page is its own stacking context, so -1 is
-     above the leaf and below the text), faint, and gone at night. It is
-     sized by the leaf's width, so it is never stretched, and on a phone
-     falls over the head of the page. At noon it lies just right of the
-     cross rather than behind it. */
-  .window-light {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: auto;
-    aspect-ratio: 1000 / 900;
-    z-index: -1;
-    pointer-events: none;
-    opacity: calc((1 - var(--night)) * var(--glass-strength, 0.36));
-    filter: blur(1.5px);
-    transition: opacity 2s ease;
-  }
-  .glass-light {
-    transform: translate(calc(var(--sun-p) * 470px + 350px), 18px)
-      skewX(calc((var(--sun-p) - 0.5) * -100deg)) scale(1.45, calc(0.72 + 0.82 * var(--graze)));
-    transition: transform 2s ease;
-  }
-  /* THE GLASS. Jewel colours that stay, and the season's own: the field
-     of each lancet, its quarries and its border. */
-  .faith {
-    --g-gold: #f2c43c;
-    --g-white: #fbf4dc;
-    --g-ruby: #c0202c;
-    --g-blue: #1f56c0;
-  }
-  .faith[data-season='green'] {
-    --g-field: #1f8a48; --g-deep: #156237;
-  }
-  .faith[data-season='violet'] {
-    --g-field: #5d34a8; --g-deep: #41237c;
-  }
-  .faith[data-season='white'] {
-    --g-field: #f3e3a2; --g-deep: #e7cd76;
-  }
-  .faith[data-season='red'] {
-    --g-field: #c42a2a; --g-deep: #8e1a1e;
-  }
-  .window-light :global(.g-gold) { fill: var(--g-gold); }
-  .window-light :global(.g-white) { fill: var(--g-white); }
-  .window-light :global(.g-ruby) { fill: var(--g-ruby); }
-  .window-light :global(.g-blue) { fill: var(--g-blue); }
-  .window-light :global(.g-field) { fill: var(--g-field, #1f8a48); }
-  .window-light :global(.g-deep) { fill: var(--g-deep, #156237); opacity: 0.42; }
-  .window-light :global(.g-letter) { font-family: var(--serif); font-size: 22px; font-weight: 500; text-anchor: middle; fill: var(--g-gold); }
-  .window-light :global(.g-lead) { fill: none; stroke: var(--leaf); stroke-width: 1.6; }
-  .window-light :global(.g-lead--fine) { stroke-width: 1; }
-  @media (max-width: 40rem) {
-    .window-light {
-      --glass-strength: 0.28;
-      filter: none;
-    }
   }
 
   .visually-hidden {
@@ -1561,9 +1409,7 @@ const WINDOW = quatrefoil() + venetianLight(10, '\u0391') + venetianLight(84, '\
     .cross-glint,
     .cross-night,
     .cross-candle,
-    .ribbon-name,
-    .window-light,
-    .glass-light {
+    .ribbon-name {
       transition: none;
     }
   }
@@ -1610,8 +1456,6 @@ const WINDOW = quatrefoil() + venetianLight(10, '\u0391') + venetianLight(84, '\
     .initial-letter {
       clip-path: none;
     }
-    .faith::before,
-    .window-light,
     .ribbon,
     .cross-glint,
     .cross-night,
@@ -1682,7 +1526,6 @@ const WINDOW = quatrefoil() + venetianLight(10, '\u0391') + venetianLight(84, '\
     const when = staged && !Number.isNaN(Date.parse(staged)) ? new Date(staged) : new Date();
     const season = seasonOn(when);
     ribbon.dataset.colour = season.colour;
-    page.dataset.season = season.colour; // the window's glass
     ribbon.setAttribute('aria-label', `The season of the church year: ${season.name}`);
     const name = ribbon.querySelector('.ribbon-name');
     if (name) name.textContent = season.name;
