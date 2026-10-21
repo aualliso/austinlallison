@@ -4578,7 +4578,213 @@ export const COLLECTION: Collection = {
         note: 'Photographer unidentified; unpublished.',
       },
     },
-    
+    {
+      slug: 'west-eva-emma-thomas',
+      title: '[Eva Swann and Emma Thomas Miller on a porch]',
+      controlNumber: 'I.1.2.4',
+      titleSource: 'supplied',
+      place: 'Texas',
+      date: {
+        // What prints. Square brackets mark an assessment.
+        display: '[1915-1925]',
+        earliest: 1915,
+        latest: 1925,
+        basis: [
+          'Estimated date',
+        ],
+        confidence: 'probable',
+      },
+      depicts: [
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity.',
+          region: { face: 'recto', x: 30.8, y: 21.7, w: 6.5, h: 9 },
+        },
+        {
+          person: 'miller-emma-thomas',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          basis: 'Only Emma I can identify in the family.',
+          region: { face: 'recto', x: 45.1, y: 22.3, w: 7, h: 9.2 },
+        },
+      ],
+      format: 'real photo postcard',
+      inscriptions: [
+        { location: 'recto',
+          medium: 'ink',
+          text: 'Eva and Emma\n 90lbs | 268 lbs\nbefore and after'
+        }
+      ],
+      recto: { file: 'west-eva-emma-thomas-recto.jpg' },
+      verso: { file: 'west-eva-emma-thomas-verso.jpg'},
+      description: 'This is a photography of Eva Swann and Emma Thomas Miller, Eva\'s aunt. They are pointing at each other in a playful way.',
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'swann-loveta-eva-minnie-other-girls',
+      title: '[Eva, Minnie, and Loveta Swann with other unidentified girls]',
+      controlNumber: 'I.1.3.3',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1910-1915]',
+        earliest: 1910,
+        latest: 1915,
+        basis: [
+          'There is no date, but this was likely taken after the Swanns moved to New Mexico.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'swann-loveta-eva-minnie-other-girls-recto.jpg' },
+      verso: { file: 'swann-loveta-eva-minnie-other-girls-verso.jpg' },
+      description: 'This photograph depicts Eva, Minnie, and Loveta Swann standing on a porch with other unidentified girls.',
+      inscriptions: [
+        
+      ],
+      depicts: [
+        {
+          person: 'west-eva-swann-powell',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 46.3, y: 31.7, w: 5.9, h: 9.5 },
+        },
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 37.1, y: 29.8, w: 6, h: 10.1 },
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 72.9, y: 44.5, w: 6.4, h: 10.6 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'girdner-nannie-ouida-centennial',
+      title: '[Nannie and Ouida Girdner at the Greenville Centennial]',
+      controlNumber: 'I.1.6.1',
+      titleSource: 'supplied',
+      place: 'Greenville, Texas',
+      date: {
+        display: '1950',
+        earliest: 1950,
+        latest: 1950,
+        basis: [
+          'Nannie appears in the same outfit in another photograph from this scene in 1950 at the Greenville, Texas Centennial.',
+        ],
+        confidence: 'certain',
+      },
+      format: 'snapshot',
+      recto: { file: 'girdner-nannie-ouida-centennial-recto.jpg' },
+      verso: { file: 'girdner-nannie-ouida-centennial-verso.jpg' },
+      description: 'This photograph depicts Nannie Swann Girdner and her niece Ouida Girdner. Another photograph from this series suggests that this was taken at the Greenville, Texas Centennial Celebration.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Nannie Swann Girdner\nOuida Girdner'
+        }
+      ],
+      related: [
+        {slug: 'girdner-nannie-swann-greenville-centennial', relation: ''}
+      ],
+      depicts: [
+        {
+          person: 'girdner-nannie-atkinson-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 24.6, y: 15.6, w: 15.4, h: 14.1 },
+        },
+        {
+          as: 'Ouida Girdner',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 56.1, y: 18.6, w: 13.4, h: 10.4 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'girdner-nannie-house-porch',
+      title: '[Nannie Girdner sitting on her porch]',
+      controlNumber: 'I.1.7.3',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '[1920-1930]',
+        earliest: 1920,
+        latest: 1930,
+        basis: [
+          'This photograph is undated, but a date from 1920 to 1930 is likely.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'girdner-nannie-house-porch-recto.jpg' },
+      verso: { file: 'girdner-nannie-house-porch-verso.jpg' },
+      description: 'This photograph depicts Nannie Swann Girdner and her niece Ouida Girdner. Another photograph from this series suggests that this was taken at the Greenville, Texas Centennial Celebration.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Mrs. C.E. Girdner'
+        }
+      ],
+      depicts: [
+        {
+          person: 'girdner-nannie-atkinson-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 59.5, y: 40, w: 2.4, h: 4.7 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'three-men-on-donkey',
+      title: '[Two men on a donkey]',
+      controlNumber: 'I.1.11.1',
+      titleSource: 'supplied',
+      place: 'unknown',
+      date: {
+        display: '[1900-1920]',
+        earliest: 1900,
+        latest: 1920,
+        basis: [
+          'This photograph is undated. Dates of 1900 to 1920 seem probable',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'three-men-on-donkey-recto.jpg' },
+      verso: { file: 'three-men-on-donkey-vero.jpg' },
+      description: 'This photograph depicts two unidentified men riding a donkey. Another man stands near the face of the donkey.',
+      inscriptions: [
+      ],
+      depicts: [
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
         /* ---------------------------------------------------------------- */
     {
       slug: 'midway-grange-journal',

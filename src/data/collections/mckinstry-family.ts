@@ -7407,8 +7407,573 @@ export const COLLECTION: Collection = {
         note: 'Photographer unidentified; unpublished.',
       },
     },
-
-
+    {
+      slug: 'mckinstry-car-on-bridge',
+      title: '[Car on bridge]',
+      controlNumber: 'I.1.2.1',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1923-1924]',
+        earliest: 1923,
+        latest: 1924,
+        basis: [
+          'Assuming the children in this photograph are Sammy and Jean McKinstry, Jean appears to be one or two years old, which places this in 1923 or 1924.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-car-on-bridge-recto.jpg' },
+      verso: { file: 'mckinstry-car-on-bridge-verso.jpg'},
+      description: 'This photograph depicts a car on the bridge with a woman standing outside the car with a child and a woman sitting in the car with a child. It is presumed the children depicted here are Sammy and Jean McKinstry. The other women can not be positively identified.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 47.3, y: 51.5, w: 4.4, h: 3.2 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'probable',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 73.7, y: 44.9, w: 3.4, h: 2.5 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-jean-dress-tree',
+      title: '[Jean McKinstry wearing a dress in front of a tree]',
+      controlNumber: 'I.1.2.3',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1936-1938]',
+        earliest: 1936,
+        latest: 1938,
+        basis: [
+          'Jean appears to be 14 to 16 years old here.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-jean-dress-tree-recto.jpg' },
+      verso: { file: 'mckinstry-jean-dress-tree-verso.jpg'},
+      description: 'This photograph depicts Jean McKinstry wearing a dress standing in front of a tree.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 44.7, y: 17.3, w: 11.3, h: 12.7 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-jean-doll-car',
+      title: '[Jean McKinstry with a doll by a car]',
+      controlNumber: 'I.1.3.1',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1924-1925]',
+        earliest: 1924,
+        latest: 1925,
+        basis: [
+          'Jean appears to be 2 or 3 years old here, which places the photograph in 1924 or 1925.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-jean-doll-car-recto.jpg' },
+      verso: { file: 'mckinstry-jean-doll-car-verso.jpg'},
+      description: 'This photograph depicts Jean McKinstry as a child kneeling with a doll near a car.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 43.4, y: 30.2, w: 19.3, h: 16.6 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-sammy-sara-beth-west-dresses',
+      title: '[Sammy McKinstry and Sara Beth West in dresses standing near a tree]',
+      controlNumber: 'I.1.3.2',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1936-1938]',
+        earliest: 1936,
+        latest: 1938,
+        basis: [
+          'Sammy appears to be 16 to 18 here, which places this photograph from 1936 to 1938.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-sammy-sara-beth-west-dresses-recto.jpg' },
+      verso: { file: 'mckinstry-sammy-sara-beth-west-dresses-verso.jpg'},
+      description: 'This photograph depicts Sammy McKinstry and her cousin Sara Beth West standing near a tree with both wearing dresses.',
+      related: [
+      ],
+      inscriptions: [ 
+        {
+          location: 'verso',
+          medium: 'pencil',
+          text: 'Sammy\nSara Beth'
+        }
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 53.6, y: 24.3, w: 8.9, h: 9 },
+        },
+        {
+          person: 'wakeman-sara-beth-west',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 37.6, y: 24.3, w: 12.2, h: 9.6 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-sammy-jean-mildred-peggy-sitting',
+      title: '[Sammy, Jean, Mildred, and Peggy McKinstry sitting near a bush]',
+      controlNumber: 'I.1.3.4',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1932-1934]',
+        earliest: 1932,
+        latest: 1934,
+        basis: [
+          'Mildred appears to be 5 to 7 years old here, which places this photograph between 1932 and 1934.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-sammy-jean-mildred-peggy-sitting-recto.jpg' },
+      verso: { file: 'mckinstry-sammy-jean-mildred-peggy-sitting-verso.jpg'},
+      description: 'This photograph depicts Sammy, Jean, Mildred, and Peggy McKinstry sitting on the ground near a bush in front of a structure.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 53.7, y: 23.1, w: 9.9, h: 15.3 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 64.6, y: 23.3, w: 9.8, h: 16.7 },
+        },
+        {
+          person: 'osborn-mildred-adeline-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 28.4, y: 30.6, w: 7.1, h: 13.3 },
+        },
+        {
+          person: 'smith-peggy-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 39.8, y: 29.9, w: 9.1, h: 14.7 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-sammy-cork-andrews',
+      title: '[Sammy McKinstry with high school friends Cork Andrews and Dub Hardin]',
+      controlNumber: 'I.1.4.1',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1937]',
+        earliest: 1937,
+        latest: 1937,
+        basis: [
+          'This picture matches a photograph of Sammy\'s senior year classmates. This would have been taken in 1937.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-sammy-cork-andrews-recto.jpg' },
+      verso: { file: 'mckinstry-sammy-cork-andrews-verso.jpg'},
+      description: 'This photograph depicts Sammy McKinstry with friends Cork Andrews and Dub Hardin. They are in a forested area.',
+      related: [
+      ],
+      inscriptions: [ 
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Dub Hardin\nSammy\n+\nCork Andrews'
+        }
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 49.5, y: 43.1, w: 12, h: 9.8 },
+        },
+        {
+          as: 'Cork Andrews',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 28.9, y: 39.6, w: 13.2, h: 10.8 },
+        },
+        {
+          as: 'Dub Hardin',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 39.3, y: 39.6, w: 11.5, h: 8.5 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-sammy-jean-in-costumes',
+      title: '[Sammy and Jean McKinstry in costumes]',
+      controlNumber: 'I.1.4.2',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1926-1928]',
+        earliest: 1926,
+        latest: 1928,
+        basis: [
+          'Jean appears to be between 4 and 6 years old here, which places it between 1926 and 1928.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-sammy-jean-in-costumes-recto.jpg' },
+      verso: { file: 'mckinstry-sammy-jean-in-costumes-verso.jpg'},
+      description: 'This photograph depicts Sammy and Jean McKinstry wearing costumes.',
+      related: [
+      ],
+      inscriptions: [ 
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'My master creation\n Jean Allison'
+        }
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 54.2, y: 26, w: 14, h: 12.2 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 26.5, y: 32, w: 13.8, h: 13.1 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-sam-sammy-near-porch',
+      title: '[Sam McKinstry holding Sammy near a porch]',
+      controlNumber: 'I.1.4.3',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1921]',
+        earliest: 1921,
+        latest: 1921,
+        basis: [
+          'Sammy appears to be one year old here.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-sam-sammy-near-porch-recto.jpg' },
+      verso: { file: 'mckinstry-sam-sammy-near-porch-verso.jpg'},
+      description: 'This photograph depicts Sam McKinstry holding his daughter, Sammy, near the porch of a house.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-samuel-small',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 24.1, y: 21.7, w: 10.9, h: 9.5 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 32.1, y: 14, w: 10, h: 8.9 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-loveta-sammy-jean-in-field',
+      title: '[Loveta McKinstry with her two daughters, Sammy and Jean, in a field]',
+      controlNumber: 'I.1.4.4',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1923-1924]',
+        earliest: 1923,
+        latest: 1924,
+        basis: [
+          'Jean appears to be between one and two years old here, which places this photo in 1923 or 1924.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-loveta-sammy-jean-in-field-recto.jpg' },
+      verso: { file: 'mckinstry-loveta-sammy-jean-in-field-verso.jpg'},
+      description: 'This photograph depicts Loveta McKinstry kneeling in a field with her two daughers, Sammy and Jean. A structure and a windmill are in the background.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 53.4, y: 40.6, w: 6.2, h: 5.5 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 58.5, y: 42.1, w: 7.2, h: 5.7 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 48.8, y: 40.9, w: 6.2, h: 5.2 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-jean-dress-lamb',
+      title: '[Jean McKinstry wearing a dress and hat with a lamb]',
+      controlNumber: 'I.1.5.1',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1936-1938]',
+        earliest: 1936,
+        latest: 1938,
+        basis: [
+          'Jean appears to be 14 to 16 years old here.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-jean-dress-lamb-recto.jpg' },
+      verso: { file: 'mckinstry-jean-dress-lamb-verso.jpg'},
+      description: 'This photograph depicts Jean McKinstry wearing a dress and a hat. There are two lambs visible on the ground.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 36.3, y: 17.6, w: 12.9, h: 12.5 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-sam-sammy-with-steer',
+      title: '[Sam McKinstry with Sammy in a field with a steer]',
+      controlNumber: 'I.1.5.2',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1922]',
+        earliest: 1922,
+        latest: 1922,
+        basis: [
+          'Sammy appears to be about two years old here.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-sam-sammy-with-steer-recto.jpg' },
+      verso: { file: 'mckinstry-sam-sammy-with-steer-verso.jpg'},
+      description: 'This photograph depicts Sam McKinstry with his daughter, Sammy, in a field with a steer behind a fence. They appear to be feeding the steer.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-samuel-small',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 44.8, y: 29.1, w: 3.6, h: 7.1 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 50, y: 47.7, w: 3.9, h: 6.6 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-jean-dress-bicycle',
+      title: '[Jean McKinstry wearing a polka dot dress pushing a bicycle]',
+      controlNumber: 'I.1.5.3',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1936-1938]',
+        earliest: 1936,
+        latest: 1938,
+        basis: [
+          'Jean appears to be 14 to 16 years old here.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-jean-dress-bicycle-recto.jpg' },
+      verso: { file: 'mckinstry-jean-dress-bicycle-verso.jpg'},
+      description: 'This photograph depicts Jean McKinstry wearing a polka dot dress while pushing a bicycle.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 45.8, y: 18.1, w: 11.5, h: 11.5 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-loveta-jean-sammy-porch',
+      title: '[Loveta, Sammy, and Jean McKinstry on the porch]',
+      controlNumber: 'I.1.5.4',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1923]',
+        earliest: 1923,
+        latest: 1923,
+        basis: [
+          'Jean appears to be less than six months old here, but more than 2 months old. This places the photograph in 1923.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-loveta-jean-sammy-porch-recto.jpg' },
+      verso: { file: 'mckinstry-loveta-jean-sammy-porch-verso.jpg'},
+      description: 'This photograph depicts Loveta McKinstry holding her daughter Jean while sitting on the porch. Sammy is visible to the right.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 48.7, y: 32.6, w: 9.2, h: 9 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 67, y: 44.5, w: 9.9, h: 9 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 38.2, y: 34.9, w: 10.5, h: 9.3 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
     {
       slug: 'mckinstry-album',
       title: '[Album of McKinstry photographs]',

@@ -632,5 +632,91 @@ export const COLLECTION: Collection = {
       ],
 
     },
+    {
+      slug: 'thomas-bud-john-stairs',
+      controlNumber: 'I.1.2.2',
+      title: '[Bud and John Thomas standing on stairs]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      date: {
+        display: '[1914-1918]',
+        earliest: 1914,
+        latest: 1918,
+        basis: ['This photograph is undated, but it may have been taken around the time others of these two were taken. This is an assumption.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'thomas-bud-john-stairs-recto.jpg',
+      },
+       verso: {
+        file: 'thomas-bud-john-stairs-verso.jpg',
+      },
+      description:
+        'This is a photograph of Norphlet "Bud" Thomas and his brother John. They are both standing on stairs.',
+      depicts: [
+        {
+          person: 'thomas-norphlet-bud',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 33, y: 33, w: 11.1, h: 6.9 },
+        },
+        {
+          person: 'thomas-john',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 60.7, y: 30, w: 12.8, h: 8.4 },
+        },
+      ],
+      inscriptions: [
+        {
+          location: 'recto',   // 'recto' | 'verso' | 'mount' | 'sleeve'
+          medium: 'ink',       // 'pencil' | 'ink' | 'ballpoint' | 'printed' | 'stamped' | 'other'
+          // Transcribe AS WRITTEN, spelling included. \n for line breaks.
+          text: 'Uncle Bud and Daddy',
+        },
+      ],
+
+    },
+    {
+      slug: 'thomas-minerva-porch',
+      controlNumber: 'I.1.1.1',
+      title: '[Minerva Hunter Thomas sitting on the porch]',
+      titleSource: 'supplied',
+      place: 'Texas',
+      format: 'real photo postcard',
+      date: {
+        display: '[1910-1915]',
+        earliest: 1910,
+        latest: 1915,
+        basis: ['This photograph is undated, but an assumed date of 1910 to 1915 is likely.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'thomas-minerva-porch-recto.jpg',
+      },
+       verso: {
+        file: 'thomas-minerva-porch-verso.jpg',
+      },
+      inscriptions: [
+        { location: 'verso',
+          medium: 'ink',
+          text: 'Grandma Thomas'
+        }
+      ],
+      description:
+        'This photograph depicts Minerva Hunter Thomas sewing while sitting on a porch. The location of this photograph is unknown, but it is possible it was taken in Texas.',
+      depicts: [
+        {
+          person: 'thomas-minerva-hunter',
+          confidence: 'certain',
+          basis:
+            'Identified on verso',
+          region: { face: 'recto', x: 48.5, y: 41.2, w: 9.2, h: 6.4 },
+        },
+      ],
+
+    },
   ],
 };

@@ -3963,5 +3963,173 @@ export const COLLECTION: Collection = {
         },
       ],
     },
+    {
+      slug: 'allison-harold-oscar-fred-barn',
+      title: '[Harold, Oscar, and Fred Allison at the barn]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'I.1.7.4',
+      date: {
+        display: '[1954]',
+        earliest: 1954,
+        latest: 1954,
+        basis: ['The verso lists the date as 1954. Nothing objects to this.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-oscar-fred-barn-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-oscar-fred-barn-verso.jpg',
+      },
+      description:
+        'This photograph depicts Harold, Oscar, and Fred Allison at the barn in Lamb County between Muleshoe and Earth. Harold is leaning against a vehicle.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Oscar and Harold Allison\n on whose farm show was held. \n\nFred\'s picture\n\nHLA 1954.'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 56.9, y: 38.3, w: 11, h: 15 },
+        },
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 17.6, y: 35.6, w: 11.5, h: 18.5 },
+        },
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 37.9, y: 72, w: 7.9, h: 11.6 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-carolyn-sam-dolls',
+      title: '[Carolyn and Sam Allison with dolls near a car]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'I.1.8.1',
+      date: {
+        display: '[1951-1952]',
+        earliest: 1951,
+        latest: 1952,
+        basis: ['The verso lists Carolyn\'s age as 3, so a 1951 or 1952 date is likely.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-carolyn-sam-dolls-recto.jpg',
+      },
+      verso: {
+        file: 'allison-carolyn-sam-dolls-verso.jpg',
+      },
+      description:
+        'This photograph depicts Carolyn and Sam Allison standing near a car both holding dolls.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Carolyn Allison\nSam Allison\nAge 3'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 29.5, y: 28.2, w: 17.5, h: 13.5 },
+        },
+        {
+          person: 'allison-sam-oscar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 51.6, y: 34, w: 17.8, h: 12.5 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jean-veta-carolyn-fred-jim-portrait',
+      title: '[Jean Allison with her surviving children]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'I.1.18.1',
+      date: {
+        display: '[1996-1997]',
+        earliest: 1996,
+        latest: 1997,
+        basis: ['This photograph was taken shortly before Jean moved into Muleshoe in 1998. A 1996 or 1997 date is probable.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jean-veta-carolyn-fred-jim-portrait-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jean-veta-carolyn-fred-jim-portrait-recto.jpg',
+      },
+      description:
+        'This photograph depicts Jean Allison with her children, Veta, Carolyn, Fred, and Jim. This photograph was taken at Jean\'s home between Muleshoe and Earth.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 45.2, y: 36.9, w: 7.3, h: 13.2 },
+        },
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 68, y: 38, w: 6.8, h: 11.9 },
+        },
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 13.5, y: 23.3, w: 8.2, h: 13.8 },
+        },
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 34.3, y: 9.7, w: 7.8, h: 14.7 },
+        },
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 64.3, y: 12.7, w: 7.5, h: 13.6 },
+        },
+      ],
+    },
   ]
 }

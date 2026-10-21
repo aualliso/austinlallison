@@ -67,6 +67,652 @@
       }
     }
   },
+  "allison-family/allison-carolyn-bedroom-doll-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-bedroom-doll-recto-b1b65b7adc",
+    "width": 4616,
+    "height": 6352,
+    "sizes": [
+      {
+        "width": 289,
+        "height": 397
+      },
+      {
+        "width": 340,
+        "height": 468
+      },
+      {
+        "width": 680,
+        "height": 936
+      },
+      {
+        "width": 800,
+        "height": 1101
+      },
+      {
+        "width": 1200,
+        "height": 1651
+      },
+      {
+        "width": 1889,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2615
+      },
+      {
+        "width": 3634,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1889,
+      "study": 3634
+    },
+    "hash": "b1b65b7adc620d608e4310b6cf40a13cf6c14c3b3c9f2fff3aec7a14f9376bf7",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-bedroom-doll-recto.jpg",
+        "width": 4616,
+        "height": 6352,
+        "bytes": 2370408
+      },
+      "share": {
+        "file": "allison-carolyn-bedroom-doll-recto-2600px.jpg",
+        "width": 1889,
+        "height": 2600,
+        "bytes": 500917
+      }
+    }
+  },
+  "allison-family/allison-carolyn-bedroom-doll-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-bedroom-doll-verso-fc7ef6ae50",
+    "width": 2247,
+    "height": 3135,
+    "sizes": [
+      {
+        "width": 281,
+        "height": 392
+      },
+      {
+        "width": 340,
+        "height": 474
+      },
+      {
+        "width": 680,
+        "height": 949
+      },
+      {
+        "width": 800,
+        "height": 1116
+      },
+      {
+        "width": 1200,
+        "height": 1674
+      },
+      {
+        "width": 1864,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 2651
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1864,
+      "study": null
+    },
+    "hash": "fc7ef6ae5085ba77bba1cd250a5d607490b08d33688b7aba71cae356bf5f0c7e",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-bedroom-doll-verso.jpg",
+        "width": 2247,
+        "height": 3135,
+        "bytes": 585546
+      },
+      "share": null
+    }
+  },
+  "allison-family/allison-carolyn-brushing-hair-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-brushing-hair-recto-35d5d138ab",
+    "width": 6412,
+    "height": 4577,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 243
+      },
+      {
+        "width": 401,
+        "height": 287
+      },
+      {
+        "width": 680,
+        "height": 485
+      },
+      {
+        "width": 800,
+        "height": 571
+      },
+      {
+        "width": 1200,
+        "height": 857
+      },
+      {
+        "width": 1900,
+        "height": 1356
+      },
+      {
+        "width": 2600,
+        "height": 1856
+      },
+      {
+        "width": 5000,
+        "height": 3569
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "35d5d138abe35e51d759425f32d03727aab26bca5d193f0d0507e9e8754270a6",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-brushing-hair-recto.jpg",
+        "width": 6412,
+        "height": 4577,
+        "bytes": 2188516
+      },
+      "share": {
+        "file": "allison-carolyn-brushing-hair-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1856,
+        "bytes": 428453
+      }
+    }
+  },
+  "allison-family/allison-carolyn-brushing-hair-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-brushing-hair-verso-4225b7cb38",
+    "width": 3158,
+    "height": 2256,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 243
+      },
+      {
+        "width": 395,
+        "height": 282
+      },
+      {
+        "width": 680,
+        "height": 486
+      },
+      {
+        "width": 800,
+        "height": 572
+      },
+      {
+        "width": 1200,
+        "height": 857
+      },
+      {
+        "width": 1900,
+        "height": 1357
+      },
+      {
+        "width": 2600,
+        "height": 1857
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": null
+    },
+    "hash": "4225b7cb3829675818b3427ad554836aa06f1a022fec32190ce8675c27cb9a24",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-brushing-hair-verso.jpg",
+        "width": 3158,
+        "height": 2256,
+        "bytes": 596733
+      },
+      "share": null
+    }
+  },
+  "allison-family/allison-carolyn-ironing-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-ironing-recto-23dbc1cfac",
+    "width": 4554,
+    "height": 6355,
+    "sizes": [
+      {
+        "width": 285,
+        "height": 398
+      },
+      {
+        "width": 340,
+        "height": 474
+      },
+      {
+        "width": 680,
+        "height": 949
+      },
+      {
+        "width": 800,
+        "height": 1116
+      },
+      {
+        "width": 1200,
+        "height": 1675
+      },
+      {
+        "width": 1863,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2651
+      },
+      {
+        "width": 3583,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1863,
+      "study": 3583
+    },
+    "hash": "23dbc1cfac35281bb7d77835c4c5b5a173b82e00d7924bb8c13f80163011a180",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-ironing-recto.jpg",
+        "width": 4554,
+        "height": 6355,
+        "bytes": 2452656
+      },
+      "share": {
+        "file": "allison-carolyn-ironing-recto-2600px.jpg",
+        "width": 1863,
+        "height": 2600,
+        "bytes": 521386
+      }
+    }
+  },
+  "allison-family/allison-carolyn-ironing-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-ironing-verso-a4886c4b41",
+    "width": 2404,
+    "height": 3277,
+    "sizes": [
+      {
+        "width": 301,
+        "height": 410
+      },
+      {
+        "width": 340,
+        "height": 463
+      },
+      {
+        "width": 680,
+        "height": 927
+      },
+      {
+        "width": 800,
+        "height": 1091
+      },
+      {
+        "width": 1200,
+        "height": 1636
+      },
+      {
+        "width": 1900,
+        "height": 2590
+      },
+      {
+        "width": 1907,
+        "height": 2600
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1907,
+      "study": null
+    },
+    "hash": "a4886c4b4153521b76b69e61ab641cb1a88fbf81c2f442e46e99a8359dd6ea86",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-ironing-verso.jpg",
+        "width": 2404,
+        "height": 3277,
+        "bytes": 770821
+      },
+      "share": null
+    }
+  },
+  "allison-family/allison-carolyn-sam-dolls-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-sam-dolls-recto-bfa99160a1",
+    "width": 4680,
+    "height": 7394,
+    "sizes": [
+      {
+        "width": 293,
+        "height": 463
+      },
+      {
+        "width": 340,
+        "height": 537
+      },
+      {
+        "width": 680,
+        "height": 1074
+      },
+      {
+        "width": 800,
+        "height": 1264
+      },
+      {
+        "width": 1200,
+        "height": 1896
+      },
+      {
+        "width": 1646,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 3002
+      },
+      {
+        "width": 3165,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1646,
+      "study": 3165
+    },
+    "hash": "bfa99160a14d9219532f5708c9a623d5e718a6d607a7b03059f6185216ed2a2e",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-sam-dolls-recto.jpg",
+        "width": 4680,
+        "height": 7394,
+        "bytes": 2922149
+      },
+      "share": {
+        "file": "allison-carolyn-sam-dolls-recto-2600px.jpg",
+        "width": 1646,
+        "height": 2600,
+        "bytes": 439223
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-carolyn-sam-dolls-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-sam-dolls-verso-17843e6f5a",
+    "width": 2352,
+    "height": 3708,
+    "sizes": [
+      {
+        "width": 294,
+        "height": 464
+      },
+      {
+        "width": 340,
+        "height": 536
+      },
+      {
+        "width": 680,
+        "height": 1072
+      },
+      {
+        "width": 800,
+        "height": 1261
+      },
+      {
+        "width": 1200,
+        "height": 1892
+      },
+      {
+        "width": 1649,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2995
+      },
+      {
+        "width": 2352,
+        "height": 3708
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1649,
+      "study": 2352
+    },
+    "hash": "17843e6f5adcf52206fbaa2c99586e453422c6c8c77124dfc9416c85791e425c",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-sam-dolls-verso.jpg",
+        "width": 2352,
+        "height": 3708,
+        "bytes": 883841
+      },
+      "share": {
+        "file": "allison-carolyn-sam-dolls-verso-2600px.jpg",
+        "width": 1649,
+        "height": 2600,
+        "bytes": 411833
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-carolyn-sewing-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-sewing-recto-7d79493fc3",
+    "width": 6334,
+    "height": 4534,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 243
+      },
+      {
+        "width": 396,
+        "height": 284
+      },
+      {
+        "width": 680,
+        "height": 487
+      },
+      {
+        "width": 800,
+        "height": 573
+      },
+      {
+        "width": 1200,
+        "height": 859
+      },
+      {
+        "width": 1900,
+        "height": 1360
+      },
+      {
+        "width": 2600,
+        "height": 1861
+      },
+      {
+        "width": 5000,
+        "height": 3579
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "7d79493fc36d7a1e50b4bf568c56aeadaf4eb0f574632212b9392606e9b26f8a",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-sewing-recto.jpg",
+        "width": 6334,
+        "height": 4534,
+        "bytes": 2777640
+      },
+      "share": {
+        "file": "allison-carolyn-sewing-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1861,
+        "bytes": 542540
+      }
+    }
+  },
+  "allison-family/allison-carolyn-sewing-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-sewing-verso-c0019906a0",
+    "width": 3151,
+    "height": 2297,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 248
+      },
+      {
+        "width": 394,
+        "height": 288
+      },
+      {
+        "width": 680,
+        "height": 496
+      },
+      {
+        "width": 800,
+        "height": 583
+      },
+      {
+        "width": 1200,
+        "height": 875
+      },
+      {
+        "width": 1900,
+        "height": 1385
+      },
+      {
+        "width": 2600,
+        "height": 1895
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": null
+    },
+    "hash": "c0019906a092b4556a655e6b0d60f205e33b3b688986d569147ca62d3bddf198",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-sewing-verso.jpg",
+        "width": 3151,
+        "height": 2297,
+        "bytes": 709178
+      },
+      "share": null
+    }
+  },
   "allison-family/allison-fred-jack-outside-house-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-fred-jack-outside-house-recto-42502c6c8d",
@@ -260,6 +906,133 @@
         "width": 3276,
         "height": 2838,
         "bytes": 1034902
+      },
+      "share": null
+    }
+  },
+  "allison-family/allison-gerald-oscar-sammy-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-gerald-oscar-sammy-recto-e3b741ed89",
+    "width": 4554,
+    "height": 4597,
+    "sizes": [
+      {
+        "width": 285,
+        "height": 288
+      },
+      {
+        "width": 340,
+        "height": 343
+      },
+      {
+        "width": 680,
+        "height": 686
+      },
+      {
+        "width": 800,
+        "height": 808
+      },
+      {
+        "width": 1200,
+        "height": 1211
+      },
+      {
+        "width": 1900,
+        "height": 1918
+      },
+      {
+        "width": 2576,
+        "height": 2600
+      },
+      {
+        "width": 4554,
+        "height": 4597
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2576,
+      "study": 4554
+    },
+    "hash": "e3b741ed895c7edb1d3d4064e191cd541732020b9cf47b541a7b008d156dd03e",
+    "download": {
+      "full": {
+        "file": "allison-gerald-oscar-sammy-recto.jpg",
+        "width": 4554,
+        "height": 4597,
+        "bytes": 1746630
+      },
+      "share": {
+        "file": "allison-gerald-oscar-sammy-recto-2600px.jpg",
+        "width": 2576,
+        "height": 2600,
+        "bytes": 632937
+      }
+    }
+  },
+  "allison-family/allison-gerald-oscar-sammy-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-gerald-oscar-sammy-verso-8d34cc86ab",
+    "width": 2313,
+    "height": 2346,
+    "sizes": [
+      {
+        "width": 290,
+        "height": 294
+      },
+      {
+        "width": 340,
+        "height": 345
+      },
+      {
+        "width": 680,
+        "height": 690
+      },
+      {
+        "width": 800,
+        "height": 811
+      },
+      {
+        "width": 1200,
+        "height": 1217
+      },
+      {
+        "width": 1900,
+        "height": 1927
+      },
+      {
+        "width": 2313,
+        "height": 2346
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2313,
+      "study": null
+    },
+    "hash": "8d34cc86abe15227417c81f0bf03e3995b8c88fecbbb9d4d54131fe894818eed",
+    "download": {
+      "full": {
+        "file": "allison-gerald-oscar-sammy-verso.jpg",
+        "width": 2313,
+        "height": 2346,
+        "bytes": 712051
       },
       "share": null
     }
@@ -467,6 +1240,135 @@
         "height": 2600,
         "bytes": 696053
       }
+    },
+    "store": "private",
+    "publicCopy": true
+  },
+  "allison-family/allison-harold-cherry-coupe-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-cherry-coupe-recto-c98d77fccd",
+    "width": 4474,
+    "height": 6100,
+    "sizes": [
+      {
+        "width": 280,
+        "height": 382
+      },
+      {
+        "width": 340,
+        "height": 464
+      },
+      {
+        "width": 680,
+        "height": 927
+      },
+      {
+        "width": 800,
+        "height": 1091
+      },
+      {
+        "width": 1200,
+        "height": 1636
+      },
+      {
+        "width": 1900,
+        "height": 2591
+      },
+      {
+        "width": 1907,
+        "height": 2600
+      },
+      {
+        "width": 3667,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1907,
+      "study": 3667
+    },
+    "hash": "c98d77fccdfbf446b0ee683bef5621b528876f8ea697b709dcec6a39085d49cb",
+    "download": {
+      "full": {
+        "file": "allison-harold-cherry-coupe-recto.jpg",
+        "width": 4474,
+        "height": 6100,
+        "bytes": 2369152
+      },
+      "share": {
+        "file": "allison-harold-cherry-coupe-recto-2600px.jpg",
+        "width": 1907,
+        "height": 2600,
+        "bytes": 492626
+      }
+    }
+  },
+  "allison-family/allison-harold-cherry-coupe-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-cherry-coupe-verso-dcbd097f16",
+    "width": 2243,
+    "height": 2999,
+    "sizes": [
+      {
+        "width": 281,
+        "height": 375
+      },
+      {
+        "width": 340,
+        "height": 455
+      },
+      {
+        "width": 680,
+        "height": 909
+      },
+      {
+        "width": 800,
+        "height": 1070
+      },
+      {
+        "width": 1200,
+        "height": 1604
+      },
+      {
+        "width": 1900,
+        "height": 2540
+      },
+      {
+        "width": 1945,
+        "height": 2601
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1945,
+      "study": null
+    },
+    "hash": "dcbd097f166e7718c6daa064754fe7a640a7b3330a1cc7cc5a6754ec6f087dc5",
+    "download": {
+      "full": {
+        "file": "allison-harold-cherry-coupe-verso.jpg",
+        "width": 2243,
+        "height": 2999,
+        "bytes": 743342
+      },
+      "share": null
     }
   },
   "allison-family/allison-harold-discharged-1945-recto.jpg": {
@@ -855,6 +1757,133 @@
       "share": null
     }
   },
+  "allison-family/allison-harold-jean-after-marriage-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-after-marriage-recto-879efc105a",
+    "width": 5680,
+    "height": 4015,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 240
+      },
+      {
+        "width": 355,
+        "height": 251
+      },
+      {
+        "width": 680,
+        "height": 481
+      },
+      {
+        "width": 800,
+        "height": 565
+      },
+      {
+        "width": 1200,
+        "height": 848
+      },
+      {
+        "width": 1900,
+        "height": 1343
+      },
+      {
+        "width": 2600,
+        "height": 1838
+      },
+      {
+        "width": 5000,
+        "height": 3534
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "879efc105ad3c03dce30361e808c2eba25560f4e568fc8d32db5fe07555e29a1",
+    "download": {
+      "full": {
+        "file": "allison-harold-jean-after-marriage-recto.jpg",
+        "width": 5680,
+        "height": 4015,
+        "bytes": 1620536
+      },
+      "share": {
+        "file": "allison-harold-jean-after-marriage-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1838,
+        "bytes": 403892
+      }
+    }
+  },
+  "allison-family/allison-harold-jean-after-marriage-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-after-marriage-verso-bc6791dc3f",
+    "width": 2806,
+    "height": 2063,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 250
+      },
+      {
+        "width": 351,
+        "height": 258
+      },
+      {
+        "width": 680,
+        "height": 500
+      },
+      {
+        "width": 800,
+        "height": 588
+      },
+      {
+        "width": 1200,
+        "height": 882
+      },
+      {
+        "width": 1900,
+        "height": 1397
+      },
+      {
+        "width": 2600,
+        "height": 1912
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": null
+    },
+    "hash": "bc6791dc3f6608b07cf2f0d20d1c36f5a6173505d4f6ae86369e07896b94f927",
+    "download": {
+      "full": {
+        "file": "allison-harold-jean-after-marriage-verso.jpg",
+        "width": 2806,
+        "height": 2063,
+        "bytes": 634012
+      },
+      "share": null
+    }
+  },
   "allison-family/allison-harold-jean-car-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-car-recto-8c6860ccb9",
@@ -991,6 +2020,142 @@
       }
     },
     "store": "private"
+  },
+  "allison-family/allison-harold-jean-johniii-graduation-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-johniii-graduation-recto-cd2a81b9c3",
+    "width": 7303,
+    "height": 4999,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 233
+      },
+      {
+        "width": 457,
+        "height": 313
+      },
+      {
+        "width": 680,
+        "height": 465
+      },
+      {
+        "width": 800,
+        "height": 548
+      },
+      {
+        "width": 1200,
+        "height": 821
+      },
+      {
+        "width": 1900,
+        "height": 1301
+      },
+      {
+        "width": 2600,
+        "height": 1780
+      },
+      {
+        "width": 5000,
+        "height": 3423
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "cd2a81b9c3f82bd8dee907e6bc0a842f132789c0270ccbc7b6dad96070419bc0",
+    "download": {
+      "full": {
+        "file": "allison-harold-jean-johniii-graduation-recto.jpg",
+        "width": 7303,
+        "height": 4999,
+        "bytes": 3514343
+      },
+      "share": {
+        "file": "allison-harold-jean-johniii-graduation-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1780,
+        "bytes": 557209
+      }
+    }
+  },
+  "allison-family/allison-harold-jean-johniii-graduation-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-johniii-graduation-verso-e0187aa81f",
+    "width": 3679,
+    "height": 2480,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 229
+      },
+      {
+        "width": 460,
+        "height": 310
+      },
+      {
+        "width": 680,
+        "height": 458
+      },
+      {
+        "width": 800,
+        "height": 539
+      },
+      {
+        "width": 1200,
+        "height": 809
+      },
+      {
+        "width": 1900,
+        "height": 1281
+      },
+      {
+        "width": 2600,
+        "height": 1753
+      },
+      {
+        "width": 3679,
+        "height": 2480
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 3679
+    },
+    "hash": "e0187aa81f30715b7e90af4039955bcaa2950c6fd6727f9e7a1ac0ffcf28f772",
+    "download": {
+      "full": {
+        "file": "allison-harold-jean-johniii-graduation-verso.jpg",
+        "width": 3679,
+        "height": 2480,
+        "bytes": 600886
+      },
+      "share": {
+        "file": "allison-harold-jean-johniii-graduation-verso-2600px.jpg",
+        "width": 2600,
+        "height": 1753,
+        "bytes": 283868
+      }
+    }
   },
   "allison-family/allison-harold-jean-loveta-mckinstry-camellia-room-recto.jpg": {
     "v": 2,
@@ -1197,6 +2362,260 @@
     },
     "store": "private"
   },
+  "allison-family/allison-harold-jean-pilot-bob-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-pilot-bob-recto-ab46c6fe61",
+    "width": 6220,
+    "height": 4135,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 226
+      },
+      {
+        "width": 389,
+        "height": 259
+      },
+      {
+        "width": 680,
+        "height": 452
+      },
+      {
+        "width": 800,
+        "height": 532
+      },
+      {
+        "width": 1200,
+        "height": 798
+      },
+      {
+        "width": 1900,
+        "height": 1263
+      },
+      {
+        "width": 2600,
+        "height": 1728
+      },
+      {
+        "width": 5000,
+        "height": 3324
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "ab46c6fe61e0fb08ec81e5cba98f21556200bb62ff67b6c93535ac149a2678ab",
+    "download": {
+      "full": {
+        "file": "allison-harold-jean-pilot-bob-recto.jpg",
+        "width": 6220,
+        "height": 4135,
+        "bytes": 2272555
+      },
+      "share": {
+        "file": "allison-harold-jean-pilot-bob-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1728,
+        "bytes": 528097
+      }
+    }
+  },
+  "allison-family/allison-harold-jean-pilot-bob-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-pilot-bob-verso-4d70c90c40",
+    "width": 3131,
+    "height": 2039,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 221
+      },
+      {
+        "width": 392,
+        "height": 255
+      },
+      {
+        "width": 680,
+        "height": 443
+      },
+      {
+        "width": 800,
+        "height": 521
+      },
+      {
+        "width": 1200,
+        "height": 781
+      },
+      {
+        "width": 1900,
+        "height": 1237
+      },
+      {
+        "width": 2600,
+        "height": 1693
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": null
+    },
+    "hash": "4d70c90c40a159c60797f4145ea06eb824a68910ad29fb7c84400fc706d80bb0",
+    "download": {
+      "full": {
+        "file": "allison-harold-jean-pilot-bob-verso.jpg",
+        "width": 3131,
+        "height": 2039,
+        "bytes": 706198
+      },
+      "share": null
+    }
+  },
+  "allison-family/allison-harold-jean-san-antonio-bush-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-san-antonio-bush-recto-eed591bad6",
+    "width": 4095,
+    "height": 6219,
+    "sizes": [
+      {
+        "width": 256,
+        "height": 389
+      },
+      {
+        "width": 340,
+        "height": 516
+      },
+      {
+        "width": 680,
+        "height": 1033
+      },
+      {
+        "width": 800,
+        "height": 1215
+      },
+      {
+        "width": 1200,
+        "height": 1822
+      },
+      {
+        "width": 1712,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2885
+      },
+      {
+        "width": 3292,
+        "height": 4999
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1712,
+      "study": 3292
+    },
+    "hash": "eed591bad6d478e4623c57a9066c63eaef876287a7cc95a264892c12905b780f",
+    "download": {
+      "full": {
+        "file": "allison-harold-jean-san-antonio-bush-recto.jpg",
+        "width": 4095,
+        "height": 6219,
+        "bytes": 2010737
+      },
+      "share": {
+        "file": "allison-harold-jean-san-antonio-bush-recto-2600px.jpg",
+        "width": 1712,
+        "height": 2600,
+        "bytes": 443610
+      }
+    }
+  },
+  "allison-family/allison-harold-jean-san-antonio-bush-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-san-antonio-bush-verso-3b7fbc7489",
+    "width": 2086,
+    "height": 3180,
+    "sizes": [
+      {
+        "width": 261,
+        "height": 398
+      },
+      {
+        "width": 340,
+        "height": 518
+      },
+      {
+        "width": 680,
+        "height": 1037
+      },
+      {
+        "width": 800,
+        "height": 1220
+      },
+      {
+        "width": 1200,
+        "height": 1829
+      },
+      {
+        "width": 1706,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 2896
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1706,
+      "study": null
+    },
+    "hash": "3b7fbc7489857d7a004088cd57a7f3b0220c986f0d9c6213af57cb2403a67cf6",
+    "download": {
+      "full": {
+        "file": "allison-harold-jean-san-antonio-bush-verso.jpg",
+        "width": 2086,
+        "height": 3180,
+        "bytes": 618296
+      },
+      "share": null
+    }
+  },
   "allison-family/allison-harold-jean-snapshot-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-jean-snapshot-recto-6b6bfec09b",
@@ -1392,6 +2811,260 @@
       }
     }
   },
+  "allison-family/allison-harold-leather-jacket-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-leather-jacket-recto-8daa794f34",
+    "width": 4455,
+    "height": 6218,
+    "sizes": [
+      {
+        "width": 279,
+        "height": 389
+      },
+      {
+        "width": 340,
+        "height": 475
+      },
+      {
+        "width": 680,
+        "height": 949
+      },
+      {
+        "width": 800,
+        "height": 1117
+      },
+      {
+        "width": 1200,
+        "height": 1675
+      },
+      {
+        "width": 1863,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2652
+      },
+      {
+        "width": 3582,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1863,
+      "study": 3582
+    },
+    "hash": "8daa794f34080cefa12605338b138a258f86ba8350bd29085bcf3a60ec8a285c",
+    "download": {
+      "full": {
+        "file": "allison-harold-leather-jacket-recto.jpg",
+        "width": 4455,
+        "height": 6218,
+        "bytes": 2795087
+      },
+      "share": {
+        "file": "allison-harold-leather-jacket-recto-2600px.jpg",
+        "width": 1863,
+        "height": 2600,
+        "bytes": 536093
+      }
+    }
+  },
+  "allison-family/allison-harold-leather-jacket-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-leather-jacket-verso-35b19bfe01",
+    "width": 2292,
+    "height": 3205,
+    "sizes": [
+      {
+        "width": 287,
+        "height": 401
+      },
+      {
+        "width": 340,
+        "height": 475
+      },
+      {
+        "width": 680,
+        "height": 951
+      },
+      {
+        "width": 800,
+        "height": 1119
+      },
+      {
+        "width": 1200,
+        "height": 1678
+      },
+      {
+        "width": 1859,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2657
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1859,
+      "study": null
+    },
+    "hash": "35b19bfe0122bb1964a51d158b60492d6ca60b265febca2c133e76b4ad1783a2",
+    "download": {
+      "full": {
+        "file": "allison-harold-leather-jacket-verso.jpg",
+        "width": 2292,
+        "height": 3205,
+        "bytes": 624467
+      },
+      "share": null
+    }
+  },
+  "allison-family/allison-harold-officers-club-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-officers-club-recto-c4e0e41e5e",
+    "width": 4197,
+    "height": 6300,
+    "sizes": [
+      {
+        "width": 263,
+        "height": 394
+      },
+      {
+        "width": 340,
+        "height": 510
+      },
+      {
+        "width": 680,
+        "height": 1021
+      },
+      {
+        "width": 800,
+        "height": 1201
+      },
+      {
+        "width": 1200,
+        "height": 1801
+      },
+      {
+        "width": 1732,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2852
+      },
+      {
+        "width": 3331,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1732,
+      "study": 3331
+    },
+    "hash": "c4e0e41e5e9eaaa8ef6ec0847efeaa1ff3214134f87b693c061da839465cc72d",
+    "download": {
+      "full": {
+        "file": "allison-harold-officers-club-recto.jpg",
+        "width": 4197,
+        "height": 6300,
+        "bytes": 2293155
+      },
+      "share": {
+        "file": "allison-harold-officers-club-recto-2600px.jpg",
+        "width": 1732,
+        "height": 2600,
+        "bytes": 533687
+      }
+    }
+  },
+  "allison-family/allison-harold-officers-club-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-officers-club-verso-d2880193d4",
+    "width": 2029,
+    "height": 3205,
+    "sizes": [
+      {
+        "width": 254,
+        "height": 401
+      },
+      {
+        "width": 340,
+        "height": 537
+      },
+      {
+        "width": 680,
+        "height": 1074
+      },
+      {
+        "width": 800,
+        "height": 1264
+      },
+      {
+        "width": 1200,
+        "height": 1896
+      },
+      {
+        "width": 1646,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 3001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1646,
+      "study": null
+    },
+    "hash": "d2880193d45adfc9b2b35eb8ceaeb01e3093050b8d4ece5a8e22e704c8620538",
+    "download": {
+      "full": {
+        "file": "allison-harold-officers-club-verso.jpg",
+        "width": 2029,
+        "height": 3205,
+        "bytes": 772254
+      },
+      "share": null
+    }
+  },
   "allison-family/allison-harold-ollie-grizzle.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-ollie-grizzle-11b9251fd2",
@@ -1526,6 +3199,262 @@
         "height": 2600,
         "bytes": 489099
       }
+    }
+  },
+  "allison-family/allison-harold-oscar-fred-barn-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-oscar-fred-barn-recto-dbc5f2b29a",
+    "width": 5293,
+    "height": 4243,
+    "sizes": [
+      {
+        "width": 331,
+        "height": 266
+      },
+      {
+        "width": 340,
+        "height": 273
+      },
+      {
+        "width": 680,
+        "height": 545
+      },
+      {
+        "width": 800,
+        "height": 641
+      },
+      {
+        "width": 1200,
+        "height": 962
+      },
+      {
+        "width": 1900,
+        "height": 1523
+      },
+      {
+        "width": 2600,
+        "height": 2084
+      },
+      {
+        "width": 5000,
+        "height": 4008
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "dbc5f2b29af30d533d3f905c78e4ce0ca2ba0114b351b2df8061b8383ee1b322",
+    "download": {
+      "full": {
+        "file": "allison-harold-oscar-fred-barn-recto.jpg",
+        "width": 5293,
+        "height": 4243,
+        "bytes": 2576164
+      },
+      "share": {
+        "file": "allison-harold-oscar-fred-barn-recto-2600px.jpg",
+        "width": 2600,
+        "height": 2084,
+        "bytes": 774706
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-harold-oscar-fred-barn-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-oscar-fred-barn-verso-3bff04e589",
+    "width": 2136,
+    "height": 2784,
+    "sizes": [
+      {
+        "width": 267,
+        "height": 348
+      },
+      {
+        "width": 340,
+        "height": 443
+      },
+      {
+        "width": 680,
+        "height": 886
+      },
+      {
+        "width": 800,
+        "height": 1043
+      },
+      {
+        "width": 1200,
+        "height": 1564
+      },
+      {
+        "width": 1900,
+        "height": 2476
+      },
+      {
+        "width": 1995,
+        "height": 2600
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1995,
+      "study": null
+    },
+    "hash": "3bff04e5892d27cdef3bd443b2133146f7f49b5a90437f5ee656cea2a015530c",
+    "download": {
+      "full": {
+        "file": "allison-harold-oscar-fred-barn-verso.jpg",
+        "width": 2136,
+        "height": 2784,
+        "bytes": 552529
+      },
+      "share": null
+    },
+    "store": "private"
+  },
+  "allison-family/allison-harold-oscar-gerald-georga-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-oscar-gerald-georga-recto-e0aed06fec",
+    "width": 4516,
+    "height": 4556,
+    "sizes": [
+      {
+        "width": 283,
+        "height": 285
+      },
+      {
+        "width": 340,
+        "height": 343
+      },
+      {
+        "width": 680,
+        "height": 686
+      },
+      {
+        "width": 800,
+        "height": 807
+      },
+      {
+        "width": 1200,
+        "height": 1211
+      },
+      {
+        "width": 1900,
+        "height": 1917
+      },
+      {
+        "width": 2577,
+        "height": 2600
+      },
+      {
+        "width": 4516,
+        "height": 4556
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2577,
+      "study": 4516
+    },
+    "hash": "e0aed06fecd309bb8856e14dc285ae871455662a0ff9748f0d5a2cd953701e7a",
+    "download": {
+      "full": {
+        "file": "allison-harold-oscar-gerald-georga-recto.jpg",
+        "width": 4516,
+        "height": 4556,
+        "bytes": 1576639
+      },
+      "share": {
+        "file": "allison-harold-oscar-gerald-georga-recto-2600px.jpg",
+        "width": 2577,
+        "height": 2600,
+        "bytes": 569397
+      }
+    }
+  },
+  "allison-family/allison-harold-oscar-gerald-georga-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-harold-oscar-gerald-georga-verso-c8cb005747",
+    "width": 2280,
+    "height": 2257,
+    "sizes": [
+      {
+        "width": 285,
+        "height": 283
+      },
+      {
+        "width": 340,
+        "height": 337
+      },
+      {
+        "width": 680,
+        "height": 673
+      },
+      {
+        "width": 800,
+        "height": 792
+      },
+      {
+        "width": 1200,
+        "height": 1188
+      },
+      {
+        "width": 1900,
+        "height": 1881
+      },
+      {
+        "width": 2280,
+        "height": 2257
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2280,
+      "study": null
+    },
+    "hash": "c8cb0057473b009296e3e189042ae653d16cf4215c809ac0a799561e6793aad9",
+    "download": {
+      "full": {
+        "file": "allison-harold-oscar-gerald-georga-verso.jpg",
+        "width": 2280,
+        "height": 2257,
+        "bytes": 311518
+      },
+      "share": null
     }
   },
   "allison-family/allison-harold-oscar-kenneth-precure-recto.jpg": {
@@ -2208,6 +4137,133 @@
       }
     }
   },
+  "allison-family/allison-jack-calf-barn-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jack-calf-barn-recto-ff4e50a636",
+    "width": 6409,
+    "height": 4486,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 238
+      },
+      {
+        "width": 401,
+        "height": 281
+      },
+      {
+        "width": 680,
+        "height": 476
+      },
+      {
+        "width": 800,
+        "height": 560
+      },
+      {
+        "width": 1200,
+        "height": 840
+      },
+      {
+        "width": 1900,
+        "height": 1330
+      },
+      {
+        "width": 2600,
+        "height": 1820
+      },
+      {
+        "width": 5000,
+        "height": 3500
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "ff4e50a63692ce8dc1d6fe0d4124b7ceb150e5db54485b32b54a46408737470d",
+    "download": {
+      "full": {
+        "file": "allison-jack-calf-barn-recto.jpg",
+        "width": 6409,
+        "height": 4486,
+        "bytes": 1892092
+      },
+      "share": {
+        "file": "allison-jack-calf-barn-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1820,
+        "bytes": 398192
+      }
+    }
+  },
+  "allison-family/allison-jack-calf-barn-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jack-calf-barn-verso-ebb1cb0346",
+    "width": 3195,
+    "height": 2178,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 232
+      },
+      {
+        "width": 400,
+        "height": 273
+      },
+      {
+        "width": 680,
+        "height": 464
+      },
+      {
+        "width": 800,
+        "height": 545
+      },
+      {
+        "width": 1200,
+        "height": 818
+      },
+      {
+        "width": 1900,
+        "height": 1295
+      },
+      {
+        "width": 2600,
+        "height": 1772
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": null
+    },
+    "hash": "ebb1cb0346ae686639ca3ce498d157720705cc255faf07232f474742fef5e903",
+    "download": {
+      "full": {
+        "file": "allison-jack-calf-barn-verso.jpg",
+        "width": 3195,
+        "height": 2178,
+        "bytes": 447386
+      },
+      "share": null
+    }
+  },
   "allison-family/allison-jack-football-1.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jack-football-1-fab5cc2752",
@@ -2813,6 +4869,142 @@
       "share": null
     }
   },
+  "allison-family/allison-jean-harold-portrait-wedding-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jean-harold-portrait-wedding-recto-8c2d651fe3",
+    "width": 5279,
+    "height": 8016,
+    "sizes": [
+      {
+        "width": 330,
+        "height": 501
+      },
+      {
+        "width": 340,
+        "height": 516
+      },
+      {
+        "width": 680,
+        "height": 1033
+      },
+      {
+        "width": 800,
+        "height": 1215
+      },
+      {
+        "width": 1200,
+        "height": 1822
+      },
+      {
+        "width": 1712,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2885
+      },
+      {
+        "width": 3293,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1712,
+      "study": 3293
+    },
+    "hash": "8c2d651fe3e327440f1f449526aa1ebbe1447e210745f69841cf444f6887782c",
+    "download": {
+      "full": {
+        "file": "allison-jean-harold-portrait-wedding-recto.jpg",
+        "width": 5279,
+        "height": 8016,
+        "bytes": 3319343
+      },
+      "share": {
+        "file": "allison-jean-harold-portrait-wedding-recto-2600px.jpg",
+        "width": 1712,
+        "height": 2600,
+        "bytes": 430077
+      }
+    }
+  },
+  "allison-family/allison-jean-harold-portrait-wedding-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jean-harold-portrait-wedding-verso-92091fc455",
+    "width": 2617,
+    "height": 3955,
+    "sizes": [
+      {
+        "width": 328,
+        "height": 495
+      },
+      {
+        "width": 340,
+        "height": 514
+      },
+      {
+        "width": 680,
+        "height": 1028
+      },
+      {
+        "width": 800,
+        "height": 1209
+      },
+      {
+        "width": 1200,
+        "height": 1814
+      },
+      {
+        "width": 1720,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2871
+      },
+      {
+        "width": 2617,
+        "height": 3955
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1720,
+      "study": 2617
+    },
+    "hash": "92091fc455ebec240582875d80bfd1af1098a98260e1226225658ed8c5b561f3",
+    "download": {
+      "full": {
+        "file": "allison-jean-harold-portrait-wedding-verso.jpg",
+        "width": 2617,
+        "height": 3955,
+        "bytes": 560960
+      },
+      "share": {
+        "file": "allison-jean-harold-portrait-wedding-verso-2600px.jpg",
+        "width": 1720,
+        "height": 2600,
+        "bytes": 218615
+      }
+    }
+  },
   "allison-family/allison-jean-mary-andreas-mrs-redfield-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jean-mary-andreas-mrs-redfield-recto-d54997aa9a",
@@ -2879,6 +5071,130 @@
         "height": 1553,
         "bytes": 494426
       }
+    }
+  },
+  "allison-family/allison-jean-veta-carolyn-fred-jim-portrait-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jean-veta-carolyn-fred-jim-portrait-recto-0cb72577cc",
+    "width": 4428,
+    "height": 3294,
+    "sizes": [
+      {
+        "width": 277,
+        "height": 206
+      },
+      {
+        "width": 340,
+        "height": 253
+      },
+      {
+        "width": 680,
+        "height": 506
+      },
+      {
+        "width": 800,
+        "height": 595
+      },
+      {
+        "width": 1200,
+        "height": 893
+      },
+      {
+        "width": 1900,
+        "height": 1413
+      },
+      {
+        "width": 2600,
+        "height": 1934
+      },
+      {
+        "width": 4428,
+        "height": 3294
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4428
+    },
+    "hash": "0cb72577cc18d0d8312cf9017518089170b699af4c80f6edad8cac05bfa24bb6",
+    "download": {
+      "full": {
+        "file": "allison-jean-veta-carolyn-fred-jim-portrait-recto.jpg",
+        "width": 4428,
+        "height": 3294,
+        "bytes": 1538945
+      },
+      "share": {
+        "file": "allison-jean-veta-carolyn-fred-jim-portrait-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1934,
+        "bytes": 561685
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-jean-veta-carolyn-fred-jim-portrait-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jean-veta-carolyn-fred-jim-portrait-verso-7a51aef8a0",
+    "width": 1676,
+    "height": 2290,
+    "sizes": [
+      {
+        "width": 210,
+        "height": 287
+      },
+      {
+        "width": 340,
+        "height": 465
+      },
+      {
+        "width": 680,
+        "height": 929
+      },
+      {
+        "width": 800,
+        "height": 1093
+      },
+      {
+        "width": 1200,
+        "height": 1640
+      },
+      {
+        "width": 1676,
+        "height": 2290
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1676
+      ],
+      "detail": 1676,
+      "study": null
+    },
+    "hash": "7a51aef8a06b2094b4ea1365e3c8b87d1a3b7ad5d4f09b9f8b6ee252935dbd65",
+    "download": {
+      "full": {
+        "file": "allison-jean-veta-carolyn-fred-jim-portrait-verso.jpg",
+        "width": 1676,
+        "height": 2290,
+        "bytes": 284468
+      },
+      "share": null
     }
   },
   "allison-family/allison-jim-nancy-carolyn-1979.jpg": {
@@ -3904,6 +6220,133 @@
       }
     }
   },
+  "allison-family/allison-oscar-nan-at-table-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-nan-at-table-recto-adf9c84263",
+    "width": 4556,
+    "height": 4486,
+    "sizes": [
+      {
+        "width": 285,
+        "height": 281
+      },
+      {
+        "width": 340,
+        "height": 335
+      },
+      {
+        "width": 680,
+        "height": 670
+      },
+      {
+        "width": 800,
+        "height": 788
+      },
+      {
+        "width": 1200,
+        "height": 1182
+      },
+      {
+        "width": 1900,
+        "height": 1871
+      },
+      {
+        "width": 2600,
+        "height": 2560
+      },
+      {
+        "width": 4556,
+        "height": 4486
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4556
+    },
+    "hash": "adf9c842638b05ec0af91268ef85deaad2d5fabde8573e06e39e8b6169a52901",
+    "download": {
+      "full": {
+        "file": "allison-oscar-nan-at-table-recto.jpg",
+        "width": 4556,
+        "height": 4486,
+        "bytes": 1589393
+      },
+      "share": {
+        "file": "allison-oscar-nan-at-table-recto-2600px.jpg",
+        "width": 2600,
+        "height": 2560,
+        "bytes": 568989
+      }
+    }
+  },
+  "allison-family/allison-oscar-nan-at-table-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-nan-at-table-verso-127e590b35",
+    "width": 2341,
+    "height": 2281,
+    "sizes": [
+      {
+        "width": 293,
+        "height": 286
+      },
+      {
+        "width": 340,
+        "height": 331
+      },
+      {
+        "width": 680,
+        "height": 663
+      },
+      {
+        "width": 800,
+        "height": 779
+      },
+      {
+        "width": 1200,
+        "height": 1169
+      },
+      {
+        "width": 1900,
+        "height": 1851
+      },
+      {
+        "width": 2341,
+        "height": 2281
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2341,
+      "study": null
+    },
+    "hash": "127e590b3525ba204acfed94f7fdddab80206fcd110d948be5c8e6dcc4014fa6",
+    "download": {
+      "full": {
+        "file": "allison-oscar-nan-at-table-verso.jpg",
+        "width": 2341,
+        "height": 2281,
+        "bytes": 555736
+      },
+      "share": null
+    }
+  },
   "allison-family/allison-oscar-ollie-gerald.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-oscar-ollie-gerald-07f1543869",
@@ -4767,6 +7210,142 @@
     },
     "store": "private"
   },
+  "allison-family/allison-sammy-jean-2007-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-sammy-jean-2007-recto-83f80b5e9f",
+    "width": 7594,
+    "height": 5316,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 238
+      },
+      {
+        "width": 475,
+        "height": 333
+      },
+      {
+        "width": 680,
+        "height": 476
+      },
+      {
+        "width": 800,
+        "height": 560
+      },
+      {
+        "width": 1200,
+        "height": 840
+      },
+      {
+        "width": 1900,
+        "height": 1330
+      },
+      {
+        "width": 2600,
+        "height": 1820
+      },
+      {
+        "width": 5000,
+        "height": 3500
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "83f80b5e9f746f7585114c7189e57c26a4b2d896d2194ded67a05a1af5a7cac3",
+    "download": {
+      "full": {
+        "file": "allison-sammy-jean-2007-recto.jpg",
+        "width": 7594,
+        "height": 5316,
+        "bytes": 4120626
+      },
+      "share": {
+        "file": "allison-sammy-jean-2007-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1820,
+        "bytes": 542680
+      }
+    }
+  },
+  "allison-family/allison-sammy-jean-2007-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-sammy-jean-2007-verso-6521975d57",
+    "width": 3725,
+    "height": 2604,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 238
+      },
+      {
+        "width": 466,
+        "height": 326
+      },
+      {
+        "width": 680,
+        "height": 475
+      },
+      {
+        "width": 800,
+        "height": 559
+      },
+      {
+        "width": 1200,
+        "height": 839
+      },
+      {
+        "width": 1900,
+        "height": 1328
+      },
+      {
+        "width": 2600,
+        "height": 1818
+      },
+      {
+        "width": 3725,
+        "height": 2604
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 3725
+    },
+    "hash": "6521975d579575c89b30d5a3b570db2a937ee6ccddabd802f2f1b30754c674d4",
+    "download": {
+      "full": {
+        "file": "allison-sammy-jean-2007-verso.jpg",
+        "width": 3725,
+        "height": 2604,
+        "bytes": 649044
+      },
+      "share": {
+        "file": "allison-sammy-jean-2007-verso-2600px.jpg",
+        "width": 2600,
+        "height": 1818,
+        "bytes": 306453
+      }
+    }
+  },
   "allison-family/allison-veta-1955-outside-house-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-veta-1955-outside-house-recto-a4772e166e",
@@ -5519,6 +8098,260 @@
         "height": 2600,
         "bytes": 404388
       }
+    }
+  },
+  "allison-family/grizzle-ollie-harold-allison-3-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-harold-allison-3-recto-c50a92c09e",
+    "width": 4578,
+    "height": 4580,
+    "sizes": [
+      {
+        "width": 287,
+        "height": 287
+      },
+      {
+        "width": 340,
+        "height": 340
+      },
+      {
+        "width": 680,
+        "height": 680
+      },
+      {
+        "width": 800,
+        "height": 800
+      },
+      {
+        "width": 1200,
+        "height": 1201
+      },
+      {
+        "width": 1900,
+        "height": 1901
+      },
+      {
+        "width": 2599,
+        "height": 2600
+      },
+      {
+        "width": 4578,
+        "height": 4580
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2599,
+      "study": 4578
+    },
+    "hash": "c50a92c09e8b6b98903562b3f4f9ccda93dac3dd792d06b9c468650c16ed9292",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-harold-allison-3-recto.jpg",
+        "width": 4578,
+        "height": 4580,
+        "bytes": 1498578
+      },
+      "share": {
+        "file": "grizzle-ollie-harold-allison-3-recto-2600px.jpg",
+        "width": 2599,
+        "height": 2600,
+        "bytes": 535638
+      }
+    }
+  },
+  "allison-family/grizzle-ollie-harold-allison-3-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-harold-allison-3-verso-50c5701e1a",
+    "width": 2253,
+    "height": 2291,
+    "sizes": [
+      {
+        "width": 282,
+        "height": 287
+      },
+      {
+        "width": 340,
+        "height": 346
+      },
+      {
+        "width": 680,
+        "height": 691
+      },
+      {
+        "width": 800,
+        "height": 813
+      },
+      {
+        "width": 1200,
+        "height": 1220
+      },
+      {
+        "width": 1900,
+        "height": 1932
+      },
+      {
+        "width": 2253,
+        "height": 2291
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2253,
+      "study": null
+    },
+    "hash": "50c5701e1aa1b42b3cdad5e65caa28bc3d6f3739f8daa048683599602857349f",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-harold-allison-3-verso.jpg",
+        "width": 2253,
+        "height": 2291,
+        "bytes": 320728
+      },
+      "share": null
+    }
+  },
+  "allison-family/grizzle-ollie-mae-mildred-mckinstry-visiting-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-mae-mildred-mckinstry-visiting-recto-ddaaefa1e9",
+    "width": 4198,
+    "height": 4957,
+    "sizes": [
+      {
+        "width": 263,
+        "height": 310
+      },
+      {
+        "width": 340,
+        "height": 401
+      },
+      {
+        "width": 680,
+        "height": 803
+      },
+      {
+        "width": 800,
+        "height": 945
+      },
+      {
+        "width": 1200,
+        "height": 1417
+      },
+      {
+        "width": 1900,
+        "height": 2244
+      },
+      {
+        "width": 2202,
+        "height": 2600
+      },
+      {
+        "width": 4198,
+        "height": 4957
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2202,
+      "study": 4198
+    },
+    "hash": "ddaaefa1e9260299b1128a142b82ed1958e9d838351f4f8e60523cbe36282b65",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-mae-mildred-mckinstry-visiting-recto.jpg",
+        "width": 4198,
+        "height": 4957,
+        "bytes": 1667207
+      },
+      "share": {
+        "file": "grizzle-ollie-mae-mildred-mckinstry-visiting-recto-2600px.jpg",
+        "width": 2202,
+        "height": 2600,
+        "bytes": 535472
+      }
+    }
+  },
+  "allison-family/grizzle-ollie-mae-mildred-mckinstry-visiting-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/grizzle-ollie-mae-mildred-mckinstry-visiting-verso-ba098aa059",
+    "width": 2124,
+    "height": 2412,
+    "sizes": [
+      {
+        "width": 266,
+        "height": 302
+      },
+      {
+        "width": 340,
+        "height": 386
+      },
+      {
+        "width": 680,
+        "height": 772
+      },
+      {
+        "width": 800,
+        "height": 908
+      },
+      {
+        "width": 1200,
+        "height": 1363
+      },
+      {
+        "width": 1900,
+        "height": 2158
+      },
+      {
+        "width": 2124,
+        "height": 2412
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2124,
+      "study": null
+    },
+    "hash": "ba098aa059f37cb718d8748d8bf9f3310ca7e18027e0ca13342e63b14d6f1ee8",
+    "download": {
+      "full": {
+        "file": "grizzle-ollie-mae-mildred-mckinstry-visiting-verso.jpg",
+        "width": 2124,
+        "height": 2412,
+        "bytes": 652402
+      },
+      "share": null
     }
   },
   "allison-family/grizzle-ollie-sister-gladys-recto.jpg": {
@@ -7007,7 +9840,9 @@
         "height": 2600,
         "bytes": 589843
       }
-    }
+    },
+    "store": "private",
+    "publicCopy": true
   },
   "allison-family/grizzle-wiley-working-on-car.jpg": {
     "v": 2,
@@ -7484,6 +10319,133 @@
         "height": 2600,
         "bytes": 1581255
       }
+    }
+  },
+  "allison-family/pilot-harold-crew-wife-son-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/pilot-harold-crew-wife-son-recto-967a75caca",
+    "width": 4116,
+    "height": 4461,
+    "sizes": [
+      {
+        "width": 258,
+        "height": 279
+      },
+      {
+        "width": 340,
+        "height": 368
+      },
+      {
+        "width": 680,
+        "height": 737
+      },
+      {
+        "width": 800,
+        "height": 867
+      },
+      {
+        "width": 1200,
+        "height": 1301
+      },
+      {
+        "width": 1900,
+        "height": 2059
+      },
+      {
+        "width": 2399,
+        "height": 2600
+      },
+      {
+        "width": 4116,
+        "height": 4461
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2399,
+      "study": 4116
+    },
+    "hash": "967a75caca65b45da8a71bd4bf2a92bd11adb9aa6063801a6b39a3011b523f8d",
+    "download": {
+      "full": {
+        "file": "pilot-harold-crew-wife-son-recto.jpg",
+        "width": 4116,
+        "height": 4461,
+        "bytes": 1445086
+      },
+      "share": {
+        "file": "pilot-harold-crew-wife-son-recto-2600px.jpg",
+        "width": 2399,
+        "height": 2600,
+        "bytes": 560716
+      }
+    }
+  },
+  "allison-family/pilot-harold-crew-wife-son-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/pilot-harold-crew-wife-son-verso-bffd9569f5",
+    "width": 2064,
+    "height": 2244,
+    "sizes": [
+      {
+        "width": 258,
+        "height": 281
+      },
+      {
+        "width": 340,
+        "height": 370
+      },
+      {
+        "width": 680,
+        "height": 739
+      },
+      {
+        "width": 800,
+        "height": 870
+      },
+      {
+        "width": 1200,
+        "height": 1305
+      },
+      {
+        "width": 1900,
+        "height": 2066
+      },
+      {
+        "width": 2064,
+        "height": 2244
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2064,
+      "study": null
+    },
+    "hash": "bffd9569f5490e55017529dffd1cb6afa1da86f4ae72376d2590e2727c061eb9",
+    "download": {
+      "full": {
+        "file": "pilot-harold-crew-wife-son-verso.jpg",
+        "width": 2064,
+        "height": 2244,
+        "bytes": 481582
+      },
+      "share": null
     }
   },
   "allison-family/raydon-airplanes.jpg": {
@@ -21509,6 +24471,133 @@
       }
     }
   },
+  "mckinstry-family/mckinstry-car-on-bridge-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-car-on-bridge-recto-ca30a27a55",
+    "width": 3681,
+    "height": 5735,
+    "sizes": [
+      {
+        "width": 231,
+        "height": 359
+      },
+      {
+        "width": 340,
+        "height": 530
+      },
+      {
+        "width": 680,
+        "height": 1059
+      },
+      {
+        "width": 800,
+        "height": 1246
+      },
+      {
+        "width": 1200,
+        "height": 1870
+      },
+      {
+        "width": 1669,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2960
+      },
+      {
+        "width": 3209,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1669,
+      "study": 3209
+    },
+    "hash": "ca30a27a55c248470cb585e74c90d9e5e9e3e67a271dabae97df0cdc110f16f5",
+    "download": {
+      "full": {
+        "file": "mckinstry-car-on-bridge-recto.jpg",
+        "width": 3681,
+        "height": 5735,
+        "bytes": 1689878
+      },
+      "share": {
+        "file": "mckinstry-car-on-bridge-recto-2600px.jpg",
+        "width": 1669,
+        "height": 2600,
+        "bytes": 435747
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-car-on-bridge-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-car-on-bridge-verso-d2530b7170",
+    "width": 1943,
+    "height": 2951,
+    "sizes": [
+      {
+        "width": 243,
+        "height": 369
+      },
+      {
+        "width": 340,
+        "height": 516
+      },
+      {
+        "width": 680,
+        "height": 1033
+      },
+      {
+        "width": 800,
+        "height": 1215
+      },
+      {
+        "width": 1200,
+        "height": 1823
+      },
+      {
+        "width": 1712,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2886
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1712,
+      "study": null
+    },
+    "hash": "d2530b7170edd0c22527b79faa969e1194e364c138e717415ace4d954f3485e6",
+    "download": {
+      "full": {
+        "file": "mckinstry-car-on-bridge-verso.jpg",
+        "width": 1943,
+        "height": 2951,
+        "bytes": 601976
+      },
+      "share": null
+    }
+  },
   "mckinstry-family/mckinstry-children-ruth-2-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-children-ruth-2-recto-bd8572ebe1",
@@ -22985,6 +26074,129 @@
       "share": null
     }
   },
+  "mckinstry-family/mckinstry-jean-doll-car-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-doll-car-recto-e6092ca772",
+    "width": 2440,
+    "height": 3419,
+    "sizes": [
+      {
+        "width": 305,
+        "height": 428
+      },
+      {
+        "width": 340,
+        "height": 476
+      },
+      {
+        "width": 680,
+        "height": 953
+      },
+      {
+        "width": 800,
+        "height": 1121
+      },
+      {
+        "width": 1200,
+        "height": 1681
+      },
+      {
+        "width": 1856,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 2662
+      },
+      {
+        "width": 2440,
+        "height": 3419
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1856,
+      "study": 2440
+    },
+    "hash": "e6092ca77242d4594c8f7ab371cfc415bdaed66eb947b248346bf46cc015fa17",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-doll-car-recto.jpg",
+        "width": 2440,
+        "height": 3419,
+        "bytes": 693601
+      },
+      "share": {
+        "file": "mckinstry-jean-doll-car-recto-2600px.jpg",
+        "width": 1856,
+        "height": 2600,
+        "bytes": 417113
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-jean-doll-car-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-doll-car-verso-6456c34f2a",
+    "width": 1283,
+    "height": 1752,
+    "sizes": [
+      {
+        "width": 321,
+        "height": 438
+      },
+      {
+        "width": 340,
+        "height": 464
+      },
+      {
+        "width": 680,
+        "height": 929
+      },
+      {
+        "width": 800,
+        "height": 1092
+      },
+      {
+        "width": 1200,
+        "height": 1639
+      },
+      {
+        "width": 1283,
+        "height": 1752
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1283
+      ],
+      "detail": 1283,
+      "study": null
+    },
+    "hash": "6456c34f2aa235a19b5721530778acd148d16b96706e3dae780e618065758b7b",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-doll-car-verso.jpg",
+        "width": 1283,
+        "height": 1752,
+        "bytes": 236144
+      },
+      "share": null
+    }
+  },
   "mckinstry-family/mckinstry-jean-dress-1-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-dress-1-recto-1977f74380",
@@ -23108,6 +26320,375 @@
         "width": 1913,
         "height": 1220,
         "bytes": 261296
+      },
+      "share": null
+    }
+  },
+  "mckinstry-family/mckinstry-jean-dress-bicycle-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-dress-bicycle-recto-fda6f12dfc",
+    "width": 3340,
+    "height": 4497,
+    "sizes": [
+      {
+        "width": 209,
+        "height": 282
+      },
+      {
+        "width": 340,
+        "height": 458
+      },
+      {
+        "width": 680,
+        "height": 916
+      },
+      {
+        "width": 800,
+        "height": 1077
+      },
+      {
+        "width": 1200,
+        "height": 1616
+      },
+      {
+        "width": 1900,
+        "height": 2558
+      },
+      {
+        "width": 1931,
+        "height": 2600
+      },
+      {
+        "width": 3340,
+        "height": 4497
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1931,
+      "study": 3340
+    },
+    "hash": "fda6f12dfc0931df3c6f67eb0f4176e341b7eb370b968f020d63ba1d8ca7fc6e",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-dress-bicycle-recto.jpg",
+        "width": 3340,
+        "height": 4497,
+        "bytes": 1291974
+      },
+      "share": {
+        "file": "mckinstry-jean-dress-bicycle-recto-2600px.jpg",
+        "width": 1931,
+        "height": 2600,
+        "bytes": 501676
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-jean-dress-bicycle-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-dress-bicycle-verso-cda0f4260c",
+    "width": 1687,
+    "height": 2281,
+    "sizes": [
+      {
+        "width": 211,
+        "height": 286
+      },
+      {
+        "width": 340,
+        "height": 460
+      },
+      {
+        "width": 680,
+        "height": 919
+      },
+      {
+        "width": 800,
+        "height": 1082
+      },
+      {
+        "width": 1200,
+        "height": 1623
+      },
+      {
+        "width": 1687,
+        "height": 2281
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1687
+      ],
+      "detail": 1687,
+      "study": null
+    },
+    "hash": "cda0f4260ce32d079abb701e422f47c56c03b20858420bb14b5f2306c7380cfb",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-dress-bicycle-verso.jpg",
+        "width": 1687,
+        "height": 2281,
+        "bytes": 330188
+      },
+      "share": null
+    }
+  },
+  "mckinstry-family/mckinstry-jean-dress-lamb-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-dress-lamb-recto-b19dd41f9a",
+    "width": 3298,
+    "height": 4480,
+    "sizes": [
+      {
+        "width": 207,
+        "height": 280
+      },
+      {
+        "width": 340,
+        "height": 462
+      },
+      {
+        "width": 680,
+        "height": 924
+      },
+      {
+        "width": 800,
+        "height": 1087
+      },
+      {
+        "width": 1200,
+        "height": 1630
+      },
+      {
+        "width": 1900,
+        "height": 2581
+      },
+      {
+        "width": 1914,
+        "height": 2600
+      },
+      {
+        "width": 3298,
+        "height": 4480
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1914,
+      "study": 3298
+    },
+    "hash": "b19dd41f9af6754969045042fdc805275df87297e3498362e9e51003729426e7",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-dress-lamb-recto.jpg",
+        "width": 3298,
+        "height": 4480,
+        "bytes": 1344308
+      },
+      "share": {
+        "file": "mckinstry-jean-dress-lamb-recto-2600px.jpg",
+        "width": 1914,
+        "height": 2600,
+        "bytes": 513954
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-jean-dress-lamb-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-dress-lamb-verso-83f1b3a16d",
+    "width": 1759,
+    "height": 2288,
+    "sizes": [
+      {
+        "width": 220,
+        "height": 286
+      },
+      {
+        "width": 340,
+        "height": 442
+      },
+      {
+        "width": 680,
+        "height": 885
+      },
+      {
+        "width": 800,
+        "height": 1041
+      },
+      {
+        "width": 1200,
+        "height": 1561
+      },
+      {
+        "width": 1759,
+        "height": 2288
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1759
+      ],
+      "detail": 1759,
+      "study": null
+    },
+    "hash": "83f1b3a16d194d529bfeabd556fe0f314ec5f4459925e2ac2f540bd5392eb9f4",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-dress-lamb-verso.jpg",
+        "width": 1759,
+        "height": 2288,
+        "bytes": 357655
+      },
+      "share": null
+    }
+  },
+  "mckinstry-family/mckinstry-jean-dress-tree-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-dress-tree-recto-2bbcea9c52",
+    "width": 3360,
+    "height": 4554,
+    "sizes": [
+      {
+        "width": 210,
+        "height": 285
+      },
+      {
+        "width": 340,
+        "height": 461
+      },
+      {
+        "width": 680,
+        "height": 922
+      },
+      {
+        "width": 800,
+        "height": 1084
+      },
+      {
+        "width": 1200,
+        "height": 1626
+      },
+      {
+        "width": 1900,
+        "height": 2575
+      },
+      {
+        "width": 1918,
+        "height": 2600
+      },
+      {
+        "width": 3360,
+        "height": 4554
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1918,
+      "study": 3360
+    },
+    "hash": "2bbcea9c523e7aff69f881ae287e14b1ce0b924f1ff8cf9bf1309581d0f9746d",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-dress-tree-recto.jpg",
+        "width": 3360,
+        "height": 4554,
+        "bytes": 1381943
+      },
+      "share": {
+        "file": "mckinstry-jean-dress-tree-recto-2600px.jpg",
+        "width": 1918,
+        "height": 2600,
+        "bytes": 520595
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-jean-dress-tree-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-dress-tree-verso-6d0028363f",
+    "width": 1703,
+    "height": 2244,
+    "sizes": [
+      {
+        "width": 213,
+        "height": 281
+      },
+      {
+        "width": 340,
+        "height": 448
+      },
+      {
+        "width": 680,
+        "height": 896
+      },
+      {
+        "width": 800,
+        "height": 1054
+      },
+      {
+        "width": 1200,
+        "height": 1581
+      },
+      {
+        "width": 1703,
+        "height": 2244
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1703
+      ],
+      "detail": 1703,
+      "study": null
+    },
+    "hash": "6d0028363f889965cc624bdccf3e8048bc0e253ecc67e313d0cac1e598cdbee3",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-dress-tree-verso.jpg",
+        "width": 1703,
+        "height": 2244,
+        "bytes": 339742
       },
       "share": null
     }
@@ -24783,6 +28364,133 @@
       "share": null
     }
   },
+  "mckinstry-family/mckinstry-jean-roswell-air-base-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-roswell-air-base-recto-8ba3e89004",
+    "width": 4122,
+    "height": 6248,
+    "sizes": [
+      {
+        "width": 258,
+        "height": 391
+      },
+      {
+        "width": 340,
+        "height": 515
+      },
+      {
+        "width": 680,
+        "height": 1031
+      },
+      {
+        "width": 800,
+        "height": 1213
+      },
+      {
+        "width": 1200,
+        "height": 1819
+      },
+      {
+        "width": 1715,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2880
+      },
+      {
+        "width": 3299,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1715,
+      "study": 3299
+    },
+    "hash": "8ba3e89004f6f222d00570bb1b075546b381f08c9304eb7a13c5d252fb73ec15",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-roswell-air-base-recto.jpg",
+        "width": 4122,
+        "height": 6248,
+        "bytes": 2544285
+      },
+      "share": {
+        "file": "mckinstry-jean-roswell-air-base-recto-2600px.jpg",
+        "width": 1715,
+        "height": 2600,
+        "bytes": 543441
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-jean-roswell-air-base-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-roswell-air-base-verso-c8b3eb19a7",
+    "width": 2104,
+    "height": 3161,
+    "sizes": [
+      {
+        "width": 263,
+        "height": 396
+      },
+      {
+        "width": 340,
+        "height": 511
+      },
+      {
+        "width": 680,
+        "height": 1022
+      },
+      {
+        "width": 800,
+        "height": 1202
+      },
+      {
+        "width": 1200,
+        "height": 1803
+      },
+      {
+        "width": 1731,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 2855
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1731,
+      "study": null
+    },
+    "hash": "c8b3eb19a7d9d4ce38629730b4eb65f1fbceaf3c84be03abece4067c25d39022",
+    "download": {
+      "full": {
+        "file": "mckinstry-jean-roswell-air-base-verso.jpg",
+        "width": 2104,
+        "height": 3161,
+        "bytes": 773569
+      },
+      "share": null
+    }
+  },
   "mckinstry-family/mckinstry-jean-sammy-mildred-1-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-jean-sammy-mildred-1-recto-483a1c3c28",
@@ -25810,6 +29518,129 @@
       "share": null
     }
   },
+  "mckinstry-family/mckinstry-loveta-jean-sammy-porch-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-loveta-jean-sammy-porch-recto-65aabf73f6",
+    "width": 3336,
+    "height": 4531,
+    "sizes": [
+      {
+        "width": 209,
+        "height": 284
+      },
+      {
+        "width": 340,
+        "height": 462
+      },
+      {
+        "width": 680,
+        "height": 924
+      },
+      {
+        "width": 800,
+        "height": 1087
+      },
+      {
+        "width": 1200,
+        "height": 1630
+      },
+      {
+        "width": 1900,
+        "height": 2581
+      },
+      {
+        "width": 1914,
+        "height": 2600
+      },
+      {
+        "width": 3336,
+        "height": 4531
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1914,
+      "study": 3336
+    },
+    "hash": "65aabf73f6c88cf81832395d0c8592572c6614044cf9b91fcfc528f6de14a690",
+    "download": {
+      "full": {
+        "file": "mckinstry-loveta-jean-sammy-porch-recto.jpg",
+        "width": 3336,
+        "height": 4531,
+        "bytes": 1705019
+      },
+      "share": {
+        "file": "mckinstry-loveta-jean-sammy-porch-recto-2600px.jpg",
+        "width": 1914,
+        "height": 2600,
+        "bytes": 643688
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-loveta-jean-sammy-porch-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-loveta-jean-sammy-porch-verso-826959d63a",
+    "width": 1724,
+    "height": 2333,
+    "sizes": [
+      {
+        "width": 216,
+        "height": 292
+      },
+      {
+        "width": 340,
+        "height": 460
+      },
+      {
+        "width": 680,
+        "height": 920
+      },
+      {
+        "width": 800,
+        "height": 1083
+      },
+      {
+        "width": 1200,
+        "height": 1624
+      },
+      {
+        "width": 1724,
+        "height": 2333
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1724
+      ],
+      "detail": 1724,
+      "study": null
+    },
+    "hash": "826959d63a2ac70e3ef2d1e8643507f40a948c5aa174b9c428734e570f8640be",
+    "download": {
+      "full": {
+        "file": "mckinstry-loveta-jean-sammy-porch-verso.jpg",
+        "width": 1724,
+        "height": 2333,
+        "bytes": 369195
+      },
+      "share": null
+    }
+  },
   "mckinstry-family/mckinstry-loveta-minnie-edith-thomas-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-loveta-minnie-edith-thomas-recto-db04ff940b",
@@ -26067,6 +29898,129 @@
         "height": 2600,
         "bytes": 644777
       }
+    }
+  },
+  "mckinstry-family/mckinstry-loveta-sammy-jean-in-field-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-loveta-sammy-jean-in-field-recto-fcfa63f7d4",
+    "width": 3436,
+    "height": 4620,
+    "sizes": [
+      {
+        "width": 215,
+        "height": 289
+      },
+      {
+        "width": 340,
+        "height": 457
+      },
+      {
+        "width": 680,
+        "height": 914
+      },
+      {
+        "width": 800,
+        "height": 1076
+      },
+      {
+        "width": 1200,
+        "height": 1614
+      },
+      {
+        "width": 1900,
+        "height": 2555
+      },
+      {
+        "width": 1934,
+        "height": 2600
+      },
+      {
+        "width": 3436,
+        "height": 4620
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1934,
+      "study": 3436
+    },
+    "hash": "fcfa63f7d4fa206795c3b665957fe19544caa0a8bd9caa130019d9169a5ef901",
+    "download": {
+      "full": {
+        "file": "mckinstry-loveta-sammy-jean-in-field-recto.jpg",
+        "width": 3436,
+        "height": 4620,
+        "bytes": 1448823
+      },
+      "share": {
+        "file": "mckinstry-loveta-sammy-jean-in-field-recto-2600px.jpg",
+        "width": 1934,
+        "height": 2600,
+        "bytes": 505851
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-loveta-sammy-jean-in-field-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-loveta-sammy-jean-in-field-verso-8f3d6dfb6e",
+    "width": 1703,
+    "height": 2286,
+    "sizes": [
+      {
+        "width": 213,
+        "height": 286
+      },
+      {
+        "width": 340,
+        "height": 456
+      },
+      {
+        "width": 680,
+        "height": 913
+      },
+      {
+        "width": 800,
+        "height": 1074
+      },
+      {
+        "width": 1200,
+        "height": 1611
+      },
+      {
+        "width": 1703,
+        "height": 2286
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1703
+      ],
+      "detail": 1703,
+      "study": null
+    },
+    "hash": "8f3d6dfb6e278681a8dd95af07733054c24de87e2472a592f8adbc3bb9671623",
+    "download": {
+      "full": {
+        "file": "mckinstry-loveta-sammy-jean-in-field-verso.jpg",
+        "width": 1703,
+        "height": 2286,
+        "bytes": 354355
+      },
+      "share": null
     }
   },
   "mckinstry-family/mckinstry-mildred-1-recto.jpg": {
@@ -27014,6 +30968,133 @@
       "share": null
     }
   },
+  "mckinstry-family/mckinstry-sam-loveta-by-car-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sam-loveta-by-car-recto-352f273367",
+    "width": 4485,
+    "height": 5590,
+    "sizes": [
+      {
+        "width": 281,
+        "height": 350
+      },
+      {
+        "width": 340,
+        "height": 424
+      },
+      {
+        "width": 680,
+        "height": 848
+      },
+      {
+        "width": 800,
+        "height": 997
+      },
+      {
+        "width": 1200,
+        "height": 1496
+      },
+      {
+        "width": 1900,
+        "height": 2368
+      },
+      {
+        "width": 2086,
+        "height": 2600
+      },
+      {
+        "width": 4012,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2086,
+      "study": 4012
+    },
+    "hash": "352f2733674d35576d0027905ce898b013d3774b4e308199ff8cc8fe2cfc7851",
+    "download": {
+      "full": {
+        "file": "mckinstry-sam-loveta-by-car-recto.jpg",
+        "width": 4485,
+        "height": 5590,
+        "bytes": 2118557
+      },
+      "share": {
+        "file": "mckinstry-sam-loveta-by-car-recto-2600px.jpg",
+        "width": 2086,
+        "height": 2600,
+        "bytes": 534192
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-sam-loveta-by-car-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sam-loveta-by-car-verso-00b2755c3e",
+    "width": 2136,
+    "height": 2605,
+    "sizes": [
+      {
+        "width": 267,
+        "height": 326
+      },
+      {
+        "width": 340,
+        "height": 415
+      },
+      {
+        "width": 680,
+        "height": 829
+      },
+      {
+        "width": 800,
+        "height": 976
+      },
+      {
+        "width": 1200,
+        "height": 1463
+      },
+      {
+        "width": 1900,
+        "height": 2317
+      },
+      {
+        "width": 2132,
+        "height": 2600
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2132,
+      "study": null
+    },
+    "hash": "00b2755c3e7f830fe96010e558b0498bd181fda845d81e35d989e16cb0ea327c",
+    "download": {
+      "full": {
+        "file": "mckinstry-sam-loveta-by-car-verso.jpg",
+        "width": 2136,
+        "height": 2605,
+        "bytes": 501078
+      },
+      "share": null
+    }
+  },
   "mckinstry-family/mckinstry-sam-loveta-sammy-jean-mildred-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sam-loveta-sammy-jean-mildred-recto-1f2e950695",
@@ -27459,6 +31540,260 @@
         "width": 2265,
         "height": 3352,
         "bytes": 645741
+      },
+      "share": null
+    }
+  },
+  "mckinstry-family/mckinstry-sam-sammy-near-porch-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sam-sammy-near-porch-recto-3ada4880eb",
+    "width": 4135,
+    "height": 5575,
+    "sizes": [
+      {
+        "width": 259,
+        "height": 349
+      },
+      {
+        "width": 340,
+        "height": 458
+      },
+      {
+        "width": 680,
+        "height": 917
+      },
+      {
+        "width": 800,
+        "height": 1079
+      },
+      {
+        "width": 1200,
+        "height": 1618
+      },
+      {
+        "width": 1900,
+        "height": 2562
+      },
+      {
+        "width": 1928,
+        "height": 2599
+      },
+      {
+        "width": 3709,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1928,
+      "study": 3709
+    },
+    "hash": "3ada4880eba33566ea8500b56c5bae7fa773020160fd6aadc2a65e37b3e105b1",
+    "download": {
+      "full": {
+        "file": "mckinstry-sam-sammy-near-porch-recto.jpg",
+        "width": 4135,
+        "height": 5575,
+        "bytes": 1978722
+      },
+      "share": {
+        "file": "mckinstry-sam-sammy-near-porch-recto-2600px.jpg",
+        "width": 1928,
+        "height": 2600,
+        "bytes": 528701
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-sam-sammy-near-porch-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sam-sammy-near-porch-verso-79923254e4",
+    "width": 2098,
+    "height": 2796,
+    "sizes": [
+      {
+        "width": 263,
+        "height": 350
+      },
+      {
+        "width": 340,
+        "height": 453
+      },
+      {
+        "width": 680,
+        "height": 906
+      },
+      {
+        "width": 800,
+        "height": 1066
+      },
+      {
+        "width": 1200,
+        "height": 1599
+      },
+      {
+        "width": 1900,
+        "height": 2532
+      },
+      {
+        "width": 1951,
+        "height": 2600
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1951,
+      "study": null
+    },
+    "hash": "79923254e4fe5760d0342adf0341b6d39471044c7bb3f5d7c547c9b526e85c1f",
+    "download": {
+      "full": {
+        "file": "mckinstry-sam-sammy-near-porch-verso.jpg",
+        "width": 2098,
+        "height": 2796,
+        "bytes": 587831
+      },
+      "share": null
+    }
+  },
+  "mckinstry-family/mckinstry-sam-sammy-with-steer-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sam-sammy-with-steer-recto-f22b53ed04",
+    "width": 5704,
+    "height": 3593,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 214
+      },
+      {
+        "width": 357,
+        "height": 225
+      },
+      {
+        "width": 680,
+        "height": 428
+      },
+      {
+        "width": 800,
+        "height": 504
+      },
+      {
+        "width": 1200,
+        "height": 756
+      },
+      {
+        "width": 1900,
+        "height": 1197
+      },
+      {
+        "width": 2600,
+        "height": 1638
+      },
+      {
+        "width": 5000,
+        "height": 3150
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "f22b53ed0476f812f041141dc587ea3cd842b3ab7eee7f7a7cedd0a8b342cffa",
+    "download": {
+      "full": {
+        "file": "mckinstry-sam-sammy-with-steer-recto.jpg",
+        "width": 5704,
+        "height": 3593,
+        "bytes": 2111833
+      },
+      "share": {
+        "file": "mckinstry-sam-sammy-with-steer-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1638,
+        "bytes": 565175
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-sam-sammy-with-steer-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sam-sammy-with-steer-verso-f3c8d17aba",
+    "width": 1871,
+    "height": 2923,
+    "sizes": [
+      {
+        "width": 234,
+        "height": 366
+      },
+      {
+        "width": 340,
+        "height": 531
+      },
+      {
+        "width": 680,
+        "height": 1062
+      },
+      {
+        "width": 800,
+        "height": 1250
+      },
+      {
+        "width": 1200,
+        "height": 1875
+      },
+      {
+        "width": 1664,
+        "height": 2600
+      },
+      {
+        "width": 1871,
+        "height": 2923
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1871
+      ],
+      "detail": 1664,
+      "study": null
+    },
+    "hash": "f3c8d17aba3369507f229a34893eb0cd30f366475a027caffb95f700add8876d",
+    "download": {
+      "full": {
+        "file": "mckinstry-sam-sammy-with-steer-verso.jpg",
+        "width": 1871,
+        "height": 2923,
+        "bytes": 555504
       },
       "share": null
     }
@@ -29226,6 +33561,256 @@
       "share": null
     }
   },
+  "mckinstry-family/mckinstry-sammy-cork-andrews-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-cork-andrews-recto-4cedeabaea",
+    "width": 3741,
+    "height": 5899,
+    "sizes": [
+      {
+        "width": 234,
+        "height": 369
+      },
+      {
+        "width": 340,
+        "height": 536
+      },
+      {
+        "width": 680,
+        "height": 1072
+      },
+      {
+        "width": 800,
+        "height": 1261
+      },
+      {
+        "width": 1200,
+        "height": 1892
+      },
+      {
+        "width": 1649,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2996
+      },
+      {
+        "width": 3171,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1649,
+      "study": 3171
+    },
+    "hash": "4cedeabaeaa05398db35a9502f05b638712fa622444c1881f72ab672b0163ad2",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-cork-andrews-recto.jpg",
+        "width": 3741,
+        "height": 5899,
+        "bytes": 2317364
+      },
+      "share": {
+        "file": "mckinstry-sammy-cork-andrews-recto-2600px.jpg",
+        "width": 1649,
+        "height": 2600,
+        "bytes": 597438
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-cork-andrews-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-cork-andrews-verso-0cfd07ccbd",
+    "width": 1872,
+    "height": 2962,
+    "sizes": [
+      {
+        "width": 234,
+        "height": 371
+      },
+      {
+        "width": 340,
+        "height": 538
+      },
+      {
+        "width": 680,
+        "height": 1076
+      },
+      {
+        "width": 800,
+        "height": 1266
+      },
+      {
+        "width": 1200,
+        "height": 1899
+      },
+      {
+        "width": 1643,
+        "height": 2600
+      },
+      {
+        "width": 1872,
+        "height": 2962
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1872
+      ],
+      "detail": 1643,
+      "study": null
+    },
+    "hash": "0cfd07ccbd9ca9d10df8438ceddf22f6417450602d6760b6d9ef68485ced94a1",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-cork-andrews-verso.jpg",
+        "width": 1872,
+        "height": 2962,
+        "bytes": 607410
+      },
+      "share": null
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-dress-fence-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-dress-fence-recto-2c5a87e905",
+    "width": 3296,
+    "height": 4472,
+    "sizes": [
+      {
+        "width": 206,
+        "height": 280
+      },
+      {
+        "width": 340,
+        "height": 461
+      },
+      {
+        "width": 680,
+        "height": 923
+      },
+      {
+        "width": 800,
+        "height": 1085
+      },
+      {
+        "width": 1200,
+        "height": 1628
+      },
+      {
+        "width": 1900,
+        "height": 2578
+      },
+      {
+        "width": 1916,
+        "height": 2600
+      },
+      {
+        "width": 3296,
+        "height": 4472
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1916,
+      "study": 3296
+    },
+    "hash": "2c5a87e90509fd948ee80b3e97450f26257b9a6d46cd3aaa9dea33bac1703a37",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-dress-fence-recto.jpg",
+        "width": 3296,
+        "height": 4472,
+        "bytes": 1654064
+      },
+      "share": {
+        "file": "mckinstry-sammy-dress-fence-recto-2600px.jpg",
+        "width": 1916,
+        "height": 2600,
+        "bytes": 641803
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-dress-fence-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-dress-fence-verso-be17f9616d",
+    "width": 1749,
+    "height": 2321,
+    "sizes": [
+      {
+        "width": 219,
+        "height": 291
+      },
+      {
+        "width": 340,
+        "height": 451
+      },
+      {
+        "width": 680,
+        "height": 902
+      },
+      {
+        "width": 800,
+        "height": 1062
+      },
+      {
+        "width": 1200,
+        "height": 1592
+      },
+      {
+        "width": 1749,
+        "height": 2321
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1749
+      ],
+      "detail": 1749,
+      "study": null
+    },
+    "hash": "be17f9616dcbacfd6732828f293934f7881af5176704ce0ab3bdd2132f843b33",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-dress-fence-verso.jpg",
+        "width": 1749,
+        "height": 2321,
+        "bytes": 389817
+      },
+      "share": null
+    }
+  },
   "mckinstry-family/mckinstry-sammy-jean-1923-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-jean-1923-recto-ea5ea8e94c",
@@ -29428,6 +34013,646 @@
         "height": 2600,
         "bytes": 525601
       }
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-jean-goat-buggy-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-jean-goat-buggy-recto-aae9cf3799",
+    "width": 4497,
+    "height": 3278,
+    "sizes": [
+      {
+        "width": 282,
+        "height": 205
+      },
+      {
+        "width": 340,
+        "height": 248
+      },
+      {
+        "width": 680,
+        "height": 496
+      },
+      {
+        "width": 800,
+        "height": 583
+      },
+      {
+        "width": 1200,
+        "height": 875
+      },
+      {
+        "width": 1900,
+        "height": 1385
+      },
+      {
+        "width": 2600,
+        "height": 1895
+      },
+      {
+        "width": 4497,
+        "height": 3278
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4497
+    },
+    "hash": "aae9cf379919199545891ec18f93ad9d88c55ab4ed3fefcaa3dd2bcbbf883d87",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-jean-goat-buggy-recto.jpg",
+        "width": 4497,
+        "height": 3278,
+        "bytes": 1509178
+      },
+      "share": {
+        "file": "mckinstry-sammy-jean-goat-buggy-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1895,
+        "bytes": 603050
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-jean-goat-buggy-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-jean-goat-buggy-verso-da4cfb8cb0",
+    "width": 2280,
+    "height": 1632,
+    "sizes": [
+      {
+        "width": 285,
+        "height": 204
+      },
+      {
+        "width": 340,
+        "height": 243
+      },
+      {
+        "width": 680,
+        "height": 487
+      },
+      {
+        "width": 800,
+        "height": 573
+      },
+      {
+        "width": 1200,
+        "height": 859
+      },
+      {
+        "width": 1900,
+        "height": 1360
+      },
+      {
+        "width": 2280,
+        "height": 1632
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2280,
+      "study": null
+    },
+    "hash": "da4cfb8cb051c1a4e9c7422f27ce20314344429fe1c5ccefe63f573c94c96a71",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-jean-goat-buggy-verso.jpg",
+        "width": 2280,
+        "height": 1632,
+        "bytes": 404888
+      },
+      "share": null
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-jean-in-costumes-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-jean-in-costumes-recto-863108e8c4",
+    "width": 3419,
+    "height": 4512,
+    "sizes": [
+      {
+        "width": 214,
+        "height": 282
+      },
+      {
+        "width": 340,
+        "height": 449
+      },
+      {
+        "width": 680,
+        "height": 897
+      },
+      {
+        "width": 800,
+        "height": 1056
+      },
+      {
+        "width": 1200,
+        "height": 1584
+      },
+      {
+        "width": 1900,
+        "height": 2507
+      },
+      {
+        "width": 1970,
+        "height": 2600
+      },
+      {
+        "width": 3419,
+        "height": 4512
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1970,
+      "study": 3419
+    },
+    "hash": "863108e8c47c6a01c5b716e56cb844df5d559fa8160f99f3fd403a87adbd68c3",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-jean-in-costumes-recto.jpg",
+        "width": 3419,
+        "height": 4512,
+        "bytes": 1668176
+      },
+      "share": {
+        "file": "mckinstry-sammy-jean-in-costumes-recto-2600px.jpg",
+        "width": 1970,
+        "height": 2600,
+        "bytes": 638541
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-jean-in-costumes-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-jean-in-costumes-verso-febb43378e",
+    "width": 2328,
+    "height": 1736,
+    "sizes": [
+      {
+        "width": 291,
+        "height": 217
+      },
+      {
+        "width": 340,
+        "height": 254
+      },
+      {
+        "width": 680,
+        "height": 507
+      },
+      {
+        "width": 800,
+        "height": 597
+      },
+      {
+        "width": 1200,
+        "height": 895
+      },
+      {
+        "width": 1900,
+        "height": 1417
+      },
+      {
+        "width": 2328,
+        "height": 1736
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2328,
+      "study": null
+    },
+    "hash": "febb43378e34dd28b90c7eb9bf0dde0a10339fe8eaf4c64f18eaf948af2b6d33",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-jean-in-costumes-verso.jpg",
+        "width": 2328,
+        "height": 1736,
+        "bytes": 441394
+      },
+      "share": null
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-jean-mildred-lena-hendrix-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-jean-mildred-lena-hendrix-1-recto-2957bf2cd2",
+    "width": 3430,
+    "height": 4674,
+    "sizes": [
+      {
+        "width": 215,
+        "height": 293
+      },
+      {
+        "width": 340,
+        "height": 463
+      },
+      {
+        "width": 680,
+        "height": 927
+      },
+      {
+        "width": 800,
+        "height": 1090
+      },
+      {
+        "width": 1200,
+        "height": 1635
+      },
+      {
+        "width": 1900,
+        "height": 2589
+      },
+      {
+        "width": 1908,
+        "height": 2600
+      },
+      {
+        "width": 3430,
+        "height": 4674
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1908,
+      "study": 3430
+    },
+    "hash": "2957bf2cd273a9456825a85b728e32e8ad64c9bafccd11785e75466796c7f398",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-jean-mildred-lena-hendrix-1-recto.jpg",
+        "width": 3430,
+        "height": 4674,
+        "bytes": 1879491
+      },
+      "share": {
+        "file": "mckinstry-sammy-jean-mildred-lena-hendrix-1-recto-2600px.jpg",
+        "width": 1908,
+        "height": 2600,
+        "bytes": 678423
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-jean-mildred-lena-hendrix-1-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-jean-mildred-lena-hendrix-1-verso-4fbc38d55d",
+    "width": 1740,
+    "height": 2328,
+    "sizes": [
+      {
+        "width": 218,
+        "height": 291
+      },
+      {
+        "width": 340,
+        "height": 455
+      },
+      {
+        "width": 680,
+        "height": 910
+      },
+      {
+        "width": 800,
+        "height": 1070
+      },
+      {
+        "width": 1200,
+        "height": 1606
+      },
+      {
+        "width": 1740,
+        "height": 2328
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1740
+      ],
+      "detail": 1740,
+      "study": null
+    },
+    "hash": "4fbc38d55d98b7f3f14ecc3b830382b6f5aabb9bc9d97524b5d0c254f992dede",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-jean-mildred-lena-hendrix-1-verso.jpg",
+        "width": 1740,
+        "height": 2328,
+        "bytes": 395040
+      },
+      "share": null
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-jean-mildred-lena-hendrix-2-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-jean-mildred-lena-hendrix-2-recto-49f8ce88fa",
+    "width": 7211,
+    "height": 4598,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 217
+      },
+      {
+        "width": 451,
+        "height": 288
+      },
+      {
+        "width": 680,
+        "height": 434
+      },
+      {
+        "width": 800,
+        "height": 510
+      },
+      {
+        "width": 1200,
+        "height": 765
+      },
+      {
+        "width": 1900,
+        "height": 1212
+      },
+      {
+        "width": 2600,
+        "height": 1658
+      },
+      {
+        "width": 5000,
+        "height": 3188
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "49f8ce88fa453d5c20f8489ef424be7cb215becdff9b7648e49cbf8a0b7ede59",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-jean-mildred-lena-hendrix-2-recto.jpg",
+        "width": 7211,
+        "height": 4598,
+        "bytes": 3135287
+      },
+      "share": {
+        "file": "mckinstry-sammy-jean-mildred-lena-hendrix-2-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1658,
+        "bytes": 570807
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-jean-mildred-lena-hendrix-2-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-jean-mildred-lena-hendrix-2-verso-2e5d8f4028",
+    "width": 3704,
+    "height": 2346,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 215
+      },
+      {
+        "width": 463,
+        "height": 294
+      },
+      {
+        "width": 680,
+        "height": 431
+      },
+      {
+        "width": 800,
+        "height": 507
+      },
+      {
+        "width": 1200,
+        "height": 760
+      },
+      {
+        "width": 1900,
+        "height": 1203
+      },
+      {
+        "width": 2600,
+        "height": 1647
+      },
+      {
+        "width": 3704,
+        "height": 2346
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 3704
+    },
+    "hash": "2e5d8f4028c61a0b73c4f4465970f107bf6ca60c8f5ab2c8ceca479eec2da223",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-jean-mildred-lena-hendrix-2-verso.jpg",
+        "width": 3704,
+        "height": 2346,
+        "bytes": 789810
+      },
+      "share": {
+        "file": "mckinstry-sammy-jean-mildred-lena-hendrix-2-verso-2600px.jpg",
+        "width": 2600,
+        "height": 1647,
+        "bytes": 381338
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-jean-mildred-peggy-sitting-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-jean-mildred-peggy-sitting-recto-2045cd9044",
+    "width": 5216,
+    "height": 3890,
+    "sizes": [
+      {
+        "width": 326,
+        "height": 244
+      },
+      {
+        "width": 340,
+        "height": 254
+      },
+      {
+        "width": 680,
+        "height": 507
+      },
+      {
+        "width": 800,
+        "height": 597
+      },
+      {
+        "width": 1200,
+        "height": 895
+      },
+      {
+        "width": 1900,
+        "height": 1417
+      },
+      {
+        "width": 2600,
+        "height": 1939
+      },
+      {
+        "width": 5000,
+        "height": 3729
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "2045cd9044f3346f85983f350dbef138ee2facbe7ee85b90430c733864072c71",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-jean-mildred-peggy-sitting-recto.jpg",
+        "width": 5216,
+        "height": 3890,
+        "bytes": 1961722
+      },
+      "share": {
+        "file": "mckinstry-sammy-jean-mildred-peggy-sitting-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1939,
+        "bytes": 585268
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-jean-mildred-peggy-sitting-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-jean-mildred-peggy-sitting-verso-8b9a7ba1d3",
+    "width": 2705,
+    "height": 2012,
+    "sizes": [
+      {
+        "width": 339,
+        "height": 252
+      },
+      {
+        "width": 340,
+        "height": 253
+      },
+      {
+        "width": 680,
+        "height": 506
+      },
+      {
+        "width": 800,
+        "height": 595
+      },
+      {
+        "width": 1200,
+        "height": 893
+      },
+      {
+        "width": 1900,
+        "height": 1413
+      },
+      {
+        "width": 2600,
+        "height": 1934
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": null
+    },
+    "hash": "8b9a7ba1d388eae87904ee511da8220c4c69910b63e678e0c18d3b6e0b9d57c1",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-jean-mildred-peggy-sitting-verso.jpg",
+        "width": 2705,
+        "height": 2012,
+        "bytes": 572216
+      },
+      "share": null
     }
   },
   "mckinstry-family/mckinstry-sammy-jean-peggy-1-recto.jpg": {
@@ -30693,6 +35918,129 @@
         "width": 2321,
         "height": 1660,
         "bytes": 367436
+      },
+      "share": null
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-sara-beth-west-dresses-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-sara-beth-west-dresses-recto-a8cd0c5641",
+    "width": 3432,
+    "height": 4510,
+    "sizes": [
+      {
+        "width": 215,
+        "height": 282
+      },
+      {
+        "width": 340,
+        "height": 447
+      },
+      {
+        "width": 680,
+        "height": 894
+      },
+      {
+        "width": 800,
+        "height": 1051
+      },
+      {
+        "width": 1200,
+        "height": 1577
+      },
+      {
+        "width": 1900,
+        "height": 2497
+      },
+      {
+        "width": 1979,
+        "height": 2601
+      },
+      {
+        "width": 3432,
+        "height": 4510
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1979,
+      "study": 3432
+    },
+    "hash": "a8cd0c56419992ac0d9dd5735fddc412e381566ac8725d5d5a0f9496be6f3384",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-sara-beth-west-dresses-recto.jpg",
+        "width": 3432,
+        "height": 4510,
+        "bytes": 1396202
+      },
+      "share": {
+        "file": "mckinstry-sammy-sara-beth-west-dresses-recto-2600px.jpg",
+        "width": 1979,
+        "height": 2600,
+        "bytes": 522798
+      }
+    }
+  },
+  "mckinstry-family/mckinstry-sammy-sara-beth-west-dresses-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/mckinstry-family/mckinstry-sammy-sara-beth-west-dresses-verso-b73a2509ea",
+    "width": 1687,
+    "height": 2280,
+    "sizes": [
+      {
+        "width": 211,
+        "height": 285
+      },
+      {
+        "width": 340,
+        "height": 460
+      },
+      {
+        "width": 680,
+        "height": 919
+      },
+      {
+        "width": 800,
+        "height": 1081
+      },
+      {
+        "width": 1200,
+        "height": 1622
+      },
+      {
+        "width": 1687,
+        "height": 2280
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1687
+      ],
+      "detail": 1687,
+      "study": null
+    },
+    "hash": "b73a2509eaed20b9a681be537f79a449c68feca26a4af3e3c6b8a7c7b0d0c17a",
+    "download": {
+      "full": {
+        "file": "mckinstry-sammy-sara-beth-west-dresses-verso.jpg",
+        "width": 1687,
+        "height": 2280,
+        "bytes": 392985
       },
       "share": null
     }
@@ -33996,6 +39344,260 @@
         "height": 1255,
         "bytes": 257642
       }
+    }
+  },
+  "swann-family/girdner-nannie-house-porch-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/girdner-nannie-house-porch-recto-056d77f3a4",
+    "width": 5488,
+    "height": 3291,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 204
+      },
+      {
+        "width": 343,
+        "height": 206
+      },
+      {
+        "width": 680,
+        "height": 408
+      },
+      {
+        "width": 800,
+        "height": 480
+      },
+      {
+        "width": 1200,
+        "height": 720
+      },
+      {
+        "width": 1900,
+        "height": 1139
+      },
+      {
+        "width": 2600,
+        "height": 1559
+      },
+      {
+        "width": 5000,
+        "height": 2998
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "056d77f3a40e9841df9f1a9f8a9a81a86c3f97c078097a00aa2d5cc5053cbd85",
+    "download": {
+      "full": {
+        "file": "girdner-nannie-house-porch-recto.jpg",
+        "width": 5488,
+        "height": 3291,
+        "bytes": 1396516
+      },
+      "share": {
+        "file": "girdner-nannie-house-porch-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1559,
+        "bytes": 390405
+      }
+    }
+  },
+  "swann-family/girdner-nannie-house-porch-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/girdner-nannie-house-porch-verso-0b1c125756",
+    "width": 1712,
+    "height": 2780,
+    "sizes": [
+      {
+        "width": 214,
+        "height": 348
+      },
+      {
+        "width": 340,
+        "height": 552
+      },
+      {
+        "width": 680,
+        "height": 1104
+      },
+      {
+        "width": 800,
+        "height": 1299
+      },
+      {
+        "width": 1200,
+        "height": 1949
+      },
+      {
+        "width": 1601,
+        "height": 2600
+      },
+      {
+        "width": 1712,
+        "height": 2780
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1712
+      ],
+      "detail": 1601,
+      "study": null
+    },
+    "hash": "0b1c1257564cae7a1e8d5e001e31dae900312d7d9fe9acd49b07dd8559ea98b8",
+    "download": {
+      "full": {
+        "file": "girdner-nannie-house-porch-verso.jpg",
+        "width": 1712,
+        "height": 2780,
+        "bytes": 479245
+      },
+      "share": null
+    }
+  },
+  "swann-family/girdner-nannie-ouida-centennial-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/girdner-nannie-ouida-centennial-recto-4cee564d8c",
+    "width": 4580,
+    "height": 6475,
+    "sizes": [
+      {
+        "width": 287,
+        "height": 405
+      },
+      {
+        "width": 340,
+        "height": 481
+      },
+      {
+        "width": 680,
+        "height": 961
+      },
+      {
+        "width": 800,
+        "height": 1131
+      },
+      {
+        "width": 1200,
+        "height": 1697
+      },
+      {
+        "width": 1839,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2686
+      },
+      {
+        "width": 3537,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1839,
+      "study": 3537
+    },
+    "hash": "4cee564d8c3e49a3d1f8a11ff92d0d442f1c28596a605b327d93cfc2c37426a3",
+    "download": {
+      "full": {
+        "file": "girdner-nannie-ouida-centennial-recto.jpg",
+        "width": 4580,
+        "height": 6475,
+        "bytes": 2579430
+      },
+      "share": {
+        "file": "girdner-nannie-ouida-centennial-recto-2600px.jpg",
+        "width": 1839,
+        "height": 2600,
+        "bytes": 561678
+      }
+    }
+  },
+  "swann-family/girdner-nannie-ouida-centennial-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/girdner-nannie-ouida-centennial-verso-e890f12834",
+    "width": 2303,
+    "height": 3262,
+    "sizes": [
+      {
+        "width": 288,
+        "height": 408
+      },
+      {
+        "width": 340,
+        "height": 482
+      },
+      {
+        "width": 680,
+        "height": 963
+      },
+      {
+        "width": 800,
+        "height": 1133
+      },
+      {
+        "width": 1200,
+        "height": 1700
+      },
+      {
+        "width": 1836,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 2691
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1836,
+      "study": null
+    },
+    "hash": "e890f12834b011ab50c0acbf935bbfb4a0b171f1fba84f1528ba15e1d1769acd",
+    "download": {
+      "full": {
+        "file": "girdner-nannie-ouida-centennial-verso.jpg",
+        "width": 2303,
+        "height": 3262,
+        "bytes": 756323
+      },
+      "share": null
     }
   },
   "swann-family/girdner-nannie-outhouse-recto.jpg": {
@@ -45472,6 +51074,129 @@
       "share": null
     }
   },
+  "swann-family/swann-loveta-eva-minnie-other-girls-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/swann-loveta-eva-minnie-other-girls-recto-b1f8b58d90",
+    "width": 4300,
+    "height": 3219,
+    "sizes": [
+      {
+        "width": 269,
+        "height": 202
+      },
+      {
+        "width": 340,
+        "height": 255
+      },
+      {
+        "width": 680,
+        "height": 509
+      },
+      {
+        "width": 800,
+        "height": 599
+      },
+      {
+        "width": 1200,
+        "height": 898
+      },
+      {
+        "width": 1900,
+        "height": 1422
+      },
+      {
+        "width": 2600,
+        "height": 1946
+      },
+      {
+        "width": 4300,
+        "height": 3219
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4300
+    },
+    "hash": "b1f8b58d9029a6bfe8ab35f24157886ac0129517764e1d83f8a99798249420ad",
+    "download": {
+      "full": {
+        "file": "swann-loveta-eva-minnie-other-girls-recto.jpg",
+        "width": 4300,
+        "height": 3219,
+        "bytes": 1226387
+      },
+      "share": {
+        "file": "swann-loveta-eva-minnie-other-girls-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1946,
+        "bytes": 492234
+      }
+    }
+  },
+  "swann-family/swann-loveta-eva-minnie-other-girls-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/swann-loveta-eva-minnie-other-girls-verso-60d7870458",
+    "width": 1631,
+    "height": 2243,
+    "sizes": [
+      {
+        "width": 204,
+        "height": 281
+      },
+      {
+        "width": 340,
+        "height": 468
+      },
+      {
+        "width": 680,
+        "height": 935
+      },
+      {
+        "width": 800,
+        "height": 1100
+      },
+      {
+        "width": 1200,
+        "height": 1650
+      },
+      {
+        "width": 1631,
+        "height": 2243
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1631
+      ],
+      "detail": 1631,
+      "study": null
+    },
+    "hash": "60d78704589f89659fada6f5168131371b4ae726d00cc28e418dc1f3e2cd07d9",
+    "download": {
+      "full": {
+        "file": "swann-loveta-eva-minnie-other-girls-verso.jpg",
+        "width": 1631,
+        "height": 2243,
+        "bytes": 354750
+      },
+      "share": null
+    }
+  },
   "swann-family/swann-loveta-graduation-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/swann-family/swann-loveta-graduation-recto-97574825b1",
@@ -48245,6 +53970,142 @@
       "share": null
     }
   },
+  "swann-family/three-men-on-donkey-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/three-men-on-donkey-recto-026c0cd244",
+    "width": 9195,
+    "height": 6600,
+    "sizes": [
+      {
+        "width": 288,
+        "height": 207
+      },
+      {
+        "width": 340,
+        "height": 244
+      },
+      {
+        "width": 680,
+        "height": 488
+      },
+      {
+        "width": 800,
+        "height": 574
+      },
+      {
+        "width": 1200,
+        "height": 861
+      },
+      {
+        "width": 1900,
+        "height": 1364
+      },
+      {
+        "width": 2600,
+        "height": 1866
+      },
+      {
+        "width": 5000,
+        "height": 3589
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "026c0cd2446522fc77e1105a8632fea8f450a88812377a17b7dec39739155715",
+    "download": {
+      "full": {
+        "file": "three-men-on-donkey-recto.jpg",
+        "width": 9195,
+        "height": 6600,
+        "bytes": 9110604
+      },
+      "share": {
+        "file": "three-men-on-donkey-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1866,
+        "bytes": 732039
+      }
+    }
+  },
+  "swann-family/three-men-on-donkey-vero.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/three-men-on-donkey-vero-c0f6f84626",
+    "width": 4722,
+    "height": 3445,
+    "sizes": [
+      {
+        "width": 296,
+        "height": 216
+      },
+      {
+        "width": 340,
+        "height": 248
+      },
+      {
+        "width": 680,
+        "height": 496
+      },
+      {
+        "width": 800,
+        "height": 584
+      },
+      {
+        "width": 1200,
+        "height": 875
+      },
+      {
+        "width": 1900,
+        "height": 1386
+      },
+      {
+        "width": 2600,
+        "height": 1897
+      },
+      {
+        "width": 4722,
+        "height": 3445
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4722
+    },
+    "hash": "c0f6f84626bc2f94222262f44f90c1d208581007de5b8fd568c0236d58fa51b5",
+    "download": {
+      "full": {
+        "file": "three-men-on-donkey-vero.jpg",
+        "width": 4722,
+        "height": 3445,
+        "bytes": 2394076
+      },
+      "share": {
+        "file": "three-men-on-donkey-vero-2600px.jpg",
+        "width": 2600,
+        "height": 1897,
+        "bytes": 601859
+      }
+    }
+  },
   "swann-family/truett-baptism-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/swann-family/truett-baptism-recto-17b3d143ad",
@@ -48896,6 +54757,133 @@
         "height": 2600,
         "bytes": 488776
       }
+    }
+  },
+  "swann-family/west-eva-emma-thomas-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/west-eva-emma-thomas-recto-0a53fe94b5",
+    "width": 4498,
+    "height": 3697,
+    "sizes": [
+      {
+        "width": 282,
+        "height": 232
+      },
+      {
+        "width": 340,
+        "height": 279
+      },
+      {
+        "width": 680,
+        "height": 559
+      },
+      {
+        "width": 800,
+        "height": 658
+      },
+      {
+        "width": 1200,
+        "height": 986
+      },
+      {
+        "width": 1900,
+        "height": 1562
+      },
+      {
+        "width": 2600,
+        "height": 2137
+      },
+      {
+        "width": 4498,
+        "height": 3697
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4498
+    },
+    "hash": "0a53fe94b5f8970c0e9245287d7e9e8c744f640627848eeaf4d39824e8fd8808",
+    "download": {
+      "full": {
+        "file": "west-eva-emma-thomas-recto.jpg",
+        "width": 4498,
+        "height": 3697,
+        "bytes": 1786461
+      },
+      "share": {
+        "file": "west-eva-emma-thomas-recto-2600px.jpg",
+        "width": 2600,
+        "height": 2137,
+        "bytes": 659758
+      }
+    }
+  },
+  "swann-family/west-eva-emma-thomas-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/swann-family/west-eva-emma-thomas-verso-a7d56bf6f1",
+    "width": 2316,
+    "height": 1832,
+    "sizes": [
+      {
+        "width": 290,
+        "height": 229
+      },
+      {
+        "width": 340,
+        "height": 269
+      },
+      {
+        "width": 680,
+        "height": 538
+      },
+      {
+        "width": 800,
+        "height": 633
+      },
+      {
+        "width": 1200,
+        "height": 949
+      },
+      {
+        "width": 1900,
+        "height": 1503
+      },
+      {
+        "width": 2316,
+        "height": 1832
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2316,
+      "study": null
+    },
+    "hash": "a7d56bf6f1e19e01f352dff9f2cd02eb297aa789c13e14fdb026ff8d4de44901",
+    "download": {
+      "full": {
+        "file": "west-eva-emma-thomas-verso.jpg",
+        "width": 2316,
+        "height": 1832,
+        "bytes": 504798
+      },
+      "share": null
     }
   },
   "swann-family/west-eva-swann-portrait-recto.jpg": {
@@ -50065,6 +56053,133 @@
       }
     }
   },
+  "thomas-family/thomas-bud-john-stairs-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/thomas-family/thomas-bud-john-stairs-recto-fc6815cfcc",
+    "width": 3299,
+    "height": 6195,
+    "sizes": [
+      {
+        "width": 207,
+        "height": 388
+      },
+      {
+        "width": 340,
+        "height": 638
+      },
+      {
+        "width": 680,
+        "height": 1277
+      },
+      {
+        "width": 800,
+        "height": 1502
+      },
+      {
+        "width": 1200,
+        "height": 2253
+      },
+      {
+        "width": 1385,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 3568
+      },
+      {
+        "width": 2663,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1385,
+      "study": 2663
+    },
+    "hash": "fc6815cfcc5c0faaad6ddc0b0d945e314ad3afdd6cfd674cc38a333b12e3802e",
+    "download": {
+      "full": {
+        "file": "thomas-bud-john-stairs-recto.jpg",
+        "width": 3299,
+        "height": 6195,
+        "bytes": 1913570
+      },
+      "share": {
+        "file": "thomas-bud-john-stairs-recto-2600px.jpg",
+        "width": 1385,
+        "height": 2600,
+        "bytes": 436299
+      }
+    }
+  },
+  "thomas-family/thomas-bud-john-stairs-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/thomas-family/thomas-bud-john-stairs-verso-fd2869f48f",
+    "width": 1740,
+    "height": 3069,
+    "sizes": [
+      {
+        "width": 218,
+        "height": 384
+      },
+      {
+        "width": 340,
+        "height": 600
+      },
+      {
+        "width": 680,
+        "height": 1199
+      },
+      {
+        "width": 800,
+        "height": 1411
+      },
+      {
+        "width": 1200,
+        "height": 2117
+      },
+      {
+        "width": 1474,
+        "height": 2600
+      },
+      {
+        "width": 1740,
+        "height": 3069
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1740
+      ],
+      "detail": 1474,
+      "study": null
+    },
+    "hash": "fd2869f48fd4dc73fea46986fc64ad1cd2833fa6369c3538624643f613bb4c8d",
+    "download": {
+      "full": {
+        "file": "thomas-bud-john-stairs-verso.jpg",
+        "width": 1740,
+        "height": 3069,
+        "bytes": 500902
+      },
+      "share": null
+    }
+  },
   "thomas-family/thomas-bud-john-verso.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/thomas-family/thomas-bud-john-verso-36b3a62809",
@@ -50513,6 +56628,142 @@
         "bytes": 198881
       },
       "share": null
+    }
+  },
+  "thomas-family/thomas-minerva-porch-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/thomas-family/thomas-minerva-porch-recto-9e0fad2d44",
+    "width": 4405,
+    "height": 6832,
+    "sizes": [
+      {
+        "width": 276,
+        "height": 427
+      },
+      {
+        "width": 340,
+        "height": 527
+      },
+      {
+        "width": 680,
+        "height": 1055
+      },
+      {
+        "width": 800,
+        "height": 1241
+      },
+      {
+        "width": 1200,
+        "height": 1861
+      },
+      {
+        "width": 1676,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2947
+      },
+      {
+        "width": 3224,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1676,
+      "study": 3224
+    },
+    "hash": "9e0fad2d44baa7365881c3e56ea9b014298a0823d29e5e05a9c4bfd15cf40399",
+    "download": {
+      "full": {
+        "file": "thomas-minerva-porch-recto.jpg",
+        "width": 4405,
+        "height": 6832,
+        "bytes": 2731966
+      },
+      "share": {
+        "file": "thomas-minerva-porch-recto-2600px.jpg",
+        "width": 1676,
+        "height": 2600,
+        "bytes": 468619
+      }
+    }
+  },
+  "thomas-family/thomas-minerva-porch-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/thomas-family/thomas-minerva-porch-verso-439fc97c64",
+    "width": 2232,
+    "height": 3443,
+    "sizes": [
+      {
+        "width": 279,
+        "height": 431
+      },
+      {
+        "width": 340,
+        "height": 524
+      },
+      {
+        "width": 680,
+        "height": 1049
+      },
+      {
+        "width": 800,
+        "height": 1234
+      },
+      {
+        "width": 1200,
+        "height": 1851
+      },
+      {
+        "width": 1686,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 2931
+      },
+      {
+        "width": 2232,
+        "height": 3443
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1686,
+      "study": 2232
+    },
+    "hash": "439fc97c64a92eabaea4dccc3291f389f95fdc865305866f30967366c2571ec8",
+    "download": {
+      "full": {
+        "file": "thomas-minerva-porch-verso.jpg",
+        "width": 2232,
+        "height": 3443,
+        "bytes": 810683
+      },
+      "share": {
+        "file": "thomas-minerva-porch-verso-2600px.jpg",
+        "width": 1686,
+        "height": 2600,
+        "bytes": 438092
+      }
     }
   },
   "thomas-family/thomas-nannie-young-recto.jpg": {
