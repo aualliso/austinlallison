@@ -1033,11 +1033,53 @@ export const PEOPLE: Person[] = [
       'Find a Grave memorial 112370911',
     ],
     relations: [
+      { type: 'spouse', person: 'johnson-lindsay-thomas', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'pool-gregory-brent', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'hewatt-aubrey-edward', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'allison-sammy-nan-mckinstry', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'black-susan-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-edward-mckinstry', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', half: true, person: 'allison-sam-oscar', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'johnson-lindsay-thomas',
+    authorized: 'Johnson, Lindsay Thomas (L.T.)',
+    surname: 'Johnson',
+    given: 'Lindsay Thomas',
+    birth: '1927',
+    death: '2003',
+    variants: ['LT Johnson'],
+    status: 'established',
+    scopeNote:
+      '',
+
+    identifiers: { findagrave: '52717762' },
+    sources: [
+      'Find a Grave memorial 52717762',
+    ],
+    relations: [
+      { type: 'spouse', person: 'johnson-nan-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'pool-gregory-brent',
+    authorized: 'Pool, Gregory Brent',
+    surname: 'Pool',
+    given: 'Gregory Brent',
+    birth: '1967',
+    death: '2023',
+    variants: ['Greg Pool'],
+    status: 'established',
+    scopeNote:
+      '',
+
+    identifiers: { findagrave: '' },
+    sources: [
+      'Find a Grave memorial ',
+    ],
+    relations: [
+      { type: 'parent', person: 'johnson-nan-allison', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -2989,6 +3031,7 @@ export const PEOPLE: Person[] = [
     ],
     relations: [
       { type: 'spouse', person: 'didlake-george-howard', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'collins-georga-didlake', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-wiley', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'grizzle-ollie-blanche-ingle-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', half: true, person: 'allison-gerald-parker', basis: 'Established relationship', confidence: 'certain' },
@@ -3016,6 +3059,27 @@ export const PEOPLE: Person[] = [
     ],
     relations: [
       { type: 'spouse', person: 'didlake-ollie-mae-grizzle', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'collins-georga-didlake', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'collins-georga-didlake',
+    authorized: 'Collins, Georga Didlake',
+    surname: 'Collins',
+    given: 'Georga Didlake',
+    birth: '1947',
+    death: '2020',
+    variants: ['Didlake, Georga', 'Georga Didlake', 'Georga Collins'],
+    status: 'established',
+    scopeNote:
+      '',
+    identifiers: { familysearch: '' },
+    sources: [
+      'Family Search ID: .',
+    ],
+    relations: [
+      { type: 'parent', person: 'didlake-george-howard', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'didlake-ollie-mae-grizzle', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {

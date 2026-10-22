@@ -4131,5 +4131,836 @@ export const COLLECTION: Collection = {
         },
       ],
     },
+    {
+      slug: 'allison-harold-jean-san-antonio-bush',
+      title: '[Harold and Jean Allison standing next to a bush in San Antonio, Texas]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'San Antonio, Texas',
+      controlNumber: 'I.1.6.3',
+      date: {
+        display: '[1945]',
+        earliest: 1945,
+        latest: 1945,
+        basis: ['This appears to be after the marriage of Jean and Harold and during their time in San Antonio. A stamp on the verso indicates a 1945 date.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-jean-san-antonio-bush-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-jean-san-antonio-bush-verso.jpg',
+      },
+      description:
+        'This photograph depicts Harold and Jean Allison standing next to a bush in San Antonio, Texas.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 49.7, y: 36, w: 8.9, h: 6.6 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 38.1, y: 39.4, w: 7.5, h: 6.3 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jack-calf-barn',
+      title: '[Jack Allison with a show calf at the barn on the farm]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'I.1.7.1',
+      date: {
+        display: '[1968-1969]',
+        earliest: 1968,
+        latest: 1969,
+        basis: ['Jack appears to be 15 or 16 years old here, which corresponds to dates between 1968 and 1969.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jack-calf-barn-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jack-calf-barn-verso.jpg',
+      },
+      description:
+        'This photograph depicts Jack Allison standing next to the barn with his show calf.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 56.4, y: 33.7, w: 6.5, h: 11 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'allison-gerald-oscar-sammy',
+      title: '[Gerald, Oscar, and Sammy Allison at the home of Gerald Allison]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'I.1.9.1',
+      date: {
+        display: '[1959]',
+        earliest: 1959,
+        latest: 1959,
+        basis: ['A stamp on the verso suggests a date in 1959. Nothing objects to that, but that date could be a print date and not the date of the photograph.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-gerald-oscar-sammy-recto.jpg',
+      },
+      verso: {
+        file: 'allison-gerald-oscar-sammy-verso.jpg',
+      },
+      description:
+        'This photograph depicts Gerald, Oscar, and Sammy Allison standing in the home of Gerald and Ethel Allison. A photograph of one of Gerald\'s children can be seen in the background. An inscription on the verso lists one of the men as Harold Allison, but it is Gerald.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'back\nOscar + Harold Allison'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-gerald-parker',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 63.9, y: 26.9, w: 9.8, h: 10.8 },
+        },
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 49, y: 31.7, w: 8.8, h: 11.5 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 38.8, y: 26.6, w: 9.3, h: 13.4 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-oscar-nan-at-table',
+      title: '[Oscar and Nan Allison]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'I.1.9.2',
+      date: {
+        display: '[1956-1958]',
+        earliest: 1956,
+        latest: 1958,
+        basis: ['This photograph is undated, but Nan appears to be 16 to 18 years old here. This places the photograph between 1956 and 1958.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-oscar-nan-at-table-recto.jpg',
+      },
+      verso: {
+        file: 'allison-oscar-nan-at-table-verso.jpg',
+      },
+      description:
+        'This photograph depicts Oscar and Nan Allison sitting at a table. Nan is hugging Oscar around the neck.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 35.6, y: 15.7, w: 10.7, h: 13.9 },
+        },
+        {
+          person: 'johnson-nan-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 42.5, y: 12.9, w: 10.6, h: 12.1 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-carolyn-ironing',
+      title: '[Carolyn Allison ironing clothes]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'I.1.10.1',
+      date: {
+        display: '[1959]',
+        earliest: 1959,
+        latest: 1959,
+        basis: ['A print date of 1959 is in the left margin of this photograph. Nothing objects to this, but it could be a print date and not the date the photograph was taken.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-carolyn-ironing-recto.jpg',
+      },
+      verso: {
+        file: 'allison-carolyn-ironing-verso.jpg',
+      },
+      description:
+        'This photograph depicts Carolyn Allison ironing clothes.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 26, y: 26.3, w: 11.7, h: 10.8 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-carolyn-sewing',
+      title: '[Carolyn Allison sewing clothes]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'I.1.10.2',
+      date: {
+        display: '[1959]',
+        earliest: 1959,
+        latest: 1959,
+        basis: ['A print date of 1959 is in the bottom margin of this photograph. Nothing objects to this, but it could be a print date and not the date the photograph was taken.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-carolyn-sewing-recto.jpg',
+      },
+      verso: {
+        file: 'allison-carolyn-sewing-verso.jpg',
+      },
+      description:
+        'This photograph depicts Carolyn Allison sewing clothes on a sewing machine. An unknown woman can be partially seen on the right side of the photograph.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 30.7, y: 16.5, w: 10, h: 17.5 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-carolyn-bedroom-doll',
+      title: '[Carolyn Allison on her bed with a doll]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'I.1.14.1',
+      date: {
+        display: '[1958-1959]',
+        earliest: 1958,
+        latest: 1959,
+        basis: ['There is no date on this photograph, but Carolyn appears to be 10 or 11 in this image, which places it between 1958 and 1959.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-carolyn-bedroom-doll-recto.jpg',
+      },
+      verso: {
+        file: 'allison-carolyn-bedroom-doll-verso.jpg',
+      },
+      description:
+        'This photograph depicts Carolyn Allison sitting on her bed playing with a doll. An ornate lamp sits in the background.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      related: [
+        { 
+          slug: 'allison-carolyn-brushing-hair',
+          relation: 'taken at the same time'
+        }
+      ],
+      depicts: [
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 65.3, y: 49.9, w: 9.8, h: 8.7 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-carolyn-brushing-hair',
+      title: '[Carolyn Allison brushing her hair in the mirror]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'I.1.14.2',
+      date: {
+        display: '[1958-1959]',
+        earliest: 1958,
+        latest: 1959,
+        basis: ['There is no date on this photograph, but Carolyn appears to be 10 or 11 in this image, which places it between 1958 and 1959.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-carolyn-brushing-hair-recto.jpg',
+      },
+      verso: {
+        file: 'allison-carolyn-brushing-hair-verso.jpg',
+      },
+      description:
+        'This photograph depicts Carolyn Allison brushing her hair in the mirror. An ornate lamp sits on the desk next to her, and several dolls sit atop the desk.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      related: [
+        { 
+          slug: 'allison-carolyn-bedroom-doll',
+          relation: 'taken at the same time'
+        }
+      ],
+      depicts: [
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 35.4, y: 50.7, w: 5.5, h: 10.1 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-leather-jacket',
+      title: '[Harold Allison wearing a leather jacket]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'I.1.10.3',
+      date: {
+        display: '[1975-1980]',
+        earliest: 1975,
+        latest: 1980,
+        basis: ['There is no date on this photograph, but this looks to be from between the years of 1975 and 1980.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-leather-jacket-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-leather-jacket-verso.jpg',
+      },
+      description:
+        'This photograph depicts Harold Allison wearing a leather jacket while standing in the entry way of his home in Pleasant Valley, Texas.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 39.5, y: 14.3, w: 21.2, h: 20.6 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-oscar-gerald-georga',
+      title: '[Oscar, Gerald, Georga Didlake, and Harold Allison]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'I.1.10.4',
+      date: {
+        display: '[1970-1971]',
+        earliest: 1970,
+        latest: 1971,
+        basis: ['There is no date on this photograph, but this looks to be from between the years of 1970 and 1971.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-oscar-gerald-georga-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-oscar-gerald-georga-verso.jpg',
+      },
+      description:
+        'This photograph depicts Oscar, Gerald, and Harold Allison standing with their niece Georga Didlake. The child on the bottom left is Greg Pool, Nan\'s son.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-gerald-parker',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 43.3, y: 39.4, w: 8.6, h: 10.1 },
+        },
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 69.9, y: 38.9, w: 9.1, h: 11.7 },
+        },
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 22.1, y: 41.8, w: 9.8, h: 11.3 },
+        },
+        {
+          person: 'collins-georga-didlake',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 56.5, y: 38.4, w: 9.1, h: 12 },
+        },
+        {
+          person: 'pool-gregory-brent',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 11.2, y: 69, w: 9.5, h: 12.6 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jean-harold-portrait-wedding',
+      title: '[Harold and Jean Allison wedding portrait]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'I.1.12.2',
+      date: {
+        display: '[1944]',
+        earliest: 1944,
+        latest: 1944,
+        basis: ['There is no date on this photograph, but it appears to be from near their wedding date.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jean-harold-portrait-wedding-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jean-harold-portrait-wedding-verso.jpg',
+      },
+      description:
+        'This photograph depicts Harold and Jean Allison either shortly before their wedding or shortly after. Harold is in his military uniform.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 47.6, y: 19.7, w: 38.6, h: 28.5 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 8.3, y: 26.2, w: 31.7, h: 30.8 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-sammy-jean-2007',
+      title: '[Sammy and Jean Allison at Sammy\'s going away party in 2007]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Muleshoe, Texas',
+      controlNumber: 'I.1.13.2',
+      date: {
+        display: '[2007]',
+        earliest: 2007,
+        latest: 2007,
+        basis: ['Sammy moved from Muleshoe to Amarillo in 2007.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-sammy-jean-2007-recto.jpg',
+      },
+      verso: {
+        file: 'allison-sammy-jean-2007-verso.jpg',
+      },
+      description:
+        'This photograph depicts Sammy and Jean Allison in 2007 at the going away party thrown for Sammy.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 47.4, y: 22.8, w: 9.2, h: 17.4 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 57.8, y: 22, w: 8.7, h: 16.4 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-cherry-coupe',
+      title: '[Harold Allison standing in the door of a car]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'I.1.18.3',
+      date: {
+        display: '[1944]',
+        earliest: 1944,
+        latest: 1944,
+        basis: ['A date of 1944 is on the verso. Nothing objects to this.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-cherry-coupe-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-cherry-coupe-verso.jpg',
+      },
+      description:
+        'This photograph depicts Harold Allison standing in the door of his "cherry coupe" car.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: '1944\nLt. Harold L. Allison\nwith cherry coupe'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 36, y: 30.2, w: 19.8, h: 17.7 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-jean-pilot-bob',
+      title: '[Harold and Jean Allison sitting next to the pilot of Harold\'s crew and his wife]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'San Antonio, Texas',
+      controlNumber: 'I.1.18.4',
+      date: {
+        display: '[1945]',
+        earliest: 1945,
+        latest: 1945,
+        basis: ['A date of 1945 is on the verso. Nothing objects to this.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-jean-pilot-bob-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-jean-pilot-bob-verso.jpg',
+      },
+      description:
+        'This photograph depicts Harold and Jean Allison sitting next to the pilot of Harold\'s crew, Bob, and his wife.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Lt. Harold (co-pilot) + Jean Allison with\nBob + wife (pilot)'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 34.3, y: 35.2, w: 5.7, h: 10.4 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 43.4, y: 36.5, w: 5.6, h: 10.6 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-officers-club',
+      title: '[Harold Allison sitting on a bench]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'San Antonio, Texas',
+      controlNumber: 'I.1.19.1',
+      date: {
+        display: '[1945]',
+        earliest: 1945,
+        latest: 1945,
+        basis: ['A date of 1945 is on the verso. Nothing objects to this.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-officers-club-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-officers-club-verso.jpg',
+      },
+      description:
+        'This photograph depicts Harold Allison sitting on a bench in front of the Officer\'s Club in San Antonio.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'We didn\'t know\nthe little boy.\nTaken in front of\nOfficer\'s Club.\n Lt. Harold Allison\n1945'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 30.1, y: 43.3, w: 10.7, h: 7.9 },
+        },
+      ],
+    },
+    {
+      slug: 'grizzle-ollie-mae-mildred-mckinstry-visiting',
+      title: '[Ollie Mae Grizzle and Mildred McKinstry visiting Harold and Jean Allison in San Antonio]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'San Antonio, Texas',
+      controlNumber: 'I.1.19.2',
+      date: {
+        display: '[1945]',
+        earliest: 1945,
+        latest: 1945,
+        basis: ['A date of 1945 is on the verso. Nothing objects to this.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'grizzle-ollie-mae-mildred-mckinstry-visiting-recto.jpg',
+      },
+      verso: {
+        file: 'grizzle-ollie-mae-mildred-mckinstry-visiting-verso.jpg',
+      },
+      description:
+        'This photograph depicts Ollie Mae Grizzle and Mildred McKinstry sitting in the grass while on a visit to San Antonio to see Harold and Jean Allison.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'San Antonio, 1945\nSan Antonio\nOllie Mae Grizzle\n+\nMildred McKinstry\nwhile visiting\nJean + Harold.'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'osborn-mildred-adeline-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 50.8, y: 51.4, w: 8, h: 7.9 },
+        },
+        {
+          person: 'didlake-ollie-mae-grizzle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 36.8, y: 49.8, w: 8.4, h: 9.6 },
+        },
+      ],
+    },
+    {
+      slug: 'pilot-harold-crew-wife-son',
+      title: '[Bob + wife + son, pilot on Harold\'s first crew]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'San Antonio, Texas',
+      controlNumber: 'I.1.19.3',
+      date: {
+        display: '[1945]',
+        earliest: 1945,
+        latest: 1945,
+        basis: ['A date of 1945 is on the verso. Nothing objects to this.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'pilot-harold-crew-wife-son-recto.jpg',
+      },
+      verso: {
+        file: 'pilot-harold-crew-wife-son-verso.jpg',
+      },
+      description:
+        'This photograph depicts the pilot on Harold\'s first crew. His name was Bob. He is seen here with his wife and son.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Bob + wife + son.\nPilot on Harold\'s\nfirst crew.'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        
+      ],
+    },
+    {
+      slug: 'allison-harold-jean-after-marriage',
+      title: '[Harold and Jean Allison soon after marriage, 1944]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'San Antonio, Texas',
+      controlNumber: 'I.1.19.4',
+      date: {
+        display: '[1944]',
+        earliest: 1944,
+        latest: 1944,
+        basis: ['A date of 1944 is on the verso. Nothing objects to this.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-jean-after-marriage-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-jean-after-marriage-verso.jpg',
+      },
+      description:
+        'This photograph depicts Harold and Jean Allison soon after their marriage in 1944. This photograph may have been taken the day after their wedding as they left New Mexico.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: '1944\nLt. Harold + Jean Allison\nsoon after marriage'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 41.7, y: 23.9, w: 4.9, h: 8.7 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 37.8, y: 26.3, w: 4.5, h: 8.1 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-jean-johniii-graduation',
+      title: '[Harold and Jean Allison in San Antonio for John III graduation]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'San Antonio, Texas',
+      controlNumber: 'I.1.20.1',
+      date: {
+        display: '[1989]',
+        earliest: 1989,
+        latest: 1989,
+        basis: ['A date of 1989 is on the verso. Nothing objects to this.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-harold-jean-johniii-graduation-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-jean-johniii-graduation-verso.jpg',
+      },
+      description:
+        'This photograph depicts Harold and Jean Allison sitting in the back of a car in San Antonio while visiting to see John III\'s graduation.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Harold + Jean\nIn S.A. for John III graduation ceremonies\nA.M., Saturday, June 3, 1989.'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 24.4, y: 22.8, w: 21.7, h: 42 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 53.5, y: 14.7, w: 22.2, h: 45.8 },
+        },
+      ],
+    },
   ]
 }

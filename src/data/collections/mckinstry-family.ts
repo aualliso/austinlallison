@@ -7975,6 +7975,293 @@ export const COLLECTION: Collection = {
       },
     },
     {
+      slug: 'mckinstry-sammy-dress-fence',
+      title: '[Sammy McKinstry standing next to a tree and fence]',
+      controlNumber: 'I.1.6.2',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1937-1938]',
+        earliest: 1937,
+        latest: 1938,
+        basis: [
+          'Sammy appears to be 17 or 18 here, which places this photograph in 1937 or 1938.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-sammy-dress-fence-recto.jpg' },
+      verso: { file: 'mckinstry-sammy-dress-fence-verso.jpg'},
+      description: 'This is a photograph of Sammy McKinstry standing next to an evergreen tree and a fence.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 40.2, y: 10.8, w: 13.3, h: 13.4 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-sammy-jean-mildred-lena-hendrix-1',
+      title: '[Sammy, Jean, and Mildred McKinstry and Lena Hendrix sitting on the fence]',
+      controlNumber: 'I.1.6.4',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '[1931-1932]',
+        earliest: 1931,
+        latest: 1932,
+        basis: [
+          'Mildred appears to be 3 or 4 years old here, which places this photograph in 1931 or 1932.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-sammy-jean-mildred-lena-hendrix-1-recto.jpg' },
+      verso: { file: 'mckinstry-sammy-jean-mildred-lena-hendrix-1-verso.jpg'},
+      description: 'This photograph depicts Sammy, Jean, and Mildred McKinstry sitting on the fence. Lena Hendrix is the girl on the left.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 60.8, y: 27.9, w: 8.6, h: 7.6 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 47, y: 31.9, w: 9.3, h: 7.9 },
+        },
+        {
+          person: 'osborn-mildred-adeline-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 38.4, y: 35.2, w: 7.5, h: 6.5 },
+        },
+        {
+          as: 'Lena Hendrix',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 28.3, y: 30.9, w: 7.8, h: 6.6 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-sammy-jean-mildred-lena-hendrix-2',
+      title: '[Loveta, Minnie, Sammy, Jean, Peggy, and Mildred McKinstry and Lena Hendrix]',
+      controlNumber: 'I.1.8.2',
+      titleSource: 'supplied',
+      place: 'Jacobia, Texas',
+      date: {
+        display: '[1931-1932]',
+        earliest: 1931,
+        latest: 1932,
+        basis: [
+          'Mildred appears to be 3 or 4 years old here, which places this photograph in 1931 or 1932.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-sammy-jean-mildred-lena-hendrix-2-recto.jpg' },
+      verso: { file: 'mckinstry-sammy-jean-mildred-lena-hendrix-2-verso.jpg'},
+      description: 'This photograph depicts Loveta, Minnie, Sammy, Jean, Peggy, and Mildred McKinstry and Lena Hendrix.',
+      related: [
+      ],
+      inscriptions: [ 
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'The strange girl is Lena\nHendrix - Lawrence Hendrix\'s girl'      
+        }
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-minnie-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 46.9, y: 38.1, w: 5.6, h: 10.4 },
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 37.1, y: 39.2, w: 5, h: 11.8 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 24.5, y: 57.7, w: 4, h: 9.2 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 26.7, y: 63.2, w: 5.6, h: 10.6 },
+        },
+        {
+          person: 'smith-peggy-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 43.9, y: 63.8, w: 4.9, h: 10.6 },
+        },
+        {
+          person: 'osborn-mildred-adeline-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 36.2, y: 67.4, w: 6.2, h: 10.4 },
+        },
+        {
+          as: 'Lena Hendrix',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 10.7, y: 52.1, w: 5.6, h: 12.6 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-sammy-jean-goat-buggy',
+      title: '[Sammy and Jean McKinstry in a goat-pulled buggy]',
+      controlNumber: 'I.1.7.2',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1925-1926]',
+        earliest: 1925,
+        latest: 1926,
+        basis: [
+          'Jean appears to be 3 to 4 years old here, which places this photograph in 1925 or 1926.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-sammy-jean-goat-buggy-recto.jpg' },
+      verso: { file: 'mckinstry-sammy-jean-goat-buggy-verso.jpg'},
+      description: 'This photograph depicts Sammy and Jean McKinstry in a goat-pulled buggy likely near the home of their parents.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-sammy-nan-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 35.8, y: 34, w: 5.2, h: 8.5 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 31.5, y: 39.8, w: 4.3, h: 6.9 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-sam-loveta-by-car',
+      title: '[Sam and Loveta McKinstry posing next to a car]',
+      controlNumber: 'I.1.18.2',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1935-1940]',
+        earliest: 1935,
+        latest: 1940,
+        basis: [
+          'There is no date on this photograph, but a 1935 to 1940 date seems appropriate.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-sam-loveta-by-car-recto.jpg' },
+      verso: { file: 'mckinstry-sam-loveta-by-car-verso.jpg'},
+      description: 'This photograph depicts Sam and Loveta McKinstry posing next to a car.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-samuel-small',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 58.1, y: 12.7, w: 13.8, h: 13.3 },
+        },
+        {
+          person: 'mckinstry-loveta-swann',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 39.4, y: 18.4, w: 13.4, h: 13.6 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
+      slug: 'mckinstry-jean-roswell-air-base',
+      title: '[Jean McKinstry, circa 1942]',
+      controlNumber: 'I.1.20.2',
+      titleSource: 'supplied',
+      place: 'New Mexico',
+      date: {
+        display: '[1942]',
+        earliest: 1942,
+        latest: 1942,
+        basis: [
+          'Text on the verso applies a 1942 date. Nothing objects to that.',
+        ],
+        confidence: 'probable',
+      },
+      format: 'snapshot',
+      recto: { file: 'mckinstry-jean-roswell-air-base-recto.jpg' },
+      verso: { file: 'mckinstry-jean-roswell-air-base-verso.jpg'},
+      description: 'This photograph depicts Jean McKinstry around the age of 20. The verso notes that she was employed at the Roswell Air Base at this time.',
+      related: [
+      ],
+      inscriptions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',  // an id in people.ts. Build throws if unknown.
+          confidence: 'certain',  // REQUIRED on every depiction
+          basis: 'Known identity',
+          region: { face: 'recto', x: 34.2, y: 29, w: 14.8, h: 13.9 },
+        },
+      ],
+      rights: {
+        status: 'public-domain',
+        note: 'Photographer unidentified; unpublished.',
+      },
+    },
+    {
       slug: 'mckinstry-album',
       title: '[Album of McKinstry photographs]',
       titleSource: 'supplied',
