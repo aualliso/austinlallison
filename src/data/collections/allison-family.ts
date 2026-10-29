@@ -2125,7 +2125,7 @@ export const COLLECTION: Collection = {
     },
     {
       slug: 'allison-harold-unknown-man',
-      title: '[Harold Allison talking to an unknown man]',
+      title: '[Harold Allison talking to Tim Didlake and Rusty Tunnell]',
       titleSource: 'supplied',
       format: 'snapshot',
       place: 'Texas',
@@ -3270,7 +3270,7 @@ export const COLLECTION: Collection = {
         display: '[1944]',
         earliest: 1944,
         latest: 1944,
-        basis: ['This photograph is likely from Wiley Jr.\'s time at Garden City Army Air Field in 1944.'],
+        basis: ['This photograph is likely from Wiley Jr.\'s time at Garden City Army Air Field in 1944 as it appears in the Class 44-E issue of "The Planesman" from Garden City Army Air Field..'],
         confidence: 'probable',
       },
       recto: {
