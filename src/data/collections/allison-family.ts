@@ -4962,5 +4962,1015 @@ export const COLLECTION: Collection = {
         },
       ],
     },
+    {
+      slug: 'allison-austin-baseball-ubars',
+      title: '[Austin Allison U-Bars baseball portrait]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Muleshoe, Texas',
+      controlNumber: 'J.1.24.4',
+      date: {
+        display: '[1998]',
+        earliest: 1998,
+        latest: 1998,
+        basis: ['A date of 1998 is on the verso. Nothing objects to this.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-austin-baseball-ubars-recto.jpg',
+      },
+      verso: {
+        file: 'allison-austin-baseball-ubars-verso.jpg',
+      },
+      description:
+        'This photograph depicts Austin Allison posing for a portrait in his U-Bars baseball uniform in Muleshoe, Texas.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Name: Austin A.\nSeason: 98\nAge: 8\nHometown: Muleshoe\nHeight: 4\' 2"\nWeight: 56\nPosition: left field\nTeam: U-Bars\nCoach: Mike Riley'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-austin-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 42.2, y: 17.2, w: 22.3, h: 20.2 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'allison-austin-stuffed-animals',
+      title: '[Austin Allison sitting on a chair with two stuffed animals]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'J.1.22.4',
+      date: {
+        display: '1992',
+        earliest: 1992,
+        latest: 1992,
+        basis: ['A date of 1992 is on the verso. Nothing objects to this.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-austin-stuffed-animals-recto.jpg',
+      },
+      verso: {
+        file: 'allison-austin-stuffed-animals-verso.jpg',
+      },
+      description:
+        'This photograph depicts Austin Allison sitting on an old school desk chair with two stuffed animals at the home of his grandmother, Jean Allison, in 1992.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: '1992\nAustin Lamar Allison (2 1/2)',
+          hand: 'Jean Allison'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-austin-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 34.9, y: 24, w: 17, h: 27.6 },
+        },
+        
+      ],
+    },
+    {
+      slug: 'allison-carolyn-veta-skogland-1',
+      title: '[Veta Skogland and Carolyn Allison standing on a wooden porch]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'unknown',
+      controlNumber: 'J.1.22.1',
+      date: {
+        display: '[1992-1994]',
+        earliest: 1992,
+        latest: 1994,
+        basis: ['There is no date on this photograph, but a 1992-1994 date is probable.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-carolyn-veta-skogland-1-recto.jpg',
+      },
+      verso: {
+        file: 'allison-carolyn-veta-skogland-1-verso.jpg',
+      },
+      description:
+        'This photograph depicts sisters Veta Skogland and Carolyn Allison standing on a wooden porch while on a trip to an unknown location.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Carolyn + Veta',
+          hand: ''
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 58.7, y: 21.2, w: 12.2, h: 14.9 },
+        },
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 35.5, y: 17.5, w: 16.9, h: 17.4 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-fred-jack-jim-1963',
+      title: '[Formal portrait of Fred, Jack, and Jim Allison]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'unknown',
+      controlNumber: 'J.1.7',
+      date: {
+        display: '[1963]',
+        earliest: 1963,
+        latest: 1963,
+        basis: ['There is no date on this photograph, but a 1963 date is probable.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-fred-jack-jim-1963-recto.jpg',
+      },
+      verso: {
+        file: 'allison-fred-jack-jim-1963-verso.jpg',
+      },
+      description:
+        'This photograph depicts brothers Fred, Jack, and Jim Allison sitting for a formal portrait.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 67.3, y: 9.2, w: 25.6, h: 42.6 },
+        },
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 37.1, y: 23.1, w: 25.7, h: 35.7 },
+        },
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 14.2, y: 35.8, w: 22.2, h: 32.8 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-fred-jim-loveta-mckinstry-1974',
+      title: '[Fred and Jim Allison with their grandmother, Loveta McKinstry]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Muleshoe, Texas',
+      controlNumber: 'J.1.15.4',
+      date: {
+        display: '[1974]',
+        earliest: 1974,
+        latest: 1974,
+        basis: ['A print date of 1974 is on the verso. Nothing objects to this, but it could be a print date and not the date the photograph was taken.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-fred-jim-loveta-mckinstry-1974-recto.jpg',
+      },
+      verso: {
+        file: 'allison-fred-jim-loveta-mckinstry-1974-verso.jpg',
+      },
+      description:
+        'This photograph depicts brother Fred and Jim Allison with their grandmother, Loveta McKinstry. This may have been taken at the Muleshoe home of Loveta McKinstry.',
+      inscriptions: [
+        
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'mckinstry-loveta-swann',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 16.8, y: 61.2, w: 11.1, h: 13.3 },
+        },
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 5, y: 48.5, w: 9.8, h: 11.3 },
+        },
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 34.9, y: 44.4, w: 10.6, h: 10.8 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-fred-martha-olivia-portrait',
+      title: '[Fred, Martha, and Olivia Allison portrait, 1981]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'unknown',
+      controlNumber: 'J.0.1',
+      date: {
+        display: '[1981]',
+        earliest: 1981,
+        latest: 1981,
+        basis: ['There is no date on this photograph, but Olivia appears to be only a few months old here, which certainly places it in 1981.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-fred-martha-olivia-portrait-recto.jpg',
+      },
+      verso: {
+        file: 'allison-fred-martha-olivia-portrait-verso.jpg',
+      },
+      description:
+        'This photograph depicts Fred and Martha Allison with their daughter Olivia in a formal portrait. This photograph was likely taken in 1981, as Olivia appears to be only a few months old.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: '(some text cut off)\nMom + Dad + all,\n This pic taken in July -\n was home on leave - for our anniversary. Olivia was...\nmo. (now 9 mo.). We look\npretty much the same\n We love you,\nFred, Marty + Olivia.'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 49.6, y: 18.2, w: 44.4, h: 35.3 },
+        },
+        {
+          person: 'allison-martha-mccaul',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 6.3, y: 29.9, w: 34.1, h: 30.5 },
+        },
+        {
+          person: 'allison-olivia-jean',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 33.7, y: 64, w: 30.3, h: 26.6 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-fred-school-portrait-1',
+      title: '[School portrait of Fred Allison, 1957-1959]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'unknown',
+      controlNumber: 'J.1.20.3',
+      date: {
+        display: '[1957-1959]',
+        earliest: 1957,
+        latest: 1959,
+        basis: ['This photograph is undated, but Fred appears to be between 7 and 9 years old, which places it between 1957 and 1959.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-fred-school-portrait-1-recto.jpg',
+      },
+      verso: {
+        file: 'allison-fred-school-portrait-1-verso.jpg',
+      },
+      description:
+        'This photograph depicts Fred Allison in a school portrait taken between 1957 and 1959. Fred appears to be between 7 and 9 years old in this photograph.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: 'Fred Allison'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 23, y: 15.5, w: 56.6, h: 49.2 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-grandkids-in-tree',
+      title: '[Stuart, Wyndi, Daniel, Marissa, and Austin Allison in a tree at Jean Allison\'s home]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'unknown',
+      controlNumber: 'J.1.31.2',
+      date: {
+        display: '[1997-1998]',
+        earliest: 1997,
+        latest: 1998,
+        basis: ['This photograph is undated, but the ages of the grandchildren here match that time frame.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-grandkids-in-tree-recto.jpg',
+      },
+      verso: {
+        file: 'allison-grandkids-in-tree-verso.jpg',
+      },
+      description:
+        'This photograph depicts five of the seven grandchildren of Jean and Harold Allison in a tree outside the home of Jean Allison.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-daniel-fred',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 44.6, y: 9.1, w: 7.9, h: 12.2 },
+        },
+        {
+          person: 'allison-stuart-glen',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 18, y: 17, w: 7.4, h: 12.5 },
+        },
+        {
+          person: 'ludwikowski-wyndolyn-michelle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 30.4, y: 10.4, w: 8.2, h: 12.3 },
+        },
+        {
+          person: 'montalbano-marissa-swann-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 82.1, y: 23, w: 9.1, h: 13.9 },
+        },
+        {
+          person: 'allison-austin-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 39.2, y: 18.9, w: 7.6, h: 11.2 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-family-portrait-1963-2',
+      title: '[Family portrait of Harold and Jean Allison with their children, 1963]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'unknown',
+      controlNumber: 'J.1.10',
+      date: {
+        display: '[1963]',
+        earliest: 1963,
+        latest: 1963,
+        basis: ['This photograph is from approximately 1963.'],
+
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-family-portrait-1963-2-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-family-portrait-1963-2-verso.jpg',
+      },
+      description:
+        'This is a formal portrait of Harold and Jean Allison with their children, Veta, Carolyn, Fred, Jack, and Jim. This photograph was likely taken in 1963.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 56.5, y: 37.4, w: 9.7, h: 13.9 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 38.7, y: 41.3, w: 8.7, h: 12.7 },
+        },
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 26.4, y: 27.6, w: 9.8, h: 13.2 },
+        },
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 65.3, y: 26.2, w: 9.6, h: 12.2 },
+        },
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 44, y: 27.6, w: 8.8, h: 11.9 },
+        },
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 21.7, y: 44.3, w: 9.6, h: 13.9 },
+        },
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 70, y: 47.7, w: 8, h: 12.4 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-family-portrait-1963',
+      title: '[Family portrait of Harold and Jean Allison with their children, 1963, larger version]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'unknown',
+      controlNumber: 'J.1.3',
+      date: {
+        display: '[1963]',
+        earliest: 1963,
+        latest: 1963,
+        basis: ['This photograph is from approximately 1963.'],
+
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-family-portrait-1963-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-family-portrait-1963-verso.jpg',
+      },
+      description:
+        'This is a formal portrait of Harold and Jean Allison with their children, Veta, Carolyn, Fred, Jack, and Jim. This photograph was likely taken in 1963. This is a larger version of the same photograph seen elsewhere.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 58.3, y: 36, w: 14.7, h: 22.3 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 32.4, y: 41.7, w: 12.7, h: 22.4 },
+        },
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 15.6, y: 21.3, w: 11, h: 18.8 },
+        },
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 72.5, y: 19.9, w: 11.8, h: 18.6 },
+        },
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 39.7, y: 19.9, w: 13.4, h: 19.1 },
+        },
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 7.2, y: 48.6, w: 13.9, h: 19.9 },
+        },
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 77.1, y: 53.7, w: 14.1, h: 20 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-harold-jean-marissa-1988',
+      title: '[Harold and Jean Allison with granddaughter Marissa Allison, 1988-1989]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'unknown',
+      controlNumber: 'J.1.17.3',
+      date: {
+        display: '[1988-1989]',
+        earliest: 1988,
+        latest: 1989,
+        basis: ['This photograph is undated, but Marissa appears to be several months old here, but probably less than 1. This could place the photograph is 1988 or 1989.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-harold-jean-marissa-1988-recto.jpg',
+      },
+      verso: {
+        file: 'allison-harold-jean-marissa-1988-verso.jpg',
+      },
+      description:
+        'This photograph depicts Harold and Jean Allison with their granddaughter Marissa Allison. This photograph was likely taken in 1988 or 1989, as Marissa appears to be several months old, but probably less than 1 year old. Harold is holding a bottle while Jean is holding Marissa.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 26.9, y: 14.2, w: 18, h: 16.8 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 62.5, y: 22.6, w: 17.5, h: 16.5 },
+        },
+        {
+          person: 'montalbano-marissa-swann-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 49.8, y: 26.1, w: 15.1, h: 12.8 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jean-carolyn-wyndi-austin-kitchen',
+      title: '[Jean, Carolyn, Wyndi, and Austin Allison in the kitchen of Jean Allison]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'J.1.32.1',
+      date: {
+        display: '[1996]',
+        earliest: 1996,
+        latest: 1996,
+        basis: ['A date of 1-6-96 is on the verso. Nothing objects to this.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-jean-carolyn-wyndi-austin-kitchen-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jean-carolyn-wyndi-austin-kitchen-verso.jpg',
+      },
+      description:
+        'This photograph depicts Jean Allison with her daughter Carolyn, granddaughter Wyndi, and grandson Austin in the kitchen of Jean Allison\'s home in Lamb County, Texas.',
+      inscriptions: [
+        {
+          location: 'verso',
+          medium: 'ink',
+          text: '1-6-96\nAllisons all -\nJean + Austin - Wyndi + Carolyn'
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 22.4, y: 18, w: 12.7, h: 20.8 },
+        },
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 63.1, y: 18.3, w: 11.9, h: 21 },
+        },
+        {
+          person: 'ludwikowski-wyndolyn-michelle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 45.5, y: 19.9, w: 10.5, h: 18 },
+        },
+        {
+          person: 'allison-austin-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 19.7, y: 56.3, w: 12.1, h: 19.6 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jean-wyndi-austin-dining-room',
+      title: '[Jean Allison with her granddaughter Wyndi and grandson Austin in the dining room of her home]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'J.1.24.3',
+      date: {
+        display: '[1994-1995]',
+        earliest: 1994,
+        latest: 1995,
+        basis: ['There is no date on this photograph, but the ages of Wyndi and Austin match that time frame.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jean-wyndi-austin-dining-room-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jean-wyndi-austin-dining-room-verso.jpg',
+      },
+      description:
+        'This photograph depicts Jean Allison with her granddaughter Wyndi and grandson Austin in the dining room of her home in Lamb County, Texas.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 44.1, y: 9.2, w: 15.8, h: 13.8 },
+        },
+        {
+          person: 'ludwikowski-wyndolyn-michelle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 50, y: 26.1, w: 13.4, h: 14.1 },
+        },
+        {
+          person: 'allison-austin-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 51.8, y: 41.1, w: 15.1, h: 14.6 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jim-calf',
+      title: '[Jim Allison with a show calf at the barn]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'J.1.16.1',
+      date: {
+        display: '[1967-1968]',
+        earliest: 1967,
+        latest: 1968,
+        basis: ['There is no date on this photograph, but Jim appears to be between 10 and 11 years old, which places it between 1967 and 1968.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jim-calf-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jim-calf-verso.jpg',
+      },
+      description:
+        'This photograph depicts Jim Allison with a show calf at the barn in Lamb County, Texas. Farm equipment and a barn are visible in the background.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 63.5, y: 38, w: 8.3, h: 7.1 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-jim-daniel-stuart-at-grandmothers',
+      title: '[Jim Allison with his nephews, Daniel and Stuart, at Jean Allison\'s home]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'J.1.23.2',
+      date: {
+        display: '[1988]',
+        earliest: 1988,
+        latest: 1988,
+        basis: ['A date of October 1988 in on the verso. Nothing objects to this, but it could be a print date and not the date the photograph was taken.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-jim-daniel-stuart-at-grandmothers-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jim-daniel-stuart-at-grandmothers-verso.jpg',
+      },
+      description:
+        'This photograph depicts Jim Allison with his nephews, Daniel and Stuart Allison, at the home of their grandmother, Jean Allison. This photograph was likely taken in October 1988.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 49.6, y: 44.4, w: 18.2, h: 15.5 },
+        },
+        {
+          person: 'allison-daniel-fred',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 26.7, y: 46.3, w: 16.3, h: 14.5 },
+        },
+        {
+          person: 'allison-stuart-glen',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 52.1, y: 62.8, w: 14.9, h: 14.4 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-jim-graduation-1',
+      title: '[Jim Allison at his high school graduation ceremony in Muleshoe in 1975]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Muleshoe, Texas',
+      controlNumber: 'J.1.15.2',
+      date: {
+        display: '[1975]',
+        earliest: 1975,
+        latest: 1975,
+        basis: ['The photograph shows Jim Allison at his high school graduation ceremony in Muleshoe, Texas in 1975.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-jim-graduation-1-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jim-graduation-1-verso.jpg',
+      },
+      description:
+        'This photograph depicts Jim Allison preparing for his high school graduation ceremony in Muleshoe, Texas in 1975. Jim can be seen standing on the left.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 9.2, y: 38.8, w: 13.2, h: 13.9 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-jim-nancy-sitting-smiling',
+      title: '[Jim and Nancy Allison seated at a table, smiling]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'unknown',
+      controlNumber: 'J.1.24.2',
+      date: {
+        display: '[1982-1984]',
+        earliest: 1982,
+        latest: 1984,
+        basis: ['This photograph is undated, but a 1982 to 1984 date is probable.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jim-nancy-sitting-smiling-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jim-nancy-sitting-smiling-verso.jpg',
+      },
+      description:
+        'This photograph depicts Jim and Nancy Allison seated at a table, smiling. This photograph was likely taken between 1982 and 1984.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 15.3, y: 24.5, w: 19.5, h: 38.2 },
+        },
+        {
+          person: 'allison-nancy-ann-webster',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 63.5, y: 33, w: 24.5, h: 40.6 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-jim-nancy-wyndi-austin-portrait',
+      title: '[Formal portrait of Jim and Nancy Allison with their children Wyndi and Austin]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'unknown',
+      controlNumber: 'J.1.26.1',
+      date: {
+        display: '[1992-1993]',
+        earliest: 1992,
+        latest: 1993,
+        basis: ['This photograph is undated, but a 1992 to 1993 date is probable.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jim-nancy-wyndi-austin-portrait-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jim-nancy-wyndi-austin-portrait-verso.jpg',
+      },
+      description:
+        'This is a formal portrait of Jim and Nancy Allison with their children Wyndi and Austin. This photograph was likely taken between 1992 and 1993.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 44.4, y: 19.9, w: 20.5, h: 18 },
+        },
+        {
+          person: 'allison-nancy-ann-webster',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 20.3, y: 39.9, w: 21.8, h: 19.5 },
+        },
+        {
+          person: 'ludwikowski-wyndolyn-michelle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 56.7, y: 43.8, w: 19.8, h: 17.6 },
+        },
+        {
+          person: 'allison-austin-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 39.5, y: 58.8, w: 21.6, h: 18 },
+        }
+      ],
+    },
+    {
+      slug: 'skogland-veta-sitting-at-desk',
+      title: '[Veta Skogland sitting at a desk]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'San Antonio, Texas',
+      controlNumber: 'J.1.22.2',
+      date: {
+        display: '[1984-1988]',
+        earliest: 1984,
+        latest: 1988,
+        basis: ['This photograph is undated, but a 1984 to 1988 date is probable.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'skogland-veta-sitting-at-desk-recto.jpg',
+      },
+      verso: {
+        file: 'skogland-veta-sitting-at-desk-verso.jpg',
+      },
+      description:
+        'This photograph depicts Veta Skogland sitting at a desk in San Antonio, Texas. This photograph was likely taken between 1984 and 1988.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 50.7, y: 38.8, w: 10.2, h: 9.2 },
+        }
+      ],
+    },
+    {
+      slug: 'skogland-veta-jennifer-dalmatian',
+      title: '[Veta Skogland with her dalmatian dog, Jennifer]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'San Antonio, Texas',
+      controlNumber: 'J.0.2',
+      date: {
+        display: '[1980-1984]',
+        earliest: 1980,
+        latest: 1984,
+        basis: ['This photograph is undated, but a 1980 to 1984 date is probable.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'skogland-veta-jennifer-dalmatian-recto.jpg',
+      },
+      verso: {
+        file: 'skogland-veta-jennifer-dalmatian-verso.jpg',
+      },
+      description:
+        'This photograph depicts Veta Skogland with her dalmatian dog, Jennifer, in San Antonio, Texas. This photograph was likely taken between 1980 and 1984.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 43.1, y: 13.4, w: 16.1, h: 13.4 },
+        }
+      ],
+    },
   ]
 }

@@ -1292,12 +1292,116 @@ export const PEOPLE: Person[] = [
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
     relations: [
+      { type: 'spouse', person: 'allison-martha-mccaul', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-olivia-jean', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-daniel-fred', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-stuart-glen', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'montalbano-marissa-swann-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'skogland-veta-sue-allison', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-carolyn', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-jack-william', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-james-wiley', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-martha-mccaul',
+    living: true,
+    authorized: 'Allison, Martha McCaul',
+    surname: 'Allison',
+    given: 'Martha McCaul',
+    birth: '1950',
+    variants: ['Martha Allison', 'Allison, Martha', 'Martha McCaul Allison'],
+    status: 'established',
+    scopeNote:
+      'Martha McCaul Allison is the wife of Fred Harold Allison.',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    relations: [
+      { type: 'spouse', person: 'allison-fred-harold', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-olivia-jean', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-daniel-fred', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'allison-stuart-glen', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'montalbano-marissa-swann-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-olivia-jean',
+    living: true,
+    authorized: 'Allison, Olivia Jean',
+    surname: 'Allison',
+    given: 'Olivia Jean',
+    birth: '1981',
+    variants: ['Olivia Allison', 'Allison, Olivia', 'Olivia Jean Allison'],
+    status: 'established',
+    scopeNote:
+      'Olivia Jean Allison is the first child of Fred and Martha Allison',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    relations: [
+      { type: 'parent', person: 'allison-fred-harold', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-martha-mccaul', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-daniel-fred', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-stuart-glen', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'montalbano-marissa-swann-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-daniel-fred',
+    living: true,
+    authorized: 'Allison, Daniel Fred',
+    surname: 'Allison',
+    given: 'Daniel Fred',
+    birth: '1983',
+    variants: ['Daniel Allison', 'Allison, Daniel', 'Daniel Fred Allison'],
+    status: 'established',
+    scopeNote:
+      'Daniel Fred Allison is the second child of Fred and Martha Allison',
+    relations: [
+      { type: 'parent', person: 'allison-fred-harold', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-martha-mccaul', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-olivia-jean', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-stuart-glen', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'montalbano-marissa-swann-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'allison-stuart-glen',
+    living: true,
+    authorized: 'Allison, Daniel Fred',
+    surname: 'Allison',
+    given: 'Daniel Fred',
+    birth: '1983',
+    variants: ['Daniel Allison', 'Allison, Daniel', 'Daniel Fred Allison'],
+    status: 'established',
+    scopeNote:
+      'Stuart Glen Allison is the third child of Fred and Martha Allison',
+    relations: [
+      { type: 'parent', person: 'allison-fred-harold', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-martha-mccaul', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-olivia-jean', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-daniel-fred', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'montalbano-marissa-swann-allison', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'montalbano-marissa-swann-allison',
+    living: true,
+    authorized: 'Montalbano, Marissa Swann Allison',
+    surname: 'Montalbano',
+    given: 'Marissa Swann',
+    birth: '1983',
+    variants: ['Marissa Allison', 'Allison, Marissa', 'Marissa Swann Allison'],
+    status: 'established',
+    scopeNote:
+      'Marissa Swann Allison Montalbano is the fourth child of Fred and Martha Allison',
+    relations: [
+      { type: 'parent', person: 'allison-fred-harold', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'allison-martha-mccaul', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-olivia-jean', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-daniel-fred', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'sibling', person: 'allison-stuart-glen', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
