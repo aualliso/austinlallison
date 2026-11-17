@@ -5972,5 +5972,1025 @@ export const COLLECTION: Collection = {
         }
       ],
     },
+    {
+      slug: 'allison-grizzle-family-portrait-1954',
+      title: '[Allison/Grizzle family portrait, 1954]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'unknown',
+      controlNumber: 'J.1.2',
+      date: {
+        display: '[1954]',
+        earliest: 1954,
+        latest: 1954,
+        basis: ['This photograph is undated, but a 1954 date is probable.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-grizzle-family-portrait-1954-recto.jpg',
+      },
+      verso: {
+        file: 'allison-grizzle-family-portrait-1954-verso.jpg',
+      },
+      description:
+        'This photograph depicts the Allison and Grizzle families in a formal portrait taken in 1954. The photograph includes Harold and Jean Allison, their children, and other family members. This includes the children of Wiley and Ollie Grizzle and their grandchildren.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'didlake-george-howard',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 9.1, y: 18.4, w: 6.7, h: 10.3 },
+        },
+        {
+          person: 'andreas-floyd-adolf',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 18, y: 20.7, w: 6.9, h: 9.7 },
+        },
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 30.3, y: 22.8, w: 5.8, h: 8.8 },
+        },
+        {
+          person: 'allison-jack-william',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 28.9, y: 29.6, w: 4.4, h: 5.5 },
+        },
+        {
+          person: 'allison-winston-irvin',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 39.8, y: 21.8, w: 5.8, h: 9 },
+        },
+        {
+          person: 'allison-james-oscar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 49.7, y: 20.7, w: 6.5, h: 8.4 },
+        },
+        {
+          person: 'allison-gerald-parker',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 58.8, y: 20.7, w: 5.8, h: 10.1 },
+        },
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 67.8, y: 22.2, w: 7.4, h: 9.5 },
+        },
+        {
+          person: 'grizzle-james',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 79.7, y: 19.7, w: 6.2, h: 8.4 },
+        },
+        {
+          person: 'didlake-ollie-mae-grizzle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 10.8, y: 36.7, w: 6.5, h: 9 },
+        },
+        {
+          person: 'andreas-mary-lorene-grizzle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 21.5, y: 37.4, w: 4.9, h: 8.2 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 32.1, y: 39.4, w: 5.3, h: 8 },
+        },
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 30.3, y: 46, w: 5.1, h: 7.8 },
+        },
+        {
+          person: 'grizzle-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 39.1, y: 35.7, w: 6.5, h: 9.7 },
+        },
+        {
+          person: 'grizzle-ollie-blanche-ingle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 52, y: 38.5, w: 5.8, h: 8.8 },
+        },
+        {
+          person: 'allison-lanora-ethel-wells',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 58.1, y: 39.7, w: 5.6, h: 8.2 },
+        },
+        {
+          person: 'allison-robert-carroll',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 62.7, y: 43.9, w: 5.5, h: 7.6 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 70.1, y: 38.3, w: 5.1, h: 7.2 },
+        },
+        {
+          person: 'grizzle-verona-jo-warner',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 78.2, y: 38.1, w: 7, h: 8.6 },
+        },
+        {
+          person: 'allison-sam-oscar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 71.7, y: 46.3, w: 6.3, h: 7.8 },
+        },
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 31.4, y: 70, w: 5.6, h: 6.9 },
+        },
+        {
+          person: 'bainbridge-sherry-lynn-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 38.6, y: 54.5, w: 6, h: 7.8 },
+        },
+        {
+          person: 'johnson-nan-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 53, y: 53.4, w: 6.5, h: 8.6 },
+        },
+        {
+          person: 'black-susan-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 64.8, y: 56.6, w: 6.7, h: 8.6 },
+        },
+        {
+          person: 'allison-edward-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 76.4, y: 57.2, w: 6.7, h: 9.7 },
+        },
+        {
+          person: 'allison-larry-dale',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 84.7, y: 63.5, w: 6.9, h: 8.8 },
+        },
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 59.9, y: 64.1, w: 6.3, h: 8.8 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jean-family-portrait-2007',
+      title: '[Jean Allison with her seven grandchildren, 2007]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Muleshoe, Texas',
+      controlNumber: 'J.1.25.2',
+      date: {
+        display: '2007',
+        earliest: 2007,
+        latest: 2007,
+        basis: ['This photograph is from December 2007.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-jean-family-portrait-2007-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jean-family-portrait-2007-verso.jpg',
+      },
+      description:
+        'This photograph depicts Jean Allison with her seven grandchildren, 2007.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 47.2, y: 44.3, w: 9.6, h: 14.8 },
+        },
+        {
+          person: 'skogland-john-edmund-iii',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 66.5, y: 36.4, w: 8.6, h: 13.6 },
+        },
+        {
+          person: 'allison-olivia-jean',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 77, y: 21.4, w: 7.5, h: 12.6 },
+        },
+        {
+          person: 'allison-daniel-fred',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 18.2, y: 19.1, w: 8.7, h: 13.1 },
+        },
+        {
+          person: 'allison-stuart-glen',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 47.1, y: 13.2, w: 9.2, h: 13.1 },
+        },
+        {
+          person: 'ludwikowski-wyndolyn-michelle-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 61.7, y: 22.9, w: 8.2, h: 11.8 },
+        },
+        {
+          person: 'montalbano-marissa-swann-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 36.8, y: 21.1, w: 7.6, h: 12 },
+        },
+        {
+          person: 'allison-austin-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 27.6, y: 38, w: 8.3, h: 12.8 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jim-nancy-wedding-1',
+      title: '[Wedding of Jim and Nancy Allison, 1979]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lubbock, Texas',
+      controlNumber: 'J.1.13.1',
+      date: {
+        display: '1979',
+        earliest: 1979,
+        latest: 1979,
+        basis: ['This photograph is from January 1979.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-jim-nancy-wedding-1-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jim-nancy-wedding-1-verso.jpg',
+      },
+      description:
+        'This photograph depicts the wedding party of Jim and Nancy Allison, 1979.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 54.8, y: 31.2, w: 4.4, h: 8.8 },
+        },
+        {
+          person: 'allison-nancy-ann-webster',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 37.7, y: 35.6, w: 4.7, h: 7.6 },
+        },
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 63.9, y: 29.2, w: 5.3, h: 9.6 },
+        },
+        {
+          person: 'osborn-stephen-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 76.3, y: 28.7, w: 5.2, h: 9 },
+        },
+        {
+          as: 'Beth Osborn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 25.2, y: 40.9, w: 4.6, h: 6.6 },
+        },
+        {
+          as: 'Kenni Osborn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 3.7, y: 34.9, w: 5, h: 7.3 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jim-nancy-wedding-2',
+      title: '[Wedding of Jim and Nancy Allison, 1979]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lubbock, Texas',
+      controlNumber: 'J.1.26.2',
+      date: {
+        display: '1979',
+        earliest: 1979,
+        latest: 1979,
+        basis: ['This photograph is from January 1979.'],
+        confidence: 'certain',
+      },
+      recto: {
+        file: 'allison-jim-nancy-wedding-2-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jim-nancy-wedding-2-verso.jpg',
+      },
+      description:
+        'This photograph depicts the wedding party of Jim and Nancy Allison, 1979.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 43.7, y: 24.9, w: 8.8, h: 7.4 },
+        },
+        {
+          person: 'allison-nancy-ann-webster',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 28.5, y: 28.4, w: 8.3, h: 7.1 },
+        },
+        {
+          person: 'allison-fred-harold',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 77.1, y: 22.3, w: 9.4, h: 8.4 },
+        },
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 52.5, y: 31, w: 7.9, h: 7.8 },
+        },
+        {
+          person: 'allison-harold-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 9.4, y: 23.7, w: 10.8, h: 9.5 },
+        },
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 62.3, y: 25.9, w: 8.8, h: 8.5 },
+        },
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 11.2, y: 32.9, w: 8.8, h: 8.4 },
+        },
+        {
+          person: 'mckinstry-loveta-swann',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 72.4, y: 34.9, w: 9.9, h: 7.6 },
+        },
+      ],
+    },
+    {
+      slug: 'allison-jim-school-portrait-1',
+      title: '[Jim Allison school portrait, 1964-1965]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Muleshoe, Texas',
+      controlNumber: 'J.1.21.1',
+      date: {
+        display: '[1964-1965]',
+        earliest: 1964,
+        latest: 1965,
+        basis: ['The photograph shows Jim Allison in an undated school portrait. The date is likely from 1964 to 1965.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jim-school-portrait-1-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jim-school-portrait-1-verso.jpg',
+      },
+      description:
+        'This photograph depicts Jim Allison in an undated school portrait.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 13.6, y: 10.8, w: 66, h: 66.1 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-jim-senior-picture',
+      title: '[Jim Allison senior portrait, 1974-1975]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Muleshoe, Texas',
+      controlNumber: 'J.1.27.1',
+      date: {
+        display: '[1974-1975]',
+        earliest: 1974,
+        latest: 1975,
+        basis: ['The photograph is the senior portrait of Jim Allison. He was a senior at Muleshoe High School in 1974 and 1975.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-jim-senior-picture-recto.jpg',
+      },
+      verso: {
+        file: 'allison-jim-senior-picture-verso.jpg',
+      },
+      description:
+        'This photograph depicts Jim Allison posing for his senior portrait.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 32.6, y: 12.7, w: 48.5, h: 45.9 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-mack-infant',
+      title: '[Mack Allison as an infant]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'J.1.8.1',
+      date: {
+        display: '[1946-1947]',
+        earliest: 1946,
+        latest: 1947,
+        basis: ['Mack appears to be 2 or 3 years old in this image.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-mack-infant-recto.jpg',
+      },
+      verso: {
+        file: 'allison-mack-infant-verso.jpg',
+      },
+      description:
+        'This photograph depicts Mack Allison as an infant.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-edward-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 39.1, y: 24.5, w: 20.7, h: 17.2 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-mack-portrait-1',
+      title: '[Mack Allison as an infant]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'New Mexico',
+      controlNumber: 'J.1.9.2',
+      date: {
+        display: '[1946-1947]',
+        earliest: 1946,
+        latest: 1947,
+        basis: ['Mack appears to be 2 or 3 years old in this image.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-mack-portrait-1-recto.jpg',
+      },
+      verso: {
+        file: 'allison-mack-portrait-1-verso.jpg',
+      },
+      description:
+        'This photograph depicts Mack Allison as an infant.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-edward-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 14.2, y: 4.9, w: 76.7, h: 63.6 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-marissa-austin-at-grandmothers',
+      title: '[Austin and Marissa Allison in the kitchen at Harold and Jean Allison\'s home]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'J.1.23.1',
+      date: {
+        display: '[1990-1991]',
+        earliest: 1990,
+        latest: 1991,
+        basis: ['Austin appears to be around 1 or 2 years of age here, which places this photograph in 1990 or 1991.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-marissa-austin-at-grandmothers-recto.jpg',
+      },
+      verso: {
+        file: 'allison-marissa-austin-at-grandmothers-verso.jpg',
+      },
+      description:
+        'This photograph depicts Austin Allison and Marissa Allison in the kitchen at their grandparents\' kitchen.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'montalbano-marissa-swann-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 58.6, y: 22.6, w: 17.4, h: 23.5 },
+        },
+        {
+          person: 'allison-austin-lamar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 20, y: 37.9, w: 26.2, h: 29.9 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-nan-susan-portrait',
+      title: '[Nan and Susan Allison portrait]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'J.1.9.1',
+      date: {
+        display: '[1948-1949]',
+        earliest: 1990,
+        latest: 1991,
+        basis: ['Nan appears to be 8 or 9 in this image, which places it in 1948 or 1949.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-nan-susan-portrait-recto.jpg',
+      },
+      verso: {
+        file: 'allison-nan-susan-portrait-verso.jpg',
+      },
+      description:
+        'This photograph depicts Nan and Susan Allison posing for a portait.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'johnson-nan-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 54.7, y: 17.7, w: 27, h: 23.3 },
+        },
+        {
+          person: 'black-susan-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 13.9, y: 22.3, w: 28.2, h: 22 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-sam-infant',
+      title: '[Sam Allison as an infant]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'J.1.8.2',
+      date: {
+        display: '[1949-1950]',
+        earliest: 1949,
+        latest: 1950,
+        basis: ['Sam appears to be around 1 year of age here.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-sam-infant-recto.jpg',
+      },
+      verso: {
+        file: 'allison-sam-infant-verso.jpg',
+      },
+      description:
+        'This photograph depicts Sam Allison posing for a portrait as an infant.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-sam-oscar',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 40.1, y: 19.3, w: 32.4, h: 30.4 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-sammy-jean-jim-oscar-1975',
+      title: '[Jean, Oscar, Jim, and Sammy Allison next to a car]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'J.1.15.3',
+      date: {
+        display: '[1975]',
+        earliest: 1975,
+        latest: 1975,
+        basis: ['This photograph was likely taken around the time of Jim\'s graduation in 1975.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-sammy-jean-jim-oscar-1975-recto.jpg',
+      },
+      verso: {
+        file: 'allison-sammy-jean-jim-oscar-1975-verso.jpg',
+      },
+      description:
+        'This photograph depicts Jim Allison preparing to enter a car on his way to his high school graduation. Jean, Oscar, and Sammy Allison are standing nearby.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-veta-jean-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 16.8, y: 44.5, w: 9, h: 12 },
+        },
+        {
+          person: 'allison-oscar-ingle',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 42.5, y: 45.2, w: 7.4, h: 8.3 },
+        },
+        {
+          person: 'allison-sammy-nan-mckinstry',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 73.8, y: 43.6, w: 9.5, h: 11.1 },
+        },
+        {
+          person: 'allison-james-wiley',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 54.3, y: 43.6, w: 9.1, h: 10.8 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-veta-portrait',
+      title: '[Veta Allison portrait, 1963-1964]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'J.1.4',
+      date: {
+        display: '[1963-1964]',
+        earliest: 1963,
+        latest: 1964,
+        basis: ['Veta appears to be around 17 or 18 here. This places the photograph in 1963 or 1964.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-veta-portrait-recto.jpg',
+      },
+      verso: {
+        file: 'allison-veta-portrait-verso.jpg',
+      },
+      description:
+        'This photograph depicts Veta Allison posing for a portrait.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 28.6, y: 17.5, w: 47.2, h: 49.2 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-veta-school-portrait-1',
+      title: '[Veta Allison school portrait, 1963-1964]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Muleshoe, Texas',
+      controlNumber: 'J.1.20.1',
+      date: {
+        display: '[1955-1956]',
+        earliest: 1955,
+        latest: 1956,
+        basis: ['Veta appears to be around 9 or 10 here. This places the photograph in 1955 or 1956.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-veta-school-portrait-1-recto.jpg',
+      },
+      verso: {
+        file: 'allison-veta-school-portrait-1-verso.jpg',
+      },
+      description:
+        'This photograph depicts Veta Allison posing for a school portrait.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'skogland-veta-sue-allison',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 24.2, y: 13.9, w: 47.2, h: 47.8 },
+        }
+      ],
+    },
+    {
+      slug: 'skogland-john-profile',
+      title: '[John Skogland, Jr. at the home of Jean and Harold Allison]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lamb County, Texas',
+      controlNumber: 'J.0.0.2',
+      date: {
+        display: '[1980-1985]',
+        earliest: 1980,
+        latest: 1985,
+        basis: ['This photograph is undated, but a 1980 to 1985 date is probable'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'skogland-john-profile-recto.jpg',
+      },
+      verso: {
+        file: 'skogland-john-profile-verso.jpg',
+      },
+      description:
+        'This photograph depicts John Skogland, Jr. at the home of Jean and Harold Allison.',
+      inscriptions: [
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'skogland-john-edmund-jr',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 27.3, y: 24.3, w: 37.6, h: 47.8 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-carolyn-1966',
+      title: '[Carolyn Allison, 1966]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Texas',
+      controlNumber: 'J.1.11',
+      date: {
+        display: '[1966]',
+        earliest: 1966,
+        latest: 1966,
+        basis: ['The verso identifies a 1966 date. Nothing objects to this.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-carolyn-1966-recto.jpg',
+      },
+      verso: {
+        file: 'allison-carolyn-1966-verso.jpg',
+      },
+      description:
+        'This photograph depicts Carolyn Allison posing for a portrait in 1966.',
+      inscriptions: [
+        {
+          location: "verso",
+          medium: "ink",
+          text: "Carolyn Allison\n1966"
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 26.4, y: 19.7, w: 36.3, h: 38.6 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-carolyn-1982',
+      title: '[Carolyn Allison, 1982]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Lubbock, Texas',
+      controlNumber: 'J.0.0.3',
+      date: {
+        display: '[1982]',
+        earliest: 1982,
+        latest: 1982,
+        basis: ['The verso identifies a 1982 date. Nothing objects to this.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-carolyn-1982-recto.jpg',
+      },
+      verso: {
+        file: 'allison-carolyn-1982-verso.jpg',
+      },
+      description:
+        'This photograph depicts Carolyn Allison in 1982.',
+      inscriptions: [
+        {
+          location: "verso",
+          medium: "ink",
+          text: "1982 - Lubbock"
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 26.4, y: 19.7, w: 36.3, h: 38.6 },
+        }
+      ],
+    },
+    {
+      slug: 'allison-carolyn-bo-evans-1',
+      title: '[Carolyn Allison and Bo Evans at the Polo Lounge, 1991]',
+      titleSource: 'supplied',
+      format: 'snapshot',
+      place: 'Los Angeles, California',
+      controlNumber: 'J.1.23.3',
+      date: {
+        display: '[1991]',
+        earliest: 1991,
+        latest: 1991,
+        basis: ['The verso identifies a 1991 date. Nothing objects to this.'],
+        confidence: 'probable',
+      },
+      recto: {
+        file: 'allison-carolyn-bo-evans-1-recto.jpg',
+      },
+      verso: {
+        file: 'allison-carolyn-bo-evans-1-verso.jpg',
+      },
+      description:
+        'This photograph depicts Carolyn Allison and Bo Evans at the entrance to the Polo Lounge in Los Angeles in 1991.',
+      inscriptions: [
+        {
+          location: "verso",
+          medium: "ink",
+          text: "Carolyn + Bo\n11-16-1991"
+        }
+      ],
+      mentions: [ 
+      ],
+      depicts: [
+        {
+          person: 'allison-carolyn',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 49.3, y: 46.2, w: 9.2, h: 15.3 },
+        },
+        {
+          as: 'Bo Evans',
+          confidence: 'certain',
+          basis:
+            'Known identity',
+          region: { face: 'recto', x: 36.6, y: 40.5, w: 10, h: 18.3 },
+        }
+      ],
+    },
   ]
 }

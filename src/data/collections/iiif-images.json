@@ -321,6 +321,251 @@
       }
     }
   },
+  "allison-family/allison-carolyn-1966-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-1966-recto-d42bc37f2e",
+    "width": 6480,
+    "height": 8814,
+    "sizes": [
+      {
+        "width": 203,
+        "height": 276
+      },
+      {
+        "width": 340,
+        "height": 462
+      },
+      {
+        "width": 680,
+        "height": 925
+      },
+      {
+        "width": 800,
+        "height": 1088
+      },
+      {
+        "width": 1200,
+        "height": 1632
+      },
+      {
+        "width": 1900,
+        "height": 2584
+      },
+      {
+        "width": 1912,
+        "height": 2601
+      },
+      {
+        "width": 3676,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1912,
+      "study": 3676
+    },
+    "hash": "d42bc37f2e627ac7e56e63043d39e6bcbba14e52ae05a40a84c80afafe09e042",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-1966-recto.jpg",
+        "width": 6480,
+        "height": 8814,
+        "bytes": 4110390
+      },
+      "share": {
+        "file": "allison-carolyn-1966-recto-2600px.jpg",
+        "width": 1912,
+        "height": 2600,
+        "bytes": 455870
+      }
+    }
+  },
+  "allison-family/allison-carolyn-1966-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-1966-verso-3f1b12f205",
+    "width": 3500,
+    "height": 4609,
+    "sizes": [
+      {
+        "width": 219,
+        "height": 289
+      },
+      {
+        "width": 340,
+        "height": 448
+      },
+      {
+        "width": 680,
+        "height": 895
+      },
+      {
+        "width": 800,
+        "height": 1053
+      },
+      {
+        "width": 1200,
+        "height": 1580
+      },
+      {
+        "width": 1900,
+        "height": 2502
+      },
+      {
+        "width": 1974,
+        "height": 2599
+      },
+      {
+        "width": 3500,
+        "height": 4609
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1974,
+      "study": 3500
+    },
+    "hash": "3f1b12f205a1145d5f6e4fba988d9db9c50a63868be9736bfe4604e8b04e324a",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-1966-verso.jpg",
+        "width": 3500,
+        "height": 4609,
+        "bytes": 1485404
+      },
+      "share": {
+        "file": "allison-carolyn-1966-verso-2600px.jpg",
+        "width": 1974,
+        "height": 2600,
+        "bytes": 453422
+      }
+    }
+  },
+  "allison-family/allison-carolyn-1982-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-1982-recto-ccaf8ddf7e",
+    "width": 2233,
+    "height": 2197,
+    "sizes": [
+      {
+        "width": 280,
+        "height": 275
+      },
+      {
+        "width": 340,
+        "height": 335
+      },
+      {
+        "width": 680,
+        "height": 669
+      },
+      {
+        "width": 800,
+        "height": 787
+      },
+      {
+        "width": 1200,
+        "height": 1181
+      },
+      {
+        "width": 1900,
+        "height": 1869
+      },
+      {
+        "width": 2233,
+        "height": 2197
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2233,
+      "study": null
+    },
+    "hash": "ccaf8ddf7eef1cc830deb672b983de9d5c2b0d1a32fa93b61cfca77320ef31ec",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-1982-recto.jpg",
+        "width": 2233,
+        "height": 2197,
+        "bytes": 675374
+      },
+      "share": null
+    }
+  },
+  "allison-family/allison-carolyn-1982-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-1982-verso-b5b64de868",
+    "width": 1177,
+    "height": 1234,
+    "sizes": [
+      {
+        "width": 295,
+        "height": 309
+      },
+      {
+        "width": 340,
+        "height": 356
+      },
+      {
+        "width": 680,
+        "height": 713
+      },
+      {
+        "width": 800,
+        "height": 839
+      },
+      {
+        "width": 1177,
+        "height": 1234
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1177
+      ],
+      "detail": 1177,
+      "study": null
+    },
+    "hash": "b5b64de868de80743fe1b53ce33e82983730da9e59fb3e10808c4eef5f27ba07",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-1982-verso.jpg",
+        "width": 1177,
+        "height": 1234,
+        "bytes": 183237
+      },
+      "share": null
+    }
+  },
   "allison-family/allison-carolyn-bedroom-doll-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-bedroom-doll-recto-b1b65b7adc",
@@ -444,6 +689,133 @@
         "width": 2247,
         "height": 3135,
         "bytes": 585546
+      },
+      "share": null
+    }
+  },
+  "allison-family/allison-carolyn-bo-evans-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-bo-evans-1-recto-54eb5b7813",
+    "width": 5886,
+    "height": 4080,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 236
+      },
+      {
+        "width": 368,
+        "height": 255
+      },
+      {
+        "width": 680,
+        "height": 471
+      },
+      {
+        "width": 800,
+        "height": 555
+      },
+      {
+        "width": 1200,
+        "height": 832
+      },
+      {
+        "width": 1900,
+        "height": 1317
+      },
+      {
+        "width": 2600,
+        "height": 1802
+      },
+      {
+        "width": 5000,
+        "height": 3466
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "54eb5b7813bb3c21490cbbe2937d855fd1c4c9452f4c7e5be2f595bcc324b3ae",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-bo-evans-1-recto.jpg",
+        "width": 5886,
+        "height": 4080,
+        "bytes": 2188731
+      },
+      "share": {
+        "file": "allison-carolyn-bo-evans-1-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1802,
+        "bytes": 494822
+      }
+    }
+  },
+  "allison-family/allison-carolyn-bo-evans-1-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-carolyn-bo-evans-1-verso-bcf55306fb",
+    "width": 2013,
+    "height": 2924,
+    "sizes": [
+      {
+        "width": 252,
+        "height": 366
+      },
+      {
+        "width": 340,
+        "height": 494
+      },
+      {
+        "width": 680,
+        "height": 988
+      },
+      {
+        "width": 800,
+        "height": 1162
+      },
+      {
+        "width": 1200,
+        "height": 1743
+      },
+      {
+        "width": 1790,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2760
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1790,
+      "study": null
+    },
+    "hash": "bcf55306fb596ea49433ab2a51fbbd7a10d83abd16e14d3608afc0d69a99bcff",
+    "download": {
+      "full": {
+        "file": "allison-carolyn-bo-evans-1-verso.jpg",
+        "width": 2013,
+        "height": 2924,
+        "bytes": 442030
       },
       "share": null
     }
@@ -2053,6 +2425,144 @@
         "width": 2600,
         "height": 1900,
         "bytes": 254337
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-grizzle-family-portrait-1954-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-grizzle-family-portrait-1954-recto-3a5625d97b",
+    "width": 11951,
+    "height": 9972,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 284
+      },
+      {
+        "width": 374,
+        "height": 312
+      },
+      {
+        "width": 680,
+        "height": 567
+      },
+      {
+        "width": 800,
+        "height": 668
+      },
+      {
+        "width": 1200,
+        "height": 1001
+      },
+      {
+        "width": 1900,
+        "height": 1585
+      },
+      {
+        "width": 2600,
+        "height": 2169
+      },
+      {
+        "width": 5000,
+        "height": 4172
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "3a5625d97becd0a5db19217b0b3d0134d1d23995961c76d6b4d7395670c8addb",
+    "download": {
+      "full": {
+        "file": "allison-grizzle-family-portrait-1954-recto.jpg",
+        "width": 11951,
+        "height": 9972,
+        "bytes": 38362722
+      },
+      "share": {
+        "file": "allison-grizzle-family-portrait-1954-recto-2600px.jpg",
+        "width": 2600,
+        "height": 2169,
+        "bytes": 1833299
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-grizzle-family-portrait-1954-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-grizzle-family-portrait-1954-verso-00e612cd44",
+    "width": 5958,
+    "height": 4958,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 283
+      },
+      {
+        "width": 373,
+        "height": 310
+      },
+      {
+        "width": 680,
+        "height": 566
+      },
+      {
+        "width": 800,
+        "height": 666
+      },
+      {
+        "width": 1200,
+        "height": 999
+      },
+      {
+        "width": 1900,
+        "height": 1581
+      },
+      {
+        "width": 2600,
+        "height": 2164
+      },
+      {
+        "width": 5000,
+        "height": 4161
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "00e612cd448475f1e296540acc8989c1dc48316601396cbcfd774b119efa451c",
+    "download": {
+      "full": {
+        "file": "allison-grizzle-family-portrait-1954-verso.jpg",
+        "width": 5958,
+        "height": 4958,
+        "bytes": 2004456
+      },
+      "share": {
+        "file": "allison-grizzle-family-portrait-1954-verso-2600px.jpg",
+        "width": 2600,
+        "height": 2164,
+        "bytes": 308366
       }
     },
     "store": "private"
@@ -6434,6 +6944,135 @@
     },
     "store": "private"
   },
+  "allison-family/allison-jean-family-portrait-2007-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jean-family-portrait-2007-recto-5af6b068ea",
+    "width": 6240,
+    "height": 5121,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 279
+      },
+      {
+        "width": 390,
+        "height": 321
+      },
+      {
+        "width": 680,
+        "height": 558
+      },
+      {
+        "width": 800,
+        "height": 657
+      },
+      {
+        "width": 1200,
+        "height": 985
+      },
+      {
+        "width": 1900,
+        "height": 1559
+      },
+      {
+        "width": 2600,
+        "height": 2134
+      },
+      {
+        "width": 5000,
+        "height": 4103
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "5af6b068ea802cb45693e27bcc4dd1679882709c17b2f6db6a44001667ed7d1a",
+    "download": {
+      "full": {
+        "file": "allison-jean-family-portrait-2007-recto.jpg",
+        "width": 6240,
+        "height": 5121,
+        "bytes": 3874208
+      },
+      "share": {
+        "file": "allison-jean-family-portrait-2007-recto-2600px.jpg",
+        "width": 2600,
+        "height": 2134,
+        "bytes": 822431
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-jean-family-portrait-2007-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jean-family-portrait-2007-verso-5c94efbc1e",
+    "width": 3103,
+    "height": 2584,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 283
+      },
+      {
+        "width": 388,
+        "height": 323
+      },
+      {
+        "width": 680,
+        "height": 566
+      },
+      {
+        "width": 800,
+        "height": 666
+      },
+      {
+        "width": 1200,
+        "height": 999
+      },
+      {
+        "width": 1900,
+        "height": 1582
+      },
+      {
+        "width": 2600,
+        "height": 2165
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": null
+    },
+    "hash": "5c94efbc1ea0b397439ea56f7a117e3dbed1de9e38ae4b3492d312f790a68b36",
+    "download": {
+      "full": {
+        "file": "allison-jean-family-portrait-2007-verso.jpg",
+        "width": 3103,
+        "height": 2584,
+        "bytes": 771644
+      },
+      "share": null
+    },
+    "store": "private"
+  },
   "allison-family/allison-jean-harold-portrait-wedding-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jean-harold-portrait-wedding-recto-8c2d651fe3",
@@ -7541,6 +8180,282 @@
     },
     "store": "private"
   },
+  "allison-family/allison-jim-nancy-wedding-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jim-nancy-wedding-1-recto-4f28733b48",
+    "width": 8617,
+    "height": 6249,
+    "sizes": [
+      {
+        "width": 270,
+        "height": 196
+      },
+      {
+        "width": 340,
+        "height": 247
+      },
+      {
+        "width": 680,
+        "height": 493
+      },
+      {
+        "width": 800,
+        "height": 580
+      },
+      {
+        "width": 1200,
+        "height": 870
+      },
+      {
+        "width": 1900,
+        "height": 1378
+      },
+      {
+        "width": 2600,
+        "height": 1886
+      },
+      {
+        "width": 5000,
+        "height": 3626
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 5000
+    },
+    "hash": "4f28733b48f6ef7fae354dccd7b917efeb2966c5f5c08ffa9204f6142119f60c",
+    "download": {
+      "full": {
+        "file": "allison-jim-nancy-wedding-1-recto.jpg",
+        "width": 8617,
+        "height": 6249,
+        "bytes": 4815877
+      },
+      "share": {
+        "file": "allison-jim-nancy-wedding-1-recto-2600px.jpg",
+        "width": 2600,
+        "height": 1886,
+        "bytes": 529604
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-jim-nancy-wedding-1-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jim-nancy-wedding-1-verso-de9388aeab",
+    "width": 4295,
+    "height": 3120,
+    "sizes": [
+      {
+        "width": 269,
+        "height": 195
+      },
+      {
+        "width": 340,
+        "height": 247
+      },
+      {
+        "width": 680,
+        "height": 494
+      },
+      {
+        "width": 800,
+        "height": 581
+      },
+      {
+        "width": 1200,
+        "height": 872
+      },
+      {
+        "width": 1900,
+        "height": 1380
+      },
+      {
+        "width": 2600,
+        "height": 1889
+      },
+      {
+        "width": 4295,
+        "height": 3120
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 4295
+    },
+    "hash": "de9388aeabedabe5cceb5ce5d64a9dd7bdf1e2b89e8f393c2e4d0d322e4fa349",
+    "download": {
+      "full": {
+        "file": "allison-jim-nancy-wedding-1-verso.jpg",
+        "width": 4295,
+        "height": 3120,
+        "bytes": 843641
+      },
+      "share": {
+        "file": "allison-jim-nancy-wedding-1-verso-2600px.jpg",
+        "width": 2600,
+        "height": 1889,
+        "bytes": 277633
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-jim-nancy-wedding-2-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jim-nancy-wedding-2-recto-d3fd3c6c65",
+    "width": 6209,
+    "height": 8633,
+    "sizes": [
+      {
+        "width": 195,
+        "height": 270
+      },
+      {
+        "width": 340,
+        "height": 473
+      },
+      {
+        "width": 680,
+        "height": 945
+      },
+      {
+        "width": 800,
+        "height": 1112
+      },
+      {
+        "width": 1200,
+        "height": 1668
+      },
+      {
+        "width": 1870,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2642
+      },
+      {
+        "width": 3596,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1870,
+      "study": 3596
+    },
+    "hash": "d3fd3c6c65a8b201abd2e02f5c467185bfc98da4fcf0c5c0359f2f694b9630c0",
+    "download": {
+      "full": {
+        "file": "allison-jim-nancy-wedding-2-recto.jpg",
+        "width": 6209,
+        "height": 8633,
+        "bytes": 4565130
+      },
+      "share": {
+        "file": "allison-jim-nancy-wedding-2-recto-2600px.jpg",
+        "width": 1870,
+        "height": 2600,
+        "bytes": 523272
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-jim-nancy-wedding-2-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jim-nancy-wedding-2-verso-8b30e45ea7",
+    "width": 3153,
+    "height": 4317,
+    "sizes": [
+      {
+        "width": 198,
+        "height": 270
+      },
+      {
+        "width": 340,
+        "height": 466
+      },
+      {
+        "width": 680,
+        "height": 931
+      },
+      {
+        "width": 800,
+        "height": 1095
+      },
+      {
+        "width": 1200,
+        "height": 1643
+      },
+      {
+        "width": 1899,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2601
+      },
+      {
+        "width": 3153,
+        "height": 4317
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1899,
+      "study": 3153
+    },
+    "hash": "8b30e45ea7c728c67a0e61fc8b9ac15c490d97caacd1e8ecd88759a43dc30541",
+    "download": {
+      "full": {
+        "file": "allison-jim-nancy-wedding-2-verso.jpg",
+        "width": 3153,
+        "height": 4317,
+        "bytes": 943538
+      },
+      "share": {
+        "file": "allison-jim-nancy-wedding-2-verso-2600px.jpg",
+        "width": 1899,
+        "height": 2600,
+        "bytes": 312429
+      }
+    },
+    "store": "private"
+  },
   "allison-family/allison-jim-nancy-wyndi-austin-portrait-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jim-nancy-wyndi-austin-portrait-recto-3f4707ff26",
@@ -7747,6 +8662,259 @@
       }
     },
     "store": "private"
+  },
+  "allison-family/allison-jim-school-portrait-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jim-school-portrait-1-recto-20b4133892",
+    "width": 2216,
+    "height": 3025,
+    "sizes": [
+      {
+        "width": 277,
+        "height": 379
+      },
+      {
+        "width": 340,
+        "height": 464
+      },
+      {
+        "width": 680,
+        "height": 928
+      },
+      {
+        "width": 800,
+        "height": 1092
+      },
+      {
+        "width": 1200,
+        "height": 1638
+      },
+      {
+        "width": 1900,
+        "height": 2594
+      },
+      {
+        "width": 1905,
+        "height": 2600
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1905,
+      "study": null
+    },
+    "hash": "20b41338922582c03db6ccc21734e86f5570194fa58a4cbf09c58a1bfb346279",
+    "download": {
+      "full": {
+        "file": "allison-jim-school-portrait-1-recto.jpg",
+        "width": 2216,
+        "height": 3025,
+        "bytes": 610805
+      },
+      "share": null
+    },
+    "store": "private",
+    "publicCopy": true
+  },
+  "allison-family/allison-jim-school-portrait-1-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jim-school-portrait-1-verso-d8ba4de529",
+    "width": 1117,
+    "height": 1588,
+    "sizes": [
+      {
+        "width": 280,
+        "height": 397
+      },
+      {
+        "width": 340,
+        "height": 483
+      },
+      {
+        "width": 680,
+        "height": 967
+      },
+      {
+        "width": 800,
+        "height": 1137
+      },
+      {
+        "width": 1117,
+        "height": 1588
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1117
+      ],
+      "detail": 1117,
+      "study": null
+    },
+    "hash": "d8ba4de529128b43616ac936589c81b91114a7e84baea169f164af8505e45861",
+    "download": {
+      "full": {
+        "file": "allison-jim-school-portrait-1-verso.jpg",
+        "width": 1117,
+        "height": 1588,
+        "bytes": 176875
+      },
+      "share": null
+    },
+    "store": "private",
+    "publicCopy": true
+  },
+  "allison-family/allison-jim-senior-picture-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jim-senior-picture-recto-50cd8aa314",
+    "width": 6134,
+    "height": 8592,
+    "sizes": [
+      {
+        "width": 192,
+        "height": 269
+      },
+      {
+        "width": 340,
+        "height": 476
+      },
+      {
+        "width": 680,
+        "height": 952
+      },
+      {
+        "width": 800,
+        "height": 1121
+      },
+      {
+        "width": 1200,
+        "height": 1681
+      },
+      {
+        "width": 1856,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2661
+      },
+      {
+        "width": 3570,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1856,
+      "study": 3570
+    },
+    "hash": "50cd8aa314dfa9a95457216a35021751032db1033ca895081e9f431fcacd1ab0",
+    "download": {
+      "full": {
+        "file": "allison-jim-senior-picture-recto.jpg",
+        "width": 6134,
+        "height": 8592,
+        "bytes": 5374747
+      },
+      "share": {
+        "file": "allison-jim-senior-picture-recto-2600px.jpg",
+        "width": 1856,
+        "height": 2600,
+        "bytes": 588761
+      }
+    },
+    "store": "private",
+    "publicCopy": true
+  },
+  "allison-family/allison-jim-senior-picture-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-jim-senior-picture-verso-d9cc862429",
+    "width": 3101,
+    "height": 4383,
+    "sizes": [
+      {
+        "width": 194,
+        "height": 274
+      },
+      {
+        "width": 340,
+        "height": 481
+      },
+      {
+        "width": 680,
+        "height": 961
+      },
+      {
+        "width": 800,
+        "height": 1131
+      },
+      {
+        "width": 1200,
+        "height": 1696
+      },
+      {
+        "width": 1840,
+        "height": 2601
+      },
+      {
+        "width": 1900,
+        "height": 2685
+      },
+      {
+        "width": 3101,
+        "height": 4383
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1840,
+      "study": 3101
+    },
+    "hash": "d9cc862429b7d0fcbff427680c97831873048853d8053d504306acd8d8ba828c",
+    "download": {
+      "full": {
+        "file": "allison-jim-senior-picture-verso.jpg",
+        "width": 3101,
+        "height": 4383,
+        "bytes": 1977431
+      },
+      "share": {
+        "file": "allison-jim-senior-picture-verso-2600px.jpg",
+        "width": 1840,
+        "height": 2600,
+        "bytes": 629994
+      }
+    },
+    "store": "private",
+    "publicCopy": true
   },
   "allison-family/allison-joseph-carroll-ned-hogan-1-recto.jpg": {
     "v": 2,
@@ -8156,6 +9324,407 @@
       }
     }
   },
+  "allison-family/allison-mack-infant-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-mack-infant-recto-a286df0508",
+    "width": 5919,
+    "height": 8233,
+    "sizes": [
+      {
+        "width": 185,
+        "height": 258
+      },
+      {
+        "width": 340,
+        "height": 473
+      },
+      {
+        "width": 680,
+        "height": 946
+      },
+      {
+        "width": 800,
+        "height": 1113
+      },
+      {
+        "width": 1200,
+        "height": 1669
+      },
+      {
+        "width": 1869,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2643
+      },
+      {
+        "width": 3595,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1869,
+      "study": 3595
+    },
+    "hash": "a286df0508e25538f73266fb538bdfa2aab0be679f30e447f9d4dc66ab240f26",
+    "download": {
+      "full": {
+        "file": "allison-mack-infant-recto.jpg",
+        "width": 5919,
+        "height": 8233,
+        "bytes": 4894321
+      },
+      "share": {
+        "file": "allison-mack-infant-recto-2600px.jpg",
+        "width": 1869,
+        "height": 2600,
+        "bytes": 527508
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-mack-infant-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-mack-infant-verso-a118d331c8",
+    "width": 3083,
+    "height": 4170,
+    "sizes": [
+      {
+        "width": 193,
+        "height": 261
+      },
+      {
+        "width": 340,
+        "height": 460
+      },
+      {
+        "width": 680,
+        "height": 920
+      },
+      {
+        "width": 800,
+        "height": 1082
+      },
+      {
+        "width": 1200,
+        "height": 1623
+      },
+      {
+        "width": 1900,
+        "height": 2570
+      },
+      {
+        "width": 1922,
+        "height": 2600
+      },
+      {
+        "width": 3083,
+        "height": 4170
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1922,
+      "study": 3083
+    },
+    "hash": "a118d331c8632ae95916ea8aa525162c6080cbc8dded556f300ee233e7655653",
+    "download": {
+      "full": {
+        "file": "allison-mack-infant-verso.jpg",
+        "width": 3083,
+        "height": 4170,
+        "bytes": 1734403
+      },
+      "share": {
+        "file": "allison-mack-infant-verso-2600px.jpg",
+        "width": 1922,
+        "height": 2600,
+        "bytes": 586371
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-mack-portrait-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-mack-portrait-1-recto-acabca28f7",
+    "width": 4640,
+    "height": 7062,
+    "sizes": [
+      {
+        "width": 290,
+        "height": 442
+      },
+      {
+        "width": 340,
+        "height": 517
+      },
+      {
+        "width": 680,
+        "height": 1035
+      },
+      {
+        "width": 800,
+        "height": 1218
+      },
+      {
+        "width": 1200,
+        "height": 1826
+      },
+      {
+        "width": 1708,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2892
+      },
+      {
+        "width": 3285,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1708,
+      "study": 3285
+    },
+    "hash": "acabca28f7b45f22e286a7fc8ee9a0c47fc0e854ffb0d3abdef9b67d4f73484f",
+    "download": {
+      "full": {
+        "file": "allison-mack-portrait-1-recto.jpg",
+        "width": 4640,
+        "height": 7062,
+        "bytes": 2351611
+      },
+      "share": {
+        "file": "allison-mack-portrait-1-recto-2600px.jpg",
+        "width": 1708,
+        "height": 2600,
+        "bytes": 372269
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-mack-portrait-1-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-mack-portrait-1-verso-c6363df450",
+    "width": 2529,
+    "height": 3743,
+    "sizes": [
+      {
+        "width": 317,
+        "height": 468
+      },
+      {
+        "width": 340,
+        "height": 503
+      },
+      {
+        "width": 680,
+        "height": 1006
+      },
+      {
+        "width": 800,
+        "height": 1184
+      },
+      {
+        "width": 1200,
+        "height": 1776
+      },
+      {
+        "width": 1757,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2812
+      },
+      {
+        "width": 2529,
+        "height": 3743
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1757,
+      "study": 2529
+    },
+    "hash": "c6363df450c4a227d778e3f1d87ceb023a4eac4296baa63913b3dfc0036582a4",
+    "download": {
+      "full": {
+        "file": "allison-mack-portrait-1-verso.jpg",
+        "width": 2529,
+        "height": 3743,
+        "bytes": 869933
+      },
+      "share": {
+        "file": "allison-mack-portrait-1-verso-2600px.jpg",
+        "width": 1757,
+        "height": 2600,
+        "bytes": 395075
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-marissa-austin-at-grandmothers-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-marissa-austin-at-grandmothers-recto-4b5b17d80d",
+    "width": 3505,
+    "height": 3336,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 324
+      },
+      {
+        "width": 439,
+        "height": 417
+      },
+      {
+        "width": 680,
+        "height": 647
+      },
+      {
+        "width": 800,
+        "height": 761
+      },
+      {
+        "width": 1200,
+        "height": 1142
+      },
+      {
+        "width": 1900,
+        "height": 1808
+      },
+      {
+        "width": 2600,
+        "height": 2475
+      },
+      {
+        "width": 3505,
+        "height": 3336
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2600,
+      "study": 3505
+    },
+    "hash": "4b5b17d80d5988835cf3b3321df081aa5dfb2a39d05cf8f443721b24e15e1a10",
+    "download": {
+      "full": {
+        "file": "allison-marissa-austin-at-grandmothers-recto.jpg",
+        "width": 3505,
+        "height": 3336,
+        "bytes": 1038520
+      },
+      "share": {
+        "file": "allison-marissa-austin-at-grandmothers-recto-2600px.jpg",
+        "width": 2600,
+        "height": 2475,
+        "bytes": 588336
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-marissa-austin-at-grandmothers-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-marissa-austin-at-grandmothers-verso-038d807ffa",
+    "width": 1765,
+    "height": 1796,
+    "sizes": [
+      {
+        "width": 340,
+        "height": 346
+      },
+      {
+        "width": 442,
+        "height": 449
+      },
+      {
+        "width": 680,
+        "height": 692
+      },
+      {
+        "width": 800,
+        "height": 814
+      },
+      {
+        "width": 1200,
+        "height": 1221
+      },
+      {
+        "width": 1765,
+        "height": 1796
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1765
+      ],
+      "detail": 1765,
+      "study": null
+    },
+    "hash": "038d807ffa333f931e033f3d5b98b4f9eae8d2f042abdaf6978a5d099e2cdb02",
+    "download": {
+      "full": {
+        "file": "allison-marissa-austin-at-grandmothers-verso.jpg",
+        "width": 1765,
+        "height": 1796,
+        "bytes": 229785
+      },
+      "share": null
+    },
+    "store": "private"
+  },
   "allison-family/allison-mckinstry-wedding-announcement-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-mckinstry-wedding-announcement-recto-f02c777fae",
@@ -8223,6 +9792,144 @@
         "bytes": 461909
       }
     }
+  },
+  "allison-family/allison-nan-susan-portrait-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-nan-susan-portrait-recto-8b0374ec2b",
+    "width": 5024,
+    "height": 7414,
+    "sizes": [
+      {
+        "width": 314,
+        "height": 464
+      },
+      {
+        "width": 340,
+        "height": 502
+      },
+      {
+        "width": 680,
+        "height": 1003
+      },
+      {
+        "width": 800,
+        "height": 1181
+      },
+      {
+        "width": 1200,
+        "height": 1771
+      },
+      {
+        "width": 1762,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2804
+      },
+      {
+        "width": 3388,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1762,
+      "study": 3388
+    },
+    "hash": "8b0374ec2bba511b0191d5785268da19d47351a4e28faea0149ffd72d38e6de8",
+    "download": {
+      "full": {
+        "file": "allison-nan-susan-portrait-recto.jpg",
+        "width": 5024,
+        "height": 7414,
+        "bytes": 3026826
+      },
+      "share": {
+        "file": "allison-nan-susan-portrait-recto-2600px.jpg",
+        "width": 1762,
+        "height": 2600,
+        "bytes": 495716
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-nan-susan-portrait-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-nan-susan-portrait-verso-0680866a00",
+    "width": 2545,
+    "height": 3719,
+    "sizes": [
+      {
+        "width": 319,
+        "height": 465
+      },
+      {
+        "width": 340,
+        "height": 497
+      },
+      {
+        "width": 680,
+        "height": 994
+      },
+      {
+        "width": 800,
+        "height": 1169
+      },
+      {
+        "width": 1200,
+        "height": 1754
+      },
+      {
+        "width": 1779,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2776
+      },
+      {
+        "width": 2545,
+        "height": 3719
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1779,
+      "study": 2545
+    },
+    "hash": "0680866a00906e0f624faac0a11b7fbbbdef167a3101bf7843a01d5dd1f5f843",
+    "download": {
+      "full": {
+        "file": "allison-nan-susan-portrait-verso.jpg",
+        "width": 2545,
+        "height": 3719,
+        "bytes": 928907
+      },
+      "share": {
+        "file": "allison-nan-susan-portrait-verso-2600px.jpg",
+        "width": 1779,
+        "height": 2600,
+        "bytes": 422641
+      }
+    },
+    "store": "private"
   },
   "allison-family/allison-oscar-and-ollie-grizzle-recto.jpg": {
     "v": 2,
@@ -9485,6 +11192,135 @@
       }
     }
   },
+  "allison-family/allison-sam-infant-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-sam-infant-recto-e3ba3e475b",
+    "width": 4438,
+    "height": 6316,
+    "sizes": [
+      {
+        "width": 278,
+        "height": 395
+      },
+      {
+        "width": 340,
+        "height": 484
+      },
+      {
+        "width": 680,
+        "height": 968
+      },
+      {
+        "width": 800,
+        "height": 1139
+      },
+      {
+        "width": 1200,
+        "height": 1708
+      },
+      {
+        "width": 1827,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2704
+      },
+      {
+        "width": 3513,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1827,
+      "study": 3513
+    },
+    "hash": "e3ba3e475bd9f378661d7891a3df7475d8b50861a23dac936fba50333972b96b",
+    "download": {
+      "full": {
+        "file": "allison-sam-infant-recto.jpg",
+        "width": 4438,
+        "height": 6316,
+        "bytes": 2132109
+      },
+      "share": {
+        "file": "allison-sam-infant-recto-2600px.jpg",
+        "width": 1827,
+        "height": 2600,
+        "bytes": 498803
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-sam-infant-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-sam-infant-verso-f857fa50de",
+    "width": 2257,
+    "height": 3144,
+    "sizes": [
+      {
+        "width": 283,
+        "height": 393
+      },
+      {
+        "width": 340,
+        "height": 474
+      },
+      {
+        "width": 680,
+        "height": 947
+      },
+      {
+        "width": 800,
+        "height": 1114
+      },
+      {
+        "width": 1200,
+        "height": 1672
+      },
+      {
+        "width": 1866,
+        "height": 2599
+      },
+      {
+        "width": 1900,
+        "height": 2647
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1866,
+      "study": null
+    },
+    "hash": "f857fa50de36d102a655004e706f8c9fb671306a913fd45e5ed88d0c2a157974",
+    "download": {
+      "full": {
+        "file": "allison-sam-infant-verso.jpg",
+        "width": 2257,
+        "height": 3144,
+        "bytes": 527044
+      },
+      "share": null
+    },
+    "store": "private"
+  },
   "allison-family/allison-sam-jack-jemima-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-sam-jack-jemima-recto-db44754f6c",
@@ -9690,6 +11526,135 @@
       }
     }
   },
+  "allison-family/allison-sammy-jean-jim-oscar-1975-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-sammy-jean-jim-oscar-1975-recto-9bb9683ed7",
+    "width": 4328,
+    "height": 4384,
+    "sizes": [
+      {
+        "width": 271,
+        "height": 274
+      },
+      {
+        "width": 340,
+        "height": 344
+      },
+      {
+        "width": 680,
+        "height": 689
+      },
+      {
+        "width": 800,
+        "height": 810
+      },
+      {
+        "width": 1200,
+        "height": 1216
+      },
+      {
+        "width": 1900,
+        "height": 1925
+      },
+      {
+        "width": 2567,
+        "height": 2600
+      },
+      {
+        "width": 4328,
+        "height": 4384
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2567,
+      "study": 4328
+    },
+    "hash": "9bb9683ed775ef9438d248a0ddcb2e6a8f657c7469061b4dc6395733a6bc0e5c",
+    "download": {
+      "full": {
+        "file": "allison-sammy-jean-jim-oscar-1975-recto.jpg",
+        "width": 4328,
+        "height": 4384,
+        "bytes": 1682560
+      },
+      "share": {
+        "file": "allison-sammy-jean-jim-oscar-1975-recto-2600px.jpg",
+        "width": 2567,
+        "height": 2600,
+        "bytes": 611639
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-sammy-jean-jim-oscar-1975-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-sammy-jean-jim-oscar-1975-verso-ede8d5246f",
+    "width": 2192,
+    "height": 2149,
+    "sizes": [
+      {
+        "width": 274,
+        "height": 269
+      },
+      {
+        "width": 340,
+        "height": 333
+      },
+      {
+        "width": 680,
+        "height": 667
+      },
+      {
+        "width": 800,
+        "height": 784
+      },
+      {
+        "width": 1200,
+        "height": 1176
+      },
+      {
+        "width": 1900,
+        "height": 1863
+      },
+      {
+        "width": 2192,
+        "height": 2149
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2192,
+      "study": null
+    },
+    "hash": "ede8d5246f40c60e7afe620af950af636549e8ef5902981b7eedee85a89682a6",
+    "download": {
+      "full": {
+        "file": "allison-sammy-jean-jim-oscar-1975-verso.jpg",
+        "width": 2192,
+        "height": 2149,
+        "bytes": 352514
+      },
+      "share": null
+    },
+    "store": "private"
+  },
   "allison-family/allison-veta-1955-outside-house-recto.jpg": {
     "v": 2,
     "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-veta-1955-outside-house-recto-a4772e166e",
@@ -9756,6 +11721,255 @@
         "height": 2600,
         "bytes": 654862
       }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-veta-portrait-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-veta-portrait-recto-708e5124a4",
+    "width": 9809,
+    "height": 12313,
+    "sizes": [
+      {
+        "width": 307,
+        "height": 385
+      },
+      {
+        "width": 340,
+        "height": 427
+      },
+      {
+        "width": 680,
+        "height": 854
+      },
+      {
+        "width": 800,
+        "height": 1004
+      },
+      {
+        "width": 1200,
+        "height": 1506
+      },
+      {
+        "width": 1900,
+        "height": 2385
+      },
+      {
+        "width": 2071,
+        "height": 2600
+      },
+      {
+        "width": 3983,
+        "height": 5000
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2071,
+      "study": 3983
+    },
+    "hash": "708e5124a4a56d7ddadf2a9f666d3ca7b7b0301425edad2c48a80bfb3efc2de5",
+    "download": {
+      "full": {
+        "file": "allison-veta-portrait-recto.jpg",
+        "width": 9809,
+        "height": 12313,
+        "bytes": 9726372
+      },
+      "share": {
+        "file": "allison-veta-portrait-recto-2600px.jpg",
+        "width": 2071,
+        "height": 2600,
+        "bytes": 478861
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-veta-portrait-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-veta-portrait-verso-a64bb6b408",
+    "width": 4945,
+    "height": 6139,
+    "sizes": [
+      {
+        "width": 310,
+        "height": 384
+      },
+      {
+        "width": 340,
+        "height": 422
+      },
+      {
+        "width": 680,
+        "height": 844
+      },
+      {
+        "width": 800,
+        "height": 993
+      },
+      {
+        "width": 1200,
+        "height": 1490
+      },
+      {
+        "width": 1900,
+        "height": 2359
+      },
+      {
+        "width": 2094,
+        "height": 2600
+      },
+      {
+        "width": 4028,
+        "height": 5001
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2094,
+      "study": 4028
+    },
+    "hash": "a64bb6b40802393484b960b7d095ed4f085d81814c4c21d43ce71630e5893cd4",
+    "download": {
+      "full": {
+        "file": "allison-veta-portrait-verso.jpg",
+        "width": 4945,
+        "height": 6139,
+        "bytes": 2794120
+      },
+      "share": {
+        "file": "allison-veta-portrait-verso-2600px.jpg",
+        "width": 2094,
+        "height": 2600,
+        "bytes": 383345
+      }
+    },
+    "store": "private"
+  },
+  "allison-family/allison-veta-school-portrait-1-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-veta-school-portrait-1-recto-9771780e16",
+    "width": 2171,
+    "height": 2987,
+    "sizes": [
+      {
+        "width": 272,
+        "height": 374
+      },
+      {
+        "width": 340,
+        "height": 468
+      },
+      {
+        "width": 680,
+        "height": 936
+      },
+      {
+        "width": 800,
+        "height": 1101
+      },
+      {
+        "width": 1200,
+        "height": 1651
+      },
+      {
+        "width": 1890,
+        "height": 2600
+      },
+      {
+        "width": 1900,
+        "height": 2614
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 1890,
+      "study": null
+    },
+    "hash": "9771780e1687a9934d82b070bb5a1540d99fd5e4ae640893f5ab706055c1ec26",
+    "download": {
+      "full": {
+        "file": "allison-veta-school-portrait-1-recto.jpg",
+        "width": 2171,
+        "height": 2987,
+        "bytes": 592408
+      },
+      "share": null
+    },
+    "store": "private"
+  },
+  "allison-family/allison-veta-school-portrait-1-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/allison-veta-school-portrait-1-verso-14871efc26",
+    "width": 1081,
+    "height": 1493,
+    "sizes": [
+      {
+        "width": 271,
+        "height": 374
+      },
+      {
+        "width": 340,
+        "height": 470
+      },
+      {
+        "width": 680,
+        "height": 939
+      },
+      {
+        "width": 800,
+        "height": 1105
+      },
+      {
+        "width": 1081,
+        "height": 1493
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1081
+      ],
+      "detail": 1081,
+      "study": null
+    },
+    "hash": "14871efc26cae8e76be4658e95db372145b394f75f3311b35f3df58262c7a8f4",
+    "download": {
+      "full": {
+        "file": "allison-veta-school-portrait-1-verso.jpg",
+        "width": 1081,
+        "height": 1493,
+        "bytes": 162221
+      },
+      "share": null
     },
     "store": "private"
   },
@@ -12859,6 +15073,117 @@
         "bytes": 463178
       }
     }
+  },
+  "allison-family/skogland-john-profile-recto.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/skogland-john-profile-recto-dd6c66bbe3",
+    "width": 2197,
+    "height": 2209,
+    "sizes": [
+      {
+        "width": 275,
+        "height": 277
+      },
+      {
+        "width": 340,
+        "height": 342
+      },
+      {
+        "width": 680,
+        "height": 684
+      },
+      {
+        "width": 800,
+        "height": 804
+      },
+      {
+        "width": 1200,
+        "height": 1207
+      },
+      {
+        "width": 1900,
+        "height": 1910
+      },
+      {
+        "width": 2197,
+        "height": 2209
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1200,
+        1900
+      ],
+      "detail": 2197,
+      "study": null
+    },
+    "hash": "dd6c66bbe3a68af38c55d94fbd24f68114ebfe84a4b5b938dbc57f1ca84d1128",
+    "download": {
+      "full": {
+        "file": "skogland-john-profile-recto.jpg",
+        "width": 2197,
+        "height": 2209,
+        "bytes": 599767
+      },
+      "share": null
+    },
+    "store": "private"
+  },
+  "allison-family/skogland-john-profile-verso.jpg": {
+    "v": 2,
+    "id": "https://iiif.austinlallison.com/iiif/3/allison-family/skogland-john-profile-verso-07a56532b9",
+    "width": 1170,
+    "height": 1185,
+    "sizes": [
+      {
+        "width": 293,
+        "height": 297
+      },
+      {
+        "width": 340,
+        "height": 344
+      },
+      {
+        "width": 680,
+        "height": 689
+      },
+      {
+        "width": 800,
+        "height": 810
+      },
+      {
+        "width": 1170,
+        "height": 1185
+      }
+    ],
+    "rungs": {
+      "index": [
+        340,
+        680
+      ],
+      "view": [
+        800,
+        1170
+      ],
+      "detail": 1170,
+      "study": null
+    },
+    "hash": "07a56532b9c3a490303d27ddfa6c163b348f6f44647f9d7764f6d6dcf780ce68",
+    "download": {
+      "full": {
+        "file": "skogland-john-profile-verso.jpg",
+        "width": 1170,
+        "height": 1185,
+        "bytes": 168135
+      },
+      "share": null
+    },
+    "store": "private"
   },
   "allison-family/skogland-veta-jennifer-dalmatian-recto.jpg": {
     "v": 2,

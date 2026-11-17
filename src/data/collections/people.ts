@@ -1244,12 +1244,46 @@ export const PEOPLE: Person[] = [
     // TODO: memorial 52656978 could not be read (rate-limited). Dates are
     // still unknown; this is the one record in the batch with none.
     relations: [
+      { type: 'spouse', person: 'skogland-john-edmund-jr', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'skogland-john-edmund-iii', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'allison-harold-lamar', basis: 'Established relationship', confidence: 'certain' },
       { type: 'parent', person: 'allison-veta-jean-mckinstry', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-carolyn', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-fred-harold', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-jack-william', basis: 'Established relationship', confidence: 'certain' },
       { type: 'sibling', person: 'allison-james-wiley', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'skogland-john-edmund-jr',
+    living: true,
+    authorized: 'Skogland, John Edmund Jr.',
+    surname: 'Skogland',
+    given: 'John Edmund Jr.',
+    birth: '1945',
+    variants: ['John Skogland', 'Skogland, John', 'John Skogland, Jr.', 'Skogland, John Jr.'],
+    status: 'established',
+    scopeNote:
+      'John Skogland is the husband of Veta Skogland',
+    relations: [
+      { type: 'spouse', person: 'skogland-veta-sue-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'child', person: 'skogland-john-edmund-iii', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'skogland-john-edmund-iii',
+    living: true,
+    authorized: 'Skogland, John Edmund III',
+    surname: 'Skogland',
+    given: 'John Edmund III',
+    birth: '1945',
+    variants: ['John Skogland', 'Skogland, John', 'John Skogland, III', 'Skogland, John III'],
+    status: 'established',
+    scopeNote:
+      'John Skogland is the son of Veta and John Skogland',
+    relations: [
+      { type: 'parent', person: 'skogland-veta-sue-allison', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'skogland-john-edmund-jr', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
@@ -1372,7 +1406,7 @@ export const PEOPLE: Person[] = [
     authorized: 'Allison, Daniel Fred',
     surname: 'Allison',
     given: 'Daniel Fred',
-    birth: '1983',
+    birth: '1985',
     variants: ['Daniel Allison', 'Allison, Daniel', 'Daniel Fred Allison'],
     status: 'established',
     scopeNote:
@@ -1391,7 +1425,7 @@ export const PEOPLE: Person[] = [
     authorized: 'Montalbano, Marissa Swann Allison',
     surname: 'Montalbano',
     given: 'Marissa Swann',
-    birth: '1983',
+    birth: '1988',
     variants: ['Marissa Allison', 'Allison, Marissa', 'Marissa Swann Allison'],
     status: 'established',
     scopeNote:
@@ -1570,6 +1604,28 @@ export const PEOPLE: Person[] = [
     relations: [
       { type: 'spouse', person: 'osborn-mildred-adeline-mckinstry', basis: 'Established relationship', confidence: 'certain' },
       { type: 'child', person: 'osborn-stephen-mckinstry', basis: 'Established relationship', confidence: 'certain' },
+    ]
+  },
+  {
+    id: 'walker-rebecca-osborn',
+    living: true,
+    authorized: 'Walker, Rebecca Osborn',
+    surname: 'Osborn',
+    given: 'Rebecca Osborn',
+    birth: '1949',
+    variants: ['Becky Osborn', 'Rebecca Osborn', 'Osborn, Becky', 'Becky Walker', 'Walker, Becky', 'Walker, Rebecca'],
+    status: 'established',
+    scopeNote:
+      'Rebecca Osborn Walker is the first daughter of Mildred and Kenneth Osborn',
+    // TODO: memorial 52656978 could not be read (rate-limited). Dates are
+    // still unknown; this is the one record in the batch with none.
+    identifiers: {  },
+    sources: [
+      '',
+    ],
+    relations: [
+      { type: 'parent', person: 'osborn-kenneth', basis: 'Established relationship', confidence: 'certain' },
+      { type: 'parent', person: 'osborn-mildred-adeline-mckinstry', basis: 'Established relationship', confidence: 'certain' },
     ]
   },
   {
